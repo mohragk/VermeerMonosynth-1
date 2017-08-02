@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="0nRd9LLGO" name="Vermeer Monosynth" projectType="audioplug"
+              version="1.0.0" juceLinkage="amalg_multi" buildVST="1" buildRTAS="0"
+              buildAU="0" pluginName="Vermeer Monosynth" pluginDesc="Vermeer Monosynth"
+              pluginManufacturer="Vermeer inc." pluginManufacturerCode="VERM"
+              pluginCode="Vmon" pluginChannelConfigs="" pluginIsSynth="1" pluginWantsMidiIn="1"
+              pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0" pluginTailLength="0"
+              pluginEditorRequiresKeys="1" pluginAUExportPrefix="VermeerMonosynth"
+              pluginAUViewClass="JuceDemoProjectAU_V1" pluginRTASCategory=""
+              bundleIdentifier="com.vermeer.Monosynth" jucerVersion="5.1.0"
+              companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
+              buildAAX="0" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
+              includeBinaryInAppConfig="1" buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
+              companyWebsite="www.soundcloud.com/meneervermeer" companyEmail="meneervermeermusic@gmail.com"
+              pluginIsMidiEffectPlugin="0" buildAUv3="0" buildStandalone="1"
+              enableIAA="0" displaySplashScreen="1" reportAppUsage="1" splashScreenColour="Dark"
+              cppLanguageStandard="11">
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="" rtasFolder="~/SDKs/PT_80_SDK"
+               objCExtraSuffix="JuceDemo" aaxFolder="" postbuildCommand="" vst3Folder=""
+               smallIcon="aJR5EJ" bigIcon="IbiCwm">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="VermeerMonosynth"
+                       osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="VermeerMonosynth"
+                       osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../../../../../Applications/JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2017 targetFolder="Builds/VisualStudio2017" windowsTargetPlatformVersion=""
+            smallIcon="aJR5EJ" bigIcon="IbiCwm">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
+                       isDebug="1" optimisation="1" targetName="VermeerMonosynth"/>
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
+                       isDebug="0" optimisation="3" targetName="VermeerMonosynth"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\..\..\..\..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\..\..\..\..\..\JUCE\modules"/>
+      </MODULEPATHS>
+    </VS2017>
+  </EXPORTFORMATS>
+  <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="IbiCwm" name="MonoSynthIconLarge.png" compile="0" resource="1"
+          file="Resources/MonoSynthIconLarge.png"/>
+    <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"
+          file="Resources/MonoSynthIconSmall.png"/>
+    <GROUP id="{902056B3-1486-08AF-7310-B5F8845202B7}" name="MoogLadders">
+      <FILE id="VSqYOa" name="ImprovedModel.h" compile="0" resource="0" file="Source/MoogLadders/ImprovedModel.h"/>
+      <FILE id="PYmIbs" name="LadderFilterBase.h" compile="0" resource="0"
+            file="Source/MoogLadders/LadderFilterBase.h"/>
+      <FILE id="IEXVyo" name="util.h" compile="0" resource="0" file="Source/MoogLadders/util.h"/>
+    </GROUP>
+    <GROUP id="{15B2711C-29BF-F9B4-2940-C6792AB9DBFD}" name="adsr">
+      <FILE id="Sk6Jz4" name="ADSR.cpp" compile="1" resource="0" file="Source/adsr/ADSR.cpp"/>
+      <FILE id="NQi4xi" name="ADSR.h" compile="0" resource="0" file="Source/adsr/ADSR.h"/>
+    </GROUP>
+    <FILE id="Iif5nfHL" name="PluginEditor.h" compile="0" resource="0"
+          file="Source/PluginEditor.h"/>
+    <FILE id="RCFlkTAef" name="PluginEditor.cpp" compile="1" resource="0"
+          file="Source/PluginEditor.cpp"/>
+    <FILE id="PkpMNdnIr" name="PluginProcessor.h" compile="0" resource="0"
+          file="Source/PluginProcessor.h"/>
+    <FILE id="gFFr0hbSp" name="PluginProcessor.cpp" compile="1" resource="0"
+          file="Source/PluginProcessor.cpp"/>
+    <FILE id="obk9kG" name="SinewaveSynth.h" compile="0" resource="0" file="Source/SinewaveSynth.h"/>
+    <FILE id="SfPbCK" name="Oscillators.h" compile="0" resource="0" file="Source/Oscillators.h"/>
+    <FILE id="gmvNxx" name="NoiseGen.h" compile="0" resource="0" file="Source/NoiseGen.h"/>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="0"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+  </MODULES>
+</JUCERPROJECT>
