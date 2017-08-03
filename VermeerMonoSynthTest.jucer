@@ -8,7 +8,7 @@
               pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0" pluginTailLength="0"
               pluginEditorRequiresKeys="1" pluginAUExportPrefix="VermeerMonosynth"
               pluginAUViewClass="JuceDemoProjectAU_V1" pluginRTASCategory=""
-              bundleIdentifier="com.vermeer.Monosynth" jucerVersion="5.1.0"
+              bundleIdentifier="com.vermeer.Monosynth" jucerVersion="5.1.1"
               companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
               buildAAX="0" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
               includeBinaryInAppConfig="1" buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
@@ -89,8 +89,6 @@
     <FILE id="gFFr0hbSp" name="PluginProcessor.cpp" compile="1" resource="0"
           file="Source/PluginProcessor.cpp"/>
     <FILE id="obk9kG" name="SinewaveSynth.h" compile="0" resource="0" file="Source/SinewaveSynth.h"/>
-    <FILE id="SfPbCK" name="Oscillators.h" compile="0" resource="0" file="Source/Oscillators.h"/>
-    <FILE id="gmvNxx" name="NoiseGen.h" compile="0" resource="0" file="Source/NoiseGen.h"/>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
   <MODULES>
