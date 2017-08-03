@@ -126,10 +126,10 @@ public:
     void pitchWheelMoved (int newValue) override
     {
         
-        /*
+        
         double frequencyOffset = ((newValue > 0 ? maxFreq : minFreq) * (newValue / 127.0));
         angleDelta.setValue (((2.0 * double_Pi) * (midiFrequency + frequencyOffset)) / getSampleRate());
-        */
+      
        
         /*
         double newFreq = midiFrequency + ( frequencyOffset );
