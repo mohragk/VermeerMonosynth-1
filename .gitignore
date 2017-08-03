@@ -52,3 +52,4 @@ Builds/VisualStudio2017/.vs/Vermeer Monosynth/v15/.suo
 *.db-shm
 *.db-wal
 *.res
+*.sqlite
