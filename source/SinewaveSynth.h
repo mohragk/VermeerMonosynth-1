@@ -66,17 +66,11 @@ public:
                     SynthesiserSound* /*sound*/,
                     int /*currentPitchWheelPosition*/) override
     {
-        midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         
-        // Store the initial note and work out the maximum frequency deviations for pitch bend
-        initialNote = midiNoteNumber;
-        maxFreq = MidiMessage::getMidiNoteInHertz (initialNote + 12) - midiFrequency;
-        minFreq = midiFrequency - MidiMessage::getMidiNoteInHertz (initialNote - 12);
-        
-        
-        ampEnvelope.setSampleRate(getSampleRate());
-        pitchEnvelope.setSampleRate(getSampleRate());
-        
+		ampEnvelope.setSampleRate(getSampleRate());
+		pitchEnvelope.setSampleRate(getSampleRate());
+		
+		midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         
         for ( int i = 0; i < numOscillators; i++)
         {
@@ -125,18 +119,11 @@ public:
     
     void pitchWheelMoved (int newValue) override
     {
-        
-        
-        double frequencyOffset = ((newValue > 0 ? maxFreq : minFreq) * (newValue / 127.0));
-        angleDelta.setValue (((2.0 * double_Pi) * (midiFrequency + frequencyOffset)) / getSampleRate());
-      
-       
-        /*
-        double newFreq = midiFrequency + ( frequencyOffset );
-        oscFrequency.setValue(newFreq);
-        updateAngleDelta();
-        */
-        
+		        
+		double range = 12.0;
+		
+		pitchBendOffset = range / 16383.0;
+    
     }
     
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override
@@ -264,20 +251,20 @@ private:
                 //Get Pitch Envelope Amount
                 double pitchEnvAmt = pitchEnvelope.process();
 				
-                //Apply Pitch Envelope Amount, deviated from current pitch
-                double newFreqOsc1 = midiFrequency + ( pitchEnvAmt * pitchModAmount);
-                double newFreqOsc2 = midiFrequency + ( pitchEnvAmt * pitchModAmount);
-                double newFreqOsc3 = midiFrequency + ( pitchEnvAmt * pitchModAmount);
+                //Apply Pitch Envelope and PitchBend Amount, deviated from current pitch
+                double newFreqOsc1 = midiFrequency + ( pitchEnvAmt * pitchModAmount );
+                double newFreqOsc2 = midiFrequency + ( pitchEnvAmt * pitchModAmount );
+                double newFreqOsc3 = midiFrequency + ( pitchEnvAmt * pitchModAmount );
                 
-				//Calculate new frequencies after finetuning
-				double osc1F = semitoneOffsetToFreq(oscDetuneAmount[0], newFreqOsc1);
-				double osc2F = semitoneOffsetToFreq(oscDetuneAmount[1], newFreqOsc2);
-                double osc3F = semitoneOffsetToFreq(oscDetuneAmount[2], newFreqOsc3);
+				//Calculate new frequencies after detuning by knob and or pitchbend wheel
+				double osc1Detuned = semitoneOffsetToFreq((oscDetuneAmount[0] + pitchBendOffset), newFreqOsc1);
+				double osc2Detuned = semitoneOffsetToFreq((oscDetuneAmount[1] + pitchBendOffset), newFreqOsc2);
+                double osc3Detuned = semitoneOffsetToFreq((oscDetuneAmount[2] + pitchBendOffset), newFreqOsc3);
                 
                 //Set the new frequency
-                oscFrequency[0].setValue(osc1F);
-                oscFrequency[1].setValue(osc2F);
-                oscFrequency[2].setValue(osc3F);
+                oscFrequency[0].setValue(osc1Detuned);
+                oscFrequency[1].setValue(osc2Detuned);
+                oscFrequency[2].setValue(osc3Detuned);
                 
                 
                 
@@ -457,6 +444,7 @@ private:
     float angleDelta;
     
     double  phase[3], phaseIncrement[3], lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
+	double pitchBendOffset;
     
     double midiFrequency;
     double maxFreq = 0, minFreq = 0;

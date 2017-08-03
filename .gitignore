@@ -34,8 +34,21 @@
 *.plist
 *.nib
 *.entitlements
+*.pbxproj
 *.ico
 *.rc
 *.sln
 *.vcxproj
 *.filters
+*.exp
+*.tlog
+*.log
+*.ilk
+*.pdb
+*.ipch
+*.db
+Builds/VisualStudio2017/.vs/Vermeer Monosynth/v15/.suo
+*.opendb
+*.db-shm
+*.db-wal
+*.res
