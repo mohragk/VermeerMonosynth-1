@@ -23,10 +23,14 @@ class LFO
                 OSCILLATOR_MODE_SINE = 0,
                 OSCILLATOR_MODE_SAW,
                 OSCILLATOR_MODE_SQUARE,
-                OSCILLATOR_MODE_NOISE, 
-                numOscillatorModes
-            };
+                OSCILLATOR_MODE_NOISE
+         };
         
+        void setSampleRate(double sr)
+        {
+            sampleRate = sr;
+        }
+            
         void setFrequency(double f)
         {
             frequency = f;
@@ -52,12 +56,11 @@ class LFO
         double nextSample()
         {
             
-            phaseIncrement = updatePhaseIncrement(frequency);
-            
             const double two_Pi = 2.0 * double_Pi;
             double value = 0.0;
             
-            switch (mode) {
+            switch (mode) 
+            {
                 case OSCILLATOR_MODE_SINE:
                     value = sin(phase);
                     break;
@@ -75,10 +78,10 @@ class LFO
                     Random r;
                     value = r.nextDouble();
                     break;
-                default:
-                    break;
+
             }
             
+            phaseIncrement = updatePhaseIncrement(frequency);
             phase += phaseIncrement;
             
             while (phase >= 2.0 * double_Pi)
@@ -94,15 +97,14 @@ class LFO
      
         double updatePhaseIncrement(double freq)
         {
-            double nyFreq = fmin( freq, getSampleRate() / 2.0 );
-            return ( ( 2.0 * double_Pi ) * nyFreq ) / getSampleRate();
+            return ( ( 2.0 * double_Pi ) * freq ) / sampleRate;
         }
     
         
-        double phase, phaseInc, frequency;
+        double sampleRate, phase, phaseIncrement, frequency;
         
         OscillatorMode mode;
        
     
     
-}
+};

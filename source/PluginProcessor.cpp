@@ -156,6 +156,8 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     keyboardState.addListener(this);
     
     filterEnvelope = new ADSR();
+    
+    lfo = new LFO();
    
 }
 

@@ -89,6 +89,7 @@
     <FILE id="gFFr0hbSp" name="PluginProcessor.cpp" compile="1" resource="0"
           file="Source/PluginProcessor.cpp"/>
     <FILE id="obk9kG" name="SinewaveSynth.h" compile="1" resource="0" file="Source/SinewaveSynth.h"/>
+    <FILE id="yf17tA" name="lfo.h" compile="0" resource="0" file="source/lfo.h"/>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
   <MODULES>

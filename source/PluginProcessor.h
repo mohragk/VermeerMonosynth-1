@@ -29,6 +29,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "adsr/ADSR.h"
 #include "MoogLadders/ImprovedModel.h"
+#include "lfo.h"
 
 
 
@@ -215,6 +216,7 @@ private:
 	void applyModToTarget(modTarget m, double amount);
 
     ADSR *filterEnvelope;
+    LFO *lfo;
     
     int mNumVoices;
 
