@@ -411,6 +411,8 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
     
     for (int i = 0; i < numSamples; i++)
     {
+        lfo.setMode(*lfoModeParam);
+
 
 		lfo.setFrequency(*lfoRateParam);
 		double lfoValue = lfo.nextSample();
@@ -420,10 +422,12 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
 
 
         float contourRange = *filterContourParam * contourVelocity;
-        currentCutoff = *filterParam + (filterEnvelope->process() * contourRange * cutoffModulationAmt);
+        currentCutoff = *filterParam + (filterEnvelope->process() * contourRange) * cutoffModulationAmt;
         
         if (currentCutoff > 14000.0)
             currentCutoff = 14000.0;
+        if (currentCutoff< 20.0)
+            currentCutoff = 20.0;
         
         cutoff.setValue     (currentCutoff);
         resonance.setValue  (*filterQParam);
@@ -663,18 +667,26 @@ void JuceDemoPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int o
 
 void JuceDemoPluginAudioProcessor::applyModToTarget(int target, double amount)
 {
-	modTarget t = (modTarget) target;
+    modTarget t = (modTarget) target;
+    
 	switch (t) {
 	case modAmp:
-		return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setAmpModulation(amount);
+		dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setAmpModulation(amount);
+        dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
+
 
 		break;
 	case modPitch:
-		return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(amount);
+		dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(amount);
+        dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setAmpModulation(0.0);
 		break;
 
 	case modCutoff:
-		cutoffModulationAmt = amount + 1.0 / 2.0;
+        
+
+        if (amount != 0.0)
+            cutoffModulationAmt = amount + 1.0 / 2.0;
+        dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
 		break;
 	default:
 		break;
