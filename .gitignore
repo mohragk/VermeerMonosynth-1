@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+*.icns
+*.plist
+*.nib
+*.entitlements
+*.ico
+*.rc
+*.sln
+*.vcxproj
+*.filters
