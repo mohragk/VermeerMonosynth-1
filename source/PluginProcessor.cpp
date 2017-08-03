@@ -164,6 +164,7 @@ JuceDemoPluginAudioProcessor::~JuceDemoPluginAudioProcessor()
     keyboardState.removeListener(this);
 }
 
+
 void JuceDemoPluginAudioProcessor::initialiseSynth()
 {
    
@@ -274,15 +275,15 @@ void JuceDemoPluginAudioProcessor::reset()
 void JuceDemoPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
 
-    contourMultiplier = velocity;
+    contourVelocity = velocity;
     
 
     // Making sure that the envelope resets to attack when the gate is already open, but not in release state
-	/*if (filterEnvelope->getState() == ADSR::env_attack
-		|| filterEnvelope->getState() == ADSR::env_decay
-		|| filterEnvelope->getState() == ADSR::env_sustain)
+	/*if (filterenvelope->getstate() == adsr::env_attack
+		|| filterenvelope->getstate() == adsr::env_decay
+		|| filterenvelope->getstate() == adsr::env_sustain)
 	{
-		filterEnvelope->resetToAttack();
+		filterenvelope->resettoattack();
 	}
 	else*/
 		filterEnvelope->gate(true);
@@ -391,8 +392,8 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
     
     for (int i = 0; i < numSamples; i++)
     {
-        float range = *filterContourParam * contourMultiplier;
-        currentCutoff = *filterParam + (filterEnvelope->process() * range);
+        float contourRange = *filterContourParam * contourVelocity;
+        currentCutoff = *filterParam + (filterEnvelope->process() * contourRange * cutoffModulationAmt);
         
         if (currentCutoff > 14000.0)
             currentCutoff = 14000.0;
@@ -564,7 +565,7 @@ void inline JuceDemoPluginAudioProcessor::updateParameters()
     setAmpEnvelope  (*attackParam1, *decayParam1, *sustainParam1, *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
     setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
     
-    setPitchModulation(*pitchModParam);
+	setPitchEnvelopeAmount(*pitchModParam);
     
     setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam );
     setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
@@ -587,10 +588,10 @@ void JuceDemoPluginAudioProcessor::setPitchEnvelope(float attack, float decay, f
 }
 
 
-void JuceDemoPluginAudioProcessor::setPitchModulation(float pitchMod)
+void JuceDemoPluginAudioProcessor::setPitchEnvelopeAmount(float pitchMod)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(pitchMod);
+    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchEnvelopeAmount(pitchMod);
     
 }
 
@@ -631,6 +632,26 @@ void JuceDemoPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int o
     
 }
 
+
+
+void JuceDemoPluginAudioProcessor::applyModToTarget(modTarget target, double amount)
+{
+	switch (target) {
+	case modAmp:
+		return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setAmpModulation(amount);
+
+		break;
+	case modPitch:
+		return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(amount);
+		break;
+
+	case modCutoff:
+		cutoffModulationAmt = amount + 1.0 / 2.0;
+		break;
+	default:
+		break;
+	}
+}
 
 float JuceDemoPluginAudioProcessor::softClip(float s)
 {

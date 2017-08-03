@@ -116,14 +116,14 @@ public:
    
 
     
-    void setPitchModulation( float pitchMod);
+    void setPitchEnvelopeAmount( float pitchMod);
     //void setOscOffset(float offset);
 	void setOsc1DetuneAmount(float fine, int coarse);
 	void setOsc2DetuneAmount(float fine, int coarse);
     void setOsc3DetuneAmount(float fine, int coarse);
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
-    
+	
   
     
     // Our parameters
@@ -204,8 +204,16 @@ private:
     
     ImprovedMoog filter2[2];
     
-
+	enum modTarget {
+		modPitch,
+		modCutoff,
+		modAmp,
+		modMode,
+		numModTargets
+	};
     
+	void applyModToTarget(modTarget m, double amount);
+
     ADSR *filterEnvelope;
     
     int mNumVoices;
@@ -216,7 +224,8 @@ private:
     
     float softClip(float s);
 
-    float contourMultiplier;
+    float contourVelocity;
+	double cutoffModulationAmt; 
     
     float currentCutoff;
     

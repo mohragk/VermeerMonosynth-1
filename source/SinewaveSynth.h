@@ -172,10 +172,23 @@ public:
 
 		
     // Pretty dumb name, but this influences the amount of pitch deviation generated from the envelope.
-    void setPitchModulation ( float pitchMod )
+    void setPitchEnvelopeAmount ( float pitchMod )
     {
         pitchModAmount = pitchMod;
     }
+
+	void setAmpModulation(double amt)
+	{
+		ampModulation = (amt + 1.0) / 2.0; // Normalize
+	}
+
+
+	void setPitchModulation(double amt)
+	{
+		double rangeSemitones = 24.0;
+		pitchModulation = amt * rangeSemitones;
+
+	}
     
     
     void setOscGains(float g1, float g2, float g3)
@@ -256,10 +269,10 @@ private:
                 double newFreqOsc2 = midiFrequency + ( pitchEnvAmt * pitchModAmount );
                 double newFreqOsc3 = midiFrequency + ( pitchEnvAmt * pitchModAmount );
                 
-				//Calculate new frequencies after detuning by knob and or pitchbend wheel
-				double osc1Detuned = semitoneOffsetToFreq((oscDetuneAmount[0] + pitchBendOffset), newFreqOsc1);
-				double osc2Detuned = semitoneOffsetToFreq((oscDetuneAmount[1] + pitchBendOffset), newFreqOsc2);
-                double osc3Detuned = semitoneOffsetToFreq((oscDetuneAmount[2] + pitchBendOffset), newFreqOsc3);
+				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
+				double osc1Detuned = semitoneOffsetToFreq((oscDetuneAmount[0] + pitchBendOffset + pitchModulation), newFreqOsc1);
+				double osc2Detuned = semitoneOffsetToFreq((oscDetuneAmount[1] + pitchBendOffset + pitchModulation), newFreqOsc2);
+                double osc3Detuned = semitoneOffsetToFreq((oscDetuneAmount[2] + pitchBendOffset + pitchModulation), newFreqOsc3);
                 
                 //Set the new frequency
                 oscFrequency[0].setValue(osc1Detuned);
@@ -273,7 +286,8 @@ private:
                 {
                     phaseIncrement[osc] = updatePhaseIncrement(oscFrequency[osc].getNextValue());
                     
-                    oscSample[osc] = nextSample(phase[osc], phaseIncrement[osc], oscillatorMode[osc]); 
+                    oscSample[osc] = nextSample(phase[osc], phaseIncrement[osc], oscillatorMode[osc]);
+					
                     oscSample[osc] *= (level[osc] * oscGain[osc]);
                 }
                 
@@ -362,7 +376,9 @@ private:
                     value = -1.0;
                 }
                 break;
-            case OSCILLATOR_MODE_NOISE:                
+            case OSCILLATOR_MODE_NOISE:   
+
+				
                 break;
             default:
                 break;
@@ -398,7 +414,8 @@ private:
         }
         else if (mode == OSCILLATOR_MODE_NOISE)
         {
-            value = 0.0;
+			Random r;
+			value = r.nextDouble();
         }
              
        
@@ -443,6 +460,8 @@ private:
     int noteOffset;
     float angleDelta;
     
+	double pitchModulation, ampModulation;
+
     double  phase[3], phaseIncrement[3], lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
 	double pitchBendOffset;
     
