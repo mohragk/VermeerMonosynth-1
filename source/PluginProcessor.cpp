@@ -86,7 +86,13 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 	  decayRelCurve3Param(nullptr),
 
       delayPosition (0),
-      filterEnvelope(nullptr)
+      filterEnvelope(nullptr),
+
+	  modTargetParam(nullptr),
+		
+	  lfoRateParam(nullptr),
+	  lfoModeParam(nullptr)
+
 
 //Add all the rest!
 
@@ -151,13 +157,22 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 	addParameter(attackCurve3Param = new AudioParameterFloat("attackCurve3", "Attack Curve", NormalisableRange<float>(0.001, 1.0, 0.0, 0.5, false), 0.001));
 	addParameter(decayRelCurve3Param = new AudioParameterFloat("decRelCurve3", "Decay-Release Curve", NormalisableRange<float>(0.00001, 1.0, 0.0, 0.5, false), 0.00001));
     
+
+	// Modulation
+	addParameter(modTargetParam = new AudioParameterInt("modTarget", "Modulation Target", 0, 2, 1));
+
+
+	// LFO
+	addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 100.0, 0.0, 0.5, false), 0.05));
+	addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 3, 0));
+
     initialiseSynth();
     
     keyboardState.addListener(this);
     
     filterEnvelope = new ADSR();
     
-    lfo = new LFO();
+  
    
 }
 
@@ -207,7 +222,7 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
 {
      sampleRate = newSampleRate;
     
-   
+	 lfo.setSampleRate(sampleRate);
     
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
@@ -279,6 +294,7 @@ void JuceDemoPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChan
 
     contourVelocity = velocity;
     
+	lfo.setPhase(0.0);
 
     // Making sure that the envelope resets to attack when the gate is already open, but not in release state
 	/*if (filterenvelope->getstate() == adsr::env_attack
@@ -384,16 +400,25 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
     filterEnvelope->setDecayRate(*decayParam3);
     filterEnvelope->setReleaseRate(*releaseParam3);
     filterEnvelope->setSustainLevel(*sustainParam3);
-	filterEnvelope->setTargetRatioA(*attackCurve2Param);   //FIXME : parameters are switched on layaout..
+	filterEnvelope->setTargetRatioA(*attackCurve2Param);   
 	filterEnvelope->setTargetRatioDR(*decayRelCurve2Param);
-    
-   
-    
+
+	lfo.setMode(*lfoModeParam);
+	
+
     const int numSamples = buffer.getNumSamples();
     
     
     for (int i = 0; i < numSamples; i++)
     {
+
+		lfo.setFrequency(*lfoRateParam);
+		double lfoValue = lfo.nextSample();
+		modAmount = 1.0;							// Make parameter
+		applyModToTarget(*modTargetParam, lfoValue * modAmount);
+
+
+
         float contourRange = *filterContourParam * contourVelocity;
         currentCutoff = *filterParam + (filterEnvelope->process() * contourRange * cutoffModulationAmt);
         
@@ -405,7 +430,7 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
         drive.setValue      (*filterDriveParam);
     }
     
-    
+	
     
 }
 
@@ -636,9 +661,10 @@ void JuceDemoPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int o
 
 
 
-void JuceDemoPluginAudioProcessor::applyModToTarget(modTarget target, double amount)
+void JuceDemoPluginAudioProcessor::applyModToTarget(int target, double amount)
 {
-	switch (target) {
+	modTarget t = (modTarget) target;
+	switch (t) {
 	case modAmp:
 		return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setAmpModulation(amount);
 

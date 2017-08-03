@@ -34,6 +34,7 @@ class LFO
         void setFrequency(double f)
         {
             frequency = f;
+			phaseIncrement = updatePhaseIncrement(frequency);
         }
         
         void setPhase(double ph)
@@ -55,7 +56,9 @@ class LFO
             
         double nextSample()
         {
-            
+
+			
+
             const double two_Pi = 2.0 * double_Pi;
             double value = 0.0;
             
@@ -81,7 +84,7 @@ class LFO
 
             }
             
-            phaseIncrement = updatePhaseIncrement(frequency);
+            
             phase += phaseIncrement;
             
             while (phase >= 2.0 * double_Pi)

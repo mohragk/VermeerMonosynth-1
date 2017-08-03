@@ -179,8 +179,10 @@ public:
     AudioParameterFloat* attackCurve3Param;
     AudioParameterFloat* decayRelCurve3Param;
 
-    
-    
+	AudioParameterInt*   modTargetParam;
+
+	AudioParameterFloat* lfoRateParam;
+	AudioParameterInt*   lfoModeParam;
     
     
 private:
@@ -213,10 +215,12 @@ private:
 		numModTargets
 	};
     
-	void applyModToTarget(modTarget m, double amount);
+	void applyModToTarget(int target, double amount);
 
     ADSR *filterEnvelope;
-    LFO *lfo;
+	LFO lfo;
+
+	double modAmount;
     
     int mNumVoices;
 

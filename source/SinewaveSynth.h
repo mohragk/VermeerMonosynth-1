@@ -76,7 +76,8 @@ public:
         {
             phase[i] = 0.0;
             level[i] = 0.2;
-            
+			oscFrequency[i].reset(getSampleRate(), 0.0001);
+
             oscFrequency[i].setValue(midiFrequency);
             phaseIncrement[i] = updatePhaseIncrement(oscFrequency[i].getNextValue());
         }
@@ -122,7 +123,7 @@ public:
 		        
 		double range = 12.0;
 		
-		pitchBendOffset = range / 16383.0;
+		pitchBendOffset = 0; // range / 16383.0;
     
     }
     
@@ -185,7 +186,9 @@ public:
 
 	void setPitchModulation(double amt)
 	{
+		
 		double rangeSemitones = 24.0;
+		
 		pitchModulation = amt * rangeSemitones;
 
 	}
@@ -265,14 +268,14 @@ private:
                 double pitchEnvAmt = pitchEnvelope.process();
 				
                 //Apply Pitch Envelope and PitchBend Amount, deviated from current pitch
-                double newFreqOsc1 = midiFrequency + ( pitchEnvAmt * pitchModAmount );
-                double newFreqOsc2 = midiFrequency + ( pitchEnvAmt * pitchModAmount );
-                double newFreqOsc3 = midiFrequency + ( pitchEnvAmt * pitchModAmount );
+                double newFreqOsc1 = midiFrequency + ( pitchEnvAmt * pitchModAmount);
+                double newFreqOsc2 = midiFrequency + ( pitchEnvAmt * pitchModAmount);
+                double newFreqOsc3 = midiFrequency + ( pitchEnvAmt * pitchModAmount);
                 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
-				double osc1Detuned = semitoneOffsetToFreq((oscDetuneAmount[0] + pitchBendOffset + pitchModulation), newFreqOsc1);
-				double osc2Detuned = semitoneOffsetToFreq((oscDetuneAmount[1] + pitchBendOffset + pitchModulation), newFreqOsc2);
-                double osc3Detuned = semitoneOffsetToFreq((oscDetuneAmount[2] + pitchBendOffset + pitchModulation), newFreqOsc3);
+				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation, newFreqOsc1);
+				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1], newFreqOsc2);
+                double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2], newFreqOsc3);
                 
                 //Set the new frequency
                 oscFrequency[0].setValue(osc1Detuned);

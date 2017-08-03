@@ -151,7 +151,12 @@ private:
 		sustainSlider3,
 		releaseSlider3,
 		attackCurveSlider3,
-		decRelCurveSlider3
+		decRelCurveSlider3,
+
+		modTargetSlider,
+
+		lfoRateSlider,
+		lfoModeSlider
 		;
 
 	ScopedPointer<Drawable> drawable1;

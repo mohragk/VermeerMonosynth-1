@@ -540,6 +540,26 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     decRelCurveSlider3->setSliderStyle (Slider::LinearVertical);
     decRelCurveSlider3->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 
+
+	//
+	// Modulation Target
+	//
+	addAndMakeVisible(modTargetSlider = new ParameterSlider(*owner.modTargetParam));  //
+	modTargetSlider->setSliderStyle(Slider::RotaryVerticalDrag);
+	modTargetSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+
+
+	//
+	// LFO
+	//
+	addAndMakeVisible(lfoRateSlider = new ParameterSlider(*owner.lfoRateParam));  //
+	lfoRateSlider->setSliderStyle(Slider::RotaryVerticalDrag);
+	lfoRateSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 15);
+
+	addAndMakeVisible(lfoModeSlider = new ParameterSlider(*owner.lfoModeParam));  //
+	lfoModeSlider->setSliderStyle(Slider::RotaryVerticalDrag);
+	lfoModeSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+
     if (JUCEApplicationBase::isStandaloneApp())
 		addAndMakeVisible(midiKeyboard);
                        
@@ -659,6 +679,11 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     decRelCurveSlider2 = nullptr;
     attackCurveSlider3 = nullptr;
     decRelCurveSlider3 = nullptr;
+
+	modTargetSlider = nullptr;
+	lfoRateSlider = nullptr;
+	lfoModeSlider = nullptr;
+
     drawable1 = nullptr;
     drawable2 = nullptr;
     drawable3 = nullptr;
@@ -1010,6 +1035,11 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     releaseSlider3->setBounds (496, 336, 14, 80);
     volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
+
+	modTargetSlider->setBounds(getWidth() - 24 - 64, 184, 64, 64);
+	lfoRateSlider->setBounds(getWidth() - 24 - 64, 264, 64, 64);
+	lfoModeSlider->setBounds(getWidth() - 24 - 64, 344, 64, 64);
+
     mainLabel->setBounds (getWidth() - 24 - 64, 64, 64, 24);
     titleLabel->setBounds ((getWidth() / 2) - (400 / 2), 12, 400, 24);
     attackCurveSlider1->setBounds (554, 122, 12, 60);
