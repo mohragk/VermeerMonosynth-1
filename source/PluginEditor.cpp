@@ -213,8 +213,9 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc1OffsetSlider = new ParameterSlider (*owner.oscOffsetParam)); //
     osc1OffsetSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    osc1OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 30, 10);
+    osc1OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     osc1OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
+    osc1OffsetSlider->setDoubleClickReturnValue(true, 0.5);
     
     addAndMakeVisible (osc1OffsetLabel = new Label ("osc1OffsetLabel",
                                                     TRANS("Offset")));          //
@@ -266,8 +267,10 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc2OffsetSlider = new ParameterSlider (*owner.osc2OffsetParam)); //
     osc2OffsetSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    osc2OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 30, 10);
+    osc2OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     osc2OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
+    osc2OffsetSlider->setDoubleClickReturnValue(true, 0.5);
+
     
     addAndMakeVisible (osc2OffsetLabel = new Label ("OSC2 Offset Label",
                                                      TRANS("Offset")));           //
@@ -318,8 +321,10 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
 
     addAndMakeVisible (osc3OffsetSlider = new ParameterSlider (*owner.osc3OffsetParam)); //
     osc3OffsetSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    osc3OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 30, 10);
+    osc3OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     osc3OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
+    osc3OffsetSlider->setDoubleClickReturnValue(true, 0.5);
+
     
     addAndMakeVisible (osc3OffsetLabel = new Label ("OSC2 Offset Label",
                                                     TRANS("Offset\n")));   //
@@ -637,8 +642,12 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
 	
 	
 	if (JUCEApplicationBase::isStandaloneApp())
+    {
 		addAndMakeVisible(midiKeyboard);
-                       
+        midiKeyboard.setAvailableRange(12, 115);
+        midiKeyboard.setLowestVisibleKey(36);
+        midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
+    }
                        
     //
     // Drawables for symbols/icons
@@ -1204,7 +1213,7 @@ void JuceDemoPluginAudioProcessorEditor::resized()
 	if (JUCEApplicationBase::isStandaloneApp())
 	{
 		Rectangle<int> r(getLocalBounds().reduced(8));
-		midiKeyboard.setBounds(r.removeFromBottom(70));
+		midiKeyboard.setBounds(r.removeFromBottom(100));
 	}
 
     getProcessor().lastUIWidth = getWidth();
