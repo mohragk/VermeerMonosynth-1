@@ -646,13 +646,12 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     glideTimeSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 20);
 	
 	
-	if (JUCEApplicationBase::isStandaloneApp())
-    {
-		addAndMakeVisible(midiKeyboard);
-        midiKeyboard.setAvailableRange(12, 115);
-        midiKeyboard.setLowestVisibleKey(36);
-        midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
-    }
+	
+    addAndMakeVisible(midiKeyboard);
+    midiKeyboard.setAvailableRange(12, 115);
+    midiKeyboard.setLowestVisibleKey(36);
+    midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
+    
                        
     //
     // Drawables for symbols/icons
@@ -693,10 +692,9 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
 
     // set resize limits for this plug-in
-	if (JUCEApplicationBase::isStandaloneApp())
-		setResizeLimits (820, 550, 820, 550);
-	else
-		setResizeLimits(820, 480, 820, 480);
+	
+    setResizeLimits (820, 550, 820, 550);
+	
 
     // set our component's initial size to be the last one that was stored in the filter's settings
     setSize (owner.lastUIWidth,
