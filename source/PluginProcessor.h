@@ -124,6 +124,7 @@ public:
     void setOsc3DetuneAmount(float fine, int coarse);
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
+    void setGlide(float time);
 	
   
     
@@ -184,6 +185,8 @@ public:
 	AudioParameterFloat* lfoRateParam;
 	AudioParameterInt*   lfoModeParam;
 	AudioParameterFloat* lfoIntensityParam;
+    
+    AudioParameterFloat* glideTimeParam;
     
     
 private:

@@ -69,7 +69,12 @@ public:
         
 		ampEnvelope.setSampleRate(getSampleRate());
 		pitchEnvelope.setSampleRate(getSampleRate());
-		
+        
+        for ( int i = 0; i < numOscillators; i++)
+        {
+            oscFrequency[i].reset(getSampleRate(), glideTime);
+        }
+        
 		midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         
         for ( int i = 0; i < numOscillators; i++)
@@ -79,8 +84,8 @@ public:
             level[i] = 0.2;
 			
 
-            oscFrequency[i] = midiFrequency;
-            phaseIncrement[i] = updatePhaseIncrement(oscFrequency[i]);
+            oscFrequency[i].setValue(midiFrequency);
+            phaseIncrement[i] = updatePhaseIncrement(oscFrequency[i].getNextValue());
         }
       
         
@@ -122,9 +127,10 @@ public:
     void pitchWheelMoved (int newValue) override
     {
 		        
-		double range = 12.0;
+		double range = 24.0;
+        float v = newValue - 8192;
 		
-		pitchBendOffset = 0; // range / 16383.0;
+		pitchBendOffset =  range * (v / 8192.0);
     
     }
     
@@ -253,6 +259,12 @@ public:
         
     }
     
+    void setGlide(float gT)
+    {
+        glideTime = gT;
+
+    }
+    
 private:
     
     template <typename FloatType>
@@ -275,21 +287,21 @@ private:
                 double newFreqOsc3 = midiFrequency + ( pitchEnvAmt * pitchModAmount);
                 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
-				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation, newFreqOsc1);
-				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation, newFreqOsc2);
-                double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation, newFreqOsc3);
+				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreqOsc1);
+				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreqOsc2);
+                double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreqOsc3);
                 
                 //Set the new frequency
-                oscFrequency[0] = osc1Detuned;
-                oscFrequency[1] = osc2Detuned;
-                oscFrequency[2] = osc3Detuned;
+                oscFrequency[0].setValue(osc1Detuned);
+                oscFrequency[1].setValue(osc2Detuned);
+                oscFrequency[2].setValue(osc3Detuned);
                 
                 
                 
                 // Calculate new phase increment and calculate samples
                 for ( int osc = 0; osc < numOscillators ; osc++)
                 {
-                    phaseIncrement[osc] = updatePhaseIncrement(oscFrequency[osc]);
+                    phaseIncrement[osc] = updatePhaseIncrement(oscFrequency[osc].getNextValue());
                     
                     oscSample[osc] = nextSample(phase[osc], phaseIncrement[osc], oscillatorMode[osc]);
 					
@@ -467,15 +479,16 @@ private:
     
 	double pitchModulation, ampModulation;
 
-    double  phase[3], phaseIncrement[3], oscFrequency[3], lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
+    double  phase[3], phaseIncrement[3], /*oscFrequency[3],*/ lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
 	double pitchBendOffset;
+    double glideTime;
     
     double midiFrequency;
     double maxFreq = 0, minFreq = 0;
     double pitchModAmount;
 //	double osc1DetuneAmount, osc2DetuneAmount;
 
-    //LinearSmoothedValue<float> oscFrequency[3];
+    LinearSmoothedValue<float> oscFrequency[3];
     
     
 };

@@ -167,7 +167,9 @@ private:
 
 		lfoRateSlider,
 		lfoModeSlider,
-		lfoIntensitySlider
+		lfoIntensitySlider,
+    
+        glideTimeSlider
 		;
 
 	ScopedPointer<Drawable> drawable1;

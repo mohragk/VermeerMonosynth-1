@@ -167,6 +167,10 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 	addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 100.0, 0.0, 0.5, false), 0.05));
 	addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 2, 0));
 	addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
+    
+    
+    // Glide
+    addParameter(glideTimeParam = new AudioParameterFloat("glideTime", "Glide Time", NormalisableRange<float>(0.001, 11.0, 0.0, 0.2, false), 0.001));
 
     initialiseSynth();
     
@@ -609,6 +613,8 @@ void inline JuceDemoPluginAudioProcessor::updateParameters()
     setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam );
     setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
     setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
+    
+    setGlide(*glideTimeParam);
 }
 
 
@@ -671,6 +677,13 @@ void JuceDemoPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int o
     
 }
 
+
+void JuceDemoPluginAudioProcessor::setGlide(float time)
+{
+    
+    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setGlide(time);
+    
+}
 
 
 void JuceDemoPluginAudioProcessor::applyModToTarget(int target, double amount)

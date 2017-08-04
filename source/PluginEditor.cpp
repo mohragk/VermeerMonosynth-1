@@ -639,6 +639,11 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     modTargetCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
     modTargetCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 	
+    
+    // Glide
+    addAndMakeVisible(glideTimeSlider = new ParameterSlider(*owner.glideTimeParam));  //
+    glideTimeSlider->setSliderStyle(Slider::RotaryVerticalDrag);
+    glideTimeSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 20);
 	
 	
 	if (JUCEApplicationBase::isStandaloneApp())
@@ -1174,8 +1179,11 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     decaySlider3->setBounds (448, 336, 14, 80);
     sustainSlider3->setBounds (472, 336, 14, 80);
     releaseSlider3->setBounds (496, 336, 14, 80);
+    
     volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
+    
+    glideTimeSlider->setBounds(getWidth() - 24 - 64, 178, 64, 64);
 
     lfoLabel->setBounds             (628, 64, 80, 24);
     
