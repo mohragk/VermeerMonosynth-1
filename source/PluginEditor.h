@@ -156,7 +156,8 @@ private:
 		modTargetSlider,
 
 		lfoRateSlider,
-		lfoModeSlider
+		lfoModeSlider,
+		lfoIntensitySlider
 		;
 
 	ScopedPointer<Drawable> drawable1;

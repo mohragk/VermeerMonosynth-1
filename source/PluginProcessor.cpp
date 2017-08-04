@@ -91,7 +91,8 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 	  modTargetParam(nullptr),
 		
 	  lfoRateParam(nullptr),
-	  lfoModeParam(nullptr)
+	  lfoModeParam(nullptr),
+      lfoIntensityParam(nullptr)
 
 
 //Add all the rest!
@@ -165,6 +166,7 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 	// LFO
 	addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 100.0, 0.0, 0.5, false), 0.05));
 	addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 3, 0));
+	addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
 
     initialiseSynth();
     
@@ -411,18 +413,24 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
     
     for (int i = 0; i < numSamples; i++)
     {
+        
+        //
+        // LFO
+        //
         lfo.setMode(*lfoModeParam);
 
 
 		lfo.setFrequency(*lfoRateParam);
 		double lfoValue = lfo.nextSample();
-		modAmount = 1.0;							// Make parameter
+		modAmount = *lfoIntensityParam;							// Make parameter
 		applyModToTarget(*modTargetParam, lfoValue * modAmount);
 
 
 
+        // Modulation by envelope and LFO (if set)
+        float lfoFilterRange = 6000.0;
         float contourRange = *filterContourParam * contourVelocity;
-        currentCutoff = *filterParam + (filterEnvelope->process() * contourRange) * cutoffModulationAmt;
+        currentCutoff = *filterParam + (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
         if (currentCutoff > 14000.0)
             currentCutoff = 14000.0;
@@ -685,7 +693,7 @@ void JuceDemoPluginAudioProcessor::applyModToTarget(int target, double amount)
         
 
         if (amount != 0.0)
-            cutoffModulationAmt = amount + 1.0 / 2.0;
+            cutoffModulationAmt = amount;
         dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
 		break;
 	default:

@@ -275,8 +275,8 @@ private:
                 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
 				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation, newFreqOsc1);
-				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1], newFreqOsc2);
-                double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2], newFreqOsc3);
+				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation, newFreqOsc2);
+                double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation, newFreqOsc3);
                 
                 //Set the new frequency
                 oscFrequency[0].setValue(osc1Detuned);

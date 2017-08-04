@@ -183,6 +183,7 @@ public:
 
 	AudioParameterFloat* lfoRateParam;
 	AudioParameterInt*   lfoModeParam;
+	AudioParameterFloat* lfoIntensityParam;
     
     
 private:

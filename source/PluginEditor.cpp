@@ -560,7 +560,15 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
 	lfoModeSlider->setSliderStyle(Slider::RotaryVerticalDrag);
 	lfoModeSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 
-    if (JUCEApplicationBase::isStandaloneApp())
+    addAndMakeVisible(lfoIntensitySlider = new ParameterSlider(*owner.lfoIntensityParam));  //
+	lfoIntensitySlider->setSliderStyle(Slider::RotaryVerticalDrag);
+	lfoIntensitySlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+	
+	
+	
+	
+	
+	if (JUCEApplicationBase::isStandaloneApp())
 		addAndMakeVisible(midiKeyboard);
                        
                        
@@ -683,6 +691,7 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
 	modTargetSlider = nullptr;
 	lfoRateSlider = nullptr;
 	lfoModeSlider = nullptr;
+    lfoIntensitySlider = nullptr;
 
     drawable1 = nullptr;
     drawable2 = nullptr;
@@ -1036,9 +1045,10 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
-	modTargetSlider->setBounds(getWidth() - 24 - 64, 184, 64, 64);
-	lfoRateSlider->setBounds(getWidth() - 24 - 64, 264, 64, 64);
-	lfoModeSlider->setBounds(getWidth() - 24 - 64, 344, 64, 64);
+	modTargetSlider->setBounds(getWidth() - 24 - 64, 184, 44, 44);
+	lfoRateSlider->setBounds(getWidth() - 24 - 64, 244, 44, 44);
+	lfoModeSlider->setBounds(getWidth() - 24 - 64, 304, 44, 44);
+	lfoIntensitySlider->setBounds(getWidth() - 24 - 64, 364, 44, 44);
 
     mainLabel->setBounds (getWidth() - 24 - 64, 64, 64, 24);
     titleLabel->setBounds ((getWidth() / 2) - (400 / 2), 12, 400, 24);
