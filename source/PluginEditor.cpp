@@ -124,7 +124,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (titleLabel = new Label ("Title",
                                                TRANS("Vermeer Monosynth-1")));
-    titleLabel->setFont (Font ("Futura Std", 24.00f, Font::plain).withExtraKerningFactor (0.150f));
+    titleLabel->setFont (Font ("Futura", 24.00f, Font::plain).withExtraKerningFactor (0.150f));
     titleLabel->setJustificationType (Justification::centredBottom);
     titleLabel->setEditable (false, false, false);
     titleLabel->setColour (Label::textColourId, Colours::white);
@@ -137,7 +137,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     //
     addAndMakeVisible (mainLabel = new Label ("Main Label",
                                               TRANS("Main")));
-    mainLabel->setFont (Font ("Futura Std", 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    mainLabel->setFont (Font ("Futura", 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     mainLabel->setJustificationType (Justification::centredTop);
     mainLabel->setEditable (false, false, false);
     mainLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -152,7 +152,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (volumeLabel = new Label ("Main Volume Label",
                                                 TRANS("Volume")));              //
-    volumeLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    volumeLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     volumeLabel->setJustificationType (Justification::centredBottom);
     volumeLabel->setEditable (false, false, false);
     volumeLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -165,7 +165,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (oscillatorsLabel = new Label ("Oscillators",
                                                      TRANS("Oscillators")));        //
-    oscillatorsLabel->setFont (Font ("Futura Std", 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    oscillatorsLabel->setFont (Font ("Futura", 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     oscillatorsLabel->setJustificationType (Justification::centredTop);
     oscillatorsLabel->setEditable (false, false, false);
     oscillatorsLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -179,7 +179,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
 	addAndMakeVisible(osc1GainLabel = new Label("OSC1 Gain Label",
 		TRANS("Gain")));
-    osc1GainLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f)); //
+    osc1GainLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f)); //
     osc1GainLabel->setJustificationType (Justification::centredBottom);
     osc1GainLabel->setEditable (false, false, false);
     osc1GainLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -191,7 +191,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc1WaveformLabel = new Label ("OSC1 Waveform Label",
                                                       TRANS("Shape")));                 //
-    osc1WaveformLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    osc1WaveformLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc1WaveformLabel->setJustificationType (Justification::centredBottom);
     osc1WaveformLabel->setEditable (false, false, false);
     osc1WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -204,7 +204,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc1TuneLabel = new Label ("OSC1 Tune Label",
                                                   TRANS("Tune")));                      //
-    osc1TuneLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withTypefaceStyle ("Medium").withExtraKerningFactor (0.150f));
+    osc1TuneLabel->setFont (Font ("Futura", 13.00f, Font::plain).withTypefaceStyle ("Medium").withExtraKerningFactor (0.150f));
     osc1TuneLabel->setJustificationType (Justification::centredBottom);
     osc1TuneLabel->setEditable (false, false, false);
     osc1TuneLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -218,7 +218,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc1OffsetLabel = new Label ("osc1OffsetLabel",
                                                     TRANS("Offset")));          //
-    osc1OffsetLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    osc1OffsetLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc1OffsetLabel->setJustificationType (Justification::centredBottom);
     osc1OffsetLabel->setEditable (false, false, false);
     osc1OffsetLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -233,7 +233,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc2GainLabel = new Label ("OSC2 Gain Label",
                                                   TRANS("Gain")));                  //
-    osc2GainLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    osc2GainLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc2GainLabel->setJustificationType (Justification::centredBottom);
     osc2GainLabel->setEditable (false, false, false);
     osc2GainLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -245,7 +245,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc2WaveformLabel = new Label ("OSC2 Waveform Label",
                                                       TRANS("Shape")));             //
-    osc2WaveformLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    osc2WaveformLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc2WaveformLabel->setJustificationType (Justification::centredBottom);
     osc2WaveformLabel->setEditable (false, false, false);
     osc2WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -258,7 +258,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
 	addAndMakeVisible(osc2TuneLabel = new Label("OSC2 Tune Label",
 		TRANS("Tune")));
-    osc2TuneLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f)); //
+    osc2TuneLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f)); //
     osc2TuneLabel->setJustificationType (Justification::centredBottom);
     osc2TuneLabel->setEditable (false, false, false);
     osc2TuneLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -271,7 +271,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc2OffsetLabel = new Label ("OSC2 Offset Label",
                                                      TRANS("Offset")));           //
-    osc2OffsetLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    osc2OffsetLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc2OffsetLabel->setJustificationType (Justification::centredBottom);
     osc2OffsetLabel->setEditable (false, false, false);
     osc2OffsetLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -285,7 +285,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc3GainLabel = new Label ("OSC2 Gain Label",
                                                   TRANS("Gain")));                  //
-    osc3GainLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    osc3GainLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc3GainLabel->setJustificationType (Justification::centredBottom);
     osc3GainLabel->setEditable (false, false, false);
     osc3GainLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -297,7 +297,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc3WaveformLabel = new Label ("OSC1 Gain Label",
                                                       TRANS("Shape")));                 //
-    osc3WaveformLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    osc3WaveformLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc3WaveformLabel->setJustificationType (Justification::centredBottom);
     osc3WaveformLabel->setEditable (false, false, false);
     osc3WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -310,7 +310,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc3TuneLabel = new Label ("OSC3 Tune Label",
                                                   TRANS("Tune")));              //
-    osc3TuneLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    osc3TuneLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc3TuneLabel->setJustificationType (Justification::centredBottom);
     osc3TuneLabel->setEditable (false, false, false);
     osc3TuneLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -323,7 +323,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (osc3OffsetLabel = new Label ("OSC2 Offset Label",
                                                     TRANS("Offset\n")));   //
-    osc3OffsetLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    osc3OffsetLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc3OffsetLabel->setJustificationType (Justification::centredBottom);
     osc3OffsetLabel->setEditable (false, false, false);
     osc3OffsetLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -340,7 +340,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (pitchModLabel = new Label ("OSC2 Gain Label",
                                                   TRANS("Pitch Mod")));                     //
-    pitchModLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    pitchModLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     pitchModLabel->setJustificationType (Justification::centredBottom);
     pitchModLabel->setEditable (false, false, false);
     pitchModLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -353,7 +353,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (filterLabel = new Label ("Filter",
                                                 TRANS("Filter")));                          //
-    filterLabel->setFont (Font ("Futura Std", 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    filterLabel->setFont (Font ("Futura", 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     filterLabel->setJustificationType (Justification::centredTop);
     filterLabel->setEditable (false, false, false);
     filterLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -365,7 +365,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (filterCutoffLabel = new Label ("Filter Cutoff Label",
                                                       TRANS("Cutoff")));            //
-    filterCutoffLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterCutoffLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     filterCutoffLabel->setJustificationType (Justification::centredBottom);
     filterCutoffLabel->setEditable (false, false, false);
     filterCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -377,7 +377,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (filterResonanceLabel = new Label ("Filter Resonance Label",
                                                          TRANS("Resonance")));      //
-    filterResonanceLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterResonanceLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     filterResonanceLabel->setJustificationType (Justification::centredBottom);
     filterResonanceLabel->setEditable (false, false, false);
     filterResonanceLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -390,7 +390,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (filterContourLabel = new Label ("Filter Contour Label",
                                                        TRANS("Contour")));              //
-    filterContourLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterContourLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     filterContourLabel->setJustificationType (Justification::centredBottom);
     filterContourLabel->setEditable (false, false, false);
     filterContourLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -402,7 +402,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (filterDriveLabel = new Label ("Filter Drive Label",
                                                      TRANS("Drive")));                  //
-    filterDriveLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterDriveLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     filterDriveLabel->setJustificationType (Justification::centredBottom);
     filterDriveLabel->setEditable (false, false, false);
     filterDriveLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -416,7 +416,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (envelopesLabel = new Label ("Envelopes",
                                                    TRANS("Envelopes")));        //
-    envelopesLabel->setFont (Font ("Futura Std", 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    envelopesLabel->setFont (Font ("Futura", 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     envelopesLabel->setJustificationType (Justification::centredTop);
     envelopesLabel->setEditable (false, false, false);
     envelopesLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -425,7 +425,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (envAmpLabel = new Label ("Envelope Amp Label",
                                                 TRANS("Amplitude")));           //
-    envAmpLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    envAmpLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     envAmpLabel->setJustificationType (Justification::centredBottom);
     envAmpLabel->setEditable (false, false, false);
     envAmpLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -453,7 +453,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (envFilterLabel = new Label ("Envelope Filter Label",
                                                    TRANS("Filter Cutoff")));            //
-    envFilterLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    envFilterLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     envFilterLabel->setJustificationType (Justification::centredBottom);
     envFilterLabel->setEditable (false, false, false);
     envFilterLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -479,7 +479,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
     addAndMakeVisible (envPitchLabel = new Label ("Envelope Pitch Label",
                                                   TRANS("Pitch Mod.")));          //
-    envPitchLabel->setFont (Font ("Futura Std", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    envPitchLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     envPitchLabel->setJustificationType (Justification::centredBottom);
     envPitchLabel->setEditable (false, false, false);
     envPitchLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -541,30 +541,98 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     decRelCurveSlider3->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 
 
-	//
-	// Modulation Target
-	//
-	addAndMakeVisible(modTargetSlider = new ParameterSlider(*owner.modTargetParam));  //
-	modTargetSlider->setSliderStyle(Slider::RotaryVerticalDrag);
-	modTargetSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+	
 
 
 	//
 	// LFO
 	//
+    addAndMakeVisible (lfoLabel = new Label ("lfoLabel",
+                                                TRANS("LFO")));                          //
+    lfoLabel->setFont (Font ("Futura", 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    lfoLabel->setJustificationType (Justification::centredTop);
+    lfoLabel->setEditable (false, false, false);
+    lfoLabel->setColour (TextEditor::textColourId, Colours::black);
+    lfoLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    addAndMakeVisible (lfoRateLabel = new Label ("lfoRateLabel",
+                                                    TRANS("Rate")));          //
+    lfoRateLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    lfoRateLabel->setJustificationType (Justification::centredBottom);
+    lfoRateLabel->setEditable (false, false, false);
+    lfoRateLabel->setColour (TextEditor::textColourId, Colours::black);
+    lfoRateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
 	addAndMakeVisible(lfoRateSlider = new ParameterSlider(*owner.lfoRateParam));  //
 	lfoRateSlider->setSliderStyle(Slider::RotaryVerticalDrag);
-	lfoRateSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 15);
+	lfoRateSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+    
+    addAndMakeVisible (lfoModeLabel = new Label ("lfoModeLabel",
+                                                 TRANS("Shape")));          //
+    lfoModeLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    lfoModeLabel->setJustificationType (Justification::centredBottom);
+    lfoModeLabel->setEditable (false, false, false);
+    lfoModeLabel->setColour (TextEditor::textColourId, Colours::black);
+    lfoModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
 	addAndMakeVisible(lfoModeSlider = new ParameterSlider(*owner.lfoModeParam));  //
-	lfoModeSlider->setSliderStyle(Slider::RotaryVerticalDrag);
+	lfoModeSlider->setSliderStyle(Slider::LinearHorizontal);
 	lfoModeSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 
+    addAndMakeVisible (lfoIntensityLabel = new Label ("lfoIntensityLabel",
+                                                 TRANS("Mod Amt")));          //
+    lfoIntensityLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    lfoIntensityLabel->setJustificationType (Justification::centredBottom);
+    lfoIntensityLabel->setEditable (false, false, false);
+    lfoIntensityLabel->setColour (TextEditor::textColourId, Colours::black);
+    lfoIntensityLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
     addAndMakeVisible(lfoIntensitySlider = new ParameterSlider(*owner.lfoIntensityParam));  //
 	lfoIntensitySlider->setSliderStyle(Slider::RotaryVerticalDrag);
 	lfoIntensitySlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 	
-	
+    
+    
+    //
+    // Modulation Target
+    //
+    addAndMakeVisible(modTargetSlider = new ParameterSlider(*owner.modTargetParam));  //
+    modTargetSlider->setSliderStyle(Slider::LinearVertical);
+    modTargetSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+    
+    addAndMakeVisible (modTargetLabel = new Label ("modTargetLabel",
+                                                      TRANS("Target")));          //
+    modTargetLabel->setFont (Font ("Futura", 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    modTargetLabel->setJustificationType (Justification::centredBottom);
+    modTargetLabel->setEditable (false, false, false);
+    modTargetLabel->setColour (TextEditor::textColourId, Colours::black);
+    modTargetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    
+    addAndMakeVisible (modTargetOffLabel = new Label ("modTargetOffLabel",
+                                                        TRANS("-off")));          //
+    modTargetOffLabel->setFont (Font ("Futura", 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    modTargetOffLabel->setJustificationType (Justification::centredLeft);
+    modTargetOffLabel->setEditable (false, false, false);
+    modTargetOffLabel->setColour (TextEditor::textColourId, Colours::black);
+    modTargetOffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    
+    addAndMakeVisible (modTargetPitchLabel = new Label ("modTargetPitchLabel",
+                                                      TRANS("-pitch")));          //
+    modTargetPitchLabel->setFont (Font ("Futura", 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    modTargetPitchLabel->setJustificationType (Justification::centredLeft);
+    modTargetPitchLabel->setEditable (false, false, false);
+    modTargetPitchLabel->setColour (TextEditor::textColourId, Colours::black);
+    modTargetPitchLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    addAndMakeVisible (modTargetCutoffLabel = new Label ("modTargetCutoffLabel",
+                                                        TRANS("-cutoff")));          //
+    modTargetCutoffLabel->setFont (Font ("Futura", 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    modTargetCutoffLabel->setJustificationType (Justification::centredLeft);
+    modTargetCutoffLabel->setEditable (false, false, false);
+    modTargetCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
+    modTargetCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 	
 	
 	
@@ -604,14 +672,17 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
  
 	drawable21 = Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize);
     drawable20 = Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize);
-                       
-                       
+    
+    drawable22 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
+    drawable23 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
+    drawable24 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    
 
     // set resize limits for this plug-in
 	if (JUCEApplicationBase::isStandaloneApp())
-		setResizeLimits (720, 550, 720, 550);
+		setResizeLimits (820, 550, 820, 550);
 	else
-		setResizeLimits(720, 480, 720, 480);
+		setResizeLimits(820, 480, 820, 480);
 
     // set our component's initial size to be the last one that was stored in the filter's settings
     setSize (owner.lastUIWidth,
@@ -688,7 +759,15 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     attackCurveSlider3 = nullptr;
     decRelCurveSlider3 = nullptr;
 
-	modTargetSlider = nullptr;
+    lfoLabel = nullptr;
+    lfoRateLabel = nullptr;
+    lfoModeLabel = nullptr;
+    lfoIntensityLabel = nullptr;
+    modTargetLabel = nullptr;
+    modTargetCutoffLabel = nullptr;
+    modTargetPitchLabel = nullptr;
+	
+    modTargetSlider = nullptr;
 	lfoRateSlider = nullptr;
 	lfoModeSlider = nullptr;
     lfoIntensitySlider = nullptr;
@@ -723,7 +802,7 @@ void JuceDemoPluginAudioProcessorEditor::paint (Graphics& g)
     g.fillAll (Colour (0xff0e0e0e));
     
     {
-        int x = 305, y = 64, width = 1, height = 356;
+        int x = 305, y = 64, width = 1, height = 358;
         Colour fillColour = Colour (0xffcfcfcf);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -732,7 +811,7 @@ void JuceDemoPluginAudioProcessorEditor::paint (Graphics& g)
     }
     
     {
-        int x = 401, y = 64, width = 1, height = 356;
+        int x = 401, y = 64, width = 1, height = 358;
         Colour fillColour = Colour (0xffcfcfcf);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -742,6 +821,16 @@ void JuceDemoPluginAudioProcessorEditor::paint (Graphics& g)
     
     {
         int x = 617, y = 64, width = 1, height = 358;
+        Colour fillColour = Colour (0xffcfcfcf);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRect (x, y, width, height);
+    }
+    
+    
+    {
+        int x = 713, y = 64, width = 1, height = 358;
         Colour fillColour = Colour (0xffcfcfcf);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -988,6 +1077,40 @@ void JuceDemoPluginAudioProcessorEditor::paint (Graphics& g)
             drawable21->drawWithin (g, Rectangle<float> (x, y, width, height),
                                     RectanglePlacement::centred, 1.000f);
     }
+    
+    
+    
+    
+    {
+        int x = 682, y = 224, width = 10, height = 6;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (Colours::black);
+        jassert (drawable22 != 0);
+        if (drawable22 != 0)
+            drawable22->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                    RectanglePlacement::centred, 1.000f);
+    }
+    {
+        int x = 660, y = 224, width = 10, height = 6;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (Colours::black);
+        jassert (drawable23 != 0);
+        if (drawable23 != 0)
+            drawable23->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                    RectanglePlacement::centred, 1.000f);
+    }
+    {
+        int x = 638, y = 224, width = 10, height = 6;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (Colours::black);
+        jassert (drawable24 != 0);
+        if (drawable24 != 0)
+            drawable24->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                    RectanglePlacement::centred, 1.000f);
+    }
 	
 }
 
@@ -1045,10 +1168,24 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
-	modTargetSlider->setBounds(getWidth() - 24 - 64, 184, 44, 44);
-	lfoRateSlider->setBounds(getWidth() - 24 - 64, 244, 44, 44);
-	lfoModeSlider->setBounds(getWidth() - 24 - 64, 304, 44, 44);
-	lfoIntensitySlider->setBounds(getWidth() - 24 - 64, 364, 44, 44);
+    lfoLabel->setBounds             (628, 64, 80, 24);
+    
+    lfoRateLabel->setBounds         (634, 88, 64, 24);
+	lfoRateSlider->setBounds        (634, 104, 64, 64);
+    
+    lfoModeLabel->setBounds         (634, 168, 64, 24);
+	lfoModeSlider->setBounds        (634, 178, 64, 64);
+    
+    lfoIntensityLabel->setBounds    (634, 247, 64, 24);
+	lfoIntensitySlider->setBounds   (634, 263, 64, 64);
+    
+    modTargetLabel->setBounds       (634, 328, 64, 24);
+    modTargetSlider->setBounds      (612, 352, 64, 54);
+    
+    modTargetOffLabel->setBounds  (650, 352, 64, 24);
+    modTargetCutoffLabel->setBounds (650, 368, 64, 24);
+    modTargetPitchLabel->setBounds  (650, 384, 64, 24);
+    
 
     mainLabel->setBounds (getWidth() - 24 - 64, 64, 64, 24);
     titleLabel->setBounds ((getWidth() / 2) - (400 / 2), 12, 400, 24);

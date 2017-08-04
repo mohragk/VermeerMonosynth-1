@@ -103,7 +103,17 @@ private:
 		envFilterLabel,
 		envPitchLabel,
 		volumeLabel,
-		pitchModLabel
+		pitchModLabel,
+    
+        lfoLabel,
+    
+        lfoRateLabel,
+        lfoModeLabel,
+        lfoIntensityLabel,
+        modTargetLabel,
+        modTargetCutoffLabel,
+        modTargetPitchLabel,
+        modTargetOffLabel
 
 			;
     
@@ -181,6 +191,9 @@ private:
 	ScopedPointer<Drawable> drawable19;
 	ScopedPointer<Drawable> drawable20;
 	ScopedPointer<Drawable> drawable21;
+    ScopedPointer<Drawable> drawable22;
+    ScopedPointer<Drawable> drawable23;
+    ScopedPointer<Drawable> drawable24;
     //==============================================================================
     JuceDemoPluginAudioProcessor& getProcessor() const
     {

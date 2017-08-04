@@ -160,12 +160,12 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     
 
 	// Modulation
-	addParameter(modTargetParam = new AudioParameterInt("modTarget", "Modulation Target", 0, 2, 1));
+	addParameter(modTargetParam = new AudioParameterInt("modTarget", "Modulation Target", 0, 2, 2));
 
 
 	// LFO
 	addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 100.0, 0.0, 0.5, false), 0.05));
-	addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 3, 0));
+	addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 2, 0));
 	addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
 
     initialiseSynth();
@@ -678,23 +678,27 @@ void JuceDemoPluginAudioProcessor::applyModToTarget(int target, double amount)
     modTarget t = (modTarget) target;
     
 	switch (t) {
-	case modAmp:
-		dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setAmpModulation(amount);
-        dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
-
-
-		break;
-	case modPitch:
-		dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(amount);
-        dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setAmpModulation(0.0);
-		break;
-
 	case modCutoff:
-        
-
         if (amount != 0.0)
             cutoffModulationAmt = amount;
+        
         dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
+        
+        break;
+	case modPitch:
+        dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(amount);
+            
+        if (amount != 0.0)
+            cutoffModulationAmt = 0.0;
+        
+        break;
+
+	case off:
+        dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
+        
+        if (amount != 0.0)
+            cutoffModulationAmt = 0.0;
+        
 		break;
 	default:
 		break;

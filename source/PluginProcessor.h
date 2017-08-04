@@ -211,9 +211,7 @@ private:
 	enum modTarget {
 		modPitch,
 		modCutoff,
-		modAmp,
-		modMode,
-		numModTargets
+		off,
 	};
     
 	void applyModToTarget(int target, double amount);
