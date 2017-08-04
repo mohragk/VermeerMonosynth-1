@@ -731,7 +731,7 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     osc3TuneLabel = nullptr;
     osc3WaveformSlider = nullptr;
     filterLabel = nullptr;
-	filterCutoffSlider = nullptr;
+    filterCutoffSlider = nullptr;
     filterCutoffLabel = nullptr;
     filterResonanceSlider = nullptr;
     filterResonanceLabel = nullptr;
@@ -780,8 +780,8 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     modTargetPitchLabel = nullptr;
 	
     modTargetSlider = nullptr;
-	lfoRateSlider = nullptr;
-	lfoModeSlider = nullptr;
+    lfoRateSlider = nullptr;
+    lfoModeSlider = nullptr;
     lfoIntensitySlider = nullptr;
 
     drawable1 = nullptr;
@@ -1180,27 +1180,27 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     
     volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
-    
+
     glideTimeSlider->setBounds(getWidth() - 24 - 64, 178, 64, 64);
 
     lfoLabel->setBounds             (628, 64, 80, 24);
-    
+
     lfoRateLabel->setBounds         (634, 88, 64, 24);
-	lfoRateSlider->setBounds        (634, 104, 64, 64);
-    
+    lfoRateSlider->setBounds        (634, 104, 64, 64);
+
     lfoModeLabel->setBounds         (634, 168, 64, 24);
-	lfoModeSlider->setBounds        (634, 178, 64, 64);
-    
+    lfoModeSlider->setBounds        (634, 178, 64, 64);
+
     lfoIntensityLabel->setBounds    (634, 247, 64, 24);
-	lfoIntensitySlider->setBounds   (634, 263, 64, 64);
-    
+    lfoIntensitySlider->setBounds   (634, 263, 64, 64);
+
     modTargetLabel->setBounds       (634, 328, 64, 24);
     modTargetSlider->setBounds      (612, 352, 64, 54);
-    
+
     modTargetOffLabel->setBounds  (650, 352, 64, 24);
     modTargetCutoffLabel->setBounds (650, 368, 64, 24);
     modTargetPitchLabel->setBounds  (650, 384, 64, 24);
-    
+
 
     mainLabel->setBounds (getWidth() - 24 - 64, 64, 64, 24);
     titleLabel->setBounds ((getWidth() / 2) - (400 / 2), 12, 400, 24);
@@ -1216,11 +1216,10 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     attackCurveSlider3->setBounds (554, 346, 12, 60);
     decRelCurveSlider3->setBounds (568, 346, 12, 60);
    
-	if (JUCEApplicationBase::isStandaloneApp())
-	{
-		Rectangle<int> r(getLocalBounds().reduced(8));
-		midiKeyboard.setBounds(r.removeFromBottom(100));
-	}
+    
+    Rectangle<int> r(getLocalBounds().reduced(8));
+    midiKeyboard.setBounds(r.removeFromBottom(100));
+   
 
     getProcessor().lastUIWidth = getWidth();
     getProcessor().lastUIHeight = getHeight();

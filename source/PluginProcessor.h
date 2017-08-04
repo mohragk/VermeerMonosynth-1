@@ -119,8 +119,8 @@ public:
     
     void setPitchEnvelopeAmount( float pitchMod);
     //void setOscOffset(float offset);
-	void setOsc1DetuneAmount(float fine, int coarse);
-	void setOsc2DetuneAmount(float fine, int coarse);
+    void setOsc1DetuneAmount(float fine, int coarse);
+    void setOsc2DetuneAmount(float fine, int coarse);
     void setOsc3DetuneAmount(float fine, int coarse);
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
@@ -134,8 +134,8 @@ public:
     AudioParameterFloat* osc1GainParam;
     AudioParameterFloat* osc2GainParam;
     AudioParameterFloat* osc3GainParam;
-	AudioParameterFloat* osc1DetuneAmountParam;
-	AudioParameterFloat* osc2DetuneAmountParam;
+    AudioParameterFloat* osc1DetuneAmountParam;
+    AudioParameterFloat* osc2DetuneAmountParam;
     AudioParameterFloat* osc3DetuneAmountParam;
     
     AudioParameterInt* osc1ModeParam;
@@ -147,7 +147,7 @@ public:
     AudioParameterFloat* filterContourParam;
     AudioParameterFloat* filterDriveParam;
 
-    
+
     AudioParameterFloat* pitchModParam;
 
     AudioParameterInt* oscOffsetParam;
@@ -161,8 +161,8 @@ public:
     AudioParameterFloat* releaseParam1;
     AudioParameterFloat* attackCurve1Param;
     AudioParameterFloat* decayRelCurve1Param;
-    
-    
+
+
     AudioParameterFloat* attackParam2;
     AudioParameterFloat* decayParam2;
     AudioParameterFloat* sustainParam2;
@@ -171,8 +171,7 @@ public:
     AudioParameterFloat* decayRelCurve2Param;
 
 
-    
-    
+
     AudioParameterFloat* attackParam3;
     AudioParameterFloat* decayParam3;
     AudioParameterFloat* sustainParam3;
@@ -180,11 +179,11 @@ public:
     AudioParameterFloat* attackCurve3Param;
     AudioParameterFloat* decayRelCurve3Param;
 
-	AudioParameterInt*   modTargetParam;
+    AudioParameterInt*   modTargetParam;
 
-	AudioParameterFloat* lfoRateParam;
-	AudioParameterInt*   lfoModeParam;
-	AudioParameterFloat* lfoIntensityParam;
+    AudioParameterFloat* lfoRateParam;
+    AudioParameterInt*   lfoModeParam;
+    AudioParameterFloat* lfoIntensityParam;
     
     AudioParameterFloat* glideTimeParam;
     
@@ -211,18 +210,18 @@ private:
     
     ImprovedMoog filter2[2];
     
-	enum modTarget {
-		modPitch,
-		modCutoff,
-		off,
-	};
+    enum modTarget {
+        modPitch,
+        modCutoff,
+        off,
+    };
     
-	void applyModToTarget(int target, double amount);
+    void applyModToTarget(int target, double amount);
 
     ADSR *filterEnvelope;
-	LFO lfo;
+    LFO lfo;
 
-	double modAmount;
+    double modAmount;
     
     int mNumVoices;
 

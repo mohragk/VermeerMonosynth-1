@@ -78,32 +78,32 @@ private:
 	Label timecodeDisplayLabel;
 
     ScopedPointer<Label>  
-		mainLabel,
-		titleLabel,
-		osc1GainLabel,
-		osc1WaveformLabel,
-		osc1OffsetLabel,
-		oscillatorsLabel,
-		osc1TuneLabel,
-		osc2GainLabel,
-		osc2WaveformLabel,
-		osc2OffsetLabel,
-		osc2TuneLabel,
-		osc3GainLabel,
-		osc3WaveformLabel,
-		osc3OffsetLabel,
-		osc3TuneLabel,
-		filterLabel,
-		filterCutoffLabel,
-		filterResonanceLabel,
-		filterContourLabel,
-		filterDriveLabel,
-		envelopesLabel,
-		envAmpLabel,
-		envFilterLabel,
-		envPitchLabel,
-		volumeLabel,
-		pitchModLabel,
+        mainLabel,
+        titleLabel,
+        osc1GainLabel,
+        osc1WaveformLabel,
+        osc1OffsetLabel,
+        oscillatorsLabel,
+        osc1TuneLabel,
+        osc2GainLabel,
+        osc2WaveformLabel,
+        osc2OffsetLabel,
+        osc2TuneLabel,
+        osc3GainLabel,
+        osc3WaveformLabel,
+        osc3OffsetLabel,
+        osc3TuneLabel,
+        filterLabel,
+        filterCutoffLabel,
+        filterResonanceLabel,
+        filterContourLabel,
+        filterDriveLabel,
+        envelopesLabel,
+        envAmpLabel,
+        envFilterLabel,
+        envPitchLabel,
+        volumeLabel,
+        pitchModLabel,
     
         lfoLabel,
     
@@ -115,84 +115,84 @@ private:
         modTargetPitchLabel,
         modTargetOffLabel
 
-			;
+            ;
     
     ScopedPointer<ParameterSlider> 
-		volumeSlider,
-		osc1GainSlider,
-		osc1OffsetSlider,
-		osc1TuneSlider,
-		osc1WaveformSlider,
+        volumeSlider,
+        osc1GainSlider,
+        osc1OffsetSlider,
+        osc1TuneSlider,
+        osc1WaveformSlider,
 
-		osc2GainSlider,
-		osc2OffsetSlider,
-		osc2TuneSlider,
-		osc2WaveformSlider,
+        osc2GainSlider,
+        osc2OffsetSlider,
+        osc2TuneSlider,
+        osc2WaveformSlider,
 
-		osc3GainSlider,
-		osc3OffsetSlider,
-		osc3TuneSlider,
-		osc3WaveformSlider,
+        osc3GainSlider,
+        osc3OffsetSlider,
+        osc3TuneSlider,
+        osc3WaveformSlider,
 
-		pitchModSlider,
+        pitchModSlider,
 
-		filterCutoffSlider, 
-		filterResonanceSlider,
-		filterContourSlider,
-		filterDriveSlider,
+        filterCutoffSlider, 
+        filterResonanceSlider,
+        filterContourSlider,
+        filterDriveSlider,
 
-		attackSlider1,
-		decaySlider1,
-		sustainSlider1,
-		releaseSlider1,
-		attackCurveSlider1,
-		decRelCurveSlider1,
+        attackSlider1,
+        decaySlider1,
+        sustainSlider1,
+        releaseSlider1,
+        attackCurveSlider1,
+        decRelCurveSlider1,
 
 
-		attackSlider2,
-		decaySlider2,
-		sustainSlider2,
-		releaseSlider2,
-		attackCurveSlider2,
-		decRelCurveSlider2,
+        attackSlider2,
+        decaySlider2,
+        sustainSlider2,
+        releaseSlider2,
+        attackCurveSlider2,
+        decRelCurveSlider2,
 
-		attackSlider3,
-		decaySlider3,
-		sustainSlider3,
-		releaseSlider3,
-		attackCurveSlider3,
-		decRelCurveSlider3,
+        attackSlider3,
+        decaySlider3,
+        sustainSlider3,
+        releaseSlider3,
+        attackCurveSlider3,
+        decRelCurveSlider3,
 
-		modTargetSlider,
+        modTargetSlider,
 
-		lfoRateSlider,
-		lfoModeSlider,
-		lfoIntensitySlider,
-    
+        lfoRateSlider,
+        lfoModeSlider,
+        lfoIntensitySlider,
+
         glideTimeSlider
-		;
+        ;
 
-	ScopedPointer<Drawable> drawable1;
-	ScopedPointer<Drawable> drawable2;
-	ScopedPointer<Drawable> drawable3;
-	ScopedPointer<Drawable> drawable4;
-	ScopedPointer<Drawable> drawable5;
-	ScopedPointer<Drawable> drawable6;
-	ScopedPointer<Drawable> drawable7;
-	ScopedPointer<Drawable> drawable8;
-	ScopedPointer<Drawable> drawable9;
-	ScopedPointer<Drawable> drawable10;
-	ScopedPointer<Drawable> drawable11;
-	ScopedPointer<Drawable> drawable12;
-	ScopedPointer<Drawable> drawable13;
-	ScopedPointer<Drawable> drawable14;
-	ScopedPointer<Drawable> drawable15;
-	ScopedPointer<Drawable> drawable16;
-	ScopedPointer<Drawable> drawable17;
-	ScopedPointer<Drawable> drawable18;
-	ScopedPointer<Drawable> drawable19;
-	ScopedPointer<Drawable> drawable20;
-	ScopedPointer<Drawable> drawable21;
+    ScopedPointer<Drawable> drawable1;
+    ScopedPointer<Drawable> drawable2;
+    ScopedPointer<Drawable> drawable3;
+    ScopedPointer<Drawable> drawable4;
+    ScopedPointer<Drawable> drawable5;
+    ScopedPointer<Drawable> drawable6;
+    ScopedPointer<Drawable> drawable7;
+    ScopedPointer<Drawable> drawable8;
+    ScopedPointer<Drawable> drawable9;
+    ScopedPointer<Drawable> drawable10;
+    ScopedPointer<Drawable> drawable11;
+    ScopedPointer<Drawable> drawable12;
+    ScopedPointer<Drawable> drawable13;
+    ScopedPointer<Drawable> drawable14;
+    ScopedPointer<Drawable> drawable15;
+    ScopedPointer<Drawable> drawable16;
+    ScopedPointer<Drawable> drawable17;
+    ScopedPointer<Drawable> drawable18;
+    ScopedPointer<Drawable> drawable19;
+    ScopedPointer<Drawable> drawable20;
+    ScopedPointer<Drawable> drawable21;
     ScopedPointer<Drawable> drawable22;
     ScopedPointer<Drawable> drawable23;
     ScopedPointer<Drawable> drawable24;

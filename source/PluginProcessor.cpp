@@ -45,16 +45,16 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
       osc2GainParam(nullptr),
       osc3GainParam(nullptr),
 
-	  oscOffsetParam(nullptr),
-	  osc2OffsetParam(nullptr),
-	  osc3OffsetParam(nullptr),
+      oscOffsetParam(nullptr),
+      osc2OffsetParam(nullptr),
+      osc3OffsetParam(nullptr),
 
-	  osc1ModeParam(nullptr),
-	  osc2ModeParam(nullptr),
-	  osc3ModeParam(nullptr),
+      osc1ModeParam(nullptr),
+      osc2ModeParam(nullptr),
+      osc3ModeParam(nullptr),
 
-	  osc1DetuneAmountParam(nullptr),
-	  osc2DetuneAmountParam(nullptr),
+      osc1DetuneAmountParam(nullptr),
+      osc2DetuneAmountParam(nullptr),
       osc3DetuneAmountParam(nullptr),
 
       filterParam(nullptr),
@@ -68,30 +68,30 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
       decayParam1(nullptr),
       sustainParam1(nullptr),
       releaseParam1(nullptr),
-	  attackCurve1Param(nullptr),
-	  decayRelCurve1Param(nullptr),
+      attackCurve1Param(nullptr),
+      decayRelCurve1Param(nullptr),
 
       attackParam2(nullptr),
       decayParam2(nullptr),
       sustainParam2(nullptr),
       releaseParam2(nullptr),
-	  attackCurve2Param(nullptr),
-	  decayRelCurve2Param(nullptr),
+      attackCurve2Param(nullptr),
+      decayRelCurve2Param(nullptr),
 
       attackParam3(nullptr),
       decayParam3(nullptr),
       sustainParam3(nullptr),
       releaseParam3(nullptr),
-	  attackCurve3Param(nullptr),
-	  decayRelCurve3Param(nullptr),
+      attackCurve3Param(nullptr),
+      decayRelCurve3Param(nullptr),
 
       delayPosition (0),
       filterEnvelope(nullptr),
 
-	  modTargetParam(nullptr),
-		
-	  lfoRateParam(nullptr),
-	  lfoModeParam(nullptr),
+      modTargetParam(nullptr),
+
+      lfoRateParam(nullptr),
+      lfoModeParam(nullptr),
       lfoIntensityParam(nullptr)
 
 
@@ -105,17 +105,17 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     // This creates our parameters. We'll keep some raw pointers to them in this class,
     // so that we can easily access them later, but the base class will take care of
     // deleting them for us.
-    
+
     addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.9f));
-    
+
     addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain",  0.0f, 1.0f, 0.9f));
     addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain",  0.0f, 1.0f, 0.9f));
     addParameter (osc3GainParam  = new AudioParameterFloat ("osc3Gain",  "OSC3 Gain",  0.0f, 1.0f, 0.9f));
-    
-	addParameter (osc1DetuneAmountParam = new AudioParameterFloat("osc1DetuneAmount", "OSC1 Tune", NormalisableRange<float>(-1.0, 1.0, 0.0), 0.0));
-	addParameter (osc2DetuneAmountParam = new AudioParameterFloat("osc2DetuneAmount", "OSC2 Tune", NormalisableRange<float>(-1.0, 1.0, 0.0), 0.0));
+
+    addParameter (osc1DetuneAmountParam = new AudioParameterFloat("osc1DetuneAmount", "OSC1 Tune", NormalisableRange<float>(-1.0, 1.0, 0.0), 0.0));
+    addParameter (osc2DetuneAmountParam = new AudioParameterFloat("osc2DetuneAmount", "OSC2 Tune", NormalisableRange<float>(-1.0, 1.0, 0.0), 0.0));
     addParameter (osc3DetuneAmountParam = new AudioParameterFloat("osc3DetuneAmount", "OSC3 Tune", NormalisableRange<float>(-1.0, 1.0, 0.0), 0.0));
-    
+
     addParameter(osc1ModeParam = new AudioParameterInt("osc1ModeChoice", "OSC1 Waveform", 0, 2, 2));
     addParameter(osc2ModeParam = new AudioParameterInt("osc2ModeChoice", "OSC2 Waveform", 0, 2, 2));
     addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 2, 2));
@@ -125,19 +125,19 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (0, 14000.0, 0.0, 0.5, false), 0.0));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0, 5.0, 0.0, 1.0, false), 1.0));
 
-    
+
     addParameter (pitchModParam = new AudioParameterFloat("pitchMod", "Pitch Modulation", NormalisableRange<float> (0, 2000.0, 0.0, 0.5, false), 0.0));
     addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24.0, 0.0));
     addParameter (osc2OffsetParam = new AudioParameterInt("osc2Offset", "OSC2 Offset", -24, 24.0, 0.0));
     addParameter (osc3OffsetParam = new AudioParameterInt("osc3Offset", "OSC3 Offset", -24, 24.0, 0.0));
 
-    
+
     //ENV 1
     addParameter (attackParam1 = new AudioParameterFloat ("attack1", "Amp Attack",       NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.0));
     addParameter (decayParam1  = new AudioParameterFloat ("decay1", "Amp Decay",         NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.0));
     addParameter (sustainParam1  = new AudioParameterFloat ("sustain1", "Amp Sustain",   NormalisableRange<float>(0.0, 1.0,  0.0, 0.5, false), 0.9));
     addParameter (releaseParam1  = new AudioParameterFloat ("release1", "Amp Release",   NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.01));
-    
+
     addParameter (attackCurve1Param = new AudioParameterFloat("attackCurve1", "Attack Curve",           NormalisableRange<float>(0.001, 1.0, 0.0, 0.5, false), 0.001));
     addParameter (decayRelCurve1Param = new AudioParameterFloat("decRelCurve1", "Decay-Release Curve",  NormalisableRange<float>(0.00001, 1.0, 0.0, 0.5, false), 0.00001));  
     //ENV 2
@@ -146,36 +146,36 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     addParameter (sustainParam2  = new AudioParameterFloat ("sustain2", "Pitch Sustain", NormalisableRange<float>(0.0, 1.0,  0.0, 0.5, false), 0.0));
     addParameter (releaseParam2  = new AudioParameterFloat ("release2", "Pitch Release", NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.0));
 
-	addParameter(attackCurve2Param = new AudioParameterFloat("attackCurve2", "Attack Curve",			NormalisableRange<float>(0.001, 1.0, 0.0, 0.5, false), 0.001));
-	addParameter(decayRelCurve2Param = new AudioParameterFloat("decRelCurve2", "Decay-Release Curve",	NormalisableRange<float>(0.00001, 1.0, 0.0, 0.5, false), 0.00001));
-    
+    addParameter(attackCurve2Param = new AudioParameterFloat("attackCurve2", "Attack Curve",			NormalisableRange<float>(0.001, 1.0, 0.0, 0.5, false), 0.001));
+    addParameter(decayRelCurve2Param = new AudioParameterFloat("decRelCurve2", "Decay-Release Curve",	NormalisableRange<float>(0.00001, 1.0, 0.0, 0.5, false), 0.00001));
+
     //ENV 3
     addParameter (attackParam3 = new AudioParameterFloat ("attack3", "Filter Attack",    NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.0));
     addParameter (decayParam3  = new AudioParameterFloat ("decay3", "Filter Decay",      NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.0));
     addParameter (sustainParam3  = new AudioParameterFloat ("sustain3", "Filter Sustain",NormalisableRange<float>(0.0, 1.0,  0.0, 0.5, false), 0.0));
     addParameter (releaseParam3  = new AudioParameterFloat ("release3", "Filter Release",NormalisableRange<float>(0.01, 11.0, 0.0, 0.5, false), 0.01));
-    
-	addParameter(attackCurve3Param = new AudioParameterFloat("attackCurve3", "Attack Curve", NormalisableRange<float>(0.001, 1.0, 0.0, 0.5, false), 0.001));
-	addParameter(decayRelCurve3Param = new AudioParameterFloat("decRelCurve3", "Decay-Release Curve", NormalisableRange<float>(0.00001, 1.0, 0.0, 0.5, false), 0.00001));
-    
 
-	// Modulation
-	addParameter(modTargetParam = new AudioParameterInt("modTarget", "Modulation Target", 0, 2, 2));
+    addParameter(attackCurve3Param = new AudioParameterFloat("attackCurve3", "Attack Curve", NormalisableRange<float>(0.001, 1.0, 0.0, 0.5, false), 0.001));
+    addParameter(decayRelCurve3Param = new AudioParameterFloat("decRelCurve3", "Decay-Release Curve", NormalisableRange<float>(0.00001, 1.0, 0.0, 0.5, false), 0.00001));
 
 
-	// LFO
-	addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 100.0, 0.0, 0.5, false), 0.05));
-	addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 2, 0));
-	addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
-    
-    
+    // Modulation
+    addParameter(modTargetParam = new AudioParameterInt("modTarget", "Modulation Target", 0, 2, 2));
+
+
+    // LFO
+    addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 100.0, 0.0, 0.5, false), 0.05));
+    addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 2, 0));
+    addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
+
+
     // Glide
     addParameter(glideTimeParam = new AudioParameterFloat("glideTime", "Glide Time", NormalisableRange<float>(0.001, 11.0, 0.0, 0.2, false), 0.001));
 
     initialiseSynth();
-    
+
     keyboardState.addListener(this);
-    
+
     filterEnvelope = new ADSR();
     
   
@@ -303,32 +303,32 @@ void JuceDemoPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChan
 	lfo.setPhase(0.0);
 
     // Making sure that the envelope resets to attack when the gate is already open, but not in release state
-	/*if (filterenvelope->getstate() == adsr::env_attack
-		|| filterenvelope->getstate() == adsr::env_decay
-		|| filterenvelope->getstate() == adsr::env_sustain)
-	{
-		filterenvelope->resettoattack();
-	}
-	else*/
-		filterEnvelope->gate(true);
+    /*if (filterenvelope->getstate() == adsr::env_attack
+        || filterenvelope->getstate() == adsr::env_decay
+        || filterenvelope->getstate() == adsr::env_sustain)
+    {
+        filterenvelope->resettoattack();
+    }
+    else*/
+        filterEnvelope->gate(true);
 		
 }
 
 void JuceDemoPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
 
-	// Because this function only handles noteOff messages and doesn't care 
-	// whether another note is still playing, we have to make sure that the gate
-	// will only be closed when no other notes are still playing.. The ADSR
-	// class will handle release.
-	if (filterEnvelope->getState() == ADSR::env_attack
-		|| filterEnvelope->getState() == ADSR::env_decay
-		|| filterEnvelope->getState() == ADSR::env_sustain)
-	{
-		return;
-	}
-	else
-		filterEnvelope->gate(false);
+    // Because this function only handles noteOff messages and doesn't care
+    // whether another note is still playing, we have to make sure that the gate
+    // will only be closed when no other notes are still playing.. The ADSR
+    // class will handle release.
+    if (filterEnvelope->getState() == ADSR::env_attack
+        || filterEnvelope->getState() == ADSR::env_decay
+        || filterEnvelope->getState() == ADSR::env_sustain)
+    {
+        return;
+    }
+    else
+        filterEnvelope->gate(false);
 	
 		
     
@@ -406,11 +406,11 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
     filterEnvelope->setDecayRate(*decayParam3);
     filterEnvelope->setReleaseRate(*releaseParam3);
     filterEnvelope->setSustainLevel(*sustainParam3);
-	filterEnvelope->setTargetRatioA(*attackCurve2Param);   
-	filterEnvelope->setTargetRatioDR(*decayRelCurve2Param);
+    filterEnvelope->setTargetRatioA(*attackCurve2Param);
+    filterEnvelope->setTargetRatioDR(*decayRelCurve2Param);
 
-	lfo.setMode(*lfoModeParam);
-	
+    lfo.setMode(*lfoModeParam);
+
 
     const int numSamples = buffer.getNumSamples();
     
@@ -424,10 +424,10 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
         lfo.setMode(*lfoModeParam);
 
 
-		lfo.setFrequency(*lfoRateParam);
-		double lfoValue = lfo.nextSample();
-		modAmount = *lfoIntensityParam;							// Make parameter
-		applyModToTarget(*modTargetParam, lfoValue * modAmount);
+        lfo.setFrequency(*lfoRateParam);
+        double lfoValue = lfo.nextSample();
+        modAmount = *lfoIntensityParam;							// Make parameter
+        applyModToTarget(*modTargetParam, lfoValue * modAmount);
 
 
 

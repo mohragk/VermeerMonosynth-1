@@ -90,23 +90,23 @@ public:
       
         
         ampEnvelope.gate(true);
-		/*
-		if (ampEnvelope.getState() == ADSR::env_attack
-			|| ampEnvelope.getState() == ADSR::env_decay
-			|| ampEnvelope.getState() == ADSR::env_sustain)
-		{
-			ampEnvelope.resetToAttack();
-		}*/
+        /*
+        if (ampEnvelope.getState() == ADSR::env_attack
+            || ampEnvelope.getState() == ADSR::env_decay
+            || ampEnvelope.getState() == ADSR::env_sustain)
+        {
+            ampEnvelope.resetToAttack();
+        }*/
 
 
         pitchEnvelope.gate(true);
 
-		/*if (pitchEnvelope.getState() == ADSR::env_attack
-			|| pitchEnvelope.getState() == ADSR::env_decay
-			|| pitchEnvelope.getState() == ADSR::env_sustain)
-		{
-			pitchEnvelope.resetToAttack();
-		}*/
+        /*if (pitchEnvelope.getState() == ADSR::env_attack
+            || pitchEnvelope.getState() == ADSR::env_decay
+            || pitchEnvelope.getState() == ADSR::env_sustain)
+        {
+            pitchEnvelope.resetToAttack();
+        }*/
     }
     
     void stopNote (float /*velocity*/, bool allowTailOff) override
@@ -159,8 +159,8 @@ public:
         ampEnvelope.setDecayRate(decay);
         ampEnvelope.setSustainLevel(sustain);
         ampEnvelope.setReleaseRate(release);
-		ampEnvelope.setTargetRatioA(attackCurve);
-		ampEnvelope.setTargetRatioDR(decRelCurve);
+        ampEnvelope.setTargetRatioA(attackCurve);
+        ampEnvelope.setTargetRatioDR(decRelCurve);
         
         
     }
@@ -172,8 +172,8 @@ public:
         pitchEnvelope.setDecayRate(decay);
         pitchEnvelope.setSustainLevel(sustain);
         pitchEnvelope.setReleaseRate(release);
-		pitchEnvelope.setTargetRatioA(attackCurve);
-		pitchEnvelope.setTargetRatioDR(decRelCurve);
+        pitchEnvelope.setTargetRatioA(attackCurve);
+        pitchEnvelope.setTargetRatioDR(decRelCurve);
         
     }
     
@@ -185,20 +185,20 @@ public:
         pitchModAmount = pitchMod;
     }
 
-	void setAmpModulation(double amt)
-	{
-		ampModulation = (amt + 1.0) / 2.0; // Normalize
-	}
+    void setAmpModulation(double amt)
+    {
+        ampModulation = (amt + 1.0) / 2.0; // Normalize
+    }
 
 
-	void setPitchModulation(double amt)
-	{
-		
-		double rangeSemitones = 24.0;
-		
-		pitchModulation = amt * rangeSemitones;
+    void setPitchModulation(double amt)
+    {
+        
+        double rangeSemitones = 24.0;
+        
+        pitchModulation = amt * rangeSemitones;
 
-	}
+    }
     
 
     
@@ -209,16 +209,16 @@ public:
         oscGain[2] = g3;
     }
    
-	void setOsc1DetuneAmount(double fine, int coarse)
-	{
-		oscDetuneAmount[0] = fine + (float) coarse; //Semitones
-	}
+    void setOsc1DetuneAmount(double fine, int coarse)
+    {
+        oscDetuneAmount[0] = fine + (float) coarse; //Semitones
+    }
 
-	void setOsc2DetuneAmount(double fine, int coarse)
-	{
-		
-		oscDetuneAmount[1] = fine + (float) coarse; //Semitones
-	}
+    void setOsc2DetuneAmount(double fine, int coarse)
+    {
+        
+        oscDetuneAmount[1] = fine + (float) coarse; //Semitones
+    }
     
     void setOsc3DetuneAmount(double fine, int coarse)
     {
@@ -226,7 +226,7 @@ public:
         oscDetuneAmount[2] = fine + (float) coarse; //Semitones
     }
 
-	void setOscModes(int mode1, int mode2, int mode3)
+    void setOscModes(int mode1, int mode2, int mode3)
     {
         if      (mode1 == 0)
             oscillatorMode[0] = OSCILLATOR_MODE_SINE;
@@ -286,9 +286,9 @@ private:
                 double newFreqOsc2 = midiFrequency + ( pitchEnvAmt * pitchModAmount);
                 double newFreqOsc3 = midiFrequency + ( pitchEnvAmt * pitchModAmount);
                 
-				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
-				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreqOsc1);
-				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreqOsc2);
+                //Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
+                double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreqOsc1);
+                double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreqOsc2);
                 double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreqOsc3);
                 
                 //Set the new frequency
@@ -322,7 +322,7 @@ private:
                     
                     outputBuffer.addSample (i, startSample, sample);
                 }
-        
+                
                 for (int i = 0; i < numOscillators; i++)
                 {
                     phase[i] += phaseIncrement[i];
@@ -368,10 +368,10 @@ private:
     
     
     
-	float inline semitoneOffsetToFreq(double semitones, double freq)
-	{
-		return pow(2.0, (semitones / 12.0)) * freq;
-	}
+    float inline semitoneOffsetToFreq(double semitones, double freq)
+    {
+        return pow(2.0, (semitones / 12.0)) * freq;
+    }
 
     
 
@@ -431,8 +431,8 @@ private:
         }
         else if (mode == OSCILLATOR_MODE_NOISE)
         {
-			Random r;
-			value = r.nextDouble();
+            Random r;
+            value = r.nextDouble();
         }
              
        
@@ -477,10 +477,10 @@ private:
     int noteOffset;
     float angleDelta;
     
-	double pitchModulation, ampModulation;
+    double pitchModulation, ampModulation;
 
     double  phase[3], phaseIncrement[3], /*oscFrequency[3],*/ lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
-	double pitchBendOffset;
+    double pitchBendOffset;
     double glideTime;
     
     double midiFrequency;

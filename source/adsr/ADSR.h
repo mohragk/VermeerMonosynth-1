@@ -22,8 +22,8 @@
 
 class ADSR {
 public:
-	ADSR(void);
-	~ADSR(void);
+    ADSR(void);
+    ~ADSR(void);
     enum envState {
         env_idle = 0,
         env_attack,
@@ -32,34 +32,34 @@ public:
         env_release
     };
 
-	float process(void);
+    float process(void);
     void processSample(float* samples, int numSamples);
     float getOutput(void);
     int getState(void);
-	void gate(int on);
+    void gate(int on);
     void setSampleRate(float sr);
     void setAttackRate(float rate);
     void setDecayRate(float rate);
     void setReleaseRate(float rate);
-	void setSustainLevel(float level);
+    void setSustainLevel(float level);
     void setTargetRatioA(float targetRatio);
     void setTargetRatioDR(float targetRatio);
     void setState(envState newState);
     void reset(void);
-	void resetToAttack(void);
+    void resetToAttack(void);
 
     
 protected:
-	int state;
+    int state;
     float sampleRate;
-	float output;
-	float attackRate;
-	float decayRate;
-	float releaseRate;
-	float attackCoef;
-	float decayCoef;
-	float releaseCoef;
-	float sustainLevel;
+    float output;
+    float attackRate;
+    float decayRate;
+    float releaseRate;
+    float attackCoef;
+    float decayCoef;
+    float releaseCoef;
+    float sustainLevel;
     float targetRatioA;
     float targetRatioDR;
     float attackBase;
@@ -70,7 +70,7 @@ protected:
 };
 
 inline float ADSR::process() {
-	switch (state) {
+    switch (state) {
         case env_idle:
             break;
         case env_attack:
@@ -95,8 +95,8 @@ inline float ADSR::process() {
                 output = 0.0;
                 state = env_idle;
             }
-	}
-	return output;
+    }
+    return output;
 }
 
 inline void ADSR::processSample(float *sample, int numSamples)
@@ -135,8 +135,8 @@ inline void ADSR::processSample(float *sample, int numSamples)
 }
 
 inline void ADSR::gate(int gate) {
-	if (gate)
-		state = env_attack;
+    if (gate)
+        state = env_attack;
     else if (state != env_idle)
         state = env_release;
 }
@@ -156,12 +156,12 @@ inline void ADSR::reset() {
 }
 
 inline void ADSR::resetToAttack() {
-	output = 0.0;
-	state = env_attack;
+    output = 0.0;
+    state = env_attack;
 }
 
 inline float ADSR::getOutput() {
-	return output;
+    return output;
 }
 
 #endif
