@@ -74,12 +74,13 @@ public:
         
         for ( int i = 0; i < numOscillators; i++)
         {
-            phase[i] = 0.0;
+            if (ampEnvelope.getState() == ADSR::env_idle)
+                phase[i] = 0.0;
             level[i] = 0.2;
-			oscFrequency[i].reset(getSampleRate(), 0.0001);
+			
 
-            oscFrequency[i].setValue(midiFrequency);
-            phaseIncrement[i] = updatePhaseIncrement(oscFrequency[i].getNextValue());
+            oscFrequency[i] = midiFrequency;
+            phaseIncrement[i] = updatePhaseIncrement(oscFrequency[i]);
         }
       
         
@@ -279,16 +280,16 @@ private:
                 double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation, newFreqOsc3);
                 
                 //Set the new frequency
-                oscFrequency[0].setValue(osc1Detuned);
-                oscFrequency[1].setValue(osc2Detuned);
-                oscFrequency[2].setValue(osc3Detuned);
+                oscFrequency[0] = osc1Detuned;
+                oscFrequency[1] = osc2Detuned;
+                oscFrequency[2] = osc3Detuned;
                 
                 
                 
                 // Calculate new phase increment and calculate samples
                 for ( int osc = 0; osc < numOscillators ; osc++)
                 {
-                    phaseIncrement[osc] = updatePhaseIncrement(oscFrequency[osc].getNextValue());
+                    phaseIncrement[osc] = updatePhaseIncrement(oscFrequency[osc]);
                     
                     oscSample[osc] = nextSample(phase[osc], phaseIncrement[osc], oscillatorMode[osc]);
 					
@@ -466,7 +467,7 @@ private:
     
 	double pitchModulation, ampModulation;
 
-    double  phase[3], phaseIncrement[3], lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
+    double  phase[3], phaseIncrement[3], oscFrequency[3], lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
 	double pitchBendOffset;
     
     double midiFrequency;
@@ -474,7 +475,7 @@ private:
     double pitchModAmount;
 //	double osc1DetuneAmount, osc2DetuneAmount;
 
-    LinearSmoothedValue<float> oscFrequency[3];
+    //LinearSmoothedValue<float> oscFrequency[3];
     
     
 };
