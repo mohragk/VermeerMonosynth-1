@@ -342,6 +342,7 @@ Builds/VisualStudio2017/.vs/Vermeer Monosynth/v15/.suo
 *.db-wal
 *.res
 *.sqlite
+*.vst
 
 *.xcworkspacedata
 
