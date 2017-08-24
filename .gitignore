@@ -336,6 +336,8 @@ __pycache__/
 *.pdb
 *.ipch
 *.db
+*.zip
+
 Builds/VisualStudio2017/.vs/Vermeer Monosynth/v15/.suo
 *.opendb
 *.db-shm
