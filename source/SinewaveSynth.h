@@ -480,6 +480,7 @@ private:
     double pitchModulation, ampModulation;
 
     double  phase[3], phaseIncrement[3], /*oscFrequency[3],*/ lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
+    double phase_alt;
     double pitchBendOffset;
     double glideTime;
     
