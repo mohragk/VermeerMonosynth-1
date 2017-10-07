@@ -385,6 +385,7 @@ private:
                 break;
             case OSCILLATOR_MODE_SAW:
                 value = (2.0 * phase / two_Pi) - 1.0;
+                value = tanh(4.0 * value);
                 break;
             case OSCILLATOR_MODE_SQUARE:
                 if (phase <= double_Pi) {
@@ -411,7 +412,7 @@ private:
         const double two_Pi = 2.0 * double_Pi;
         
         double value = 0.0;
-        double t = phase / two_Pi;
+        double t = phase / two_Pi; // normalize period
         
         //oscillatorMode = OSCILLATOR_MODE_SQUARE;
         
@@ -442,7 +443,7 @@ private:
     
     double poly_blep (double t, double phaseIncrement)
     {
-        double dt = phaseIncrement /  double_Pi;
+        double dt = phaseIncrement / (2.0 * double_Pi); // normalize phase increment
         
         if (t < dt)
         {
