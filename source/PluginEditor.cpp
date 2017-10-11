@@ -641,10 +641,15 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
 	
     
     // Glide
-    addAndMakeVisible(glideTimeSlider = new ParameterSlider(*owner.glideTimeParam));  //
+    addAndMakeVisible(glideTimeSlider = new ParameterSlider(*owner.sawSaturationParam));  //todo: 
     glideTimeSlider->setSliderStyle(Slider::RotaryVerticalDrag);
     glideTimeSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 20);
 	
+    
+    // FilterSwitch
+    addAndMakeVisible(filterSelectSlider = new ParameterSlider(*owner.filterSelectParam));  //todo:
+    filterSelectSlider->setSliderStyle(Slider::LinearHorizontal);
+    filterSelectSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 20);
 	
 	
     addAndMakeVisible(midiKeyboard);
@@ -1182,6 +1187,7 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
     glideTimeSlider->setBounds(getWidth() - 24 - 64, 178, 64, 64);
+    filterSelectSlider->setBounds(getWidth() - 24 - 64, 278, 64, 64);
 
     lfoLabel->setBounds             (628, 64, 80, 24);
 

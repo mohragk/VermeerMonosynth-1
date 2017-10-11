@@ -124,7 +124,7 @@ public:
     void setOsc3DetuneAmount(float fine, int coarse);
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
-    void setGlide(float time);
+    void setSawSaturation(float sat);
 	
   
     
@@ -185,7 +185,8 @@ public:
     AudioParameterInt*   lfoModeParam;
     AudioParameterFloat* lfoIntensityParam;
     
-    AudioParameterFloat* glideTimeParam;
+    AudioParameterFloat* sawSaturationParam;
+    AudioParameterInt* filterSelectParam;
     
     
 private:
@@ -209,6 +210,8 @@ private:
     
     
     ImprovedMoog filter2[2];
+    
+    IIRFilter filter[2];
     
     enum modTarget {
         modPitch,

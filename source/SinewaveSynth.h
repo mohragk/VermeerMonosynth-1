@@ -259,9 +259,9 @@ public:
         
     }
     
-    void setGlide(float gT)
+    void setSawSaturation(float sat)
     {
-        glideTime = gT;
+        sawSaturation = sat;
 
     }
     
@@ -375,7 +375,7 @@ private:
 
     
 
-    double naiveWaveformForMode(OscillatorMode mode, double phase)
+   inline double naiveWaveformForMode(OscillatorMode mode, double phase)
     {
         const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;
@@ -384,8 +384,10 @@ private:
                 value = sin(phase);
                 break;
             case OSCILLATOR_MODE_SAW:
-                value = (2.0 * phase / two_Pi) - 1.0;
-                value = tanh(4.0 * value);
+                value = phase / two_Pi;
+                value = tanh(sawSaturation * value);
+                value = ( 2.0 * value ) - 1.0;
+                //value *= -1.0;
                 break;
             case OSCILLATOR_MODE_SQUARE:
                 if (phase <= double_Pi) {
@@ -421,7 +423,7 @@ private:
         else if ( mode == OSCILLATOR_MODE_SAW )
         {
             value = naiveWaveformForMode(OSCILLATOR_MODE_SAW, phase);
-            value -= poly_blep(t, phaseIncrement);
+            value -= poly_blep(t, phaseIncrement); // positive for rising, negative for falling
         }
         else if ( mode == OSCILLATOR_MODE_SQUARE )
         {
@@ -480,10 +482,11 @@ private:
     
     double pitchModulation, ampModulation;
 
-    double  phase[3], phaseIncrement[3], /*oscFrequency[3],*/ lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
+    double phase[3], phaseIncrement[3], /*oscFrequency[3],*/ lastOutput[3], level[3], oscGain[3], oscDetuneAmount[3];
     double phase_alt;
     double pitchBendOffset;
     double glideTime;
+    double sawSaturation;
     
     double midiFrequency;
     double maxFreq = 0, minFreq = 0;

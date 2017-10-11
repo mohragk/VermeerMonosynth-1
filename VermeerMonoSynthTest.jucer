@@ -66,6 +66,9 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="BU8U7s" name="Oscillator.h" compile="0" resource="0" file="source/Oscillator.h"/>
+    <FILE id="nnHxpZ" name="SineWaveSynthTest.h" compile="0" resource="0"
+          file="source/SineWaveSynthTest.h"/>
     <GROUP id="{EF44F59F-F976-4DD6-7642-C69E0075D234}" name="font">
       <FILE id="GzeoeP" name="FuturaStd-Bold.otf" compile="0" resource="1"
             file="Resources/font/FuturaStd-Bold.otf"/>

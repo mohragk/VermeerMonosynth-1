@@ -28,7 +28,7 @@
 #include "PluginEditor.h"
 
 #include "adsr/ADSR.h"
-#include "SinewaveSynth.h"
+#include "MonoSynth.h"
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
@@ -92,7 +92,10 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 
       lfoRateParam(nullptr),
       lfoModeParam(nullptr),
-      lfoIntensityParam(nullptr)
+      lfoIntensityParam(nullptr),
+
+      sawSaturationParam(nullptr),
+      filterSelectParam(nullptr)
 
 
 //Add all the rest!
@@ -121,7 +124,7 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 2, 2));
 
     addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (0.0, 14000.0, 0.0, 0.5, false), 12000.0));
-    addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0, 4.0, 0.0, 1.0, false), 0.0));
+    addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (1.0, 10.0, 0.0, 1.0, false), 1.0));
     addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (0, 14000.0, 0.0, 0.5, false), 0.0));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0, 5.0, 0.0, 1.0, false), 1.0));
 
@@ -169,8 +172,10 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
 
 
-    // Glide
-    addParameter(glideTimeParam = new AudioParameterFloat("glideTime", "Glide Time", NormalisableRange<float>(0.001, 11.0, 0.0, 0.2, false), 0.001));
+    // Glide IS NOW SAWSAT!!
+    addParameter(sawSaturationParam = new AudioParameterFloat("sawSaturation", "Saw Saturation", NormalisableRange<float>(1.0, 10.0, 0.0, 0.5, false), 2.0));
+    
+    addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 1, 0));
 
     initialiseSynth();
 
@@ -474,49 +479,86 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
     pLeft = channelDataLeft;
     pRight = channelDataRight;
     
-    if (stepSize > 1.0)
+    
+    if (*filterSelectParam == 0)
     {
-       for(int step = 0; step < numSamples; step += (int)stepSize)
-       {
-           for(int channel = 0; channel < 2; channel++)
+        if (stepSize > 1.0)
+        {
+           for(int step = 0; step < numSamples; step += (int)stepSize)
+           {
+               for(int channel = 0; channel < 2; channel++)
+                {
+                    filter2[channel].SetResonance   (resonance.getNextValue());
+                    filter2[channel].SetCutoff      (cutoff.getNextValue());
+                    filter2[channel].SetDrive       (drive.getNextValue());
+                }
+
+                filter2[0].Process(pLeft, stepSize);
+                filter2[1].Process(pRight, stepSize);
+                pLeft  += (int)stepSize;
+                pRight += (int)stepSize;
+            }
+        }
+        else
+        {
+            for(int channel = 0; channel < 2; channel++)
             {
                 filter2[channel].SetResonance   (resonance.getNextValue());
                 filter2[channel].SetCutoff      (cutoff.getNextValue());
                 filter2[channel].SetDrive       (drive.getNextValue());
             }
-            
-            filter2[0].Process(pLeft, stepSize);
-            filter2[1].Process(pRight, stepSize);
-            pLeft  += (int)stepSize;
-            pRight += (int)stepSize;
+            filter2[0].Process(channelDataLeft, numSamples);
+            filter2[1].Process(channelDataRight, numSamples);
         }
+        //
+        // reduce volume when filter is overdriven
+        //
+         if (*filterDriveParam > 1.0)
+         {
+             float reduction = 1 / *filterDriveParam;
+             for (int i = 0; i < numSamples; i++)
+             {
+                 channelDataLeft[i]  *= reduction;
+                 channelDataRight[i] *= reduction;
+         
+             }
+         }
+        
     }
     else
     {
-        for(int channel = 0; channel < 2; channel++)
+    
+        if ( stepSize > 1.0 )
         {
-            filter2[channel].SetResonance   (resonance.getNextValue());
-            filter2[channel].SetCutoff      (cutoff.getNextValue());
-            filter2[channel].SetDrive       (drive.getNextValue());
+            for (int step = 0; step < numSamples; step += (int)stepSize )
+            {
+                double q = resonance.getNextValue();
+                IIRCoefficients ir = IIRCoefficients::makeLowPass(sampleRate, cutoff.getNextValue(), q);
+                for (int channel = 0; channel < 2; channel++ )
+                {
+                    filter[channel].setCoefficients(ir);
+                }
+                
+                filter[0].processSamples(pLeft, stepSize);
+                filter[1].processSamples(pRight, stepSize);
+                
+                pLeft  += (int)stepSize;
+                pRight += (int)stepSize;
+            }
         }
-        filter2[0].Process(channelDataLeft, numSamples);
-        filter2[1].Process(channelDataRight, numSamples);
+        else
+        {
+            IIRCoefficients ir = IIRCoefficients::makeLowPass(sampleRate, cutoff.getNextValue(), resonance.getNextValue());
+            for (int channel = 0; channel < 2; channel++ )
+            {
+                filter[channel].setCoefficients(ir);
+            }
+            filter[0].processSamples(channelDataLeft, numSamples);
+            filter[1].processSamples(channelDataRight, numSamples);
+        }
     }
     
-    //
-    // reduce volume when filter is overdriven
-    //
-  /*  if (*filterDriveParam > 1.0)
-    {
-        float reduction = 1 / *filterDriveParam;
-        for (int i = 0; i < numSamples; i++)
-        {
-            channelDataLeft[i]  *= reduction;
-            channelDataRight[i] *= reduction;
-            
-        }
-    }
-    */
+  
 }
 
 
@@ -614,7 +656,7 @@ void inline JuceDemoPluginAudioProcessor::updateParameters()
     setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
     setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
     
-    setGlide(*glideTimeParam);
+    setSawSaturation(*sawSaturationParam);
 }
 
 
@@ -678,10 +720,10 @@ void JuceDemoPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int o
 }
 
 
-void JuceDemoPluginAudioProcessor::setGlide(float time)
+void JuceDemoPluginAudioProcessor::setSawSaturation(float sat)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setGlide(time);
+    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setSawSaturation(sat);
     
 }
 
