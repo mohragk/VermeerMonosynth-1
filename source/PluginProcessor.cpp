@@ -513,7 +513,7 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
         //
         // reduce volume when filter is overdriven
         //
-         if (*filterDriveParam > 1.0)
+        /* if (*filterDriveParam > 1.0)
          {
              float reduction = 1 / *filterDriveParam;
              for (int i = 0; i < numSamples; i++)
@@ -522,7 +522,7 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
                  channelDataRight[i] *= reduction;
          
              }
-         }
+         }*/
         
     }
     else
