@@ -56,6 +56,8 @@ public:
     void startedDragging() override     { param.beginChangeGesture();  }
     void stoppedDragging() override     { param.endChangeGesture();   }
 
+	
+
     double getValueFromText (const String& text) override   { return param.getValueForText (text); }
     String getTextFromValue (double value) override         { return param.getText ((float) value, 1024); }
 
@@ -72,7 +74,7 @@ public:
 
     AudioProcessorParameter& param;
     
-    LinearSmoothedValue<float> newValueSmooth;
+    //LinearSmoothedValue<float> newValueSmooth;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
 };
@@ -1164,8 +1166,16 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     filterResonanceLabel->setBounds (304, 168, 100, 24);
     filterContourSlider->setBounds (320, 264, 64, 64);
     filterContourLabel->setBounds (320, 248, 65, 24);
-    filterDriveSlider->setBounds (320, 344, 64, 64);
-    filterDriveLabel->setBounds (320, 328, 65, 24);
+
+	
+	filterDriveSlider->setBounds(320, 344, 64, 64);
+	filterDriveLabel->setBounds(320, 328, 65, 24);
+	
+	
+
+	
+	
+	
     envelopesLabel->setBounds (464, 64, 100, 24);
     attackSlider1->setBounds (424, 112, 14, 80);
     attackSlider2->setBounds (424, 224, 14, 80);
@@ -1235,6 +1245,21 @@ void JuceDemoPluginAudioProcessorEditor::resized()
 void JuceDemoPluginAudioProcessorEditor::timerCallback()
 {
     updateTimecodeDisplay (getProcessor().lastPosInfo);
+
+	if (filterSelectSlider->getValue() == 1)
+	{
+		filterDriveSlider->setAlpha(0.2);
+		filterDriveLabel->setAlpha(0.2);
+		filterDriveSlider->setEnabled(false);
+	}
+		
+	else
+	{
+		filterDriveSlider->setAlpha(1.0);
+		filterDriveSlider->setEnabled(true);
+		filterDriveLabel->setAlpha(1.0);
+	}
+	
 }
 
 
