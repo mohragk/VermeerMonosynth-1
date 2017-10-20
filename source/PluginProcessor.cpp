@@ -29,6 +29,8 @@
 
 #include "adsr/ADSR.h"
 #include "MonoSynth.h"
+#include <math.h>
+#include <iostream>
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
@@ -95,7 +97,9 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
       lfoIntensityParam(nullptr),
 
       sawSaturationParam(nullptr),
-      filterSelectParam(nullptr)
+      filterSelectParam(nullptr),
+
+      lfoDivisionParam(nullptr)
 
 
 //Add all the rest!
@@ -124,7 +128,7 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 2, 2));
 
     addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (0.0, 14000.0, 0.0, 0.5, false), 12000.0));
-    addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (1.0, 10.0, 0.0, 1.0, false), 1.0));
+    addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0, 1.0, 0.0, 1.0, false), 0.0));
     addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (0, 14000.0, 0.0, 0.5, false), 0.0));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0, 5.0, 0.0, 1.0, false), 1.0));
 
@@ -167,14 +171,23 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 
 
     // LFO
-    addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 100.0, 0.0, 0.5, false), 0.05));
+    addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 30.0, 0.0, 0.5, false), 0.05));
     addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 2, 0));
     addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
 
+    
+    
+    //
+    //
+    //
+    addParameter(lfoDivisionParam = new AudioParameterInt("lfoDivision", "LFO Synced Rate", 1, 6, 2));
+    
+    
 
     // Glide IS NOW SAWSAT!!
     addParameter(sawSaturationParam = new AudioParameterFloat("sawSaturation", "Saw Saturation", NormalisableRange<float>(1.0, 10.0, 0.0, 0.5, false), 2.0));
     
+    // Filter Select Parameter
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 1, 0));
 
     initialiseSynth();
@@ -182,6 +195,7 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     keyboardState.addListener(this);
 
     filterEnvelope = new ADSR();
+    //ampEnvelope = new ADSR();
     
   
    
@@ -190,6 +204,7 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 JuceDemoPluginAudioProcessor::~JuceDemoPluginAudioProcessor()
 {
     keyboardState.removeListener(this);
+    delete filterEnvelope;
 }
 
 
@@ -240,7 +255,7 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
     synth.setCurrentPlaybackSampleRate (newSampleRate);
     keyboardState.reset();
    
-    cutoff.reset(sampleRate, 0.003);
+    cutoff.reset(sampleRate, 0.0005);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     
@@ -263,6 +278,7 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
     }
     
     filterEnvelope->setSampleRate(newSampleRate);
+    ampEnvelope.setSampleRate(newSampleRate);
     
     
     
@@ -306,38 +322,25 @@ void JuceDemoPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChan
     contourVelocity = velocity;
     
 	lfo.setPhase(0.0);
-
-    // Making sure that the envelope resets to attack when the gate is already open, but not in release state
-    /*if (filterenvelope->getstate() == adsr::env_attack
-        || filterenvelope->getstate() == adsr::env_decay
-        || filterenvelope->getstate() == adsr::env_sustain)
-    {
-        filterenvelope->resettoattack();
-    }
-    else*/
-        filterEnvelope->gate(true);
+    
+    
+    
+    filterEnvelope->gate(true);
+    ampEnvelope.gate(true);
+    
+    lastNotePlayed = midiNoteNumber;
 		
 }
 
 void JuceDemoPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-
-    // Because this function only handles noteOff messages and doesn't care
-    // whether another note is still playing, we have to make sure that the gate
-    // will only be closed when no other notes are still playing.. The ADSR
-    // class will handle release.
-    if (filterEnvelope->getState() == ADSR::env_attack
-        || filterEnvelope->getState() == ADSR::env_decay
-        || filterEnvelope->getState() == ADSR::env_sustain)
+    
+    if (lastNotePlayed == midiNoteNumber)
     {
-        return;
-    }
-    else
+        ampEnvelope.gate(false);
         filterEnvelope->gate(false);
-	
-		
-    
-    
+    }
+
 }
 
 
@@ -366,7 +369,7 @@ void JuceDemoPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     // applying our filter
     applyFilter(buffer, delayBuffer);
     
-    
+    applyAmpEnvelope(buffer, delayBuffer);
 
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't
@@ -388,7 +391,7 @@ template <typename FloatType>
 void JuceDemoPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
 {
     ignoreUnused (delayBuffer);
-    const float gainLevel =*gainParam;
+    const float gainLevel = *gainParam;// * ampEnvelope->getOutput();
     
     
 
@@ -414,8 +417,9 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
     filterEnvelope->setTargetRatioA(*attackCurve2Param);
     filterEnvelope->setTargetRatioDR(*decayRelCurve2Param);
 
-    lfo.setMode(*lfoModeParam);
-
+    //lfo.setMode(*lfoModeParam);
+    lfo_division = pow(2.0, *lfoDivisionParam);
+    calculateLFOSyncedFreq();
 
     const int numSamples = buffer.getNumSamples();
     
@@ -427,9 +431,15 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
         // LFO
         //
         lfo.setMode(*lfoModeParam);
-
-
-        lfo.setFrequency(*lfoRateParam);
+        lfo_synced_freq_old = lfo_synced_freq;
+        
+        lfo_division = pow(2.0, *lfoDivisionParam);
+        calculateLFOSyncedFreq();
+        
+        if (lfo_synced_freq_old != lfo_synced_freq)
+            lfo.setPhase(0.0);
+        
+        lfo.setFrequency( lfo_synced_freq ); //*lfoRateParam);
         double lfoValue = lfo.nextSample();
         modAmount = *lfoIntensityParam;							// Make parameter
         applyModToTarget(*modTargetParam, lfoValue * modAmount);
@@ -449,6 +459,8 @@ void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer
         cutoff.setValue     (currentCutoff);
         resonance.setValue  (*filterQParam);
         drive.setValue      (*filterDriveParam);
+        
+       
     }
     
 	
@@ -471,7 +483,7 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
     //
     //  break buffer into chunks
     //
-    float stepSize = (float) numSamples / 32.0; //target buffersize = 64
+    float stepSize = (float) numSamples / 32.0; //target buffersize = 32
    
     float *pLeft;
     float *pRight;
@@ -488,8 +500,10 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
            {
                for(int channel = 0; channel < 2; channel++)
                 {
-                    filter2[channel].SetResonance   (resonance.getNextValue());
-                    filter2[channel].SetCutoff      (cutoff.getNextValue());
+                    // remap resonance
+                    double Q = resonance.getNextValue() * 4.0;
+                    filter2[channel].SetResonance   (Q);
+                    filter2[channel].SetCutoff      (currentCutoff);
                     filter2[channel].SetDrive       (drive.getNextValue());
                 }
 
@@ -503,8 +517,9 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
         {
             for(int channel = 0; channel < 2; channel++)
             {
-                filter2[channel].SetResonance   (resonance.getNextValue());
-                filter2[channel].SetCutoff      (cutoff.getNextValue());
+                double Q = resonance.getNextValue() * 4.0;
+                filter2[channel].SetResonance   (Q);
+                filter2[channel].SetCutoff      (currentCutoff); //(cutoff.getNextValue());
                 filter2[channel].SetDrive       (drive.getNextValue());
             }
             filter2[0].Process(channelDataLeft, numSamples);
@@ -532,23 +547,26 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
         {
             for (int step = 0; step < numSamples; step += (int)stepSize )
             {
-                double q = resonance.getNextValue();
-                IIRCoefficients ir = IIRCoefficients::makeLowPass(sampleRate, cutoff.getNextValue(), q);
+                // remap resonance
+                double Q = resonance.getNextValue() * 10.0 + 1.0;
+                IIRCoefficients ir = IIRCoefficients::makeLowPass(sampleRate, currentCutoff, Q);
                 for (int channel = 0; channel < 2; channel++ )
                 {
                     filter[channel].setCoefficients(ir);
                 }
-                
+
                 filter[0].processSamples(pLeft, stepSize);
                 filter[1].processSamples(pRight, stepSize);
-                
+
                 pLeft  += (int)stepSize;
                 pRight += (int)stepSize;
             }
         }
         else
         {
-            IIRCoefficients ir = IIRCoefficients::makeLowPass(sampleRate, cutoff.getNextValue(), resonance.getNextValue());
+            // remap resonance
+            double Q = resonance.getNextValue() * 10.0 + 1.0;
+            IIRCoefficients ir = IIRCoefficients::makeLowPass(sampleRate, currentCutoff, Q);
             for (int channel = 0; channel < 2; channel++ )
             {
                 filter[channel].setCoefficients(ir);
@@ -560,6 +578,53 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
     
   
 }
+
+
+
+
+
+
+
+
+
+template <typename FloatType>
+void JuceDemoPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
+{
+    ignoreUnused ( delayBuffer );
+    int numSamples = buffer.getNumSamples();
+    
+    FloatType* channelDataLeft  = buffer.getWritePointer(0);
+    FloatType* channelDataRight = buffer.getWritePointer(1);
+    
+    ampEnvelope.setAttackRate(*attackParam1);
+    ampEnvelope.setDecayRate(*decayParam1);
+    ampEnvelope.setReleaseRate(*releaseParam1);
+    ampEnvelope.setSustainLevel(*sustainParam1);
+    ampEnvelope.setTargetRatioA(*attackCurve1Param);
+    ampEnvelope.setTargetRatioDR(*decayRelCurve1Param);
+    
+   // std::cout << filterEnvelope->getState() << std::endl;
+    
+    int i = 0;
+    
+    while ( i <= numSamples )
+    {
+        channelDataLeft[i]  *= ampEnvelope.process();
+        channelDataRight[i] *= ampEnvelope.process();
+        i++;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 void JuceDemoPluginAudioProcessor::updateCurrentTimeInfoFromHost()
@@ -647,7 +712,7 @@ void inline JuceDemoPluginAudioProcessor::updateParameters()
     setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
     setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
     
-    setAmpEnvelope  (*attackParam1, *decayParam1, *sustainParam1, *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
+    //setAmpEnvelope  (*attackParam1, *decayParam1, *sustainParam1, *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
     setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
     
 	setPitchEnvelopeAmount(*pitchModParam);
@@ -778,4 +843,23 @@ float JuceDemoPluginAudioProcessor::softClip(float s)
     }
     return localSample;
 }
+
+
+void JuceDemoPluginAudioProcessor::calculateLFOSyncedFreq()
+{
+    double beats_per_minute = lastPosInfo.bpm;
+    double seconds_per_beat = 60.0 / beats_per_minute;
+    double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
+    double seconds_per_note = seconds_per_beat * (lastPosInfo.timeSigDenominator / lfo_division);
+    
+    
+    lfo_synced_freq =  1.0 / seconds_per_note;
+}
+
+
+
+
+
+
+
 

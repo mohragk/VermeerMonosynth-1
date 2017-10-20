@@ -188,6 +188,8 @@ public:
     AudioParameterFloat* sawSaturationParam;
     AudioParameterInt* filterSelectParam;
     
+    AudioParameterInt* lfoDivisionParam;
+    
     
 private:
     //==============================================================================
@@ -201,6 +203,10 @@ private:
     void applyFilter (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
     template <typename FloatType>
     void applyDelay (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+    template <typename FloatType>
+    void applyAmpEnvelope (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+    
+    void calculateLFOSyncedFreq();
 
     AudioBuffer<float> delayBufferFloat;
     AudioBuffer<double> delayBufferDouble;
@@ -222,7 +228,11 @@ private:
     void applyModToTarget(int target, double amount);
 
     ADSR *filterEnvelope;
+    ADSR ampEnvelope;
     LFO lfo;
+    
+    double lfo_synced_freq, lfo_synced_freq_old;
+    double lfo_division;
 
     double modAmount;
     
@@ -242,6 +252,8 @@ private:
     double sampleRate;
     
     LinearSmoothedValue<double> cutoff, resonance, drive;
+    
+    int lastNotePlayed;
     
     
     static BusesProperties getBusesProperties();

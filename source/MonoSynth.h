@@ -47,7 +47,7 @@ public:
 class SineWaveVoice  : public SynthesiserVoice
 {
 public:
-    SineWaveVoice() : phase(0.0)
+    SineWaveVoice()
     
     {
         
@@ -74,6 +74,8 @@ public:
         osc1.setSampleRate(sr);
         osc2.setSampleRate(sr);
         osc3.setSampleRate(sr);
+       
+        
         
        
         
@@ -205,7 +207,9 @@ public:
     
     void setOscGains(float g1, float g2, float g3)
     {
-        //TODO
+        osc1.setGain(g1);
+        osc2.setGain(g2);
+        osc3.setGain(g3);
     }
     
     void setOsc1DetuneAmount(double fine, int coarse)
@@ -272,7 +276,9 @@ private:
                 
                 sample = (osc1.nextSample() + osc2.nextSample() + osc3.nextSample()) / numOscillators;
                 
-                sample *= ampEnvelope.process();
+                //sample *= ampEnvelope.process();
+                
+                //sample += (oscNoise.nextSample() * 0.25);
                 
                 
                 // Softclip combined samples so signal is always between 0.75 and -0.75

@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-    Oscillator() : phase(0.0)
+    Oscillator() : level(0.25)
     {
         
     }
@@ -38,6 +38,11 @@ public:
     void setPhase(double ph)
     {
         phase = ph;
+    }
+    
+    void setGain(double g)
+    {
+        gain = g;
     }
     
     void setMode(int m)
@@ -93,7 +98,7 @@ public:
             phase -= two_Pi;
         }
         
-        return value * level;
+        return value * level * gain;
     }
     
 private:
@@ -124,7 +129,7 @@ private:
     
     
     double sampleRate, phase, phaseIncrement, frequency;
-    double level = 0.25;
+    double level, gain;
     
     OscillatorMode mode;
     
