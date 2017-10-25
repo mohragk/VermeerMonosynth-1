@@ -206,6 +206,7 @@ JuceDemoPluginAudioProcessor::~JuceDemoPluginAudioProcessor()
 {
     keyboardState.removeListener(this);
     delete filterEnvelope;
+	delete ampEnvelope;
 }
 
 
@@ -248,7 +249,8 @@ AudioProcessor::BusesProperties JuceDemoPluginAudioProcessor::getBusesProperties
 void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*samplesPerBlock*/)
 {
      sampleRate = newSampleRate;
-    
+
+	
 	 lfo.setSampleRate(sampleRate);
     
     // Use this method as the place to do any pre-playback
@@ -259,8 +261,13 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
     cutoff.reset(sampleRate, 0.0005);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
-    envGain.reset(sampleRate, 0.00005);
-    switchGain.reset(sampleRate, 0.01);
+
+	
+	
+
+    envGain.reset(sampleRate, 0.001);
+    
+	switchGain.reset(sampleRate, 0.01);
     
     /*
     for (int i = 0; i < 2; i++) {
@@ -374,6 +381,7 @@ void JuceDemoPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     applyFilter(buffer, delayBuffer);
     
     applyAmpEnvelope(buffer, delayBuffer);
+	applyAmp(buffer, delayBuffer);
 
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't
@@ -624,23 +632,34 @@ void JuceDemoPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buff
     ampEnvelope->setTargetRatioDR(*decayRelCurve1Param);
     
    // std::cout << filterEnvelope->getState() << std::endl;
-    
+     
+	int i = 0;
     
     while ( --numSamples >= 0)
     {
         envGain.setValue( ampEnvelope->process() );
+		channelDataLeft[i] *= envGain.getNextValue();
+		channelDataRight[i] *= envGain.getNextValue();
+		i++;
     }
     
-    const float gainLevel = envGain.getNextValue();// * ampEnvelope->getOutput();
-    
-    
-    
-    for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
-        buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
+   
     
 }
 
 
+template <typename FloatType>
+void JuceDemoPluginAudioProcessor::applyAmp(AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
+{
+	
+	const int numSamples = buffer.getNumSamples();
+	FloatType* left = buffer.getWritePointer(0);
+	FloatType* right = buffer.getWritePointer(1);
+
+	//envGain.applyGain(buffer, numSamples);
+
+	
+}
 
 
 

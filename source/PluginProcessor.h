@@ -195,16 +195,24 @@ private:
     //==============================================================================
     template <typename FloatType>
     void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, AudioBuffer<FloatType>& delayBuffer);
-    template <typename FloatType>
+    
+	template <typename FloatType>
     void applyGain (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
-    template <typename FloatType>
+   
+	template <typename FloatType>
     void applyFilterEnvelope (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer);
-    template <typename FloatType>
+   
+	template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
-    template <typename FloatType>
+   
+	template <typename FloatType>
     void applyDelay (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
-    template <typename FloatType>
+    
+	template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+
+	template <typename FloatType>
+	void applyAmp (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
     
     void calculateLFOSyncedFreq();
 
@@ -252,7 +260,9 @@ private:
     
     double sampleRate;
     
-    LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain;
+    LinearSmoothedValue<double> cutoff, resonance, drive, envGain,  switchGain; //envGain,
+
+	
     
     int lastNotePlayed;
     
