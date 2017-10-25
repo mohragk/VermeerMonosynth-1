@@ -134,7 +134,7 @@ inline void ADSR::processSample(float *sample, int numSamples)
 
 }
 
-void ADSR::gate(int gate) {
+inline void ADSR::gate(int gate) {
     if (gate)
         state = env_attack;
     else if (state != env_idle)

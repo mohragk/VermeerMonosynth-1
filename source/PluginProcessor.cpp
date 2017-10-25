@@ -89,6 +89,7 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 
       delayPosition (0),
       filterEnvelope(nullptr),
+      ampEnvelope(nullptr),
 
       modTargetParam(nullptr),
 
@@ -195,7 +196,7 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     keyboardState.addListener(this);
 
     filterEnvelope = new ADSR();
-    //ampEnvelope = new ADSR();
+    ampEnvelope = new ADSR();
     
   
    
@@ -258,6 +259,8 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
     cutoff.reset(sampleRate, 0.0005);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
+    envGain.reset(sampleRate, 0.00005);
+    switchGain.reset(sampleRate, 0.01);
     
     /*
     for (int i = 0; i < 2; i++) {
@@ -278,7 +281,7 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
     }
     
     filterEnvelope->setSampleRate(newSampleRate);
-    ampEnvelope.setSampleRate(newSampleRate);
+    ampEnvelope->setSampleRate(newSampleRate);
     
     
     
@@ -326,7 +329,8 @@ void JuceDemoPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChan
     
     
     filterEnvelope->gate(true);
-    ampEnvelope.gate(true);
+    ampEnvelope->gate(true);
+    //ampEnvelope->resetToAttack();
     
     lastNotePlayed = midiNoteNumber;
 		
@@ -337,7 +341,7 @@ void JuceDemoPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCha
     
     if (lastNotePlayed == midiNoteNumber)
     {
-        ampEnvelope.gate(false);
+        ampEnvelope->gate(false);
         filterEnvelope->gate(false);
     }
 
@@ -364,7 +368,7 @@ void JuceDemoPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     
     
     // getting our filter envelope values
-    applyEnvelope(buffer,delayBuffer);
+    applyFilterEnvelope(buffer,delayBuffer);
     
     // applying our filter
     applyFilter(buffer, delayBuffer);
@@ -404,7 +408,7 @@ void JuceDemoPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer, Au
 
 
 template <typename FloatType>
-void JuceDemoPluginAudioProcessor::applyEnvelope (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
+void JuceDemoPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
 {
     ignoreUnused(delayBuffer);
     
@@ -491,6 +495,19 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
     pLeft = channelDataLeft;
     pRight = channelDataRight;
     
+    if (lastChosenFilter != *filterSelectParam)
+    {
+        const float gainLevel = switchGain.getNextValue();// * ampEnvelope->getOutput();
+        
+        
+        
+        for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
+            buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
+        
+        lastChosenFilter = *filterSelectParam;
+        
+        return;
+    }
     
     if (*filterSelectParam == 0)
     {
@@ -503,7 +520,7 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
                     // remap resonance
                     double Q = resonance.getNextValue() * 4.0;
                     filter2[channel].SetResonance   (Q);
-                    filter2[channel].SetCutoff      (currentCutoff);
+                    filter2[channel].SetCutoff      (cutoff.getNextValue());
                     filter2[channel].SetDrive       (drive.getNextValue());
                 }
 
@@ -519,7 +536,7 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
             {
                 double Q = resonance.getNextValue() * 4.0;
                 filter2[channel].SetResonance   (Q);
-                filter2[channel].SetCutoff      (currentCutoff); //(cutoff.getNextValue());
+                filter2[channel].SetCutoff      (cutoff.getNextValue()); //(cutoff.getNextValue());
                 filter2[channel].SetDrive       (drive.getNextValue());
             }
             filter2[0].Process(channelDataLeft, numSamples);
@@ -576,6 +593,7 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
         }
     }
     
+    lastChosenFilter = *filterSelectParam;
   
 }
 
@@ -596,23 +614,30 @@ void JuceDemoPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buff
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
     FloatType* channelDataRight = buffer.getWritePointer(1);
     
-    ampEnvelope.setAttackRate(*attackParam1);
-    ampEnvelope.setDecayRate(*decayParam1);
-    ampEnvelope.setReleaseRate(*releaseParam1);
-    ampEnvelope.setSustainLevel(*sustainParam1);
-    ampEnvelope.setTargetRatioA(*attackCurve1Param);
-    ampEnvelope.setTargetRatioDR(*decayRelCurve1Param);
+    
+    
+    ampEnvelope->setAttackRate(*attackParam1);
+    ampEnvelope->setDecayRate(*decayParam1);
+    ampEnvelope->setReleaseRate(*releaseParam1);
+    ampEnvelope->setSustainLevel(*sustainParam1);
+    ampEnvelope->setTargetRatioA(*attackCurve1Param);
+    ampEnvelope->setTargetRatioDR(*decayRelCurve1Param);
     
    // std::cout << filterEnvelope->getState() << std::endl;
     
-    int i = 0;
     
-    while ( i <= numSamples )
+    while ( --numSamples >= 0)
     {
-        channelDataLeft[i]  *= ampEnvelope.process();
-        channelDataRight[i] *= ampEnvelope.process();
-        i++;
+        envGain.setValue( ampEnvelope->process() );
     }
+    
+    const float gainLevel = envGain.getNextValue();// * ampEnvelope->getOutput();
+    
+    
+    
+    for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
+        buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
+    
 }
 
 

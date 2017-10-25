@@ -198,7 +198,7 @@ private:
     template <typename FloatType>
     void applyGain (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
     template <typename FloatType>
-    void applyEnvelope (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer);
+    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer);
     template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
     template <typename FloatType>
@@ -228,7 +228,7 @@ private:
     void applyModToTarget(int target, double amount);
 
     ADSR *filterEnvelope;
-    ADSR ampEnvelope;
+    ADSR *ampEnvelope;
     LFO lfo;
     
     double lfo_synced_freq, lfo_synced_freq_old;
@@ -237,6 +237,7 @@ private:
     double modAmount;
     
     int mNumVoices;
+    int lastChosenFilter;
 
     void initialiseSynth();
     void updateCurrentTimeInfoFromHost();
@@ -251,7 +252,7 @@ private:
     
     double sampleRate;
     
-    LinearSmoothedValue<double> cutoff, resonance, drive;
+    LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain;
     
     int lastNotePlayed;
     
