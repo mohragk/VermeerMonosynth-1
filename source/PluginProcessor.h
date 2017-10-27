@@ -29,6 +29,11 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "adsr/ADSR.h"
 #include "MoogLadders/ImprovedModel.h"
+#include "MoogLadders/HuovilainenModel.h"
+#include "MoogLadders/MusicDSPModel.h"
+#include "MoogLadders/OberheimVariationModel.h"
+#include "MoogLadders/MicrotrackerModel.h"
+
 #include "lfo.h"
 
 
@@ -109,6 +114,8 @@ public:
     int lastUIWidth, lastUIHeight;
     
 
+    //intialise filter
+    void initFilter(int i);
     
     
     //Set Envelope values
@@ -223,9 +230,10 @@ private:
     Synthesiser synth;
     
     
-    LadderFilterBase* filter2[2];
+    LadderFilterBase* filter[2];
+   // LadderFilterBase* filter[2]; // Houvilainen
     
-    IIRFilter filter[2];
+   // IIRFilter filter[2];
     
     enum modTarget {
         modPitch,

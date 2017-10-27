@@ -210,9 +210,10 @@ ampEnvelope(nullptr)
     filterEnvelope = new ADSR();
     ampEnvelope = new ADSR();
     
-    filter2[0] = new ImprovedMoog();
-    filter2[1] = new ImprovedMoog();
-  
+//    filter2[0] = new ImprovedMoog();
+//    filter2[1] = new ImprovedMoog();
+
+    initFilter(0);
    
 }
 
@@ -221,6 +222,8 @@ JuceDemoPluginAudioProcessor::~JuceDemoPluginAudioProcessor()
     keyboardState.removeListener(this);
     delete filterEnvelope;
 	delete ampEnvelope;
+    delete filter[0];
+    delete filter[1];
 }
 
 
@@ -231,6 +234,30 @@ void JuceDemoPluginAudioProcessor::initialiseSynth()
     synth.addSound (new SineWaveSound());
     
     
+    
+}
+
+void JuceDemoPluginAudioProcessor::initFilter(int i)
+{
+    delete filter[0];
+    delete filter[1];
+    
+    
+    
+    for(int channel = 0; channel < 2; channel++)
+    {
+        if (i == 0)
+            filter[channel] = new ImprovedMoog();
+        else
+            filter[channel] = new MicrotrackerMoog();
+
+        
+        filter[channel]->SetSampleRate(sampleRate);
+        filter[channel]->SetResonance(0.1);
+        filter[channel]->SetCutoff(12000.0);
+        filter[channel]->SetDrive(1.0);
+        
+    }
     
 }
 
@@ -294,10 +321,10 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
     
     for(int channel = 0; channel < 2; channel++)
     {
-        filter2[channel]->SetSampleRate(sampleRate);
-        filter2[channel]->SetResonance(0.1);
-        filter2[channel]->SetCutoff(12000.0);
-        filter2[channel]->SetDrive(1.0);
+        filter[channel]->SetSampleRate(sampleRate);
+        filter[channel]->SetResonance(0.1);
+        filter[channel]->SetCutoff(12000.0);
+        filter[channel]->SetDrive(1.0);
         
     }
     
@@ -390,6 +417,14 @@ void JuceDemoPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     
     // getting our filter envelope values
     applyFilterEnvelope(buffer,delayBuffer);
+    
+    
+    if (lastChosenFilter != *filterSelectParam)
+    {
+        int choice = *filterSelectParam;
+        initFilter(choice);
+        lastChosenFilter = choice;
+    }
     
     // applying our filter
     applyFilter(buffer, delayBuffer);
@@ -508,23 +543,23 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
     
     
    
-    // MIGHT NOT EVEN WORK CORRECTLY....
-    if (lastChosenFilter != *filterSelectParam)
-    {
-        switchGain.setValue(0.0);
-        const float gainLevel = switchGain.getNextValue();// * ampEnvelope->getOutput();
-        
-        
-        
-        for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
-            buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
-        
-       
-        
-        lastChosenFilter = *filterSelectParam;
-        
-        return;
-    }
+//    // MIGHT NOT EVEN WORK CORRECTLY....
+//    if (lastChosenFilter != *filterSelectParam)
+//    {
+//        switchGain.setValue(0.0);
+//        const float gainLevel = switchGain.getNextValue();// * ampEnvelope->getOutput();
+//
+//
+//
+//        for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
+//            buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
+//
+//
+//
+//        lastChosenFilter = *filterSelectParam;
+//
+//        return;
+//    }
     
 //    if (switchGain.isSmoothing())
 //    {
@@ -549,94 +584,98 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
     pLeft = channelDataLeft;
     pRight = channelDataRight;
     
-    if (*filterSelectParam == 0)
-    {
-        if (stepSize > 1)
+//    if (*filterSelectParam == 0)
+//    {
+//        if (stepSize > 1)
+//        {
+//           for(int step = 0; step < numSamples; step += stepSize)
+//           {
+//
+//               for(int channel = 0; channel < 2; channel++)
+//                {
+//                    // remap resonance
+//                    double Q = resonance.getNextValue() * 4.0;
+//                    filter2[channel]->SetResonance   (Q);
+//                    filter2[channel]->SetCutoff      (cutoff.getNextValue());
+//                    filter2[channel]->SetDrive       (drive.getNextValue());
+//                }
+//
+//                filter2[0]->Process(pLeft, stepSize);
+//                filter2[1]->Process(pRight, stepSize);
+//
+//                pLeft  += stepSize;
+//                pRight += stepSize;
+//
+//               //std::cout << "jepperdeklep" << std::endl;
+//            }
+//        }
+//        else
+//        {
+//            for(int channel = 0; channel < 2; channel++)
+//            {
+//                double Q = resonance.getNextValue() * 4.0;
+//                filter2[channel]->SetResonance   (Q);
+//                filter2[channel]->SetCutoff      (cutoff.getNextValue()); //(cutoff.getNextValue());
+//                filter2[channel]->SetDrive       (drive.getNextValue());
+//            }
+//            filter2[0]->Process(channelDataLeft, numSamples);
+//            filter2[1]->Process(channelDataRight, numSamples);
+//        }
+//        //
+//        // reduce volume when filter is overdriven
+//        //
+//        /* if (*filterDriveParam > 1.0)
+//         {
+//             float reduction = 1 / *filterDriveParam;
+//             for (int i = 0; i < numSamples; i++)
+//             {
+//                 channelDataLeft[i]  *= reduction;
+//                 channelDataRight[i] *= reduction;
+//
+//             }
+//         }*/
+//
+//    }
+//    else
+  //  {
+        if ( stepSize > 1)
         {
-           for(int step = 0; step < numSamples; step += stepSize)
-           {
-
-               for(int channel = 0; channel < 2; channel++)
+            for(int step = 0; step < numSamples; step += stepSize)
+            {
+                
+                for(int channel = 0; channel < 2; channel++)
                 {
                     // remap resonance
-                    double Q = resonance.getNextValue() * 4.0;
-                    filter2[channel]->SetResonance   (Q);
-                    filter2[channel]->SetCutoff      (cutoff.getNextValue());
-                    filter2[channel]->SetDrive       (drive.getNextValue());
+                    double Q = resonance.getNextValue();// * 4.0;
+                    filter[channel]->SetResonance   (Q);
+                    filter[channel]->SetCutoff      (cutoff.getNextValue());
+                    filter[channel]->SetDrive       (drive.getNextValue());
                 }
-
-                filter2[0]->Process(pLeft, stepSize);
-                filter2[1]->Process(pRight, stepSize);
-               
+                
+                filter[0]->Process(pLeft, stepSize);
+                filter[1]->Process(pRight, stepSize);
+                
                 pLeft  += stepSize;
                 pRight += stepSize;
-               
-               //std::cout << "jepperdeklep" << std::endl;
+                
+                //std::cout << "jepperdeklep" << std::endl;
             }
         }
         else
         {
             for(int channel = 0; channel < 2; channel++)
             {
-                double Q = resonance.getNextValue() * 4.0;
-                filter2[channel]->SetResonance   (Q);
-                filter2[channel]->SetCutoff      (cutoff.getNextValue()); //(cutoff.getNextValue());
-                filter2[channel]->SetDrive       (drive.getNextValue());
+                double Q = resonance.getNextValue();
+                filter[channel]->SetResonance   (Q);
+                filter[channel]->SetCutoff      (cutoff.getNextValue()); //(cutoff.getNextValue());
+                filter[channel]->SetDrive       (drive.getNextValue());
             }
-            filter2[0]->Process(channelDataLeft, numSamples);
-            filter2[1]->Process(channelDataRight, numSamples);
+            filter[0]->Process(channelDataLeft, numSamples);
+            filter[1]->Process(channelDataRight, numSamples);
         }
-        //
-        // reduce volume when filter is overdriven
-        //
-        /* if (*filterDriveParam > 1.0)
-         {
-             float reduction = 1 / *filterDriveParam;
-             for (int i = 0; i < numSamples; i++)
-             {
-                 channelDataLeft[i]  *= reduction;
-                 channelDataRight[i] *= reduction;
-         
-             }
-         }*/
-        
-    }
-    else
-    {
-        if ( stepSize > 1)
-        {
-            for (int step = 0; step < numSamples; step += stepSize )
-            {
-                // remap resonance
-                double Q = resonance.getNextValue() * 10.0 + 1.0;
-                IIRCoefficients ir = IIRCoefficients::makeLowPass(sampleRate, currentCutoff, Q);
-                for (int channel = 0; channel < 2; channel++ )
-                {
-                    filter[channel].setCoefficients(ir);
-                }
-
-                filter[0].processSamples(pLeft, stepSize);
-                filter[1].processSamples(pRight, stepSize);
-
-                pLeft  += stepSize;
-                pRight += stepSize;
-            }
-        }
-        else
-        {
-            // remap resonance
-            double Q = resonance.getNextValue() * 10.0 + 1.0;
-            IIRCoefficients ir = IIRCoefficients::makeLowPass(sampleRate, currentCutoff, Q);
-            for (int channel = 0; channel < 2; channel++ )
-            {
-                filter[channel].setCoefficients(ir);
-            }
-            filter[0].processSamples(channelDataLeft, numSamples);
-            filter[1].processSamples(channelDataRight, numSamples);
-        }
-    }
+  //  }
     
-    lastChosenFilter = *filterSelectParam;
+   // lastChosenFilter = *filterSelectParam;
   
 }
 

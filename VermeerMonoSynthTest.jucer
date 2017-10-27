@@ -8,7 +8,7 @@
               pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0" pluginTailLength="0"
               pluginEditorRequiresKeys="1" pluginAUExportPrefix="VermeerMonosynth"
               pluginAUViewClass="JuceDemoProjectAU_V1" pluginRTASCategory=""
-              bundleIdentifier="com.vermeer.Monosynth" jucerVersion="5.1.1"
+              bundleIdentifier="com.vermeer.Monosynth" jucerVersion="5.1.2"
               companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
               buildAAX="0" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
               includeBinaryInAppConfig="1" buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
@@ -66,8 +66,6 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
-    <FILE id="upR4CX" name="MonoSynth.h" compile="0" resource="0" file="source/MonoSynth.h"/>
-    <FILE id="BU8U7s" name="Oscillator.h" compile="0" resource="0" file="source/Oscillator.h"/>
     <GROUP id="{EF44F59F-F976-4DD6-7642-C69E0075D234}" name="font">
       <FILE id="GzeoeP" name="FuturaStd-Bold.otf" compile="0" resource="1"
             file="Resources/font/FuturaStd-Bold.otf"/>
@@ -115,6 +113,15 @@
     <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"
           file="Resources/MonoSynthIconSmall.png"/>
     <GROUP id="{902056B3-1486-08AF-7310-B5F8845202B7}" name="MoogLadders">
+      <FILE id="ItxKe9" name="HuovilainenModel.h" compile="0" resource="0"
+            file="source/MoogLadders/HuovilainenModel.h"/>
+      <FILE id="Lambpe" name="LadderFilterBase.cpp" compile="1" resource="0"
+            file="source/MoogLadders/LadderFilterBase.cpp"/>
+      <FILE id="uw4kx4" name="MicrotrackerModel.h" compile="0" resource="0"
+            file="source/MoogLadders/MicrotrackerModel.h"/>
+      <FILE id="ilPGdg" name="MusicDSPModel.h" compile="0" resource="0" file="source/MoogLadders/MusicDSPModel.h"/>
+      <FILE id="Li1jFw" name="OberheimVariationModel.h" compile="0" resource="0"
+            file="source/MoogLadders/OberheimVariationModel.h"/>
       <FILE id="VSqYOa" name="ImprovedModel.h" compile="0" resource="0" file="Source/MoogLadders/ImprovedModel.h"/>
       <FILE id="PYmIbs" name="LadderFilterBase.h" compile="0" resource="0"
             file="Source/MoogLadders/LadderFilterBase.h"/>
@@ -132,6 +139,8 @@
           file="Source/PluginProcessor.h"/>
     <FILE id="gFFr0hbSp" name="PluginProcessor.cpp" compile="1" resource="0"
           file="Source/PluginProcessor.cpp"/>
+    <FILE id="upR4CX" name="MonoSynth.h" compile="0" resource="0" file="source/MonoSynth.h"/>
+    <FILE id="BU8U7s" name="Oscillator.h" compile="0" resource="0" file="source/Oscillator.h"/>
     <FILE id="yf17tA" name="lfo.h" compile="0" resource="0" file="source/lfo.h"/>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>

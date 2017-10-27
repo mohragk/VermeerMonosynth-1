@@ -94,19 +94,13 @@ public:
     virtual void SetSampleRate (float sr) override
     {
         sampleRate = sr;
-        
-        if (sampleRate == 48000.0)
-            multiplier = 2.0;
-        else if (sampleRate == 44100.0)
-            multiplier = 2.1768707483;
-        else
-            multiplier = 1.0;
+        multiplier = 96000.0 / sr;
                 
     }
 	
     virtual void SetResonance(float r) override
     {
-        resonance = r;
+        resonance = r * 4.0;
     }
     
     virtual void SetCutoff(float c) override
