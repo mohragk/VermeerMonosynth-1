@@ -223,7 +223,7 @@ private:
     Synthesiser synth;
     
     
-    ImprovedMoog filter2[2];
+    LadderFilterBase* filter2[2];
     
     IIRFilter filter[2];
     
