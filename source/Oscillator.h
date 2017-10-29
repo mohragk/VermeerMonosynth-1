@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-    Oscillator() : level(0.25)
+    Oscillator() : level(0.75)
     {
         
     }

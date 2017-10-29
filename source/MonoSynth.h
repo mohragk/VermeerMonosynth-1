@@ -282,7 +282,7 @@ private:
                 
                 
                 // Softclip combined samples so signal is always between 0.75 and -0.75
-                softClip(sample);
+                //softClip(sample);
                 
                 for (int i = 0; i < outputBuffer.getNumChannels(); i++ )
                 {

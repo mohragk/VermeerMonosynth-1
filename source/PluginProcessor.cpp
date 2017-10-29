@@ -126,7 +126,7 @@ ampEnvelope(nullptr)
     // so that we can easily access them later, but the base class will take care of
     // deleting them for us.
 
-    addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.9f));
+    addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.4f));
 
     addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain",  0.0f, 1.0f, 0.9f));
     addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain",  0.0f, 1.0f, 0.9f));
@@ -223,10 +223,10 @@ JuceDemoPluginAudioProcessor::~JuceDemoPluginAudioProcessor()
 
 	
 
-    delete filterEnvelope;
-	delete ampEnvelope;
-    delete filter[0];
-    delete filter[1];
+    filterEnvelope = nullptr;
+    ampEnvelope = nullptr;
+    filter[0] = nullptr;
+    filter[1] = nullptr;
 }
 
 
@@ -242,10 +242,15 @@ void JuceDemoPluginAudioProcessor::initialiseSynth()
 
 void JuceDemoPluginAudioProcessor::initFilter(int i)
 {
-    delete filter[0];
-    delete filter[1];
+//    delete filter[0];
+//    delete filter[1];
     
-    
+    if (filter[0] != nullptr)
+    {
+        filter[0] = nullptr;
+        filter[1] = nullptr;
+    }
+
     
     for(int channel = 0; channel < 2; channel++)
     {

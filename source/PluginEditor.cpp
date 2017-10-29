@@ -729,6 +729,7 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     osc1TuneSlider = nullptr;
     osc1TuneLabel = nullptr;
     osc1WaveformSlider = nullptr;
+    
     osc2GainSlider = nullptr;
     osc2GainLabel = nullptr;
     osc2OffsetSlider = nullptr;
@@ -736,6 +737,7 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     osc2TuneSlider = nullptr;
     osc2TuneLabel = nullptr;
     osc2WaveformSlider = nullptr;
+   
     osc3GainSlider = nullptr;
     osc3GainLabel = nullptr;
     osc3OffsetSlider = nullptr;
@@ -743,6 +745,7 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     osc3TuneSlider = nullptr;
     osc3TuneLabel = nullptr;
     osc3WaveformSlider = nullptr;
+    
     filterLabel = nullptr;
     filterCutoffSlider = nullptr;
     filterCutoffLabel = nullptr;
@@ -752,6 +755,7 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     filterContourLabel = nullptr;
     filterDriveSlider = nullptr;
     filterDriveLabel = nullptr;
+   
     envelopesLabel = nullptr;
     attackSlider1 = nullptr;
     attackSlider2 = nullptr;
@@ -760,14 +764,17 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     sustainSlider1 = nullptr;
     releaseSlider1 = nullptr;
     envFilterLabel = nullptr;
+   
     decaySlider2 = nullptr;
     sustainSlider2 = nullptr;
     releaseSlider2 = nullptr;
+   
     attackSlider3 = nullptr;
     envPitchLabel = nullptr;
     decaySlider3 = nullptr;
     sustainSlider3 = nullptr;
     releaseSlider3 = nullptr;
+    
     volumeSlider = nullptr;
     volumeLabel = nullptr;
     mainLabel = nullptr;
