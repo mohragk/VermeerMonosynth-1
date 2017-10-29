@@ -38,17 +38,17 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 //==============================================================================
 JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
     : AudioProcessor (getBusesProperties()),
-      lastUIWidth (720),
-      lastUIHeight (450),
+		lastUIWidth (720),
+		lastUIHeight (450),
 
-      gainParam (nullptr),
+		gainParam (nullptr),
 
-      osc1GainParam(nullptr),
-      osc2GainParam(nullptr),
-      osc3GainParam(nullptr),
+		osc1GainParam(nullptr),
+		osc2GainParam(nullptr),
+		 osc3GainParam(nullptr),
 
-osc1DetuneAmountParam(nullptr),
-osc2DetuneAmountParam(nullptr),
+      osc1DetuneAmountParam(nullptr),
+		osc2DetuneAmountParam(nullptr),
 osc3DetuneAmountParam(nullptr),
 
 osc1ModeParam(nullptr),
@@ -220,6 +220,9 @@ ampEnvelope(nullptr)
 JuceDemoPluginAudioProcessor::~JuceDemoPluginAudioProcessor()
 {
     keyboardState.removeListener(this);
+
+	
+
     delete filterEnvelope;
 	delete ampEnvelope;
     delete filter[0];
@@ -299,7 +302,7 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
     synth.setCurrentPlaybackSampleRate (newSampleRate);
     keyboardState.reset();
    
-    cutoff.reset(sampleRate, 0.001);
+    cutoff.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
 
@@ -381,6 +384,8 @@ void JuceDemoPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChan
     //ampEnvelope->resetToAttack();
     
     lastNotePlayed = midiNoteNumber;
+
+	
 		
 }
 
@@ -391,6 +396,8 @@ void JuceDemoPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCha
     {
         ampEnvelope->gate(false);
         filterEnvelope->gate(false);
+
+		
     }
 
 }
@@ -491,7 +498,7 @@ void JuceDemoPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& 
         // LFO
         //
         lfo.setMode(*lfoModeParam);
-        lfo_synced_freq_old = lfo_synced_freq;
+        
         
         lfo_division = pow(2.0, *lfoDivisionParam);
         calculateLFOSyncedFreq();
@@ -501,10 +508,23 @@ void JuceDemoPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& 
         
         lfo.setFrequency( lfo_synced_freq ); //*lfoRateParam);
         double lfoValue = lfo.nextSample();
+
+		//
+		// @TODO: make it so it only resets once when higer, not always 
+		//
+		/*if (1.0 / lfo_synced_freq < cutoffRampTimeDefault)
+		{
+			cutoffRampTime = 1.0 / lfo_synced_freq;
+			cutoff.reset(sampleRate, cutoffRampTime);
+		}*/
+		
+		
+		
+
         modAmount = *lfoIntensityParam;                            // Make parameter
         applyModToTarget(*modTargetParam, lfoValue * modAmount);
         
-        
+		lfo_synced_freq_old = lfo_synced_freq;
         
         // Modulation by envelope and LFO (if set)
         float lfoFilterRange = 6000.0;
@@ -516,8 +536,10 @@ void JuceDemoPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& 
         if (currentCutoff< 20.0)
             currentCutoff = 20.0;
         
-        cutoff.setValue     (currentCutoff);
-        resonance.setValue  (*filterQParam);
+		
+		cutoff.setValue     (currentCutoff);
+        
+		resonance.setValue  (*filterQParam);
         drive.setValue      (*filterDriveParam);
     }
     
@@ -576,7 +598,7 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
     //
     //  break buffer into chunks
     //
-    int stepSize = jmin(4, numSamples);
+    int stepSize = jmin(16, numSamples);
     
     float *pLeft;
     float *pRight;
@@ -640,6 +662,7 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
   //  {
         if ( stepSize > 1)
         {
+			int samplesLeftOver = numSamples;
             for(int step = 0; step < numSamples; step += stepSize)
             {
                 
@@ -652,8 +675,13 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
                     filter[channel]->SetDrive       (drive.getNextValue());
                 }
                 
+				if (samplesLeftOver < stepSize)
+					stepSize = samplesLeftOver;
+
                 filter[0]->Process(pLeft, stepSize);
                 filter[1]->Process(pRight, stepSize);
+
+				samplesLeftOver -= stepSize;
                 
                 pLeft  += stepSize;
                 pRight += stepSize;
@@ -975,7 +1003,10 @@ void JuceDemoPluginAudioProcessor::calculateLFOSyncedFreq()
 }
 
 
-
+bool JuceDemoPluginAudioProcessor::noteIsBeingPlayed()
+{
+	return ampEnvelope->getState() != ADSR::env_idle;
+}
 
 
 

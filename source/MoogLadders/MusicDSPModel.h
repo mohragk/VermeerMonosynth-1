@@ -7,7 +7,7 @@
 #define MUSICDSP_MOOG_H
 
 #include "LadderFilterBase.h"
-#include "Util.h"
+#include "util.h"
 
 class MusicDSPMoog : public LadderFilterBase
 {

@@ -657,7 +657,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     // FilterSwitch
     addAndMakeVisible(filterSelectSlider = new ParameterSlider(*owner.filterSelectParam));  //todo:
     filterSelectSlider->setSliderStyle(Slider::LinearHorizontal);
-    filterSelectSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 20);
+    filterSelectSlider->setTextBoxStyle(Slider::NoTextBox, true, 0 , 0);
 	
 	
     addAndMakeVisible(midiKeyboard);
@@ -1156,6 +1156,8 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     osc1TuneSlider->setBounds (16, 263, 64, 64);
     osc1TuneLabel->setBounds (16, 247, 65, 24);
     osc1WaveformSlider->setBounds (16, 178, 64, 64);
+
+
     osc2GainSlider->setBounds (88, 104, 64, 64);
     osc2GainLabel->setBounds (88, 88, 65, 24);
     osc2OffsetSlider->setBounds (88, 344, 64, 74);
@@ -1163,14 +1165,18 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     osc2TuneSlider->setBounds (88, 263, 64, 64);
     osc2TuneLabel->setBounds (88, 247, 65, 24);
     osc2WaveformSlider->setBounds (88, 178, 64, 64);
-    osc3GainSlider->setBounds (160, 104, 64, 64);
+    
+	
+	osc3GainSlider->setBounds (160, 104, 64, 64);
     osc3GainLabel->setBounds (160, 88, 65, 24);
     osc3OffsetSlider->setBounds (160, 344, 64, 74);
     osc3OffsetLabel->setBounds (160, 328, 65, 24);
     osc3TuneSlider->setBounds (160, 263, 64, 64);
     osc3TuneLabel->setBounds (160, 247, 65, 24);
     osc3WaveformSlider->setBounds (160, 178, 64, 64);
-    filterLabel->setBounds (320, 64, 65, 24);
+    
+	
+	filterLabel->setBounds (320, 64, 65, 24);
     filterCutoffSlider->setBounds (320, 104, 64, 64);
     filterCutoffLabel->setBounds (320, 88, 65, 24);
     filterResonanceSlider->setBounds (320, 184, 64, 64);
@@ -1181,7 +1187,7 @@ void JuceDemoPluginAudioProcessorEditor::resized()
 	
 	filterDriveSlider->setBounds(320, 344, 64, 64);
 	filterDriveLabel->setBounds(320, 328, 65, 24);
-	
+	filterSelectSlider->setBounds(320, 408, 64, 30);
 	
 
 	
@@ -1208,7 +1214,7 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
     glideTimeSlider->setBounds(getWidth() - 24 - 64, 178, 64, 64);
-    filterSelectSlider->setBounds(getWidth() - 24 - 64, 278, 64, 64);
+  
     
     lfoSyncedFreqSlider->setBounds(getWidth() - 24 - 64, 378, 64, 64);
 
@@ -1272,6 +1278,19 @@ void JuceDemoPluginAudioProcessorEditor::timerCallback()
 		filterDriveSlider->setEnabled(true);
 		filterDriveLabel->setAlpha(1.0);
 	}
+
+	
+	if (getProcessor().noteIsBeingPlayed())
+	{
+		filterSelectSlider->setAlpha(0.2);
+		filterSelectSlider->setEnabled(false);
+	}		
+	else
+	{
+		filterSelectSlider->setAlpha(1.0);
+		filterSelectSlider->setEnabled(true);
+	}
+		
 	
 }
 

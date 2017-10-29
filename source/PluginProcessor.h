@@ -132,6 +132,8 @@ public:
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
     void setSawSaturation(float sat);
+
+	bool noteIsBeingPlayed();
 	
   
     
@@ -229,6 +231,8 @@ private:
 
     Synthesiser synth;
     
+
+	bool noteIsPlaying = false;
     
     LadderFilterBase* filter[2];
    // LadderFilterBase* filter[2]; // Houvilainen
@@ -269,7 +273,7 @@ private:
     double sampleRate;
     
     LinearSmoothedValue<double> cutoff, resonance, drive, envGain,  switchGain; //envGain,
-
+	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;
 	
     
     int lastNotePlayed;

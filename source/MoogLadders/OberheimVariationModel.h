@@ -6,7 +6,7 @@
 #define OBERHEIM_VARIATION_LADDER_H
 
 #include "LadderFilterBase.h"
-#include "Util.h"
+#include "util.h"
 
 class VAOnePole
 {
@@ -161,7 +161,7 @@ public:
 		oberheimCoefs[4] = 1.0;
 	}
     
-    virtual void SetDrive (float dr)
+    virtual void SetDrive (float dr) override
     {
         drive = dr;
     }
