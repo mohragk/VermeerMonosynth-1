@@ -50,7 +50,12 @@ public:
     SineWaveVoice()
     
     {
-        
+		ampEnvelope = new ADSR();
+		pitchEnvelope = new ADSR();
+
+		osc1 = new Oscillator();
+		osc2 = new Oscillator();
+		osc3 = new Oscillator();
         
     }
     
@@ -68,12 +73,12 @@ public:
     {
         double sr = getSampleRate();
         
-        ampEnvelope.setSampleRate(sr);
-        pitchEnvelope.setSampleRate(sr);
+        ampEnvelope->setSampleRate(sr);
+        pitchEnvelope->setSampleRate(sr);
         
-        osc1.setSampleRate(sr);
-        osc2.setSampleRate(sr);
-        osc3.setSampleRate(sr);
+        osc1->setSampleRate(sr);
+        osc2->setSampleRate(sr);
+        osc3->setSampleRate(sr);
        
         
         
@@ -82,15 +87,15 @@ public:
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         
         
-        if (ampEnvelope.getState() == ADSR::env_idle)
+        if (ampEnvelope->getState() == ADSR::env_idle)
         {
-            osc1.setPhase( 0.0 );
-            osc2.setPhase( 0.0 );
-            osc3.setPhase( 0.0 );
+            osc1->setPhase( 0.0 );
+            osc2->setPhase( 0.0 );
+            osc3->setPhase( 0.0 );
         }
         
         
-        ampEnvelope.gate(true);
+        ampEnvelope->gate(true);
         /*
          if (ampEnvelope.getState() == ADSR::env_attack
          || ampEnvelope.getState() == ADSR::env_decay
@@ -100,7 +105,7 @@ public:
          }*/
         
         
-        pitchEnvelope.gate(true);
+        pitchEnvelope->gate(true);
         
         /*if (pitchEnvelope.getState() == ADSR::env_attack
          || pitchEnvelope.getState() == ADSR::env_decay
@@ -113,15 +118,15 @@ public:
     void stopNote (float /*velocity*/, bool allowTailOff) override
     {
         
-        ampEnvelope.gate(false);
-        pitchEnvelope.gate(false);
+        ampEnvelope->gate(false);
+        pitchEnvelope->gate(false);
         clearCurrentNote();
         
-        if (ampEnvelope.getState() != ADSR::env_release)
+        if (ampEnvelope->getState() != ADSR::env_release)
         {
-            osc1.setPhase( 0.0 );
-            osc2.setPhase( 0.0 );
-            osc3.setPhase( 0.0 );
+            osc1->setPhase( 0.0 );
+            osc2->setPhase( 0.0 );
+            osc3->setPhase( 0.0 );
                 
         }
         
@@ -158,12 +163,12 @@ public:
     
     void setAmpEnvelope( float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve)
     {
-        ampEnvelope.setAttackRate(attack);
-        ampEnvelope.setDecayRate(decay);
-        ampEnvelope.setSustainLevel(sustain);
-        ampEnvelope.setReleaseRate(release);
-        ampEnvelope.setTargetRatioA(attackCurve);
-        ampEnvelope.setTargetRatioDR(decRelCurve);
+        ampEnvelope->setAttackRate(attack);
+        ampEnvelope->setDecayRate(decay);
+        ampEnvelope->setSustainLevel(sustain);
+        ampEnvelope->setReleaseRate(release);
+        ampEnvelope->setTargetRatioA(attackCurve);
+        ampEnvelope->setTargetRatioDR(decRelCurve);
         
         
     }
@@ -171,12 +176,12 @@ public:
     // Set pitch envelope parameters.
     void setPitchEnvelope (float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve)
     {
-        pitchEnvelope.setAttackRate(attack);
-        pitchEnvelope.setDecayRate(decay);
-        pitchEnvelope.setSustainLevel(sustain);
-        pitchEnvelope.setReleaseRate(release);
-        pitchEnvelope.setTargetRatioA(attackCurve);
-        pitchEnvelope.setTargetRatioDR(decRelCurve);
+        pitchEnvelope->setAttackRate(attack);
+        pitchEnvelope->setDecayRate(decay);
+        pitchEnvelope->setSustainLevel(sustain);
+        pitchEnvelope->setReleaseRate(release);
+        pitchEnvelope->setTargetRatioA(attackCurve);
+        pitchEnvelope->setTargetRatioDR(decRelCurve);
         
     }
     
@@ -207,9 +212,9 @@ public:
     
     void setOscGains(float g1, float g2, float g3)
     {
-        osc1.setGain(g1);
-        osc2.setGain(g2);
-        osc3.setGain(g3);
+        osc1->setGain(g1);
+        osc2->setGain(g2);
+        osc3->setGain(g3);
     }
     
     void setOsc1DetuneAmount(double fine, int coarse)
@@ -231,9 +236,9 @@ public:
     
     void setOscModes(int mode1, int mode2, int mode3)
     {
-        osc1.setMode(mode1);
-        osc2.setMode(mode2);
-        osc3.setMode(mode3);
+        osc1->setMode(mode1);
+        osc2->setMode(mode2);
+        osc3->setMode(mode3);
     }
     
     void setSawSaturation(float sat)
@@ -248,7 +253,7 @@ private:
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
         
-        if (ampEnvelope.getState() != ADSR::env_idle)
+        if (ampEnvelope->getState() != ADSR::env_idle)
         {
             
             while (--numSamples >= 0)
@@ -256,7 +261,7 @@ private:
                 FloatType sample = 0.0;
                 
                 //Get Pitch Envelope Amount
-                double pitchEnvAmt = pitchEnvelope.process();
+                double pitchEnvAmt = pitchEnvelope->process();
                 
                 //Apply Pitch Envelope and PitchBend Amount, deviated from current pitch
                 double newFreq = midiFrequency + ( pitchEnvAmt * pitchModAmount);
@@ -268,13 +273,13 @@ private:
                 double osc3Detuned = semitoneOffsetToFreq( oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreq );
                 
                 //Set the new frequency
-                osc1.setFrequency(osc1Detuned);
-                osc2.setFrequency(osc2Detuned);
-                osc3.setFrequency(osc3Detuned);
+                osc1->setFrequency(osc1Detuned);
+                osc2->setFrequency(osc2Detuned);
+                osc3->setFrequency(osc3Detuned);
 
                 // Calculate new phase increment and calculate samples
                 
-                sample = (osc1.nextSample() + osc2.nextSample() + osc3.nextSample()) / numOscillators;
+                sample = (osc1->nextSample() + osc2->nextSample() + osc3->nextSample()) / numOscillators;
                 
                 //sample *= ampEnvelope.process();
                 
@@ -331,8 +336,8 @@ private:
     }
     double phase = 0.0;
     
-    ADSR ampEnvelope, pitchEnvelope;
-    Oscillator osc1, osc2, osc3;
+    ScopedPointer<ADSR> ampEnvelope, pitchEnvelope;
+    ScopedPointer<Oscillator> osc1, osc2, osc3;
     
     int numOscillators = 3;
     

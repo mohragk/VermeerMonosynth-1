@@ -223,10 +223,10 @@ JuceDemoPluginAudioProcessor::~JuceDemoPluginAudioProcessor()
 
 	
 
-    filterEnvelope = nullptr;
-    ampEnvelope = nullptr;
-    filter[0] = nullptr;
-    filter[1] = nullptr;
+    //filterEnvelope = nullptr;
+    //ampEnvelope = nullptr;
+    //filter[0] = nullptr;
+    //filter[1] = nullptr;
 }
 
 
@@ -245,11 +245,11 @@ void JuceDemoPluginAudioProcessor::initFilter(int i)
 //    delete filter[0];
 //    delete filter[1];
     
-    if (filter[0] != nullptr)
+  /*  if (filter[0] != nullptr)
     {
         filter[0] = nullptr;
         filter[1] = nullptr;
-    }
+    }*/
 
     
     for(int channel = 0; channel < 2; channel++)
@@ -314,9 +314,9 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
 	
 	
 
-    envGain.reset(sampleRate, 0.001);
+   // envGain.reset(sampleRate, 0.001);
     
-	switchGain.reset(sampleRate, 0.01);
+   // switchGain.reset(sampleRate, 0.01);
     
     /*
     for (int i = 0; i < 2; i++) {
@@ -562,8 +562,8 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
     
     const int numSamples = buffer.getNumSamples();
     
-    float* channelDataLeft = (float*) buffer.getWritePointer(0);
-    float* channelDataRight = (float*) buffer.getWritePointer(1);
+    float* channelDataLeft  = (float*) buffer.getWritePointer(0);
+	float* channelDataRight = (float*) buffer.getWritePointer(1);
     
     
     
@@ -605,11 +605,9 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
     //
     int stepSize = jmin(16, numSamples);
     
-    float *pLeft;
-    float *pRight;
-
-    pLeft = channelDataLeft;
-    pRight = channelDataRight;
+    
+    float* pLeft = channelDataLeft;
+    float* pRight = channelDataRight;
     
 //    if (*filterSelectParam == 0)
 //    {
@@ -703,8 +701,8 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
                 filter[channel]->SetCutoff      (cutoff.getNextValue()); //(cutoff.getNextValue());
                 filter[channel]->SetDrive       (drive.getNextValue());
             }
-            filter[0]->Process(channelDataLeft, numSamples);
-            filter[1]->Process(channelDataRight, numSamples);
+            filter[0]->Process(pLeft, numSamples);
+            filter[1]->Process(pRight, numSamples);
         }
   //  }
     
@@ -744,7 +742,8 @@ void JuceDemoPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buff
     
     while ( --numSamples >= 0)
     {
-        envGain.setValue( ampEnvelope->process() );
+		float val = ampEnvelope->process();
+        envGain.setValue( val );
 		channelDataLeft[i] *= envGain.getNextValue();
 		channelDataRight[i] *= envGain.getNextValue();
 		i++;

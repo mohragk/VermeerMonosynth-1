@@ -234,10 +234,8 @@ private:
 
 	bool noteIsPlaying = false;
     
-    LadderFilterBase* filter[2];
-   // LadderFilterBase* filter[2]; // Houvilainen
-    
-   // IIRFilter filter[2];
+    ScopedPointer<LadderFilterBase> filter[2];
+ 
     
     enum modTarget {
         modPitch,
@@ -247,8 +245,8 @@ private:
     
     void applyModToTarget(int target, double amount);
 
-    ADSR *filterEnvelope;
-    ADSR *ampEnvelope;
+    ScopedPointer<ADSR> filterEnvelope;
+    ScopedPointer<ADSR> ampEnvelope;
     LFO lfo;
     
     double lfo_synced_freq, lfo_synced_freq_old;
@@ -272,7 +270,8 @@ private:
     
     double sampleRate;
     
-    LinearSmoothedValue<double> cutoff, resonance, drive, envGain,  switchGain; //envGain,
+	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain;
+	//
 	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;
 	
     
