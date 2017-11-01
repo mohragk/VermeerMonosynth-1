@@ -32,7 +32,7 @@ public:
     void setFrequency(double f)
     {
         frequency = f;
-        phaseIncrement = updatePhaseIncrement(frequency);
+       // phaseIncrement = updatePhaseIncrement(frequency);
     }
     
     void setPhase(double ph)

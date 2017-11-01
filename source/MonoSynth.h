@@ -76,6 +76,8 @@ public:
     {
         double sr = getSampleRate();
         
+
+		// Might be abundant, but just to be safe
         ampEnvelope->setSampleRate(sr);
         pitchEnvelope->setSampleRate(sr);
         
