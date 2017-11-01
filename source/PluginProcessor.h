@@ -29,6 +29,11 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "adsr/ADSR.h"
 #include "MoogLadders/ImprovedModel.h"
+#include "MoogLadders/HuovilainenModel.h"
+#include "MoogLadders/MusicDSPModel.h"
+#include "MoogLadders/OberheimVariationModel.h"
+#include "MoogLadders/MicrotrackerModel.h"
+
 #include "lfo.h"
 
 
@@ -109,6 +114,8 @@ public:
     int lastUIWidth, lastUIHeight;
     
 
+    //intialise filter
+    void initFilter(int i);
     
     
     //Set Envelope values
@@ -124,7 +131,9 @@ public:
     void setOsc3DetuneAmount(float fine, int coarse);
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
-    void setGlide(float time);
+    void setSawSaturation(float sat);
+
+	bool noteIsBeingPlayed();
 	
   
     
@@ -185,21 +194,36 @@ public:
     AudioParameterInt*   lfoModeParam;
     AudioParameterFloat* lfoIntensityParam;
     
-    AudioParameterFloat* glideTimeParam;
+    AudioParameterFloat* sawSaturationParam;
+    AudioParameterInt* filterSelectParam;
+    
+    AudioParameterInt* lfoDivisionParam;
     
     
 private:
     //==============================================================================
     template <typename FloatType>
     void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, AudioBuffer<FloatType>& delayBuffer);
-    template <typename FloatType>
+    
+	template <typename FloatType>
     void applyGain (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
-    template <typename FloatType>
-    void applyEnvelope (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer);
-    template <typename FloatType>
+   
+	template <typename FloatType>
+    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer);
+   
+	template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
-    template <typename FloatType>
+   
+	template <typename FloatType>
     void applyDelay (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+    
+	template <typename FloatType>
+    void applyAmpEnvelope (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+
+	template <typename FloatType>
+	void applyAmp (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+    
+    void calculateLFOSyncedFreq();
 
     AudioBuffer<float> delayBufferFloat;
     AudioBuffer<double> delayBufferDouble;
@@ -207,8 +231,11 @@ private:
 
     Synthesiser synth;
     
+
+	bool noteIsPlaying = false;
     
-    ImprovedMoog filter2[2];
+    ScopedPointer<LadderFilterBase> filter[2];
+ 
     
     enum modTarget {
         modPitch,
@@ -218,12 +245,17 @@ private:
     
     void applyModToTarget(int target, double amount);
 
-    ADSR *filterEnvelope;
+    ScopedPointer<ADSR> filterEnvelope;
+    ScopedPointer<ADSR> ampEnvelope;
     LFO lfo;
+    
+    double lfo_synced_freq, lfo_synced_freq_old;
+    double lfo_division;
 
     double modAmount;
     
     int mNumVoices;
+    int lastChosenFilter;
 
     void initialiseSynth();
     void updateCurrentTimeInfoFromHost();
@@ -238,7 +270,12 @@ private:
     
     double sampleRate;
     
-    LinearSmoothedValue<double> cutoff, resonance, drive;
+	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain;
+	//
+	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;
+	
+    
+    int lastNotePlayed;
     
     
     static BusesProperties getBusesProperties();

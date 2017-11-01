@@ -8,23 +8,25 @@
               pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0" pluginTailLength="0"
               pluginEditorRequiresKeys="1" pluginAUExportPrefix="VermeerMonosynth"
               pluginAUViewClass="JuceDemoProjectAU_V1" pluginRTASCategory=""
-              bundleIdentifier="com.vermeer.Monosynth" jucerVersion="5.1.1"
+              bundleIdentifier="com.vermeer.Monosynth" jucerVersion="5.2.0"
               companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
               buildAAX="0" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
               includeBinaryInAppConfig="1" buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
               companyWebsite="www.soundcloud.com/meneervermeer" companyEmail="meneervermeermusic@gmail.com"
               pluginIsMidiEffectPlugin="0" buildAUv3="0" buildStandalone="1"
               enableIAA="0" displaySplashScreen="1" reportAppUsage="1" splashScreenColour="Dark"
-              cppLanguageStandard="11">
+              cppLanguageStandard="11" companyCopyright="MRVR inc.">
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="" rtasFolder="~/SDKs/PT_80_SDK"
                objCExtraSuffix="JuceDemo" aaxFolder="" postbuildCommand="" vst3Folder=""
                smallIcon="aJR5EJ" bigIcon="IbiCwm">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="VermeerMonosynth"
-                       osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"/>
+                       osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"
+                       enablePluginBinaryCopyStep="1"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="VermeerMonosynth"
-                       osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"/>
+                       osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"
+                       enablePluginBinaryCopyStep="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../../../../../../../Applications/JUCE/modules"/>
@@ -41,13 +43,15 @@
         <MODULEPATH id="juce_audio_formats" path="../../../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <VS2017 targetFolder="Builds/VisualStudio2017" windowsTargetPlatformVersion=""
+    <VS2017 targetFolder="Builds/VisualStudio2017" windowsTargetPlatformVersion="10.0.16299.0"
             smallIcon="aJR5EJ" bigIcon="IbiCwm">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="1" optimisation="1" targetName="VermeerMonosynth"/>
+                       isDebug="1" optimisation="1" targetName="VermeerMonosynth" debugInformationFormat="ProgramDatabase"
+                       enablePluginBinaryCopyStep="0"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="VermeerMonosynth"/>
+                       isDebug="0" optimisation="3" targetName="VermeerMonosynth" debugInformationFormat="ProgramDatabase"
+                       enablePluginBinaryCopyStep="0" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="..\..\..\..\..\..\JUCE\modules"/>
@@ -66,53 +70,20 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
-    <GROUP id="{EF44F59F-F976-4DD6-7642-C69E0075D234}" name="font">
-      <FILE id="GzeoeP" name="FuturaStd-Bold.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-Bold.otf"/>
-      <FILE id="QLMqgm" name="FuturaStd-BoldOblique.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-BoldOblique.otf"/>
-      <FILE id="BCS0Wh" name="FuturaStd-Book.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-Book.otf"/>
-      <FILE id="GTDcdj" name="FuturaStd-BookOblique.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-BookOblique.otf"/>
-      <FILE id="ElVz5t" name="FuturaStd-Condensed.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-Condensed.otf"/>
-      <FILE id="QcDAgn" name="FuturaStd-CondensedBold.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-CondensedBold.otf"/>
-      <FILE id="LMYx0l" name="FuturaStd-CondensedBoldObl.otf" compile="0"
-            resource="1" file="Resources/font/FuturaStd-CondensedBoldObl.otf"/>
-      <FILE id="kxJGq2" name="FuturaStd-CondensedExtraBd.otf" compile="0"
-            resource="1" file="Resources/font/FuturaStd-CondensedExtraBd.otf"/>
-      <FILE id="zKn29D" name="FuturaStd-CondensedLight.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-CondensedLight.otf"/>
-      <FILE id="LxrlyQ" name="FuturaStd-CondensedLightObl.otf" compile="0"
-            resource="1" file="Resources/font/FuturaStd-CondensedLightObl.otf"/>
-      <FILE id="HdF3Dx" name="FuturaStd-CondensedOblique.otf" compile="0"
-            resource="1" file="Resources/font/FuturaStd-CondensedOblique.otf"/>
-      <FILE id="sMxut7" name="FuturaStd-CondExtraBoldObl.otf" compile="0"
-            resource="1" file="Resources/font/FuturaStd-CondExtraBoldObl.otf"/>
-      <FILE id="Xh26Rs" name="FuturaStd-ExtraBold.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-ExtraBold.otf"/>
-      <FILE id="lmin2i" name="FuturaStd-ExtraBoldOblique.otf" compile="0"
-            resource="1" file="Resources/font/FuturaStd-ExtraBoldOblique.otf"/>
-      <FILE id="YYXLxb" name="FuturaStd-Heavy.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-Heavy.otf"/>
-      <FILE id="U2o9Q3" name="FuturaStd-HeavyOblique.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-HeavyOblique.otf"/>
-      <FILE id="xsQHSG" name="FuturaStd-Light.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-Light.otf"/>
-      <FILE id="mMCcPx" name="FuturaStd-LightOblique.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-LightOblique.otf"/>
-      <FILE id="NTsntD" name="FuturaStd-Medium.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-Medium.otf"/>
-      <FILE id="YgCGgI" name="FuturaStd-MediumOblique.otf" compile="0" resource="1"
-            file="Resources/font/FuturaStd-MediumOblique.otf"/>
-    </GROUP>
     <FILE id="IbiCwm" name="MonoSynthIconLarge.png" compile="0" resource="1"
           file="Resources/MonoSynthIconLarge.png"/>
     <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"
           file="Resources/MonoSynthIconSmall.png"/>
     <GROUP id="{902056B3-1486-08AF-7310-B5F8845202B7}" name="MoogLadders">
+      <FILE id="ItxKe9" name="HuovilainenModel.h" compile="0" resource="0"
+            file="source/MoogLadders/HuovilainenModel.h"/>
+      <FILE id="Lambpe" name="LadderFilterBase.cpp" compile="1" resource="0"
+            file="source/MoogLadders/LadderFilterBase.cpp"/>
+      <FILE id="uw4kx4" name="MicrotrackerModel.h" compile="0" resource="0"
+            file="source/MoogLadders/MicrotrackerModel.h"/>
+      <FILE id="ilPGdg" name="MusicDSPModel.h" compile="0" resource="0" file="source/MoogLadders/MusicDSPModel.h"/>
+      <FILE id="Li1jFw" name="OberheimVariationModel.h" compile="0" resource="0"
+            file="source/MoogLadders/OberheimVariationModel.h"/>
       <FILE id="VSqYOa" name="ImprovedModel.h" compile="0" resource="0" file="Source/MoogLadders/ImprovedModel.h"/>
       <FILE id="PYmIbs" name="LadderFilterBase.h" compile="0" resource="0"
             file="Source/MoogLadders/LadderFilterBase.h"/>
@@ -130,7 +101,8 @@
           file="Source/PluginProcessor.h"/>
     <FILE id="gFFr0hbSp" name="PluginProcessor.cpp" compile="1" resource="0"
           file="Source/PluginProcessor.cpp"/>
-    <FILE id="obk9kG" name="SinewaveSynth.h" compile="0" resource="0" file="Source/SinewaveSynth.h"/>
+    <FILE id="upR4CX" name="MonoSynth.h" compile="0" resource="0" file="source/MonoSynth.h"/>
+    <FILE id="BU8U7s" name="Oscillator.h" compile="0" resource="0" file="source/Oscillator.h"/>
     <FILE id="yf17tA" name="lfo.h" compile="0" resource="0" file="source/lfo.h"/>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>

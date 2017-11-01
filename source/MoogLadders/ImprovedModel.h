@@ -51,6 +51,7 @@ public:
         
         SetCutoff(1000.0f); // normalized cutoff frequency
         SetResonance(0.1f); // [0, 4]
+		smoothCutoff.reset(sampleRate, 0.01);
     }
     
     virtual ~ImprovedMoog()
@@ -60,6 +61,7 @@ public:
     
     virtual void Process(float* samples, uint32_t n) noexcept override
     {
+		
         double dV0, dV1, dV2, dV3;
 
         for (int i = 0; i < n; i++)
@@ -94,25 +96,21 @@ public:
     virtual void SetSampleRate (float sr) override
     {
         sampleRate = sr;
-        
-        if (sampleRate == 48000.0)
-            multiplier = 2.0;
-        else if (sampleRate == 44100.0)
-            multiplier = 2.1768707483;
-        else
-            multiplier = 1.0;
+        multiplier = 96000.0 / sr;
                 
     }
 	
     virtual void SetResonance(float r) override
     {
-        resonance = r;
+        resonance = r * 4.0;
     }
     
     virtual void SetCutoff(float c) override
     {
         
         cutoff = c;
+
+		smoothCutoff.setValue(cutoff);
 		
         x = (MOOG_PI * cutoff) / (sampleRate * multiplier);
         g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);

@@ -51,6 +51,7 @@ protected:
     float cutoff;
     float resonance;
     float sampleRate;
+	LinearSmoothedValue<float> smoothCutoff;
 };
 
 #endif

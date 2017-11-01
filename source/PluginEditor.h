@@ -169,7 +169,11 @@ private:
         lfoModeSlider,
         lfoIntensitySlider,
 
-        glideTimeSlider
+        glideTimeSlider,
+    
+        filterSelectSlider,
+    
+        lfoSyncedFreqSlider
         ;
 
     ScopedPointer<Drawable> drawable1;
@@ -196,6 +200,9 @@ private:
     ScopedPointer<Drawable> drawable22;
     ScopedPointer<Drawable> drawable23;
     ScopedPointer<Drawable> drawable24;
+    
+    
+    String font;
     //==============================================================================
     JuceDemoPluginAudioProcessor& getProcessor() const
     {
