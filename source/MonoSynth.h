@@ -47,7 +47,7 @@ public:
 class SineWaveVoice  : public SynthesiserVoice
 {
 public:
-    SineWaveVoice()
+    SineWaveVoice() //: ampEnvelope(nullptr), pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
     
     {
 		ampEnvelope = new ADSR();
@@ -59,7 +59,10 @@ public:
         
     }
     
-    
+    bool hasOscillator()
+    {
+        return osc1 != nullptr;
+    }
     
     
     bool canPlaySound (SynthesiserSound* sound) override

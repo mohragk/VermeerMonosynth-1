@@ -153,10 +153,10 @@ ampEnvelope(nullptr)
 
 
     //ENV 1
-    addParameter (attackParam1 = new AudioParameterFloat ("attack1", "Amp Attack",       NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.0));
-    addParameter (decayParam1  = new AudioParameterFloat ("decay1", "Amp Decay",         NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.0));
-    addParameter (sustainParam1  = new AudioParameterFloat ("sustain1", "Amp Sustain",   NormalisableRange<float>(0.0, 1.0,  0.0, 0.5, false), 0.9));
-    addParameter (releaseParam1  = new AudioParameterFloat ("release1", "Amp Release",   NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.01));
+    addParameter (attackParam1 = new AudioParameterFloat ("attack1", "Amp Attack",       NormalisableRange<float>(0.001, 11.0, 0.0, 0.5, false), 0.001));
+    addParameter (decayParam1  = new AudioParameterFloat ("decay1", "Amp Decay",         NormalisableRange<float>(0.001, 11.0, 0.0, 0.5, false), 0.001));
+    addParameter (sustainParam1  = new AudioParameterFloat ("sustain1", "Amp Sustain",   NormalisableRange<float>(0.0, 1.0,  0.0, 0.5, false), 1.0));
+    addParameter (releaseParam1  = new AudioParameterFloat ("release1", "Amp Release",   NormalisableRange<float>(0.001, 11.0, 0.0, 0.5, false), 0.01));
 
     addParameter (attackCurve1Param = new AudioParameterFloat("attackCurve1", "Attack Curve",           NormalisableRange<float>(0.001, 1.0, 0.0, 0.5, false), 0.001));
     addParameter (decayRelCurve1Param = new AudioParameterFloat("decRelCurve1", "Decay-Release Curve",  NormalisableRange<float>(0.00001, 1.0, 0.0, 0.5, false), 0.00001));  
@@ -210,8 +210,6 @@ ampEnvelope(nullptr)
     filterEnvelope = new ADSR();
     ampEnvelope = new ADSR();
     
-//    filter2[0] = new ImprovedMoog();
-//    filter2[1] = new ImprovedMoog();
 
     initFilter(0);
    
@@ -220,13 +218,6 @@ ampEnvelope(nullptr)
 JuceDemoPluginAudioProcessor::~JuceDemoPluginAudioProcessor()
 {
     keyboardState.removeListener(this);
-
-	
-
-    //filterEnvelope = nullptr;
-    //ampEnvelope = nullptr;
-    //filter[0] = nullptr;
-    //filter[1] = nullptr;
 }
 
 
@@ -236,7 +227,7 @@ void JuceDemoPluginAudioProcessor::initialiseSynth()
     synth.addVoice (new SineWaveVoice());
     synth.addSound (new SineWaveSound());
     
-    
+    //synth->hasOscillator();
     
 }
 
@@ -758,9 +749,9 @@ template <typename FloatType>
 void JuceDemoPluginAudioProcessor::applyAmp(AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
 {
 	
-	const int numSamples = buffer.getNumSamples();
-	FloatType* left = buffer.getWritePointer(0);
-	FloatType* right = buffer.getWritePointer(1);
+//    const int numSamples = buffer.getNumSamples();
+//    FloatType* left = buffer.getWritePointer(0);
+//    FloatType* right = buffer.getWritePointer(1);
 
 	//envGain.applyGain(buffer, numSamples);
 
@@ -999,7 +990,7 @@ void JuceDemoPluginAudioProcessor::calculateLFOSyncedFreq()
 {
     double beats_per_minute = lastPosInfo.bpm;
     double seconds_per_beat = 60.0 / beats_per_minute;
-    double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
+   // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
     double seconds_per_note = seconds_per_beat * (lastPosInfo.timeSigDenominator / lfo_division);
     
     
