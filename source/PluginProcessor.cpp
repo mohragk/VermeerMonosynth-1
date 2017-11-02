@@ -49,7 +49,7 @@ JuceDemoPluginAudioProcessor::JuceDemoPluginAudioProcessor()
 
       osc1DetuneAmountParam(nullptr),
 		osc2DetuneAmountParam(nullptr),
-osc3DetuneAmountParam(nullptr),
+       osc3DetuneAmountParam(nullptr),
 
 osc1ModeParam(nullptr),
 osc2ModeParam(nullptr),
@@ -98,14 +98,6 @@ lfoRateParam(nullptr),
 lfoModeParam(nullptr),
 lfoIntensityParam(nullptr),
 sawSaturationParam(nullptr),
-
-
-
-
-
-
-
-
 
       filterSelectParam(nullptr),
   lfoDivisionParam(nullptr),
@@ -233,14 +225,6 @@ void JuceDemoPluginAudioProcessor::initialiseSynth()
 
 void JuceDemoPluginAudioProcessor::initFilter(int i)
 {
-//    delete filter[0];
-//    delete filter[1];
-    
-  /*  if (filter[0] != nullptr)
-    {
-        filter[0] = nullptr;
-        filter[1] = nullptr;
-    }*/
 
     
     for(int channel = 0; channel < 2; channel++)
@@ -332,18 +316,18 @@ void JuceDemoPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*sa
     
     
     
-    if (isUsingDoublePrecision())
-    {
-        delayBufferDouble.setSize (2, 12000);
-        delayBufferFloat.setSize (1, 1);
-    }
-    else
-    {
-        delayBufferFloat.setSize (2, 12000);
-        delayBufferDouble.setSize (1, 1);
-    }
-
-    reset();
+//    if (isUsingDoublePrecision())
+//    {
+//        delayBufferDouble.setSize (2, 12000);
+//        delayBufferFloat.setSize (1, 1);
+//    }
+//    else
+//    {
+//        delayBufferFloat.setSize (2, 12000);
+//        delayBufferDouble.setSize (1, 1);
+//    }
+//
+//    reset();
 }
 
 void JuceDemoPluginAudioProcessor::releaseResources()
@@ -359,8 +343,8 @@ void JuceDemoPluginAudioProcessor::reset()
     // Use this method as the place to clear any delay lines, buffers, etc, as it
     // means there's been a break in the audio's continuity.
   
-    delayBufferFloat.clear();
-    delayBufferDouble.clear();
+   // delayBufferFloat.clear();
+   // delayBufferDouble.clear();
 }
 
 
@@ -401,8 +385,7 @@ void JuceDemoPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCha
 
 template <typename FloatType>
 void JuceDemoPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
-                                            MidiBuffer& midiMessages,
-                                            AudioBuffer<FloatType>& delayBuffer)
+                                            MidiBuffer& midiMessages)
 {
     const int numSamples = buffer.getNumSamples();
    
@@ -419,7 +402,7 @@ void JuceDemoPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     
     
     // getting our filter envelope values
-    applyFilterEnvelope(buffer,delayBuffer);
+    applyFilterEnvelope(buffer);
     
     
     if (lastChosenFilter != *filterSelectParam)
@@ -430,10 +413,10 @@ void JuceDemoPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     }
     
     // applying our filter
-    applyFilter(buffer, delayBuffer);
+    applyFilter(buffer);
     
-    applyAmpEnvelope(buffer, delayBuffer);
-	applyAmp(buffer, delayBuffer);
+    applyAmpEnvelope(buffer);
+	applyAmp(buffer);
 
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't
@@ -441,7 +424,7 @@ void JuceDemoPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, numSamples);
 
-    applyGain (buffer, delayBuffer); // apply our gain-change to the outgoing data..
+    applyGain (buffer); // apply our gain-change to the outgoing data..
 
     // Now ask the host for the current time so we can store it to be displayed later...
     updateCurrentTimeInfoFromHost();
@@ -452,9 +435,9 @@ void JuceDemoPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
 
 
 template <typename FloatType>
-void JuceDemoPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
+void JuceDemoPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer)
 {
-    ignoreUnused (delayBuffer);
+   
     const float gainLevel = *gainParam;// * ampEnvelope->getOutput();
     
     
@@ -468,11 +451,8 @@ void JuceDemoPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer, Au
 
 
 template <typename FloatType>
-void JuceDemoPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
+void JuceDemoPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer)
 {
-    ignoreUnused(delayBuffer);
-    
-    
     
     filterEnvelope->setAttackRate(*attackParam3);
     filterEnvelope->setDecayRate(*decayParam3);
@@ -546,158 +526,54 @@ void JuceDemoPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& 
 
 
 template <typename FloatType>
-void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
+void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
 {
     
-    ignoreUnused (delayBuffer);
+    
     
     const int numSamples = buffer.getNumSamples();
     
     float* channelDataLeft  = (float*) buffer.getWritePointer(0);
 	float* channelDataRight = (float*) buffer.getWritePointer(1);
+
     
-    
-    
-    
-    
-   
-//    // MIGHT NOT EVEN WORK CORRECTLY....
-//    if (lastChosenFilter != *filterSelectParam)
-//    {
-//        switchGain.setValue(0.0);
-//        const float gainLevel = switchGain.getNextValue();// * ampEnvelope->getOutput();
-//
-//
-//
-//        for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
-//            buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
-//
-//
-//
-//        lastChosenFilter = *filterSelectParam;
-//
-//        return;
-//    }
-    
-//    if (switchGain.isSmoothing())
-//    {
-//        std::cout << "YEP" << std::endl;
-//        return;
-//    } else {
-//        switchGain.setValue(1.0);
-//    }
-    
-    
-    
-    
+//    jassert(filter[0] != nullptr);
+//    jassert(filter[1] != nullptr);
     
     //
     //  break buffer into chunks
     //
     int stepSize = jmin(16, numSamples);
     
+    int samplesLeftOver = numSamples;
     
-    float* pLeft = channelDataLeft;
-    float* pRight = channelDataRight;
-    
-//    if (*filterSelectParam == 0)
-//    {
-//        if (stepSize > 1)
-//        {
-//           for(int step = 0; step < numSamples; step += stepSize)
-//           {
-//
-//               for(int channel = 0; channel < 2; channel++)
-//                {
-//                    // remap resonance
-//                    double Q = resonance.getNextValue() * 4.0;
-//                    filter2[channel]->SetResonance   (Q);
-//                    filter2[channel]->SetCutoff      (cutoff.getNextValue());
-//                    filter2[channel]->SetDrive       (drive.getNextValue());
-//                }
-//
-//                filter2[0]->Process(pLeft, stepSize);
-//                filter2[1]->Process(pRight, stepSize);
-//
-//                pLeft  += stepSize;
-//                pRight += stepSize;
-//
-//               //std::cout << "jepperdeklep" << std::endl;
-//            }
-//        }
-//        else
-//        {
-//            for(int channel = 0; channel < 2; channel++)
-//            {
-//                double Q = resonance.getNextValue() * 4.0;
-//                filter2[channel]->SetResonance   (Q);
-//                filter2[channel]->SetCutoff      (cutoff.getNextValue()); //(cutoff.getNextValue());
-//                filter2[channel]->SetDrive       (drive.getNextValue());
-//            }
-//            filter2[0]->Process(channelDataLeft, numSamples);
-//            filter2[1]->Process(channelDataRight, numSamples);
-//        }
-//        //
-//        // reduce volume when filter is overdriven
-//        //
-//        /* if (*filterDriveParam > 1.0)
-//         {
-//             float reduction = 1 / *filterDriveParam;
-//             for (int i = 0; i < numSamples; i++)
-//             {
-//                 channelDataLeft[i]  *= reduction;
-//                 channelDataRight[i] *= reduction;
-//
-//             }
-//         }*/
-//
-//    }
-//    else
-  //  {
-        if ( stepSize > 1)
+    for(int step = 0; step < numSamples; step += stepSize)
+    {
+        
+        for(int channel = 0; channel < 2; channel++)
         {
-			int samplesLeftOver = numSamples;
-            for(int step = 0; step < numSamples; step += stepSize)
-            {
-                
-                for(int channel = 0; channel < 2; channel++)
-                {
-                    // remap resonance
-                    double Q = resonance.getNextValue();// * 4.0;
-                    filter[channel]->SetResonance   (Q);
-                    filter[channel]->SetCutoff      (cutoff.getNextValue());
-                    filter[channel]->SetDrive       (drive.getNextValue());
-                }
-                
-				if (samplesLeftOver < stepSize)
-					stepSize = samplesLeftOver;
-
-                filter[0]->Process(pLeft, stepSize);
-                filter[1]->Process(pRight, stepSize);
-
-				samplesLeftOver -= stepSize;
-                
-                pLeft  += stepSize;
-                pRight += stepSize;
-                
-                //std::cout << "jepperdeklep" << std::endl;
-            }
+            // remap resonance
+            double Q = resonance.getNextValue();// * 4.0;
+            filter[channel]->SetResonance   (Q);
+            filter[channel]->SetCutoff      (cutoff.getNextValue());
+            filter[channel]->SetDrive       (drive.getNextValue());
         }
-        else
-        {
-            for(int channel = 0; channel < 2; channel++)
-            {
-                double Q = resonance.getNextValue();
-                filter[channel]->SetResonance   (Q);
-                filter[channel]->SetCutoff      (cutoff.getNextValue()); //(cutoff.getNextValue());
-                filter[channel]->SetDrive       (drive.getNextValue());
-            }
-            filter[0]->Process(pLeft, numSamples);
-            filter[1]->Process(pRight, numSamples);
-        }
-  //  }
-    
-   // lastChosenFilter = *filterSelectParam;
+        
+        if (samplesLeftOver < stepSize)
+            stepSize = samplesLeftOver;
+
+        filter[0]->Process(channelDataLeft, stepSize);
+        filter[1]->Process(channelDataRight, stepSize);
+
+        samplesLeftOver -= stepSize;
+        
+        channelDataLeft  += stepSize;
+        channelDataRight += stepSize;
+        
+        //std::cout << "jepperdeklep" << std::endl;
+    }
+
+
   
 }
 
@@ -710,9 +586,9 @@ void JuceDemoPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, 
 
 
 template <typename FloatType>
-void JuceDemoPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
+void JuceDemoPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buffer)
 {
-    ignoreUnused ( delayBuffer );
+   
     int numSamples = buffer.getNumSamples();
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
@@ -746,7 +622,7 @@ void JuceDemoPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buff
 
 
 template <typename FloatType>
-void JuceDemoPluginAudioProcessor::applyAmp(AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer)
+void JuceDemoPluginAudioProcessor::applyAmp(AudioBuffer<FloatType>& buffer)
 {
 	
 //    const int numSamples = buffer.getNumSamples();
@@ -757,16 +633,6 @@ void JuceDemoPluginAudioProcessor::applyAmp(AudioBuffer<FloatType>& buffer, Audi
 
 	
 }
-
-
-
-
-
-
-
-
-
-
 
 void JuceDemoPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 {

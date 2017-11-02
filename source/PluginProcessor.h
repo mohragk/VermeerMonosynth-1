@@ -60,13 +60,13 @@ public:
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
     {
         jassert (! isUsingDoublePrecision());
-        process (buffer, midiMessages, delayBufferFloat);
+        process (buffer, midiMessages);
     }
 
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
     {
         jassert (isUsingDoublePrecision());
-        process (buffer, midiMessages, delayBufferDouble);
+        process (buffer, midiMessages);
     }
 
     //==============================================================================
@@ -203,25 +203,25 @@ public:
 private:
     //==============================================================================
     template <typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, AudioBuffer<FloatType>& delayBuffer);
+    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages);
     
 	template <typename FloatType>
-    void applyGain (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+    void applyGain (AudioBuffer<FloatType>& buffer);
    
 	template <typename FloatType>
-    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer, AudioBuffer<FloatType>& delayBuffer);
+    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
    
 	template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+    void applyFilter (AudioBuffer<FloatType>& buffer);
    
 	template <typename FloatType>
-    void applyDelay (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+    void applyDelay (AudioBuffer<FloatType>& buffer);
     
 	template <typename FloatType>
-    void applyAmpEnvelope (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+    void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
 
 	template <typename FloatType>
-	void applyAmp (AudioBuffer<FloatType>&, AudioBuffer<FloatType>& delayBuffer);
+	void applyAmp (AudioBuffer<FloatType>& buffer);
     
     void calculateLFOSyncedFreq();
 
