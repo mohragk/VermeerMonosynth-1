@@ -648,11 +648,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     modTargetCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 	
     
-    // Glide
-    addAndMakeVisible(glideTimeSlider = new ParameterSlider(*owner.sawSaturationParam));  //todo: 
-    glideTimeSlider->setSliderStyle(Slider::RotaryVerticalDrag);
-    glideTimeSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 20);
-	
+   
     
     // FilterSwitch
     addAndMakeVisible(filterSelectSlider = new ParameterSlider(*owner.filterSelectParam));  //todo:
@@ -804,7 +800,7 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
     lfoModeSlider = nullptr;
     lfoIntensitySlider = nullptr;
     
-    glideTimeSlider = nullptr;
+  
     filterSelectSlider = nullptr;
     
     lfoSyncedFreqSlider = nullptr;
@@ -1220,7 +1216,7 @@ void JuceDemoPluginAudioProcessorEditor::resized()
     volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
-    glideTimeSlider->setBounds(getWidth() - 24 - 64, 178, 64, 64);
+ 
   
     
     lfoSyncedFreqSlider->setBounds(getWidth() - 24 - 64, 378, 64, 64);

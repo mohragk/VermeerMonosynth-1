@@ -168,8 +168,6 @@ private:
         lfoRateSlider,
         lfoModeSlider,
         lfoIntensitySlider,
-
-        glideTimeSlider,
     
         filterSelectSlider,
     

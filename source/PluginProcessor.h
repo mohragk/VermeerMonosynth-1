@@ -119,7 +119,6 @@ public:
     
     
     //Set Envelope values
-    void setAmpEnvelope(float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve);
     void setPitchEnvelope(float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve);
    
 
@@ -131,7 +130,7 @@ public:
     void setOsc3DetuneAmount(float fine, int coarse);
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
-    void setSawSaturation(float sat);
+	void setEnvelopeState(ADSR envelope);
 
 	bool noteIsBeingPlayed();
 	
@@ -193,8 +192,7 @@ public:
     AudioParameterFloat* lfoRateParam;
     AudioParameterInt*   lfoModeParam;
     AudioParameterFloat* lfoIntensityParam;
-    
-    AudioParameterFloat* sawSaturationParam;
+
     AudioParameterInt* filterSelectParam;
     
     AudioParameterInt* lfoDivisionParam;

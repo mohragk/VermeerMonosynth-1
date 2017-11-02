@@ -97,7 +97,7 @@ osc3OffsetParam(nullptr),
 lfoRateParam(nullptr),
 lfoModeParam(nullptr),
 lfoIntensityParam(nullptr),
-sawSaturationParam(nullptr),
+
 
       filterSelectParam(nullptr),
   lfoDivisionParam(nullptr),
@@ -187,10 +187,6 @@ ampEnvelope(nullptr)
     //
     addParameter(lfoDivisionParam = new AudioParameterInt("lfoDivision", "LFO Synced Rate", 1, 6, 2));
     
-    
-
-    // Glide IS NOW SAWSAT!!
-    addParameter(sawSaturationParam = new AudioParameterFloat("sawSaturation", "Saw Saturation", NormalisableRange<float>(1.0, 10.0, 0.0, 0.5, false), 2.0));
     
     // Filter Select Parameter
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 1, 0));
@@ -719,7 +715,7 @@ void inline JuceDemoPluginAudioProcessor::updateParameters()
     setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
     setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
     
-    //setAmpEnvelope  (*attackParam1, *decayParam1, *sustainParam1, *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
+   
     setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
     
 	setPitchEnvelopeAmount(*pitchModParam);
@@ -727,17 +723,12 @@ void inline JuceDemoPluginAudioProcessor::updateParameters()
     setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam );
     setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
     setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
+
+	setEnvelopeState( *ampEnvelope );
     
-    setSawSaturation(*sawSaturationParam);
 }
 
 
-
-void JuceDemoPluginAudioProcessor::setAmpEnvelope(float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve)
-{
-
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setAmpEnvelope(attack, decay, sustain, release, attackCurve, decRelCurve);
-}
 
 void JuceDemoPluginAudioProcessor::setPitchEnvelope(float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve)
 {
@@ -792,11 +783,11 @@ void JuceDemoPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int o
 }
 
 
-void JuceDemoPluginAudioProcessor::setSawSaturation(float sat)
+void JuceDemoPluginAudioProcessor::setEnvelopeState(ADSR envelope)
 {
-    
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setSawSaturation(sat);
-    
+
+	return static_cast<SineWaveVoice*>(synth.getVoice(0))->setEnvelopeState(envelope);
+
 }
 
 
