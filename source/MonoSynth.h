@@ -44,6 +44,8 @@ public:
 
 //==============================================================================
 /** A simple demo synth voice that just plays a sine wave.. */
+
+
 class SineWaveVoice  : public SynthesiserVoice
 {
 public:
