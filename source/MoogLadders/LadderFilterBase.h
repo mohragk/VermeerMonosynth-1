@@ -43,8 +43,9 @@ public:
     virtual void SetCutoff(float c) = 0;
     virtual void SetDrive(float d) = 0;
     
-    float GetResonance() { return resonance; }
-    float GetCutoff() { return cutoff; }
+    virtual double GetResonance() { return resonance; }
+    virtual double GetCutoff() { return cutoff; }
+    virtual double GetSampleRate() { return sampleRate; }
 	
 protected:
 	

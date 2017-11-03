@@ -41,7 +41,7 @@ class ImprovedMoog : public LadderFilterBase
 {
 public:
     
-    ImprovedMoog() : LadderFilterBase()
+    ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0)
     {
         zeromem(V, sizeof(V));
         zeromem(dV, sizeof(dV));
@@ -108,10 +108,9 @@ public:
     virtual void SetCutoff(float c) override
     {
 
-		jassert(sampleRate < 0);
+		jassert(sampleRate > 0.0 );
 
         cutoff = c;
-
 
         x = (MOOG_PI * cutoff) / (sampleRate * multiplier);
         g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);
@@ -122,6 +121,16 @@ public:
         drive = d;
     }
 	
+    double GetSampleRate() override
+    {
+        return sampleRate;
+    }
+    
+    double GetCutoff() override
+    {
+        return cutoff;
+    }
+    
 private:
 	
     double V[4];

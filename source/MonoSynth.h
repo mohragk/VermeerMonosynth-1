@@ -44,7 +44,7 @@ public:
 class SineWaveVoice  : public SynthesiserVoice
 {
 public:
-    SineWaveVoice() //: ampEnvelope(nullptr), pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
+    SineWaveVoice() //: pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
     
     {
 		pitchEnvelope = new ADSR();
@@ -54,6 +54,14 @@ public:
 		osc3 = new Oscillator();
     }
     
+    ~SineWaveVoice()
+    {
+        pitchEnvelope = nullptr;
+        
+        osc1 = nullptr;
+        osc2 = nullptr;
+        osc3 = nullptr;
+    }
     
     bool canPlaySound (SynthesiserSound* sound) override
     {
@@ -64,7 +72,7 @@ public:
                     SynthesiserSound* /*sound*/,
                     int /*currentPitchWheelPosition*/) override
     {
-        const double sr = getSampleRate();
+        double sr = getSampleRate();
 
 		// Might be abundant, but just to be safe
         pitchEnvelope->setSampleRate(sr);
@@ -113,6 +121,7 @@ public:
     {
         processBlock (outputBuffer, startSample, numSamples);
     }
+    
     
     // Set pitch envelope parameters.
     void setPitchEnvelope (float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve)
@@ -177,6 +186,10 @@ private:
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
+        osc1->setSampleRate(getSampleRate());
+        osc2->setSampleRate(getSampleRate());
+        osc3->setSampleRate(getSampleRate());
+        
 		if (envState != 0)
 		{
 			while (--numSamples >= 0)
@@ -239,6 +252,7 @@ private:
         return pow(2.0, (semitones / 12.0)) * freq;
     }
 
+    double sampleRate;
 
     double phase = 0.0;
     

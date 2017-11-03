@@ -31,7 +31,7 @@
 // This is a handy slider subclass that controls an AudioProcessorParameter
 // (may move this class into the library itself at some point in the future..)
 
-class JuceDemoPluginAudioProcessorEditor::ParameterSlider   : public Slider,
+class MonosynthPluginAudioProcessorEditor::ParameterSlider   : public Slider,
                                                               private Timer
 {
 public:
@@ -80,7 +80,7 @@ public:
 };
 
 //==============================================================================
-JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemoPluginAudioProcessor& owner)
+MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
     : AudioProcessorEditor (owner),
         midiKeyboard (owner.keyboardState, MidiKeyboardComponent::horizontalKeyboard),
         timecodeDisplayLabel (String())
@@ -715,7 +715,7 @@ JuceDemoPluginAudioProcessorEditor::JuceDemoPluginAudioProcessorEditor (JuceDemo
     
 }
 
-JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
+MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
 {
     osc1GainSlider = nullptr;
     osc1GainLabel = nullptr;
@@ -830,7 +830,7 @@ JuceDemoPluginAudioProcessorEditor::~JuceDemoPluginAudioProcessorEditor()
 }
 
 //==============================================================================
-void JuceDemoPluginAudioProcessorEditor::paint (Graphics& g)
+void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
 {
     g.fillAll (Colour (0xff0e0e0e));
     
@@ -1147,7 +1147,7 @@ void JuceDemoPluginAudioProcessorEditor::paint (Graphics& g)
 	
 }
 
-void JuceDemoPluginAudioProcessorEditor::resized()
+void MonosynthPluginAudioProcessorEditor::resized()
 {
     
     
@@ -1264,7 +1264,7 @@ void JuceDemoPluginAudioProcessorEditor::resized()
 }
 
 //==============================================================================
-void JuceDemoPluginAudioProcessorEditor::timerCallback()
+void MonosynthPluginAudioProcessorEditor::timerCallback()
 {
     updateTimecodeDisplay (getProcessor().lastPosInfo);
 
@@ -1335,7 +1335,7 @@ static String quarterNotePositionToBarsBeatsString (double quarterNotes, int num
 }
 
 // Updates the text in our position label.
-void JuceDemoPluginAudioProcessorEditor::updateTimecodeDisplay (AudioPlayHead::CurrentPositionInfo pos)
+void MonosynthPluginAudioProcessorEditor::updateTimecodeDisplay (AudioPlayHead::CurrentPositionInfo pos)
 {
     MemoryOutputStream displayText;
 
@@ -1372,8 +1372,8 @@ static const unsigned char resource_CustomPluginEditor_oscSquareWaveSymbol_svg[]
 32,56,46,55,44,49,55,46,50,32,51,44,49,55,46,50,32,51,44,49,53,46,50,32,54,46,55,44,49,53,46,50,32,54,46,55,44,55,46,49,32,13,10,9,9,49,54,46,55,44,55,46,49,32,49,54,46,55,44,49,53,46,50,32,50,48,46,52,
 44,49,53,46,50,32,9,34,47,62,13,10,60,47,103,62,13,10,60,47,115,118,103,62,13,10,0,0 };
 
-const char* JuceDemoPluginAudioProcessorEditor::oscSquareWaveSymbol_svg = (const char*)resource_CustomPluginEditor_oscSquareWaveSymbol_svg;
-const int JuceDemoPluginAudioProcessorEditor::oscSquareWaveSymbol_svgSize = 599;
+const char* MonosynthPluginAudioProcessorEditor::oscSquareWaveSymbol_svg = (const char*)resource_CustomPluginEditor_oscSquareWaveSymbol_svg;
+const int MonosynthPluginAudioProcessorEditor::oscSquareWaveSymbol_svgSize = 599;
 
 // JUCER_RESOURCE: oscSquareWaveSymbol_svg2, 599, "../Resources/OscSquareWaveSymbol.svg"
 static const unsigned char resource_CustomPluginEditor_oscSquareWaveSymbol_svg2[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,117,116,
@@ -1388,8 +1388,8 @@ static const unsigned char resource_CustomPluginEditor_oscSquareWaveSymbol_svg2[
 32,56,46,55,44,49,55,46,50,32,51,44,49,55,46,50,32,51,44,49,53,46,50,32,54,46,55,44,49,53,46,50,32,54,46,55,44,55,46,49,32,13,10,9,9,49,54,46,55,44,55,46,49,32,49,54,46,55,44,49,53,46,50,32,50,48,46,52,
 44,49,53,46,50,32,9,34,47,62,13,10,60,47,103,62,13,10,60,47,115,118,103,62,13,10,0,0 };
 
-const char* JuceDemoPluginAudioProcessorEditor::oscSquareWaveSymbol_svg2 = (const char*)resource_CustomPluginEditor_oscSquareWaveSymbol_svg2;
-const int JuceDemoPluginAudioProcessorEditor::oscSquareWaveSymbol_svg2Size = 599;
+const char* MonosynthPluginAudioProcessorEditor::oscSquareWaveSymbol_svg2 = (const char*)resource_CustomPluginEditor_oscSquareWaveSymbol_svg2;
+const int MonosynthPluginAudioProcessorEditor::oscSquareWaveSymbol_svg2Size = 599;
 
 // JUCER_RESOURCE: oscSawWaveSymbol_svg, 559, "../Resources/OscSawWaveSymbol.svg"
 static const unsigned char resource_CustomPluginEditor_oscSawWaveSymbol_svg[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,117,116,102,
@@ -1403,8 +1403,8 @@ static const unsigned char resource_CustomPluginEditor_oscSawWaveSymbol_svg[] = 
 68,95,49,57,95,34,32,99,108,97,115,115,61,34,115,116,48,34,32,112,111,105,110,116,115,61,34,50,48,44,49,56,32,49,53,46,50,44,49,56,32,57,46,56,44,49,49,46,51,32,57,46,56,44,49,56,32,52,44,49,56,32,52,
 44,49,54,32,55,46,56,44,49,54,32,55,46,56,44,53,46,55,32,49,54,46,49,44,49,54,32,50,48,44,49,54,32,9,34,47,62,13,10,60,47,103,62,13,10,60,47,115,118,103,62,13,10,0,0 };
 
-const char* JuceDemoPluginAudioProcessorEditor::oscSawWaveSymbol_svg = (const char*)resource_CustomPluginEditor_oscSawWaveSymbol_svg;
-const int JuceDemoPluginAudioProcessorEditor::oscSawWaveSymbol_svgSize = 559;
+const char* MonosynthPluginAudioProcessorEditor::oscSawWaveSymbol_svg = (const char*)resource_CustomPluginEditor_oscSawWaveSymbol_svg;
+const int MonosynthPluginAudioProcessorEditor::oscSawWaveSymbol_svgSize = 559;
 
 // JUCER_RESOURCE: oscSineWaveSymbol_svg, 711, "../Resources/OscSineWaveSymbol.svg"
 static const unsigned char resource_CustomPluginEditor_oscSineWaveSymbol_svg[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,117,116,102,
@@ -1421,8 +1421,8 @@ static const unsigned char resource_CustomPluginEditor_oscSineWaveSymbol_svg[] =
 46,55,67,49,56,46,56,44,49,52,46,57,44,49,55,44,49,55,44,49,53,44,49,55,13,10,9,9,67,49,53,46,49,44,49,55,44,49,53,44,49,55,44,49,53,44,49,55,122,34,47,62,13,10,60,47,103,62,13,10,60,47,115,118,103,62,
 13,10,0,0 };
 
-const char* JuceDemoPluginAudioProcessorEditor::oscSineWaveSymbol_svg = (const char*)resource_CustomPluginEditor_oscSineWaveSymbol_svg;
-const int JuceDemoPluginAudioProcessorEditor::oscSineWaveSymbol_svgSize = 711;
+const char* MonosynthPluginAudioProcessorEditor::oscSineWaveSymbol_svg = (const char*)resource_CustomPluginEditor_oscSineWaveSymbol_svg;
+const int MonosynthPluginAudioProcessorEditor::oscSineWaveSymbol_svgSize = 711;
 
 // JUCER_RESOURCE: attackCurveLinear_symbol_svg, 531, "../Resources/attackCurveLinear_Symbol.svg"
 static const unsigned char resource_CustomPluginEditor_attackCurveLinear_symbol_svg[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,117,
@@ -1436,8 +1436,8 @@ static const unsigned char resource_CustomPluginEditor_attackCurveLinear_symbol_
 77,76,73,68,95,51,50,95,34,32,99,108,97,115,115,61,34,115,116,48,34,32,112,111,105,110,116,115,61,34,56,46,52,44,49,57,32,53,46,53,44,49,57,32,49,56,44,54,46,54,32,49,56,44,49,57,32,49,54,44,49,57,32,
 49,54,44,49,49,46,52,32,9,34,47,62,13,10,60,47,103,62,13,10,60,47,115,118,103,62,13,10,0,0 };
 
-const char* JuceDemoPluginAudioProcessorEditor::attackCurveLinear_symbol_svg = (const char*)resource_CustomPluginEditor_attackCurveLinear_symbol_svg;
-const int JuceDemoPluginAudioProcessorEditor::attackCurveLinear_symbol_svgSize = 531;
+const char* MonosynthPluginAudioProcessorEditor::attackCurveLinear_symbol_svg = (const char*)resource_CustomPluginEditor_attackCurveLinear_symbol_svg;
+const int MonosynthPluginAudioProcessorEditor::attackCurveLinear_symbol_svgSize = 531;
 
 // JUCER_RESOURCE: attackCurveExponential_symbol_svg, 547, "../Resources/attackCurveExponential_Symbol.svg"
 static const unsigned char resource_CustomPluginEditor_attackCurveExponential_symbol_svg[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,
@@ -1451,8 +1451,8 @@ static const unsigned char resource_CustomPluginEditor_attackCurveExponential_sy
 73,68,95,51,51,95,34,32,99,108,97,115,115,61,34,115,116,48,34,32,100,61,34,77,49,56,44,49,56,104,45,50,86,57,46,49,99,45,52,46,54,44,48,46,53,45,56,46,49,44,52,46,51,45,56,46,49,44,56,46,57,104,45,50,
 99,48,45,54,46,49,44,53,45,49,49,44,49,49,46,49,45,49,49,104,49,86,49,56,122,34,47,62,13,10,60,47,103,62,13,10,60,47,115,118,103,62,13,10,0,0 };
 
-const char* JuceDemoPluginAudioProcessorEditor::attackCurveExponential_symbol_svg = (const char*)resource_CustomPluginEditor_attackCurveExponential_symbol_svg;
-const int JuceDemoPluginAudioProcessorEditor::attackCurveExponential_symbol_svgSize = 547;
+const char* MonosynthPluginAudioProcessorEditor::attackCurveExponential_symbol_svg = (const char*)resource_CustomPluginEditor_attackCurveExponential_symbol_svg;
+const int MonosynthPluginAudioProcessorEditor::attackCurveExponential_symbol_svgSize = 547;
 
 // JUCER_RESOURCE: decayCurveLinear_symbol_svg, 527, "../Resources/decayCurveLinear_Symbol.svg"
 static const unsigned char resource_CustomPluginEditor_decayCurveLinear_symbol_svg[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,117,
@@ -1466,8 +1466,8 @@ static const unsigned char resource_CustomPluginEditor_decayCurveLinear_symbol_s
 77,76,73,68,95,51,52,95,34,32,99,108,97,115,115,61,34,115,116,48,34,32,112,111,105,110,116,115,61,34,49,53,46,49,44,49,57,32,49,56,44,49,57,32,53,44,54,46,54,32,53,44,49,57,32,55,44,49,57,32,55,44,49,
 49,46,52,32,9,34,47,62,13,10,60,47,103,62,13,10,60,47,115,118,103,62,13,10,0,0 };
 
-const char* JuceDemoPluginAudioProcessorEditor::decayCurveLinear_symbol_svg = (const char*)resource_CustomPluginEditor_decayCurveLinear_symbol_svg;
-const int JuceDemoPluginAudioProcessorEditor::decayCurveLinear_symbol_svgSize = 527;
+const char* MonosynthPluginAudioProcessorEditor::decayCurveLinear_symbol_svg = (const char*)resource_CustomPluginEditor_decayCurveLinear_symbol_svg;
+const int MonosynthPluginAudioProcessorEditor::decayCurveLinear_symbol_svgSize = 527;
 
 // JUCER_RESOURCE: decayCurveExponential_symbol_svg, 537, "../Resources/decayCurveExponential_Symbol.svg"
 static const unsigned char resource_CustomPluginEditor_decayCurveExponential_symbol_svg[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,
@@ -1481,8 +1481,8 @@ static const unsigned char resource_CustomPluginEditor_decayCurveExponential_sym
 73,68,95,51,55,95,34,32,99,108,97,115,115,61,34,115,116,48,34,32,100,61,34,77,49,56,44,49,57,99,45,51,46,57,44,48,45,55,46,56,45,50,46,53,45,49,48,45,53,46,56,86,49,57,72,54,86,55,104,50,99,48,44,53,44,
 53,44,49,48,44,49,48,44,49,48,86,49,57,122,34,47,62,13,10,60,47,103,62,13,10,60,47,115,118,103,62,13,10,0,0 };
 
-const char* JuceDemoPluginAudioProcessorEditor::decayCurveExponential_symbol_svg = (const char*)resource_CustomPluginEditor_decayCurveExponential_symbol_svg;
-const int JuceDemoPluginAudioProcessorEditor::decayCurveExponential_symbol_svgSize = 537;
+const char* MonosynthPluginAudioProcessorEditor::decayCurveExponential_symbol_svg = (const char*)resource_CustomPluginEditor_decayCurveExponential_symbol_svg;
+const int MonosynthPluginAudioProcessorEditor::decayCurveExponential_symbol_svgSize = 537;
 
 
 //[EndFile] You can add extra defines here...

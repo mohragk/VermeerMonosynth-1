@@ -42,13 +42,13 @@
 /**
     As the name suggest, this class does the actual audio processing.
 */
-class JuceDemoPluginAudioProcessor  : public AudioProcessor,
+class MonosynthPluginAudioProcessor  : public AudioProcessor,
                                         private MidiKeyboardStateListener
 {
 public:
     //==============================================================================
-    JuceDemoPluginAudioProcessor();
-    ~JuceDemoPluginAudioProcessor();
+    MonosynthPluginAudioProcessor();
+    ~MonosynthPluginAudioProcessor();
 
     //==============================================================================
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
@@ -114,8 +114,6 @@ public:
     int lastUIWidth, lastUIHeight;
     
 
-    //intialise filter
-    void initFilter(int i);
     
     
     //Set Envelope values
@@ -232,7 +230,7 @@ private:
 
 	bool noteIsPlaying = false;
     
-    ScopedPointer<LadderFilterBase> filter[2];
+    ScopedPointer<LadderFilterBase> filterA[2], filterB[2];
  
     
     enum modTarget {
@@ -278,5 +276,5 @@ private:
     
     static BusesProperties getBusesProperties();
    
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JuceDemoPluginAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthPluginAudioProcessor)
 };
