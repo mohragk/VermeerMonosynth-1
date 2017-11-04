@@ -57,40 +57,36 @@ public:
             mode = OSCILLATOR_MODE_NOISE;
     }
     
+
     double nextSample()
     {
         const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;
         double t = phase / two_Pi; // normalize period
+        
+        
+        
         phaseIncrement = updatePhaseIncrement(frequency);
-        switch (mode)
+        
+        if( mode == OSCILLATOR_MODE_SINE )
         {
-            case OSCILLATOR_MODE_SINE:
-                value = sin(phase);
-                break;
-            case OSCILLATOR_MODE_SAW:
-                value = phase / two_Pi; // rising saw
-                value = tanh(3.0 * value);
-                value = 2.0 * value - 1.0;
-                value -= poly_blep(t, phaseIncrement);
-                break;
-            case OSCILLATOR_MODE_SQUARE:
-                if (phase <= double_Pi) {
-                    value = 1.0;
-                } else {
-                    value = -1.0;
-                }
-                
-                value += poly_blep( t, phaseIncrement );
-                value -= poly_blep( fmod( t + 0.5, 1.0 ), phaseIncrement );
-                
-                break;
-            case OSCILLATOR_MODE_NOISE:
-                Random r;
-                value = r.nextDouble();
-                break;
-                
+            value = naiveWaveFormForMode(mode);
         }
+        else if (mode == OSCILLATOR_MODE_SAW)
+        {
+            value = naiveWaveFormForMode(mode);
+            value -= poly_blep(t, phaseIncrement);
+        }
+        else if (mode == OSCILLATOR_MODE_SQUARE)
+        {
+            value = naiveWaveFormForMode(mode);
+            value += poly_blep( t, phaseIncrement );
+            value -= poly_blep( fmod( t + 0.5, 1.0 ), phaseIncrement );
+        } else
+        {
+            value = naiveWaveFormForMode(mode);
+        }
+        
         phase += phaseIncrement;
         
         while (phase >= two_Pi)
@@ -103,9 +99,42 @@ public:
     
 private:
     
+    double naiveWaveFormForMode(OscillatorMode mode)
+    {
+        const double two_Pi = 2.0 * double_Pi;
+        double value = 0.0;;
+        switch (mode)
+        {
+            case OSCILLATOR_MODE_SINE:
+                value = sin(phase);
+                break;
+            case OSCILLATOR_MODE_SAW:
+                value = phase / two_Pi;
+                value = tanh(3.0 * value);
+                value = 2.0 * value - 1.0;
+                break;
+                
+            case OSCILLATOR_MODE_SQUARE:
+                if (phase <= double_Pi) {
+                    value = 1.0;
+                } else {
+                    value = -1.0;
+                }
+                break;
+            case OSCILLATOR_MODE_NOISE:
+                // Random r;
+                // value = r.nextDouble();
+                break;
+            default:
+                break;
+        }
+        return value;
+    }
+    
+    
     double poly_blep (double t, double phaseIncrement)
     {
-        double dt = phaseIncrement / (2.0 * double_Pi); // normalize phase increment
+        const double dt = phaseIncrement / (2.0 * double_Pi); // normalize phase increment
         
         if (t < dt)
         {
@@ -123,7 +152,7 @@ private:
     
     double updatePhaseIncrement(double freq)
     {
-        double nyFreq = fmin( freq, sampleRate / 2.0 );
+        double nyFreq = jmin( freq, sampleRate / 2.0 );
         return ( ( 2.0 * double_Pi ) * nyFreq ) / sampleRate;
     }
     

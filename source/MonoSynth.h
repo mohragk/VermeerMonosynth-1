@@ -72,6 +72,7 @@ public:
                     SynthesiserSound* /*sound*/,
                     int /*currentPitchWheelPosition*/) override
     {
+        
         double sr = getSampleRate();
 
 		// Might be abundant, but just to be safe
@@ -194,7 +195,7 @@ private:
 		{
 			while (--numSamples >= 0)
 			{
-				FloatType sample = 0.0;
+				double sample = 0.0;
 
 				//Get Pitch Envelope Amount
 				double pitchEnvAmt = pitchEnvelope->process();
