@@ -69,7 +69,7 @@ class LFO
                     break;
                 case OSCILLATOR_MODE_SAW:
                     //value = (2.0 * phase / two_Pi) - 1.0;
-                    value =  1.0 - (2.0 * phase / two_Pi);
+                    value = 1.0 - (phase / two_Pi);
                     break;
                 case OSCILLATOR_MODE_SQUARE:
                     if (phase <= double_Pi) {

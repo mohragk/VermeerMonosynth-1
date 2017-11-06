@@ -264,6 +264,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
     keyboardState.reset();
    
     cutoff.reset(sampleRate, cutoffRampTimeDefault);
+	cutoffFromEnvelope.reset(sampleRate, 0.0003);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
 
@@ -447,14 +448,14 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         // Modulation by envelope and LFO (if set)
         double lfoFilterRange = 6000.0;
         double contourRange = *filterContourParam * contourVelocity;
-        currentCutoff = *filterParam + (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
+        currentCutoff = (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
         if (currentCutoff > 14000.0) currentCutoff = 14000.0;
         if (currentCutoff < 20.0) currentCutoff = 20.0;
         
 		
-        cutoff.setValue     (currentCutoff);
-        
+        cutoff.setValue     (*filterParam);
+		cutoffFromEnvelope.setValue(currentCutoff);
 		resonance.setValue  (*filterQParam);
         drive.setValue      (*filterDriveParam);
         
@@ -496,10 +497,10 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
             
             for(int channel = 0; channel < 2; channel++)
             {
-                // remap resonance
+				double combinedCutoff = cutoffFromEnvelope.getNextValue() + cutoff.getNextValue();
                 double Q = resonance.getNextValue();// * 4.0;
                 filterA[channel]->SetResonance   (Q);
-                filterA[channel]->SetCutoff      (cutoff.getNextValue());
+                filterA[channel]->SetCutoff      (combinedCutoff);
                 filterA[channel]->SetDrive       (drive.getNextValue());
             }
             
@@ -524,10 +525,10 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
             
             for(int channel = 0; channel < 2; channel++)
             {
-                // remap resonance
-                double Q = resonance.getNextValue();// * 4.0;
+				double combinedCutoff = cutoffFromEnvelope.getNextValue() + cutoff.getNextValue();
+				double Q = resonance.getNextValue();// * 4.0;
                 filterB[channel]->SetResonance   (Q);
-                filterB[channel]->SetCutoff      (cutoff.getNextValue());
+                filterB[channel]->SetCutoff      (combinedCutoff);
                 filterB[channel]->SetDrive       (drive.getNextValue());
             }
             
