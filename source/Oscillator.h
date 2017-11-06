@@ -152,7 +152,7 @@ private:
     
     double updatePhaseIncrement(double freq)
     {
-        double nyFreq = jmin( freq, sampleRate / 2.0 );
+        const double nyFreq = jmin( freq, sampleRate / 2.0 );
         return ( ( 2.0 * double_Pi ) * nyFreq ) / sampleRate;
     }
     

@@ -808,11 +808,11 @@ float MonosynthPluginAudioProcessor::softClip(float s)
 
 void MonosynthPluginAudioProcessor::calculateLFOSyncedFreq()
 {
-    double beats_per_minute = lastPosInfo.bpm;
-    double seconds_per_beat = 60.0 / beats_per_minute;
-   // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
-    double seconds_per_note = seconds_per_beat * (lastPosInfo.timeSigDenominator / lfo_division);
-    
+    const double beats_per_minute = lastPosInfo.bpm;
+    const double seconds_per_beat = 60.0 / beats_per_minute;
+    const double seconds_per_note = seconds_per_beat * (lastPosInfo.timeSigDenominator / lfo_division);
+   
+	// double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
     
     lfo_synced_freq =  1.0 / seconds_per_note;
 }
