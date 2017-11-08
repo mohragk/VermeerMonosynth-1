@@ -139,8 +139,8 @@ private:
     
     double x;
     double g;
-    double drive;
-    double sampleRate;
+  
+	double sampleRate;
     double multiplier, multiplierCutoff;
     
    

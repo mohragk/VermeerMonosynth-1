@@ -29,9 +29,6 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "adsr/ADSR.h"
 #include "MoogLadders/ImprovedModel.h"
-#include "MoogLadders/HuovilainenModel.h"
-#include "MoogLadders/MusicDSPModel.h"
-#include "MoogLadders/OberheimVariationModel.h"
 #include "MoogLadders/MicrotrackerModel.h"
 
 #include "lfo.h"

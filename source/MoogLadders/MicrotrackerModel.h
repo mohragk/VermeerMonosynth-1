@@ -82,9 +82,8 @@ private:
 	double p32;
 	double p33;
 	double p34;
-    
-    double sampleRate;
-    double drive;
+
+	double sampleRate;
 };
 
 #endif

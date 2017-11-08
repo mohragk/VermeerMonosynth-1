@@ -426,7 +426,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
             lfo.setPhase(0.0);
         
         lfo.setFrequency( lfo_synced_freq ); //*lfoRateParam);
-        double lfoValue = lfo.nextSample();
+         const double lfoValue = lfo.nextSample();
 
 		//
 		// @TODO: make it so it only resets once when higer, not always 
@@ -446,8 +446,8 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 		lfo_synced_freq_old = lfo_synced_freq;
         
         // Modulation by envelope and LFO (if set)
-        double lfoFilterRange = 6000.0;
-        double contourRange = *filterContourParam * contourVelocity;
+        const double lfoFilterRange = 6000.0;
+        const double contourRange = *filterContourParam * contourVelocity;
         currentCutoff = (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
         if (currentCutoff > 14000.0) currentCutoff = 14000.0;

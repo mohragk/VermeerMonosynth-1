@@ -100,7 +100,7 @@ public:
         clearCurrentNote();
     }
     
-    void pitchWheelMoved (int newValue) override
+    void pitchWheelMoved (const int newValue) override
     {
         const double range = 24.0;
         const float v = newValue - 8192;
@@ -125,7 +125,7 @@ public:
     
     
     // Set pitch envelope parameters.
-    void setPitchEnvelope (float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve)
+    void setPitchEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
     {
         pitchEnvelope->setAttackRate(attack);
         pitchEnvelope->setDecayRate(decay);
@@ -136,41 +136,41 @@ public:
     }
     
     // Pretty dumb name, but this influences the amount of pitch deviation generated from the envelope.
-    void setPitchEnvelopeAmount ( float pitchMod )
+    void setPitchEnvelopeAmount (const float pitchMod )
     {
         pitchModAmount = pitchMod;
     }
     
-    void setPitchModulation(double amt)
+    void setPitchModulation(const double amt)
     {
         const double rangeSemitones = 24.0;
         
         pitchModulation = amt * rangeSemitones;
     }
     
-    void setOscGains(float g1, float g2, float g3)
+    void setOscGains(const float g1, const float g2, const float g3)
     {
         osc1->setGain(g1);
         osc2->setGain(g2);
         osc3->setGain(g3);
     }
     
-    void setOsc1DetuneAmount(double fine, int coarse)
+    void setOsc1DetuneAmount(const double fine, const int coarse)
     {
         oscDetuneAmount[0] = fine + (float) coarse; //Semitones
     }
     
-    void setOsc2DetuneAmount(double fine, int coarse)
+    void setOsc2DetuneAmount(const double fine, const int coarse)
     {
         oscDetuneAmount[1] = fine + (float) coarse; //Semitones
     }
     
-    void setOsc3DetuneAmount(double fine, int coarse)
+    void setOsc3DetuneAmount(const double fine, const int coarse)
     {
         oscDetuneAmount[2] = fine + (float) coarse; //Semitones
     }
     
-    void setOscModes(int mode1, int mode2, int mode3)
+    void setOscModes(const int mode1, const int mode2, const int mode3)
     {
         osc1->setMode(mode1);
         osc2->setMode(mode2);
@@ -248,7 +248,7 @@ private:
         return localSample;
     }
     
-    float inline semitoneOffsetToFreq(double semitones, double freq)
+    float inline semitoneOffsetToFreq(const double semitones, const double freq)
     {
         return pow(2.0, (semitones / 12.0)) * freq;
     }

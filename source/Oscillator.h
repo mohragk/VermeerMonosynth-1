@@ -24,28 +24,28 @@ public:
         OSCILLATOR_MODE_NOISE
     };
     
-    void setSampleRate(double sr)
+    void setSampleRate(const double sr) noexcept
     {
         sampleRate = sr;
     }
     
-    void setFrequency(double f)
+    void setFrequency(const double f)
     {
         frequency = f;
        // phaseIncrement = updatePhaseIncrement(frequency);
     }
     
-    void setPhase(double ph)
+    void setPhase(const double ph)
     {
         phase = ph;
     }
     
-    void setGain(double g)
+    void setGain(const double g)
     {
         gain = g;
     }
     
-    void setMode(int m)
+    void setMode(const int m)
     {
         if (m == 0)
             mode = OSCILLATOR_MODE_SINE;
@@ -99,7 +99,7 @@ public:
     
 private:
     
-    double naiveWaveFormForMode(OscillatorMode mode)
+    double naiveWaveFormForMode(const OscillatorMode mode)
     {
         const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;;
@@ -132,7 +132,7 @@ private:
     }
     
     
-    double poly_blep (double t, double phaseIncrement)
+    double poly_blep (double t, const double phaseIncrement)
     {
         const double dt = phaseIncrement / (2.0 * double_Pi); // normalize phase increment
         
@@ -150,7 +150,7 @@ private:
     }
     
     
-    double updatePhaseIncrement(double freq)
+    double updatePhaseIncrement(const double freq)
     {
         const double nyFreq = jmin( freq, sampleRate / 2.0 );
         return ( ( 2.0 * double_Pi ) * nyFreq ) / sampleRate;

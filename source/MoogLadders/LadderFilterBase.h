@@ -49,9 +49,10 @@ public:
 	
 protected:
 	
-    float cutoff;
-    float resonance;
-    float sampleRate;
+	double sampleRate;
+	double cutoff;
+	double resonance;
+	double drive;
 };
 
 #endif
