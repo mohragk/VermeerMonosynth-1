@@ -126,6 +126,7 @@ public:
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
 	void setEnvelopeState(ADSR envelope);
+    void setHardSync(int sync);
 
 	bool noteIsBeingPlayed();
 	
@@ -191,6 +192,8 @@ public:
     AudioParameterInt* filterSelectParam;
     
     AudioParameterInt* lfoDivisionParam;
+    
+    AudioParameterInt* oscSyncParam;
     
     
 private:

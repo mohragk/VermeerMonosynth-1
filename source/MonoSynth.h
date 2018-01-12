@@ -181,6 +181,11 @@ public:
 	{
 		envState =  envelope.getState();
 	}
+    
+    void setHardSync(bool sync)
+    {
+        hardSync = sync;
+    }
 
 private:
     
@@ -212,6 +217,10 @@ private:
 				osc1->setFrequency(osc1Detuned);
 				osc2->setFrequency(osc2Detuned);
 				osc3->setFrequency(osc3Detuned);
+                
+                               
+                if (osc1->isRephase() && hardSync)
+                    osc2->setPhase(0.0);
 
 				// Calculate samples and divide by number of oscillators
 				sample = (osc1->nextSample() + osc2->nextSample() + osc3->nextSample()) / numOscillators;
@@ -278,6 +287,8 @@ private:
     double midiFrequency;
     double maxFreq = 0, minFreq = 0;
     double pitchModAmount;
+    
+    bool hardSync = false;
 };
 
 

@@ -171,7 +171,9 @@ private:
     
         filterSelectSlider,
     
-        lfoSyncedFreqSlider
+        lfoSyncedFreqSlider,
+    
+        oscSyncSlider
         ;
 
     ScopedPointer<Drawable> drawable1;

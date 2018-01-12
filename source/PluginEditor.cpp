@@ -337,6 +337,13 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc3OffsetLabel->setColour (TextEditor::textColourId, Colours::black);
     osc3OffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
+    addAndMakeVisible (oscSyncSlider = new ParameterSlider(*owner.oscSyncParam));
+    oscSyncSlider->setSliderStyle (Slider::LinearVertical);
+    oscSyncSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
+    oscSyncSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
+    //oscSyncSlider->setDoubleClickReturnValue(true, 0.5);
+   
+    
     
     
     //Pitch MODULATION SLIDER
@@ -804,6 +811,8 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
     filterSelectSlider = nullptr;
     
     lfoSyncedFreqSlider = nullptr;
+    
+    oscSyncSlider = nullptr;
 
     drawable1 = nullptr;
     drawable2 = nullptr;
@@ -1177,6 +1186,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     osc3TuneSlider->setBounds (160, 263, 64, 64);
     osc3TuneLabel->setBounds (160, 247, 65, 24);
     osc3WaveformSlider->setBounds (160, 178, 64, 64);
+    
+    oscSyncSlider->setBounds (232, 178, 64, 64);
     
 	
 	filterLabel->setBounds (320, 64, 65, 24);

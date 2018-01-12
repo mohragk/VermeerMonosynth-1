@@ -56,6 +56,9 @@ osc2ModeParam(nullptr),
 osc3ModeParam(nullptr),
 
 
+oscSyncParam(nullptr),
+
+
 
 
       filterParam(nullptr),
@@ -142,6 +145,8 @@ ampEnvelope(nullptr)
     addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24.0, 0.0));
     addParameter (osc2OffsetParam = new AudioParameterInt("osc2Offset", "OSC2 Offset", -24, 24.0, 0.0));
     addParameter (osc3OffsetParam = new AudioParameterInt("osc3Offset", "OSC3 Offset", -24, 24.0, 0.0));
+    
+    addParameter (oscSyncParam = new AudioParameterInt("oscSync", "osc2>osc1 sync", 0, 1, 0));
 
 
     //ENV 1
@@ -428,18 +433,6 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         lfo.setFrequency( lfo_synced_freq ); //*lfoRateParam);
          const double lfoValue = lfo.nextSample();
 
-		//
-		// @TODO: make it so it only resets once when higer, not always 
-		//
-		/*if (1.0 / lfo_synced_freq < cutoffRampTimeDefault)
-		{
-			cutoffRampTime = 1.0 / lfo_synced_freq;
-			cutoff.reset(sampleRate, cutoffRampTime);
-		}*/
-		
-		
-		
-
         modAmount = *lfoIntensityParam;                            // Make parameter
         applyModToTarget(*modTargetParam, lfoValue * modAmount);
         
@@ -692,6 +685,8 @@ void inline MonosynthPluginAudioProcessor::updateParameters()
 
 	setEnvelopeState( *ampEnvelope );
     
+    setHardSync(*oscSyncParam);
+    
 }
 
 
@@ -754,6 +749,13 @@ void MonosynthPluginAudioProcessor::setEnvelopeState(ADSR envelope)
 
 	return static_cast<SineWaveVoice*>(synth.getVoice(0))->setEnvelopeState(envelope);
 
+}
+
+void MonosynthPluginAudioProcessor::setHardSync(int sync)
+{
+    
+    return static_cast<SineWaveVoice*>(synth.getVoice(0))->setHardSync(sync);
+    
 }
 
 

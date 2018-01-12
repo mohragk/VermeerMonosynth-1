@@ -57,6 +57,10 @@ public:
             mode = OSCILLATOR_MODE_NOISE;
     }
     
+    bool isRephase()
+    {
+        return rephase;
+    }
 
     double nextSample()
     {
@@ -89,9 +93,12 @@ public:
         
         phase += phaseIncrement;
         
+        rephase = false;
+        
         while (phase >= two_Pi)
         {
             phase -= two_Pi;
+            rephase = true;
         }
         
         return value * level * gain;
@@ -156,13 +163,13 @@ private:
         return ( ( 2.0 * double_Pi ) * nyFreq ) / sampleRate;
     }
     
-    
+
     double sampleRate, phase, phaseIncrement, frequency;
     double level, gain;
     
     OscillatorMode mode;
     
-    
+    bool rephase = false;
     
 };
 
