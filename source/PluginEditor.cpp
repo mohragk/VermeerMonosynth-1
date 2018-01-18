@@ -338,8 +338,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc3OffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     addAndMakeVisible (oscSyncSlider = new ParameterSlider(*owner.oscSyncParam));
-    oscSyncSlider->setSliderStyle (Slider::LinearVertical);
-    oscSyncSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
+    oscSyncSlider->setSliderStyle (Slider::LinearHorizontal);
+    oscSyncSlider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
     oscSyncSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     //oscSyncSlider->setDoubleClickReturnValue(true, 0.5);
    
@@ -709,7 +709,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     // set resize limits for this plug-in
 	
-    setResizeLimits (820, 550, 820, 550);
+    setResizeLimits (820, 570, 820, 570);
 	
 
     // set our component's initial size to be the last one that was stored in the filter's settings
@@ -1187,7 +1187,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     osc3TuneLabel->setBounds (160, 247, 65, 24);
     osc3WaveformSlider->setBounds (160, 178, 64, 64);
     
-    oscSyncSlider->setBounds (232, 178, 64, 64);
+    oscSyncSlider->setBounds (70, 418, 34, 34);
     
 	
 	filterLabel->setBounds (320, 64, 65, 24);
