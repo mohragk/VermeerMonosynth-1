@@ -210,6 +210,9 @@ ampEnvelope(nullptr)
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
 {
     keyboardState.removeListener(this);
+
+	synth.clearSounds();
+	synth.clearVoices();
 }
 
 
@@ -257,15 +260,18 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
 
     for(int channel = 0; channel < 2; channel++)
     {
-        filterA[channel] = new ImprovedMoog();
-        filterB[channel] = new MicrotrackerMoog();
+		//if(filterA[channel] != nullptr)
+			filterA[channel] = new ImprovedMoog();
+
+		//if (filterB[channel] != nullptr)
+			filterB[channel] = new MicrotrackerMoog();
     }
 	
 	 lfo.setSampleRate(sampleRate);
     
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    synth.setCurrentPlaybackSampleRate (newSampleRate);
+    synth.setCurrentPlaybackSampleRate (sampleRate);
     keyboardState.reset();
    
     cutoff.reset(sampleRate, cutoffRampTimeDefault);
@@ -288,8 +294,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
         
     }
     
-    filterEnvelope->setSampleRate(newSampleRate);
-    ampEnvelope->setSampleRate(newSampleRate);
+    filterEnvelope->setSampleRate(sampleRate);
+    ampEnvelope->setSampleRate(sampleRate);
     
 
 }
@@ -299,6 +305,8 @@ void MonosynthPluginAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     keyboardState.reset();
+	//synth.clearSounds();
+	//synth.clearVoices();
    
 }
 
@@ -306,7 +314,7 @@ void MonosynthPluginAudioProcessor::reset()
 {
     // Use this method as the place to clear any delay lines, buffers, etc, as it
     // means there's been a break in the audio's continuity.
-  
+ 
 }
 
 

@@ -105,7 +105,8 @@ public:
         const double range = 24.0;
         const float v = newValue - 8192;
         
-        pitchBendOffset =  range * (v / 8192.0);
+        //pitchBendOffset =  range * (v / 8192.0);
+		pitchBendOffset = 0;
     }
     
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override
@@ -157,17 +158,17 @@ public:
     
     void setOsc1DetuneAmount(const double fine, const int coarse)
     {
-        oscDetuneAmount[0] = fine + (float) coarse; //Semitones
+        oscDetuneAmount[0] = fine + (double) coarse; //Semitones
     }
     
     void setOsc2DetuneAmount(const double fine, const int coarse)
     {
-        oscDetuneAmount[1] = fine + (float) coarse; //Semitones
+        oscDetuneAmount[1] = fine + (double) coarse; //Semitones
     }
     
     void setOsc3DetuneAmount(const double fine, const int coarse)
     {
-        oscDetuneAmount[2] = fine + (float) coarse; //Semitones
+        oscDetuneAmount[2] = fine + (double) coarse; //Semitones
     }
     
     void setOscModes(const int mode1, const int mode2, const int mode3)
@@ -237,10 +238,9 @@ private:
     
     
     
-    template <typename FloatType>
-    FloatType softClip(FloatType s)
+    double softClip(double s)
     {
-        FloatType localSample = s;
+		double localSample = s;
         if (localSample > 1.0f)
         {
             localSample = 0.75f;
@@ -257,7 +257,7 @@ private:
         return localSample;
     }
     
-    float inline semitoneOffsetToFreq(const double semitones, const double freq)
+    double inline semitoneOffsetToFreq(const double semitones, const double freq)
     {
         return pow(2.0, (semitones / 12.0)) * freq;
     }
@@ -280,7 +280,7 @@ private:
     double pitchModulation, ampModulation;
     double oscDetuneAmount[3];
     
-    double pitchBendOffset;
+    double pitchBendOffset = 0;
     double glideTime;
   
     

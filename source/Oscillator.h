@@ -71,6 +71,9 @@ public:
         
         
         phaseIncrement = updatePhaseIncrement(frequency);
+
+		if (phaseIncrement == 0.0)
+			return value;
         
         if( mode == OSCILLATOR_MODE_SINE )
         {
