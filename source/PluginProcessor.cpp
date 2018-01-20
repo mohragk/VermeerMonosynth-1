@@ -260,11 +260,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
 
     for(int channel = 0; channel < 2; channel++)
     {
-		//if(filterA[channel] != nullptr)
-			filterA[channel] = new ImprovedMoog();
-
-		//if (filterB[channel] != nullptr)
-			filterB[channel] = new SEMModel();
+        filterA[channel] = new ImprovedMoog();
+        filterB[channel] = new SEMModel();
     }
 	
 	 lfo.setSampleRate(sampleRate);
@@ -305,9 +302,6 @@ void MonosynthPluginAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     keyboardState.reset();
-	//synth.clearSounds();
-	//synth.clearVoices();
-   
 }
 
 void MonosynthPluginAudioProcessor::reset()
@@ -368,8 +362,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     applyFilterEnvelope(buffer);
     
     
-    
-    
     // applying our filter
     applyFilter(buffer);
     
@@ -396,9 +388,7 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer)
 {
    
-    const float gainLevel = *gainParam;// * ampEnvelope->getOutput();
-    
-    
+    const float gainLevel = *gainParam;
 
     for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
         buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
