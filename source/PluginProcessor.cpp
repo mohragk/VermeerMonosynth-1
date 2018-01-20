@@ -264,7 +264,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
 			filterA[channel] = new ImprovedMoog();
 
 		//if (filterB[channel] != nullptr)
-			filterB[channel] = new MicrotrackerMoog();
+			filterB[channel] = new SEMModel();
     }
 	
 	 lfo.setSampleRate(sampleRate);

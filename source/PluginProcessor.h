@@ -29,7 +29,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "adsr/ADSR.h"
 #include "MoogLadders/ImprovedModel.h"
-#include "MoogLadders/MicrotrackerModel.h"
+#include "MoogLadders/SEMModel.h"
 
 #include "lfo.h"
 

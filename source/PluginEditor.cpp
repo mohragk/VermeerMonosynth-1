@@ -1292,7 +1292,6 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 		filterDriveSlider->setEnabled(true);
 		filterDriveLabel->setAlpha(1.0);
 	}
-
 	
 	if (getProcessor().noteIsBeingPlayed())
 	{

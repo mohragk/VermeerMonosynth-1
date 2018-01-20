@@ -14,7 +14,6 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#pragma once
 
 #ifndef IMPROVED_LADDER_H
 #define IMPROVED_LADDER_H
@@ -39,111 +38,104 @@ Original Implementation: D'Angelo, Valimaki
 
 class ImprovedMoog : public LadderFilterBase
 {
-public:
+	public:
     
-    ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0)
-    {
-        zeromem(V, sizeof(V));
-        zeromem(dV, sizeof(dV));
-        zeromem(tV, sizeof(tV));
+		ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0)
+		{
+			zeromem(V, sizeof(V));
+			zeromem(dV, sizeof(dV));
+			zeromem(tV, sizeof(tV));
         
-        drive = 1.0f;
+			drive = 1.0f;
         
-        SetCutoff(1000.0f); // normalized cutoff frequency
-        SetResonance(0.1f); // [0, 4]
+			SetCutoff(1000.0f); // normalized cutoff frequency
+			SetResonance(0.1f); // [0, 4]
 		
-    }
+		}
     
-    virtual ~ImprovedMoog()
-    {
+		virtual ~ImprovedMoog()
+		{
 
-    }
+		}
     
-    virtual void Process(float* samples, uint32_t n) noexcept override
-    {
+		virtual void Process(float* samples, uint32_t n) noexcept override
+		{
 		
-        double dV0, dV1, dV2, dV3;
+			double dV0, dV1, dV2, dV3;
 
-        for (int i = 0; i < n; i++)
-        {
+			for (int i = 0; i < n; i++)
+			{
             
-            dV0 = -g * (tanh((drive * samples[i] + resonance * V[3]) / (2.0 * VT)) + tV[0]);
-            V[0] += (dV0 + dV[0]) / (2.0 * sampleRate * multiplier);
-            dV[0] = dV0;
-            tV[0] = tanh(V[0] / (2.0 * VT));
+				dV0 = -g * (tanh((drive * samples[i] + resonance * V[3]) / (2.0 * VT)) + tV[0]);
+				V[0] += (dV0 + dV[0]) / (2.0 * sampleRate);
+				dV[0] = dV0;
+				tV[0] = tanh(V[0] / (2.0 * VT));
             
-            dV1 = g * (tV[0] - tV[1]);
-            V[1] += (dV1 + dV[1]) / (2.0 * sampleRate * multiplier);
-            dV[1] = dV1;
-            tV[1] = tanh(V[1] / (2.0 * VT));
+				dV1 = g * (tV[0] - tV[1]);
+				V[1] += (dV1 + dV[1]) / (2.0 * sampleRate);
+				dV[1] = dV1;
+				tV[1] = tanh(V[1] / (2.0 * VT));
             
-            dV2 = g * (tV[1] - tV[2]);
-            V[2] += (dV2 + dV[2]) / (2.0 * sampleRate * multiplier);
-            dV[2] = dV2;
-            tV[2] = tanh(V[2] / (2.0 * VT));
+				dV2 = g * (tV[1] - tV[2]);
+				V[2] += (dV2 + dV[2]) / (2.0 * sampleRate);
+				dV[2] = dV2;
+				tV[2] = tanh(V[2] / (2.0 * VT));
             
-            dV3 = g * (tV[2] - tV[3]);
-            V[3] += (dV3 + dV[3]) / (2.0 * sampleRate * multiplier);
-            dV[3] = dV3;
-            tV[3] = tanh(V[3] / (2.0 * VT));
+				dV3 = g * (tV[2] - tV[3]);
+				V[3] += (dV3 + dV[3]) / (2.0 * sampleRate);
+				dV[3] = dV3;
+				tV[3] = tanh(V[3] / (2.0 * VT));
             
-            samples[i] = V[3];
-        }
-    }
+				samples[i] = V[3];
+			}
+		}
     
     
     
-    virtual void SetSampleRate (float sr) override
-    {
-        sampleRate = sr;
-        multiplier = 96000.0 / sr;
-                
-    }
+		virtual void SetSampleRate (float sr) override
+		{
+			sampleRate = sr;
+		}
 	
-    virtual void SetResonance(float r) override
-    {
-        resonance = r * 4.0;
-    }
+		virtual void SetResonance(float r) override
+		{
+			resonance = r * 4.0;
+		}
     
-    virtual void SetCutoff(float c) override
-    {
+		virtual void SetCutoff(float c) override
+		{
+			cutoff = c;
 
-		jassert(sampleRate > 0.0 );
-
-        cutoff = c;
-
-        x = (MOOG_PI * cutoff) / (sampleRate * multiplier);
-        g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);
-	}
+			x = (MOOG_PI * cutoff) / (sampleRate);
+			g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);
+		}
     
-    virtual void SetDrive ( float d ) override
-    {
-        drive = d;
-    }
+		virtual void SetDrive ( float d ) override
+		{
+			drive = d;
+		}
 	
-    double GetSampleRate() override
-    {
-        return sampleRate;
-    }
+		double GetSampleRate() override
+		{
+			return sampleRate;
+		}
     
-    double GetCutoff() override
-    {
-        return cutoff;
-    }
+		double GetCutoff() override
+		{
+			return cutoff;
+		}
     
-private:
+	private:
 	
-    double V[4];
-    double dV[4];
-    double tV[4];
+		double V[4];
+		double dV[4];
+		double tV[4];
     
-    double x;
-    double g;
-  
-	double sampleRate;
-    double multiplier, multiplierCutoff;
-    
-   
+		double x;
+		double g;
+
+		double sampleRate;
+ 
 };
 
 #endif
