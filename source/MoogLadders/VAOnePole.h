@@ -144,6 +144,9 @@ class VAOnePole : public LadderFilterBase
     double Delta;
     double Epsilon;
     
+    double a0;
+    double Z1;
+    
     double Feedback;
     
         
@@ -152,8 +155,7 @@ class VAOnePole : public LadderFilterBase
         FilterType type;
     
        
-        double a0;
-        double Z1;
+
         
         double sampleRate;
 };

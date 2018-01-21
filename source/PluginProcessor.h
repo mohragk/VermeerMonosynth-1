@@ -28,10 +28,12 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "adsr/ADSR.h"
+
 #include "MoogLadders/ImprovedModel.h"
 #include "MoogLadders/SEMModel.h"
 #include "MoogLadders/VAOnePole.h"
 #include "MoogLadders/ThreeFiveModel.h"
+#include "MoogLadders/DiodeLadderModel.h"
 
 
 #include "lfo.h"
@@ -233,7 +235,7 @@ private:
 
 	bool noteIsPlaying = false;
     
-    ScopedPointer<LadderFilterBase> filterA[2], filterB[2];
+    ScopedPointer<LadderFilterBase> filterA[2], filterB[2], filterC[2];
  
     
     enum modTarget {

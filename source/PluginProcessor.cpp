@@ -196,7 +196,7 @@ ampEnvelope(nullptr)
     
     
     // Filter Select Parameter
-    addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 1, 0));
+    addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 0));
 
     initialiseSynth();
 
@@ -263,7 +263,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
     for(int channel = 0; channel < 2; channel++)
     {
         filterA[channel] = new ImprovedMoog();
-        filterB[channel] = new ThreeFiveModel();
+        filterB[channel] = new SEMModel();
+        filterC[channel] = new DiodeLadderModel();
     }
 	
 	 lfo.setSampleRate(sampleRate);
@@ -495,6 +496,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
             {
 				double combinedCutoff = cutoffFromEnvelope.getNextValue() + cutoff.getNextValue();
                 double Q = resonance.getNextValue();// * 4.0;
+                
                 filterA[channel]->SetResonance   (Q);
                 filterA[channel]->SetCutoff      (combinedCutoff);
                 filterA[channel]->SetDrive       (drive.getNextValue());
@@ -514,7 +516,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
             //std::cout << "jepperdeklep" << std::endl;
         }
     }
-    else
+    else if (*filterSelectParam == 1)
     {
         for(int step = 0; step < numSamples; step += stepSize)
         {
@@ -533,6 +535,32 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
             
             filterB[0]->Process(channelDataLeft, stepSize);
             filterB[1]->Process(channelDataRight, stepSize);
+            
+            samplesLeftOver -= stepSize;
+            
+            channelDataLeft  += stepSize;
+            channelDataRight += stepSize;
+        }
+    }
+    else
+    {
+        for(int step = 0; step < numSamples; step += stepSize)
+        {
+            
+            for(int channel = 0; channel < 2; channel++)
+            {
+                double combinedCutoff = cutoffFromEnvelope.getNextValue() + cutoff.getNextValue();
+                double Q = resonance.getNextValue();// * 4.0;
+                filterC[channel]->SetResonance   (Q);
+                filterC[channel]->SetCutoff      (combinedCutoff);
+                filterC[channel]->SetDrive       (drive.getNextValue());
+            }
+            
+            if (samplesLeftOver < stepSize)
+                stepSize = samplesLeftOver;
+            
+            filterC[0]->Process(channelDataLeft, stepSize);
+            filterC[1]->Process(channelDataRight, stepSize);
             
             samplesLeftOver -= stepSize;
             
