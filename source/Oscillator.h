@@ -68,8 +68,6 @@ public:
         double value = 0.0;
         double t = phase / two_Pi; // normalize period
         
-        
-        
         phaseIncrement = updatePhaseIncrement(frequency);
 
 		if (phaseIncrement == 0.0)
