@@ -125,7 +125,7 @@ class DiodeLadderModel : public LadderFilterBase
         
         U = fast_tanh(drive * U);
         
-        return va_LPF4.doFilter( va_LPF3.doFilter( va_LPF2.doFilter( va_LPF1.doFilter( U ) ) ) );
+        return 2.0 * va_LPF4.doFilter( va_LPF3.doFilter( va_LPF2.doFilter( va_LPF1.doFilter( U ) ) ) ) ;
     }
     
     virtual void Process(float* samples, uint32_t n) noexcept override
