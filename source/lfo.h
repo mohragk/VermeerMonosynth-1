@@ -26,23 +26,23 @@ class LFO
                 OSCILLATOR_MODE_NOISE
          };
         
-        void setSampleRate(double sr)
+        void setSampleRate(const double sr) noexcept
         {
             sampleRate = sr;
         }
             
-        void setFrequency(double f)
+        void setFrequency(const double f)
         {
             frequency = f;
 			phaseIncrement = updatePhaseIncrement(frequency);
         }
         
-        void setPhase(double ph)
+        void setPhase(const double ph)
         {
             phase = ph;
         }
         
-        void setMode(int m)
+        void setMode(const int m)
         {
             if (m == 0)
                 mode = OSCILLATOR_MODE_SINE;
@@ -56,9 +56,6 @@ class LFO
             
         double nextSample()
         {
-
-			
-
             const double two_Pi = 2.0 * double_Pi;
             double value = 0.0;
             
@@ -68,8 +65,7 @@ class LFO
                     value = sin(phase);
                     break;
                 case OSCILLATOR_MODE_SAW:
-                    //value = (2.0 * phase / two_Pi) - 1.0;
-                    value =  1.0 - (2.0 * phase / two_Pi);
+                    value = 1.0 - (phase / two_Pi);
                     break;
                 case OSCILLATOR_MODE_SQUARE:
                     if (phase <= double_Pi) {
@@ -99,7 +95,7 @@ class LFO
     private:
     
      
-        double updatePhaseIncrement(double freq)
+        double updatePhaseIncrement(const double freq)
         {
             return ( ( 2.0 * double_Pi ) * freq ) / sampleRate;
         }

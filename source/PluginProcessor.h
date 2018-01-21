@@ -28,11 +28,13 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "adsr/ADSR.h"
+
 #include "MoogLadders/ImprovedModel.h"
-#include "MoogLadders/HuovilainenModel.h"
-#include "MoogLadders/MusicDSPModel.h"
-#include "MoogLadders/OberheimVariationModel.h"
-#include "MoogLadders/MicrotrackerModel.h"
+#include "MoogLadders/SEMModel.h"
+#include "MoogLadders/VAOnePole.h"
+#include "MoogLadders/ThreeFiveModel.h"
+#include "MoogLadders/DiodeLadderModel.h"
+
 
 #include "lfo.h"
 
@@ -42,13 +44,13 @@
 /**
     As the name suggest, this class does the actual audio processing.
 */
-class JuceDemoPluginAudioProcessor  : public AudioProcessor,
+class MonosynthPluginAudioProcessor  : public AudioProcessor,
                                         private MidiKeyboardStateListener
 {
 public:
     //==============================================================================
-    JuceDemoPluginAudioProcessor();
-    ~JuceDemoPluginAudioProcessor();
+    MonosynthPluginAudioProcessor();
+    ~MonosynthPluginAudioProcessor();
 
     //==============================================================================
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
@@ -114,8 +116,6 @@ public:
     int lastUIWidth, lastUIHeight;
     
 
-    //intialise filter
-    void initFilter(int i);
     
     
     //Set Envelope values
@@ -131,6 +131,7 @@ public:
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
 	void setEnvelopeState(ADSR envelope);
+    void setHardSync(int sync);
 
 	bool noteIsBeingPlayed();
 	
@@ -197,6 +198,8 @@ public:
     
     AudioParameterInt* lfoDivisionParam;
     
+    AudioParameterInt* oscSyncParam;
+    
     
 private:
     //==============================================================================
@@ -232,7 +235,7 @@ private:
 
 	bool noteIsPlaying = false;
     
-    ScopedPointer<LadderFilterBase> filter[2];
+    ScopedPointer<LadderFilterBase> filterA[2], filterB[2], filterC[2];
  
     
     enum modTarget {
@@ -269,14 +272,17 @@ private:
     double sampleRate;
     
 	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain;
-	//
+	LinearSmoothedValue<double> cutoffFromEnvelope;
+	
 	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;
 	
     
     int lastNotePlayed;
     
+    double gainDB;
+    
     
     static BusesProperties getBusesProperties();
    
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JuceDemoPluginAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthPluginAudioProcessor)
 };

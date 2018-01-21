@@ -13,9 +13,10 @@ class MicrotrackerMoog : public LadderFilterBase
 
 public:
 
-	MicrotrackerMoog() : LadderFilterBase()
+	MicrotrackerMoog() : LadderFilterBase(), sampleRate(44100.0)
 	{
 		p0 = p1 = p2 = p3 = p32 = p33 = p34 = 0.0;
+        
 		SetCutoff(1000.0f);
 		SetResonance(0.10f);
 	}
@@ -60,6 +61,8 @@ public:
 
 	virtual void SetCutoff(float c) override
 	{
+        jassert(sampleRate > 0.0);
+        
 		cutoff = c * 2 * MOOG_PI / sampleRate;
 		cutoff = moog_min(cutoff, 1);
 	}
@@ -79,9 +82,8 @@ private:
 	double p32;
 	double p33;
 	double p34;
-    
-    double sampleRate;
-    double drive;
+
+	double sampleRate;
 };
 
 #endif

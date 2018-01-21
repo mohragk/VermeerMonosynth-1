@@ -43,14 +43,18 @@ public:
     virtual void SetCutoff(float c) = 0;
     virtual void SetDrive(float d) = 0;
     
-    float GetResonance() { return resonance; }
-    float GetCutoff() { return cutoff; }
+    enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
+    
+    virtual double GetResonance() { return resonance; }
+    virtual double GetCutoff() { return cutoff; }
+    virtual double GetSampleRate() { return sampleRate; }
 	
 protected:
 	
-    float cutoff;
-    float resonance;
-    float sampleRate;
+	double sampleRate;
+	double cutoff;
+	double resonance;
+	double drive;
 };
 
 #endif

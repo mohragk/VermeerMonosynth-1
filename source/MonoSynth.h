@@ -44,7 +44,7 @@ public:
 class SineWaveVoice  : public SynthesiserVoice
 {
 public:
-    SineWaveVoice() //: ampEnvelope(nullptr), pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
+    SineWaveVoice() //: pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
     
     {
 		pitchEnvelope = new ADSR();
@@ -54,6 +54,14 @@ public:
 		osc3 = new Oscillator();
     }
     
+    ~SineWaveVoice()
+    {
+        pitchEnvelope = nullptr;
+        
+        osc1 = nullptr;
+        osc2 = nullptr;
+        osc3 = nullptr;
+    }
     
     bool canPlaySound (SynthesiserSound* sound) override
     {
@@ -64,7 +72,8 @@ public:
                     SynthesiserSound* /*sound*/,
                     int /*currentPitchWheelPosition*/) override
     {
-        const double sr = getSampleRate();
+        
+        double sr = getSampleRate();
 
 		// Might be abundant, but just to be safe
         pitchEnvelope->setSampleRate(sr);
@@ -91,12 +100,13 @@ public:
         clearCurrentNote();
     }
     
-    void pitchWheelMoved (int newValue) override
+    void pitchWheelMoved (const int newValue) override
     {
         const double range = 24.0;
         const float v = newValue - 8192;
         
-        pitchBendOffset =  range * (v / 8192.0);
+        //pitchBendOffset =  range * (v / 8192.0);
+		pitchBendOffset = 0;
     }
     
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override
@@ -114,8 +124,9 @@ public:
         processBlock (outputBuffer, startSample, numSamples);
     }
     
+    
     // Set pitch envelope parameters.
-    void setPitchEnvelope (float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve)
+    void setPitchEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
     {
         pitchEnvelope->setAttackRate(attack);
         pitchEnvelope->setDecayRate(decay);
@@ -126,41 +137,41 @@ public:
     }
     
     // Pretty dumb name, but this influences the amount of pitch deviation generated from the envelope.
-    void setPitchEnvelopeAmount ( float pitchMod )
+    void setPitchEnvelopeAmount (const float pitchMod )
     {
         pitchModAmount = pitchMod;
     }
     
-    void setPitchModulation(double amt)
+    void setPitchModulation(const double amt)
     {
         const double rangeSemitones = 24.0;
         
         pitchModulation = amt * rangeSemitones;
     }
     
-    void setOscGains(float g1, float g2, float g3)
+    void setOscGains(const float g1, const float g2, const float g3)
     {
         osc1->setGain(g1);
         osc2->setGain(g2);
         osc3->setGain(g3);
     }
     
-    void setOsc1DetuneAmount(double fine, int coarse)
+    void setOsc1DetuneAmount(const double fine, const int coarse)
     {
-        oscDetuneAmount[0] = fine + (float) coarse; //Semitones
+        oscDetuneAmount[0] = fine + (double) coarse; //Semitones
     }
     
-    void setOsc2DetuneAmount(double fine, int coarse)
+    void setOsc2DetuneAmount(const double fine, const int coarse)
     {
-        oscDetuneAmount[1] = fine + (float) coarse; //Semitones
+        oscDetuneAmount[1] = fine + (double) coarse; //Semitones
     }
     
-    void setOsc3DetuneAmount(double fine, int coarse)
+    void setOsc3DetuneAmount(const double fine, const int coarse)
     {
-        oscDetuneAmount[2] = fine + (float) coarse; //Semitones
+        oscDetuneAmount[2] = fine + (double) coarse; //Semitones
     }
     
-    void setOscModes(int mode1, int mode2, int mode3)
+    void setOscModes(const int mode1, const int mode2, const int mode3)
     {
         osc1->setMode(mode1);
         osc2->setMode(mode2);
@@ -171,17 +182,26 @@ public:
 	{
 		envState =  envelope.getState();
 	}
+    
+    void setHardSync(bool sync)
+    {
+        hardSync = sync;
+    }
 
 private:
     
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
+        osc1->setSampleRate(getSampleRate());
+        osc2->setSampleRate(getSampleRate());
+        osc3->setSampleRate(getSampleRate());
+        
 		if (envState != 0)
 		{
 			while (--numSamples >= 0)
 			{
-				FloatType sample = 0.0;
+				double sample = 0.0;
 
 				//Get Pitch Envelope Amount
 				double pitchEnvAmt = pitchEnvelope->process();
@@ -190,14 +210,18 @@ private:
 				double newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
-				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreq);
-				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreq);
-				double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreq);
+				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation, newFreq);
+				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation, newFreq);
+				double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation, newFreq);
 
 				//Set the new frequency
 				osc1->setFrequency(osc1Detuned);
 				osc2->setFrequency(osc2Detuned);
 				osc3->setFrequency(osc3Detuned);
+                
+                               
+                if (osc1->isRephase() && hardSync)
+                    osc2->setPhase(0.0);
 
 				// Calculate samples and divide by number of oscillators
 				sample = (osc1->nextSample() + osc2->nextSample() + osc3->nextSample()) / numOscillators;
@@ -214,10 +238,9 @@ private:
     
     
     
-    template <typename FloatType>
-    FloatType softClip(FloatType s)
+    double softClip(double s)
     {
-        FloatType localSample = s;
+		double localSample = s;
         if (localSample > 1.0f)
         {
             localSample = 0.75f;
@@ -234,11 +257,12 @@ private:
         return localSample;
     }
     
-    float inline semitoneOffsetToFreq(double semitones, double freq)
+    double inline semitoneOffsetToFreq(const double semitones, const double freq)
     {
         return pow(2.0, (semitones / 12.0)) * freq;
     }
 
+    double sampleRate;
 
     double phase = 0.0;
     
@@ -256,13 +280,15 @@ private:
     double pitchModulation, ampModulation;
     double oscDetuneAmount[3];
     
-    double pitchBendOffset;
+    double pitchBendOffset = 0;
     double glideTime;
   
     
     double midiFrequency;
     double maxFreq = 0, minFreq = 0;
     double pitchModAmount;
+    
+    bool hardSync = false;
 };
 
 

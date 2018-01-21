@@ -33,14 +33,14 @@
 //==============================================================================
 /** This is the editor component that our filter will display.
 */
-class JuceDemoPluginAudioProcessorEditor  : public AudioProcessorEditor,
+class MonosynthPluginAudioProcessorEditor  : public AudioProcessorEditor,
 										
                                             private Timer
                                             //private MidiKeyboardStateListener
 {
 public:
-    JuceDemoPluginAudioProcessorEditor (JuceDemoPluginAudioProcessor&);
-    ~JuceDemoPluginAudioProcessorEditor();
+    MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor&);
+    ~MonosynthPluginAudioProcessorEditor();
 
     //==============================================================================
     void paint (Graphics&) override;
@@ -171,7 +171,9 @@ private:
     
         filterSelectSlider,
     
-        lfoSyncedFreqSlider
+        lfoSyncedFreqSlider,
+    
+        oscSyncSlider
         ;
 
     ScopedPointer<Drawable> drawable1;
@@ -202,9 +204,9 @@ private:
     
     String font;
     //==============================================================================
-    JuceDemoPluginAudioProcessor& getProcessor() const
+    MonosynthPluginAudioProcessor& getProcessor() const
     {
-        return static_cast<JuceDemoPluginAudioProcessor&> (processor);
+        return static_cast<MonosynthPluginAudioProcessor&> (processor);
     }
 
     void updateTimecodeDisplay (AudioPlayHead::CurrentPositionInfo);
