@@ -38,7 +38,7 @@ class SEMModel : public LadderFilterBase
     
 		void reset()
 		{
-			Z11 = 0; Z12 = 0.0;
+			Z11 = 0.0; Z12 = 0.0;
 		}
     
     

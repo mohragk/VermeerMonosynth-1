@@ -121,8 +121,10 @@ ampEnvelope(nullptr)
     // so that we can easily access them later, but the base class will take care of
     // deleting them for us.
 
-    addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.4f));
+    //addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.4f));
 
+    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float> (0.0, 2.0, 0.0, 0.5, false), 0.9));
+    
     addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain",  0.0f, 1.0f, 0.9f));
     addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain",  0.0f, 1.0f, 0.9f));
     addParameter (osc3GainParam  = new AudioParameterFloat ("osc3Gain",  "OSC3 Gain",  0.0f, 1.0f, 0.9f));
@@ -389,6 +391,7 @@ void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer)
 {
    
     const float gainLevel = *gainParam;
+ 
 
     for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
         buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
@@ -466,6 +469,8 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
     
     float* channelDataLeft  = (float*) buffer.getWritePointer(0);
 	float* channelDataRight = (float*) buffer.getWritePointer(1);
+    
+   
     
     //
     //  break buffer into chunks

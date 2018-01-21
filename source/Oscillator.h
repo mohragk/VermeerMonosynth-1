@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(44100.0), phase(0.0), level(0.25)
+    Oscillator() : sampleRate(44100.0), phase(0.0), level(0.75)
     {
         
     }

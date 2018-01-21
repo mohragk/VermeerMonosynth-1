@@ -274,6 +274,8 @@ private:
     
     int lastNotePlayed;
     
+    double gainDB;
+    
     
     static BusesProperties getBusesProperties();
    
