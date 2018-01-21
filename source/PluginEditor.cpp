@@ -1279,19 +1279,21 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 {
     updateTimecodeDisplay (getProcessor().lastPosInfo);
 
+    
+    /*
 	if (filterSelectSlider->getValue() == 1)
 	{
 		filterDriveSlider->setAlpha(0.2);
 		filterDriveLabel->setAlpha(0.2);
 		filterDriveSlider->setEnabled(false);
 	}
-		
 	else
 	{
 		filterDriveSlider->setAlpha(1.0);
 		filterDriveSlider->setEnabled(true);
 		filterDriveLabel->setAlpha(1.0);
 	}
+     */
 	
 	if (getProcessor().noteIsBeingPlayed())
 	{

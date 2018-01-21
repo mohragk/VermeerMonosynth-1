@@ -30,6 +30,9 @@
 #include "adsr/ADSR.h"
 #include "MoogLadders/ImprovedModel.h"
 #include "MoogLadders/SEMModel.h"
+#include "MoogLadders/VAOnePole.h"
+#include "MoogLadders/ThreeFiveModel.h"
+
 
 #include "lfo.h"
 

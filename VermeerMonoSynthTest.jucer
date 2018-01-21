@@ -75,6 +75,9 @@
     <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"
           file="Resources/MonoSynthIconSmall.png"/>
     <GROUP id="{902056B3-1486-08AF-7310-B5F8845202B7}" name="MoogLadders">
+      <FILE id="xJQKhJ" name="ThreeFiveModel.h" compile="0" resource="0"
+            file="source/MoogLadders/ThreeFiveModel.h"/>
+      <FILE id="cKnMgL" name="VAOnePole.h" compile="0" resource="0" file="source/MoogLadders/VAOnePole.h"/>
       <FILE id="TA5s5a" name="SEMModel.h" compile="0" resource="0" file="source/MoogLadders/SEMModel.h"/>
       <FILE id="ItxKe9" name="HuovilainenModel.h" compile="0" resource="0"
             file="source/MoogLadders/HuovilainenModel.h"/>

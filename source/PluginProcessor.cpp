@@ -263,7 +263,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
     for(int channel = 0; channel < 2; channel++)
     {
         filterA[channel] = new ImprovedMoog();
-        filterB[channel] = new SEMModel();
+        filterB[channel] = new ThreeFiveModel();
     }
 	
 	 lfo.setSampleRate(sampleRate);
