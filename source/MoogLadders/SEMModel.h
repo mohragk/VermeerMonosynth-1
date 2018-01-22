@@ -67,7 +67,7 @@ class SEMModel : public LadderFilterBase
 		
 			 for (int i = 0; i < n; i++)
 			{
-				update();
+				
 
 				// form the HPF output first
 				double hpf = Alpha0 * ( samples[i] - Rho * Z11 - Z12 );
@@ -90,11 +90,35 @@ class SEMModel : public LadderFilterBase
 				Z11 = Alpha * hpf + bpf;
 				Z12 = Alpha * bpf + lpf;
             
+				//lpf *= 2.0 / resonance;
+
+				lpf = fast_tanh(drive *lpf);
+
+				softClip(lpf);
             
 				samples[i] = lpf;
         
 			}
         
+		}
+
+		double softClip(double s)
+		{
+			double localSample = s;
+			if (localSample > 1.0f)
+			{
+				localSample = 0.75f;
+			}
+			else if (localSample < -1.0f)
+			{
+				localSample = -0.75f;
+
+			}
+			else
+			{
+				localSample = localSample - ((localSample * localSample * localSample) * 0.25f);
+			}
+			return localSample;
 		}
         
 		virtual void SetSampleRate (float sr) override
@@ -104,7 +128,10 @@ class SEMModel : public LadderFilterBase
 	
 		virtual void SetResonance(float r) override
 		{
+			//remap: 0 -> 1 --- 0.5 -> 25
 			resonance = (25.0 - 0.5) * (r - 0.0) / (1.0 - 0.0) + 0.5;
+
+			update();
 		}
     
 		virtual void SetCutoff(float c) override

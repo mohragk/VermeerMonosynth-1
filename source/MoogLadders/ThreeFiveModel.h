@@ -91,7 +91,7 @@ public:
     
     double doFilter( double sample )
     {
-        update();
+        
         
         double y = 0.0;
         
@@ -141,6 +141,7 @@ public:
     virtual void SetResonance(float r) override
     {
         K = (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01; // remap
+		update();
     }
     
     virtual void SetCutoff(float c) override

@@ -216,10 +216,7 @@ private:
     void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
    
 	template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer);
-   
-	template <typename FloatType>
-    void applyDelay (AudioBuffer<FloatType>& buffer);
+    void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase *filter[]);
     
 	template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
@@ -238,8 +235,8 @@ private:
 
 	bool noteIsPlaying = false;
     
-    ScopedPointer<LadderFilterBase> filterA[2], filterB[2], filterC[2];
- 
+    LadderFilterBase *filterA[2], *filterB[2], *filterC[2];
+
     
     enum modTarget {
         modPitch,

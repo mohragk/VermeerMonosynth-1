@@ -215,6 +215,7 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
 
 	synth.clearSounds();
 	synth.clearVoices();
+
 }
 
 
@@ -260,11 +261,27 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
 {
      sampleRate = newSampleRate;
 
+
+
     for(int channel = 0; channel < 2; channel++)
     {
         filterA[channel] = new ImprovedMoog();
+		filterA[channel]->SetSampleRate(sampleRate);
+		filterA[channel]->SetResonance(0.1);
+		filterA[channel]->SetCutoff(12000.0);
+		filterA[channel]->SetDrive(1.0);
+
         filterB[channel] = new SEMModel();
+		filterB[channel]->SetSampleRate(sampleRate);
+		filterB[channel]->SetResonance(0.1);
+		filterB[channel]->SetCutoff(12000.0);
+		filterB[channel]->SetDrive(1.0);
+
         filterC[channel] = new DiodeLadderModel();
+		filterC[channel]->SetSampleRate(sampleRate);
+		filterC[channel]->SetResonance(0.1);
+		filterC[channel]->SetCutoff(12000.0);
+		filterC[channel]->SetDrive(1.0);
     }
 	
 	 lfo.setSampleRate(sampleRate);
@@ -279,21 +296,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
 
-    
-    for(int channel = 0; channel < 2; channel++)
-    {
-        filterA[channel]->SetSampleRate(sampleRate);
-        filterA[channel]->SetResonance(0.1);
-        filterA[channel]->SetCutoff(12000.0);
-        filterA[channel]->SetDrive(1.0);
-        
-        filterB[channel]->SetSampleRate(sampleRate);
-        filterB[channel]->SetResonance(0.1);
-        filterB[channel]->SetCutoff(12000.0);
-        filterB[channel]->SetDrive(1.0);
-        
-    }
-    
+   
     filterEnvelope->setSampleRate(sampleRate);
     ampEnvelope->setSampleRate(sampleRate);
     
@@ -366,7 +369,12 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     
     
     // applying our filter
-    applyFilter(buffer);
+	if (*filterSelectParam == 0)
+		applyFilter(buffer, filterA);
+	else if(*filterSelectParam == 1)
+		applyFilter(buffer, filterB);
+	else
+		applyFilter(buffer, filterC);
     
     applyAmpEnvelope(buffer);
 	applyAmp(buffer);
@@ -469,7 +477,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase *filter[])
 {
     
     const int numSamples = buffer.getNumSamples();
@@ -486,13 +494,36 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
     
     int samplesLeftOver = numSamples;
     
-    for(int channel = 0; channel < 2; channel++)
-    {
-        filterA[channel]->SetSampleRate(getSampleRate());
-        filterB[channel]->SetSampleRate(getSampleRate());
-    }
-    
-    
+  
+	filter[0]->SetSampleRate(getSampleRate());
+	filter[1]->SetSampleRate(getSampleRate());
+  
+	for (int step = 0; step < numSamples; step += stepSize)
+	{
+		double combinedCutoff = cutoffFromEnvelope.getNextValue() + cutoff.getNextValue();
+		double Q = resonance.getNextValue();// * 4.0;
+
+		for (int channel = 0; channel < 2; channel++)
+		{
+			filter[channel]->SetResonance(Q);
+			filter[channel]->SetCutoff(combinedCutoff);
+			filter[channel]->SetDrive(drive.getNextValue());
+		}
+
+
+		if (samplesLeftOver < stepSize)
+			stepSize = samplesLeftOver;
+
+		filter[0]->Process(channelDataLeft, stepSize);
+		filter[1]->Process(channelDataRight, stepSize);
+
+		samplesLeftOver -= stepSize;
+
+		channelDataLeft += stepSize;
+		channelDataRight += stepSize;
+	}
+
+    /*
     if (*filterSelectParam == 0)
     {
         for(int step = 0; step < numSamples; step += stepSize)
@@ -574,6 +605,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
             channelDataRight += stepSize;
         }
     }
+	*/
 }
 
 

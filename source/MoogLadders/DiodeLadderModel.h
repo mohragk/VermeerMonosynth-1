@@ -109,7 +109,7 @@ class DiodeLadderModel : public LadderFilterBase
     
     double doFilter( double sample )
     {
-        update();
+      
         
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
@@ -144,6 +144,7 @@ class DiodeLadderModel : public LadderFilterBase
     virtual void SetResonance(float r) override
     {
         K = 17.0 * r ; // remap
+		update();
     }
     
     virtual void SetCutoff(float c) override

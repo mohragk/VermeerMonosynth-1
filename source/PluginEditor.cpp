@@ -1318,6 +1318,7 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 		lfoSyncedFreqSlider->setEnabled(false);
 	}
 	
+	/*
 	if (getProcessor().noteIsBeingPlayed())
 	{
 		filterSelectSlider->setAlpha(0.2);
@@ -1328,7 +1329,7 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 		filterSelectSlider->setAlpha(1.0);
 		filterSelectSlider->setEnabled(true);
 	}
-		
+		*/
 	
 }
 
