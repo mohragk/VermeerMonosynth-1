@@ -1234,19 +1234,20 @@ void MonosynthPluginAudioProcessorEditor::resized()
  
   
     
-    lfoSyncedFreqSlider->setBounds	(getWidth() - 24 - 64, 378, 64, 64);
+   
 
     lfoLabel->setBounds             (628, 64, 80, 24);
 
     lfoRateLabel->setBounds         (634, 88, 64, 24);
     lfoRateSlider->setBounds        (634, 104, 64, 64);
+	lfoSyncedFreqSlider->setBounds	(634, 104, 64, 64);
 
     lfoModeLabel->setBounds         (634, 168, 64, 24);
     lfoModeSlider->setBounds        (634, 178, 64, 64);
 
     lfoIntensityLabel->setBounds    (634, 247, 64, 24);
     lfoIntensitySlider->setBounds   (634, 263, 64, 64);
-	lfoSyncSlider->setBounds		(getWidth() - 24 - 64, 314, 64, 64);
+	lfoSyncSlider->setBounds		(634, 408, 64, 64);
 
     modTargetLabel->setBounds       (634, 328, 64, 24);
     modTargetSlider->setBounds      (612, 352, 64, 54);
@@ -1299,6 +1300,23 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 		filterDriveLabel->setAlpha(1.0);
 	}
      */
+
+	if (getProcessor().lfoSynced()) // free rate LFO
+	{
+		lfoRateSlider->setVisible(false);
+		lfoRateSlider->setEnabled(false);
+
+		lfoSyncedFreqSlider->setVisible(true);
+		lfoSyncedFreqSlider->setEnabled(true);
+	}
+	else
+	{
+		lfoRateSlider->setVisible(true);
+		lfoRateSlider->setEnabled(true);
+
+		lfoSyncedFreqSlider->setVisible(false);
+		lfoSyncedFreqSlider->setEnabled(false);
+	}
 	
 	if (getProcessor().noteIsBeingPlayed())
 	{

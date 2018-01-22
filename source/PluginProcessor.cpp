@@ -863,7 +863,10 @@ bool MonosynthPluginAudioProcessor::noteIsBeingPlayed()
 	return ampEnvelope->getState() != ADSR::env_idle;
 }
 
-
+bool MonosynthPluginAudioProcessor::lfoSynced()
+{
+	return *lfoSyncParam;
+}
 
 
 

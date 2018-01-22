@@ -134,6 +134,8 @@ public:
     void setHardSync(int sync);
 
 	bool noteIsBeingPlayed();
+
+	bool lfoSynced();
 	
   
     
