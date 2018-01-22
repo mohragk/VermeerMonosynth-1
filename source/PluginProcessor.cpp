@@ -186,7 +186,7 @@ ampEnvelope(nullptr)
     addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 30.0, 0.0, 0.5, false), 0.05));
     addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 2, 0));
     addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
-
+	addParameter(lfoSyncParam = new AudioParameterInt("lfoSync", "LFO Tempo Sync", 0, 1, 0));
     
     
     //
@@ -425,20 +425,26 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         //
         lfo.setMode(*lfoModeParam);
         
+        double lfo_division = pow(2.0, *lfoDivisionParam);
+       
+		if (*lfoSyncParam == 1)
+			lfo.setFrequency(getLFOSyncedFreq(lastPosInfo, lfo_division)); //*lfoRateParam);
+		else
+			lfo.setFrequency(*lfoRateParam);
+
+		// Retrigger LFO at new bar
+		if ( lastPosInfo.isPlaying )
+		{
+			if (lastPosInfo.ppqPositionOfLastBarStart == lastPosInfo.ppqPosition)
+				lfo.setPhase(0.0);
+		}
+			
         
-        lfo_division = pow(2.0, *lfoDivisionParam);
-        calculateLFOSyncedFreq();
-        
-        if (lfo_synced_freq_old != lfo_synced_freq)
-            lfo.setPhase(0.0);
-        
-        lfo.setFrequency( lfo_synced_freq ); //*lfoRateParam);
-         const double lfoValue = lfo.nextSample();
+		const double lfoValue = lfo.nextSample();
 
         modAmount = *lfoIntensityParam;                            // Make parameter
         applyModToTarget(*modTargetParam, lfoValue * modAmount);
         
-		lfo_synced_freq_old = lfo_synced_freq;
         
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
@@ -839,16 +845,17 @@ float MonosynthPluginAudioProcessor::softClip(float s)
 }
 
 
-void MonosynthPluginAudioProcessor::calculateLFOSyncedFreq()
+double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division )
 {
-    const double beats_per_minute = lastPosInfo.bpm;
-    const double seconds_per_beat = 60.0 / beats_per_minute;
-    const double seconds_per_note = seconds_per_beat * (lastPosInfo.timeSigDenominator / lfo_division);
-   
+	const double beats_per_minute = posInfo.bpm;
+	const double seconds_per_beat = 60.0 / beats_per_minute;
+	const double seconds_per_note = seconds_per_beat * (lastPosInfo.timeSigDenominator / division);
+
 	// double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
-    
-    lfo_synced_freq =  1.0 / seconds_per_note;
+
+	return 1.0 / seconds_per_note;
 }
+
 
 
 bool MonosynthPluginAudioProcessor::noteIsBeingPlayed()

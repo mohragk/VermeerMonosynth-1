@@ -610,6 +610,10 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     addAndMakeVisible( lfoSyncedFreqSlider = new ParameterSlider(*owner.lfoDivisionParam));
     lfoSyncedFreqSlider->setSliderStyle(Slider::RotaryVerticalDrag);
     lfoSyncedFreqSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+
+	addAndMakeVisible(lfoSyncSlider = new ParameterSlider(*owner.lfoSyncParam));
+	lfoSyncSlider->setSliderStyle(Slider::LinearHorizontal);
+	lfoSyncSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 	
     
     
@@ -1230,7 +1234,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
  
   
     
-    lfoSyncedFreqSlider->setBounds(getWidth() - 24 - 64, 378, 64, 64);
+    lfoSyncedFreqSlider->setBounds	(getWidth() - 24 - 64, 378, 64, 64);
 
     lfoLabel->setBounds             (628, 64, 80, 24);
 
@@ -1242,6 +1246,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
 
     lfoIntensityLabel->setBounds    (634, 247, 64, 24);
     lfoIntensitySlider->setBounds   (634, 263, 64, 64);
+	lfoSyncSlider->setBounds		(getWidth() - 24 - 64, 314, 64, 64);
 
     modTargetLabel->setBounds       (634, 328, 64, 24);
     modTargetSlider->setBounds      (612, 352, 64, 54);

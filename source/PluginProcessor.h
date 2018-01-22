@@ -193,6 +193,7 @@ public:
     AudioParameterFloat* lfoRateParam;
     AudioParameterInt*   lfoModeParam;
     AudioParameterFloat* lfoIntensityParam;
+	AudioParameterInt*	lfoSyncParam;
 
     AudioParameterInt* filterSelectParam;
     
@@ -224,7 +225,7 @@ private:
 	template <typename FloatType>
 	void applyAmp (AudioBuffer<FloatType>& buffer);
     
-    void calculateLFOSyncedFreq();
+	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
 
     AudioBuffer<float> delayBufferFloat;
     AudioBuffer<double> delayBufferDouble;
@@ -250,9 +251,6 @@ private:
     ScopedPointer<ADSR> ampEnvelope;
     LFO lfo;
     
-    double lfo_synced_freq, lfo_synced_freq_old;
-    double lfo_division;
-
     double modAmount;
     
     int mNumVoices;
