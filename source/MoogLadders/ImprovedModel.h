@@ -60,35 +60,14 @@ class ImprovedMoog : public LadderFilterBase
     
 		virtual void Process(float* samples, uint32_t n) noexcept override
 		{
-		
-			double dV0, dV1, dV2, dV3;
+		    renderBlock(samples, n);
 
-			for (int i = 0; i < n; i++)
-			{
-            
-				dV0 = -g * (tanh((drive * samples[i] + resonance * V[3]) / (2.0 * VT)) + tV[0]);
-				V[0] += (dV0 + dV[0]) / (2.0 * sampleRate);
-				dV[0] = dV0;
-				tV[0] = tanh(V[0] / (2.0 * VT));
-            
-				dV1 = g * (tV[0] - tV[1]);
-				V[1] += (dV1 + dV[1]) / (2.0 * sampleRate);
-				dV[1] = dV1;
-				tV[1] = tanh(V[1] / (2.0 * VT));
-            
-				dV2 = g * (tV[1] - tV[2]);
-				V[2] += (dV2 + dV[2]) / (2.0 * sampleRate);
-				dV[2] = dV2;
-				tV[2] = tanh(V[2] / (2.0 * VT));
-            
-				dV3 = g * (tV[2] - tV[3]);
-				V[3] += (dV3 + dV[3]) / (2.0 * sampleRate);
-				dV[3] = dV3;
-				tV[3] = tanh(V[3] / (2.0 * VT));
-            
-				samples[i] = V[3];
-			}
 		}
+		
+		virtual void Process(double* samples, uint32_t n) noexcept override
+        {
+            renderBlock(samples, n);
+        }
     
     
     
@@ -126,6 +105,38 @@ class ImprovedMoog : public LadderFilterBase
 		}
     
 	private:
+	
+	    template <typename FloatType>
+	    void renderBlock(FloatType* samples, uint32_t n)
+        {
+        	double dV0, dV1, dV2, dV3;
+
+			for (int i = 0; i < n; i++)
+			{
+            
+				dV0 = -g * (tanh((drive * samples[i] + resonance * V[3]) / (2.0 * VT)) + tV[0]);
+				V[0] += (dV0 + dV[0]) / (2.0 * sampleRate);
+				dV[0] = dV0;
+				tV[0] = tanh(V[0] / (2.0 * VT));
+            
+				dV1 = g * (tV[0] - tV[1]);
+				V[1] += (dV1 + dV[1]) / (2.0 * sampleRate);
+				dV[1] = dV1;
+				tV[1] = tanh(V[1] / (2.0 * VT));
+            
+				dV2 = g * (tV[1] - tV[2]);
+				V[2] += (dV2 + dV[2]) / (2.0 * sampleRate);
+				dV[2] = dV2;
+				tV[2] = tanh(V[2] / (2.0 * VT));
+            
+				dV3 = g * (tV[2] - tV[3]);
+				V[3] += (dV3 + dV[3]) / (2.0 * sampleRate);
+				dV[3] = dV3;
+				tV[3] = tanh(V[3] / (2.0 * VT));
+            
+				samples[i] = V[3];
+			}
+        }
 	
 		double V[4];
 		double dV[4];

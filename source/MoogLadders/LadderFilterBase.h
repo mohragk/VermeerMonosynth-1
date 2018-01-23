@@ -38,6 +38,7 @@ public:
     virtual ~LadderFilterBase() {}
     
     virtual void Process(float * samples, uint32_t n) noexcept = 0;
+    virtual void Process(double * samples, uint32_t n) noexcept = 0;
     virtual void SetSampleRate(float sr) = 0;
     virtual void SetResonance(float r) = 0;
     virtual void SetCutoff(float c) = 0;
@@ -50,6 +51,9 @@ public:
     virtual double GetSampleRate() { return sampleRate; }
 	
 protected:
+
+    template  <typename FloatType>
+    void renderBlock(FloatType* samples, uint32_t n);
 	
 	double sampleRate;
 	double cutoff;

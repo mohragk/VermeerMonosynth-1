@@ -271,6 +271,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
 		filterA[channel]->SetCutoff(12000.0);
 		filterA[channel]->SetDrive(1.0);
 
+		/*
         filterB[channel] = new SEMModel();
 		filterB[channel]->SetSampleRate(sampleRate);
 		filterB[channel]->SetResonance(0.1);
@@ -282,6 +283,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
 		filterC[channel]->SetResonance(0.1);
 		filterC[channel]->SetCutoff(12000.0);
 		filterC[channel]->SetDrive(1.0);
+		*/
     }
 	
 	 lfo.setSampleRate(sampleRate);
@@ -369,12 +371,12 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     
     
     // applying our filter
-	if      (*filterSelectParam == 0)
+	//if      (*filterSelectParam == 0)
 		applyFilter(buffer, filterA);
-	else if (*filterSelectParam == 1)
-		applyFilter(buffer, filterB);
-	else
-		applyFilter(buffer, filterC);
+	//else if (*filterSelectParam == 1)
+	//	applyFilter(buffer, filterB);
+	//else
+	//	applyFilter(buffer, filterC);
     
     applyAmpEnvelope(buffer);
 	applyAmp(buffer);
