@@ -369,9 +369,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     
     
     // applying our filter
-	if (*filterSelectParam == 0)
+	if      (*filterSelectParam == 0)
 		applyFilter(buffer, filterA);
-	else if(*filterSelectParam == 1)
+	else if (*filterSelectParam == 1)
 		applyFilter(buffer, filterB);
 	else
 		applyFilter(buffer, filterC);
@@ -494,7 +494,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
   
 	for (int step = 0; step < numSamples; step += stepSize)
 	{
-		double combinedCutoff = cutoffFromEnvelope.getNextValue() + cutoff.getNextValue();
+		double combinedCutoff = currentCutoff + cutoff.getNextValue();
 		double Q = resonance.getNextValue();// * 4.0;
 
 		for (int channel = 0; channel < 2; channel++)
