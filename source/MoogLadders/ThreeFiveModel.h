@@ -68,7 +68,7 @@ public:
         // set Alpha0; same for LPF as HPF
         Alpha0 = 1.0 / ( 1.0 - K * G + K * G * G );
         
-        if (type = LPF2)
+        if (type == LPF2)
         {
             va_LPF2.Beta = ( K - K * G ) / ( 1.0 + g );
             va_HPF1.Beta = -1.0 / ( 1.0 + g);
