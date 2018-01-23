@@ -48,7 +48,7 @@ public:
     }
     
     
-    void update()
+    virtual void update() override
     {
         //prewarp for BZT
         double wd = 2 * MOOG_PI * cutoff;
@@ -99,7 +99,7 @@ public:
 	template <typename FloatType>
 	FloatType doFilter(FloatType sample )
     {
-        
+		update();
         
 		FloatType y = 0.0;
         
@@ -154,7 +154,6 @@ public:
     virtual void SetResonance(double r) override
     {
         K = (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01; // remap
-		update();
     }
     
     virtual void SetCutoff(double c) override

@@ -42,7 +42,7 @@ class VAOnePole : public LadderFilterBase
         {}
     
         
-        void update()
+        virtual void update() override
         {
             double wd = 2 * MOOG_PI * cutoff;
             double T = 1 / sampleRate;

@@ -49,7 +49,7 @@ class DiodeLadderModel : public LadderFilterBase
         va_LPF4.reset();
     }
     
-    void update()
+    virtual void update() override
     {
         double wd = 2 * MOOG_PI * cutoff;
         double T  = 1 / sampleRate;
@@ -110,6 +110,7 @@ class DiodeLadderModel : public LadderFilterBase
 	template <typename FloatType>
     FloatType doFilter( FloatType sample )
     {
+		update();
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
         va_LPF2.setFeedback( va_LPF3.getFeedbackOutput() );
@@ -156,7 +157,6 @@ class DiodeLadderModel : public LadderFilterBase
     virtual void SetResonance(double r) override
     {
         K = 17.0 * r ; // remap
-		update();
     }
     
     virtual void SetCutoff(double c) override

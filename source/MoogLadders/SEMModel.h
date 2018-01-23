@@ -42,7 +42,7 @@ class SEMModel : public LadderFilterBase
 		}
     
     
-		void update()
+		virtual void update() override
 		{
         
 			// prewarp cutoff, billinear transform

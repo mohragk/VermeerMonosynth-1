@@ -298,6 +298,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
 	cutoffFromEnvelope.reset(sampleRate, 0.0003);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
+	masterGain.reset(sampleRate, 0.001);
 
    
     filterEnvelope->setSampleRate(sampleRate);
@@ -315,6 +316,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
 	cutoffFromEnvelope.reset(sampleRate, 0.0003);
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
+	masterGain.reset(sampleRate, 0.001);
 }
 
 void MonosynthPluginAudioProcessor::reset()
@@ -325,8 +327,7 @@ void MonosynthPluginAudioProcessor::reset()
 	cutoffFromEnvelope.reset(sampleRate, 0.0003);
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
-
-	
+	masterGain.reset(sampleRate, 0.001);	
 	
 }
 
@@ -385,7 +386,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
 	if (*filterSelectParam == 0)		{ applyFilter(buffer, filterA); }
 	else if (*filterSelectParam == 1)	{ applyFilter(buffer, filterB); }
 	else								{ applyFilter(buffer, filterC); }
-    
+
+
     applyAmpEnvelope(buffer);
 
     // In case we have more outputs than inputs, we'll clear any output
@@ -407,10 +409,14 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer)
 {
-    const float gainLevel = *gainParam;
+    
+
+	masterGain.setValue(*gainParam);
+
+	
 
     for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
-        buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
+        buffer.applyGain (channel, 0, buffer.getNumSamples(), masterGain.getNextValue());
 }
 
 
@@ -494,9 +500,14 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     int stepSize = jmin(16, numSamples);
     
     int samplesLeftOver = numSamples;
+
+
   
 	for (int step = 0; step < numSamples; step += stepSize)
 	{
+		//filter[0]->update();
+		//filter[1]->update();
+
 		double combinedCutoff = currentCutoff + cutoff.getNextValue();
 		double Q = resonance.getNextValue();// * 4.0;
 
@@ -518,6 +529,116 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 		channelDataLeft += stepSize;
 		channelDataRight += stepSize;
 	}
+}
+
+
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applyFilterAlt(AudioBuffer<FloatType>& buffer)
+{
+
+
+	const int numSamples = buffer.getNumSamples();
+
+	FloatType* channelDataLeft = buffer.getWritePointer(0);
+	FloatType* channelDataRight = buffer.getWritePointer(1);
+
+	//
+	//  break buffer into chunks
+	//
+	int stepSize = jmin(16, numSamples);
+
+	int samplesLeftOver = numSamples;
+
+
+	if (*filterSelectParam == 0)
+	{
+		for (int step = 0; step < numSamples; step += stepSize)
+		{
+			//filter[0]->update();
+			//filter[1]->update();
+
+			double combinedCutoff = currentCutoff + cutoff.getNextValue();
+			double Q = resonance.getNextValue();// * 4.0;
+
+			for (int channel = 0; channel < 2; channel++)
+			{
+				filterA[channel]->SetResonance(Q);
+				filterA[channel]->SetCutoff(combinedCutoff);
+				filterA[channel]->SetDrive(drive.getNextValue());
+			}
+
+			if (samplesLeftOver < stepSize)
+				stepSize = samplesLeftOver;
+
+			filterA[0]->Process(channelDataLeft, stepSize);
+			filterA[1]->Process(channelDataRight, stepSize);
+
+			samplesLeftOver -= stepSize;
+
+			channelDataLeft += stepSize;
+			channelDataRight += stepSize;
+		}
+	}
+	else if (*filterSelectParam == 1)
+	{
+		for (int step = 0; step < numSamples; step += stepSize)
+		{
+			//filter[0]->update();
+			//filter[1]->update();
+
+			double combinedCutoff = currentCutoff + cutoff.getNextValue();
+			double Q = resonance.getNextValue();// * 4.0;
+
+			for (int channel = 0; channel < 2; channel++)
+			{
+				filterB[channel]->SetResonance(Q);
+				filterB[channel]->SetCutoff(combinedCutoff);
+				filterB[channel]->SetDrive(drive.getNextValue());
+			}
+
+			if (samplesLeftOver < stepSize)
+				stepSize = samplesLeftOver;
+
+			filterB[0]->Process(channelDataLeft, stepSize);
+			filterB[1]->Process(channelDataRight, stepSize);
+
+			samplesLeftOver -= stepSize;
+
+			channelDataLeft += stepSize;
+			channelDataRight += stepSize;
+		}
+	}
+	else
+	{
+		for (int step = 0; step < numSamples; step += stepSize)
+		{
+			//filter[0]->update();
+			//filter[1]->update();
+
+			double combinedCutoff = currentCutoff + cutoff.getNextValue();
+			double Q = resonance.getNextValue();// * 4.0;
+
+			for (int channel = 0; channel < 2; channel++)
+			{
+				filterC[channel]->SetResonance(Q);
+				filterC[channel]->SetCutoff(combinedCutoff);
+				filterC[channel]->SetDrive(drive.getNextValue());
+			}
+
+			if (samplesLeftOver < stepSize)
+				stepSize = samplesLeftOver;
+
+			filterC[0]->Process(channelDataLeft, stepSize);
+			filterC[1]->Process(channelDataRight, stepSize);
+
+			samplesLeftOver -= stepSize;
+
+			channelDataLeft += stepSize;
+			channelDataRight += stepSize;
+		}
+	}
+
+	
 }
 
 

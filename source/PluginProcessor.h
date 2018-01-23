@@ -219,6 +219,9 @@ private:
    
 	template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase *filter[]);
+
+	template <typename FloatType>
+	void applyFilterAlt(AudioBuffer<FloatType>& buffer);
     
 	template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
@@ -266,7 +269,7 @@ private:
     
     double sampleRate;
     
-	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain;
+	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, masterGain;
 	LinearSmoothedValue<double> cutoffFromEnvelope;
 	
 	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;
