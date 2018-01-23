@@ -81,15 +81,6 @@
             file="source/MoogLadders/ThreeFiveModel.h"/>
       <FILE id="cKnMgL" name="VAOnePole.h" compile="0" resource="0" file="source/MoogLadders/VAOnePole.h"/>
       <FILE id="TA5s5a" name="SEMModel.h" compile="0" resource="0" file="source/MoogLadders/SEMModel.h"/>
-      <FILE id="ItxKe9" name="HuovilainenModel.h" compile="0" resource="0"
-            file="source/MoogLadders/HuovilainenModel.h"/>
-      <FILE id="Lambpe" name="LadderFilterBase.cpp" compile="1" resource="0"
-            file="source/MoogLadders/LadderFilterBase.cpp"/>
-      <FILE id="uw4kx4" name="MicrotrackerModel.h" compile="0" resource="0"
-            file="source/MoogLadders/MicrotrackerModel.h"/>
-      <FILE id="ilPGdg" name="MusicDSPModel.h" compile="0" resource="0" file="source/MoogLadders/MusicDSPModel.h"/>
-      <FILE id="Li1jFw" name="OberheimVariationModel.h" compile="0" resource="0"
-            file="source/MoogLadders/OberheimVariationModel.h"/>
       <FILE id="VSqYOa" name="ImprovedModel.h" compile="0" resource="0" file="Source/MoogLadders/ImprovedModel.h"/>
       <FILE id="PYmIbs" name="LadderFilterBase.h" compile="0" resource="0"
             file="Source/MoogLadders/LadderFilterBase.h"/>
