@@ -59,8 +59,17 @@ class VAOnePole : public LadderFilterBase
                 samples[i] = doFilter(samples[i]);
 			}
 		}
+
+		virtual void Process(double* samples, uint32_t n) noexcept override
+		{
+			for (int i = 0; i < n; i++)
+			{
+				samples[i] = doFilter(samples[i]);
+			}
+		}
     
-        double doFilter( double sample )
+		template <typename FloatType>
+        FloatType doFilter( FloatType sample )
         {
             //update();
             

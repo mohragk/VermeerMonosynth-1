@@ -107,10 +107,9 @@ class DiodeLadderModel : public LadderFilterBase
         
     }
     
-    double doFilter( double sample )
+	template <typename FloatType>
+    FloatType doFilter( FloatType sample )
     {
-      
-        
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
         va_LPF2.setFeedback( va_LPF3.getFeedbackOutput() );
@@ -135,6 +134,14 @@ class DiodeLadderModel : public LadderFilterBase
             samples[i] = doFilter(samples[i]);
         }
     }
+
+	virtual void Process(double* samples, uint32_t n) noexcept override
+	{
+		for (int i = 0; i < n; i++)
+		{
+			samples[i] = doFilter(samples[i]);
+		}
+	}
     
     virtual void SetSampleRate (float sr) override
     {

@@ -259,7 +259,7 @@ AudioProcessor::BusesProperties MonosynthPluginAudioProcessor::getBusesPropertie
 //==============================================================================
 void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*samplesPerBlock*/)
 {
-     sampleRate = newSampleRate;
+    sampleRate = newSampleRate;
 
 
 
@@ -271,22 +271,23 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*s
 		filterA[channel]->SetCutoff(12000.0);
 		filterA[channel]->SetDrive(1.0);
 
-		/*
-        filterB[channel] = new SEMModel();
+		
+        filterB[channel] = new ThreeFiveModel();
 		filterB[channel]->SetSampleRate(sampleRate);
 		filterB[channel]->SetResonance(0.1);
 		filterB[channel]->SetCutoff(12000.0);
 		filterB[channel]->SetDrive(1.0);
+		
 
         filterC[channel] = new DiodeLadderModel();
 		filterC[channel]->SetSampleRate(sampleRate);
 		filterC[channel]->SetResonance(0.1);
 		filterC[channel]->SetCutoff(12000.0);
 		filterC[channel]->SetDrive(1.0);
-		*/
+		
     }
 	
-	 lfo.setSampleRate(sampleRate);
+	lfo.setSampleRate(sampleRate);
     
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
@@ -310,13 +311,20 @@ void MonosynthPluginAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     keyboardState.reset();
+	cutoff.reset(sampleRate, cutoffRampTimeDefault);
+	cutoffFromEnvelope.reset(sampleRate, 0.0003);
+	resonance.reset(sampleRate, 0.001);
+	drive.reset(sampleRate, 0.001);
 }
 
 void MonosynthPluginAudioProcessor::reset()
 {
     // Use this method as the place to clear any delay lines, buffers, etc, as it
     // means there's been a break in the audio's continuity.
- 
+	cutoff.reset(sampleRate, cutoffRampTimeDefault);
+	cutoffFromEnvelope.reset(sampleRate, 0.0003);
+	resonance.reset(sampleRate, 0.001);
+	drive.reset(sampleRate, 0.001);
 }
 
 
@@ -371,12 +379,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
     
     
     // applying our filter
-	//if      (*filterSelectParam == 0)
-		applyFilter(buffer, filterA);
-	//else if (*filterSelectParam == 1)
-	//	applyFilter(buffer, filterB);
-	//else
-	//	applyFilter(buffer, filterC);
+	if (*filterSelectParam == 0)		{ applyFilter(buffer, filterA); }
+	else if (*filterSelectParam == 1)	{ applyFilter(buffer, filterB); }
+	else								{ applyFilter(buffer, filterC); }
     
     applyAmpEnvelope(buffer);
 	applyAmp(buffer);
@@ -400,9 +405,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer)
 {
-   
     const float gainLevel = *gainParam;
- 
 
     for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
         buffer.applyGain (channel, 0, buffer.getNumSamples(), gainLevel);
@@ -415,7 +418,6 @@ void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer)
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer)
 {
-    
     filterEnvelope->setAttackRate(*attackParam3);
     filterEnvelope->setDecayRate(*decayParam3);
     filterEnvelope->setReleaseRate(*releaseParam3);
@@ -423,10 +425,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
     filterEnvelope->setTargetRatioA(*attackCurve2Param);
     filterEnvelope->setTargetRatioDR(*decayRelCurve2Param);
 
-   
-
     const int numSamples = buffer.getNumSamples();
-    
     
     for (int i = 0; i < numSamples; i++)
     {
@@ -465,10 +464,10 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         if (currentCutoff < 20.0) currentCutoff = 20.0;
         
 		
-        cutoff.setValue     (*filterParam);
-		cutoffFromEnvelope.setValue(currentCutoff);
-		resonance.setValue  (*filterQParam);
-        drive.setValue      (*filterDriveParam);
+        cutoff.setValue				(*filterParam);
+		cutoffFromEnvelope.setValue	(currentCutoff);
+		resonance.setValue			(*filterQParam);
+        drive.setValue				(*filterDriveParam);
         
         
     }
@@ -479,18 +478,18 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase *filter[])
+void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter[])
 {
     
     const int numSamples = buffer.getNumSamples();
     
-    float* channelDataLeft  = (float*) buffer.getWritePointer(0);
-	float* channelDataRight = (float*) buffer.getWritePointer(1);
+    FloatType* channelDataLeft  = buffer.getWritePointer(0);
+	FloatType* channelDataRight = buffer.getWritePointer(1);
     
     //
     //  break buffer into chunks
     //
-    int stepSize = jmin(1, numSamples);
+    int stepSize = jmin(16, numSamples);
     
     int samplesLeftOver = numSamples;
   

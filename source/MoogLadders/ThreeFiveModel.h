@@ -88,21 +88,29 @@ public:
             samples[i] = doFilter(samples[i]);
         }
     }
+	virtual void Process(double* samples, uint32_t n) noexcept override
+	{
+		for (int i = 0; i < n; i++)
+		{
+			samples[i] = doFilter(samples[i]);
+		}
+	}
     
-    double doFilter( double sample )
+	template <typename FloatType>
+	FloatType doFilter(FloatType sample )
     {
         
         
-        double y = 0.0;
+		FloatType y = 0.0;
         
         if (type == LPF2)
         {
-            double y1 = va_LPF1.doFilter(sample);
+			FloatType y1 = va_LPF1.doFilter(sample);
             
-            double S35 =    va_HPF1.getFeedbackOutput() +
+			FloatType S35 =    va_HPF1.getFeedbackOutput() +
                             va_LPF2.getFeedbackOutput();
             
-            double u = Alpha0 *  y1 + S35 ;
+			FloatType u = Alpha0 *  y1 + S35 ;
             
             u = fast_tanh(drive * u);
             
@@ -112,12 +120,12 @@ public:
         }
         else
         {
-            double y1 = va_HPF1.doFilter(sample);
+			FloatType y1 = va_HPF1.doFilter(sample);
             
-            double S35 =    va_HPF2.getFeedbackOutput() +
+			FloatType S35 =    va_HPF2.getFeedbackOutput() +
                             va_LPF1.getFeedbackOutput();
             
-            double u = Alpha0 * y1 + S35;
+			FloatType u = Alpha0 * y1 + S35;
             
             y = K * u;
             

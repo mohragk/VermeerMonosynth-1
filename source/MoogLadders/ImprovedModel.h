@@ -74,6 +74,7 @@ class ImprovedMoog : public LadderFilterBase
 		virtual void SetSampleRate (float sr) override
 		{
 			sampleRate = sr;
+			multiplier = 96000.0 / sr;
 		}
 	
 		virtual void SetResonance(float r) override
@@ -85,7 +86,7 @@ class ImprovedMoog : public LadderFilterBase
 		{
 			cutoff = c;
 
-			x = (MOOG_PI * cutoff) / (sampleRate);
+			x = (MOOG_PI * cutoff) / (sampleRate * multiplier);
 			g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);
 		}
     
@@ -114,25 +115,25 @@ class ImprovedMoog : public LadderFilterBase
 			for (int i = 0; i < n; i++)
 			{
             
-				dV0 = -g * (tanh((drive * samples[i] + resonance * V[3]) / (2.0 * VT)) + tV[0]);
-				V[0] += (dV0 + dV[0]) / (2.0 * sampleRate);
+				dV0 = -g * (fast_tanh((drive * samples[i] + resonance * V[3]) / (2.0 * VT)) + tV[0]);
+				V[0] += (dV0 + dV[0]) / (2.0 * sampleRate * multiplier);
 				dV[0] = dV0;
-				tV[0] = tanh(V[0] / (2.0 * VT));
+				tV[0] = fast_tanh(V[0] / (2.0 * VT));
             
 				dV1 = g * (tV[0] - tV[1]);
-				V[1] += (dV1 + dV[1]) / (2.0 * sampleRate);
+				V[1] += (dV1 + dV[1]) / (2.0 * sampleRate * multiplier);
 				dV[1] = dV1;
-				tV[1] = tanh(V[1] / (2.0 * VT));
+				tV[1] = fast_tanh(V[1] / (2.0 * VT));
             
 				dV2 = g * (tV[1] - tV[2]);
-				V[2] += (dV2 + dV[2]) / (2.0 * sampleRate);
+				V[2] += (dV2 + dV[2]) / (2.0 * sampleRate* multiplier);
 				dV[2] = dV2;
-				tV[2] = tanh(V[2] / (2.0 * VT));
+				tV[2] = fast_tanh(V[2] / (2.0 * VT));
             
 				dV3 = g * (tV[2] - tV[3]);
-				V[3] += (dV3 + dV[3]) / (2.0 * sampleRate);
+				V[3] += (dV3 + dV[3]) / (2.0 * sampleRate * multiplier);
 				dV[3] = dV3;
-				tV[3] = tanh(V[3] / (2.0 * VT));
+				tV[3] = fast_tanh(V[3] / (2.0 * VT));
             
 				samples[i] = V[3];
 			}
@@ -146,7 +147,7 @@ class ImprovedMoog : public LadderFilterBase
 		double g;
 
 		double sampleRate;
- 
+		double multiplier;
 };
 
 #endif
