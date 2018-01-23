@@ -222,9 +222,6 @@ private:
     
 	template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
-
-	template <typename FloatType>
-	void applyAmp (AudioBuffer<FloatType>& buffer);
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
 

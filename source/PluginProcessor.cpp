@@ -325,6 +325,9 @@ void MonosynthPluginAudioProcessor::reset()
 	cutoffFromEnvelope.reset(sampleRate, 0.0003);
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
+
+	
+	
 }
 
 
@@ -384,7 +387,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
 	else								{ applyFilter(buffer, filterC); }
     
     applyAmpEnvelope(buffer);
-	applyAmp(buffer);
 
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't
@@ -554,12 +556,6 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
     
 }
 
-
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyAmp(AudioBuffer<FloatType>& buffer)
-{
-
-}
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 {

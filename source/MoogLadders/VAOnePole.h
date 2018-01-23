@@ -54,7 +54,7 @@ class VAOnePole : public LadderFilterBase
         
         virtual void Process(float* samples, uint32_t n) noexcept override
 		{
-            for (int i = 0; i < n; i++)
+            for (uint32_t i = 0; i < n; i++)
 			{
                 samples[i] = doFilter(samples[i]);
 			}
@@ -62,7 +62,7 @@ class VAOnePole : public LadderFilterBase
 
 		virtual void Process(double* samples, uint32_t n) noexcept override
 		{
-			for (int i = 0; i < n; i++)
+			for (uint32_t i = 0; i < n; i++)
 			{
 				samples[i] = doFilter(samples[i]);
 			}
@@ -117,22 +117,22 @@ class VAOnePole : public LadderFilterBase
         }
         
         
-        virtual void SetSampleRate (float sr) override
+        virtual void SetSampleRate (double sr) override
 		{
 			sampleRate = sr;                
 		}
 	
-		virtual void SetResonance(float r) override
+		virtual void SetResonance(double r) override
 		{
             resonance = r * 10.0;;
 		}
     
-		virtual void SetCutoff(float c) override
+		virtual void SetCutoff(double c) override
 		{
 			cutoff = c;
 		}
     
-		virtual void SetDrive ( float d ) override
+		virtual void SetDrive (double d ) override
 		{
 			drive = d;
 		}
@@ -162,10 +162,6 @@ class VAOnePole : public LadderFilterBase
     private :
     
         FilterType type;
-    
-       
-
-        
         double sampleRate;
 };
 

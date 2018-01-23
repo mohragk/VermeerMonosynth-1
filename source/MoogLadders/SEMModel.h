@@ -64,7 +64,7 @@ class SEMModel : public LadderFilterBase
     
 		virtual void Process(float* samples, uint32_t n) noexcept override
 		{
-			 for (int i = 0; i < n; i++)
+			 for (uint32_t i = 0; i < n; i++)
 			{
 				 doFilter(samples[i]);
 			}
@@ -72,7 +72,7 @@ class SEMModel : public LadderFilterBase
 
 		virtual void Process(double* samples, uint32_t n) noexcept override
 		{
-			for (int i = 0; i < n; i++)
+			for (uint32_t i = 0; i < n; i++)
 			{
 				doFilter(samples[i]);
 			}
@@ -131,25 +131,25 @@ class SEMModel : public LadderFilterBase
 			return localSample;
 		}
         
-		virtual void SetSampleRate (float sr) override
+		virtual void SetSampleRate (double sr) override
 		{
 			sampleRate = sr;                
 		}
 	
-		virtual void SetResonance(float r) override
+		virtual void SetResonance(double r) override
 		{
 			//remap: 0 -> 1 --- 0.5 -> 25
 			resonance = (25.0 - 0.5) * (r - 0.0) / (1.0 - 0.0) + 0.5;
 			
 		}
     
-		virtual void SetCutoff(float c) override
+		virtual void SetCutoff(double c) override
 		{
 			cutoff = c;
 
 		}
     
-		virtual void SetDrive ( float d ) override
+		virtual void SetDrive (double d ) override
 		{
 			drive = d;
 		}
