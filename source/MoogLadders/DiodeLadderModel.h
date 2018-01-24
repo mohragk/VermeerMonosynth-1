@@ -49,7 +49,7 @@ class DiodeLadderModel : public LadderFilterBase
         va_LPF4.reset();
     }
     
-    void update()
+    virtual void update() override
     {
         double wd = 2 * MOOG_PI * cutoff;
         double T  = 1 / sampleRate;
@@ -107,10 +107,10 @@ class DiodeLadderModel : public LadderFilterBase
         
     }
     
-    double doFilter( double sample )
+	template <typename FloatType>
+    FloatType doFilter( FloatType sample )
     {
-      
-        
+		
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
         va_LPF2.setFeedback( va_LPF3.getFeedbackOutput() );
@@ -130,29 +130,42 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual void Process(float* samples, uint32_t n) noexcept override
     {
-        for (int i = 0; i < n; i++)
+        for (uint32_t i = 0; i < n; i++)
         {
             samples[i] = doFilter(samples[i]);
         }
     }
+
+	virtual void Process(double* samples, uint32_t n) noexcept override
+	{
+		for (uint32_t i = 0; i < n; i++)
+		{
+			samples[i] = doFilter(samples[i]);
+		}
+	}
     
-    virtual void SetSampleRate (float sr) override
+    virtual void SetSampleRate (double sr) override
     {
         sampleRate = sr;
+
+		va_LPF1.SetSampleRate(sr);
+		va_LPF2.SetSampleRate(sr);
+		va_LPF3.SetSampleRate(sr);
+		va_LPF4.SetSampleRate(sr);
     }
     
-    virtual void SetResonance(float r) override
+    virtual void SetResonance(double r) override
     {
         K = 17.0 * r ; // remap
-		update();
     }
     
-    virtual void SetCutoff(float c) override
+    virtual void SetCutoff(double c) override
     {
         cutoff = c;
+        update();
     }
     
-    virtual void SetDrive ( float d ) override
+    virtual void SetDrive (double d ) override
     {
         drive = d;
     }

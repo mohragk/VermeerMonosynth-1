@@ -93,11 +93,20 @@ private:
         osc3WaveformLabel,
         osc3OffsetLabel,
         osc3TuneLabel,
+    
+        oscSyncLabel,
+        oscSyncONLabel,
+        oscSyncOFFLabel,
         filterLabel,
         filterCutoffLabel,
         filterResonanceLabel,
         filterContourLabel,
         filterDriveLabel,
+    
+        filterMoogLabel,
+        filterMS20Label,
+        filter303Label,
+    
         envelopesLabel,
         envAmpLabel,
         envFilterLabel,

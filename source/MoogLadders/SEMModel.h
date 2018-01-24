@@ -42,7 +42,7 @@ class SEMModel : public LadderFilterBase
 		}
     
     
-		void update()
+		virtual void update() override
 		{
         
 			// prewarp cutoff, billinear transform
@@ -64,42 +64,52 @@ class SEMModel : public LadderFilterBase
     
 		virtual void Process(float* samples, uint32_t n) noexcept override
 		{
-		
-			 for (int i = 0; i < n; i++)
+			 for (uint32_t i = 0; i < n; i++)
 			{
-				
-
-				// form the HPF output first
-				double hpf = Alpha0 * ( samples[i] - Rho * Z11 - Z12 );
-            
-				// BPF out
-				double bpf = Alpha * hpf + Z11;
-            
-				// non-linear
-				//if (NLP)
-				//    bpf = tanh( Saturation * bpf );
-            
-				// LPF
-				double lpf = Alpha * bpf + Z12;
-            
-				double R = 1.0 / ( 2.0 * resonance );
-            
-				double bsf = samples[i] - 2.0 * R * bpf;
-            
-				// update memory
-				Z11 = Alpha * hpf + bpf;
-				Z12 = Alpha * bpf + lpf;
-            
-				//lpf *= 2.0 / resonance;
-
-				lpf = fast_tanh(drive *lpf);
-
-				softClip(lpf);
-            
-				samples[i] = lpf;
-        
+				 doFilter(samples[i]);
 			}
-        
+		}
+
+		virtual void Process(double* samples, uint32_t n) noexcept override
+		{
+			for (uint32_t i = 0; i < n; i++)
+			{
+				doFilter(samples[i]);
+			}
+		}
+
+		template <typename FloatType>
+		FloatType doFilter(FloatType sample)
+		{
+			
+			// form the HPF output first
+			FloatType hpf = Alpha0 * (sample - Rho * Z11 - Z12);
+
+			// BPF out
+			FloatType bpf = Alpha * hpf + Z11;
+
+			// non-linear
+			//if (NLP)
+			//    bpf = tanh( Saturation * bpf );
+
+			// LPF
+			FloatType lpf = Alpha * bpf + Z12;
+
+			FloatType R = 1.0 / (2.0 * resonance);
+
+			FloatType bsf = sample - 2.0 * R * bpf;
+
+			// update memory
+			Z11 = Alpha * hpf + bpf;
+			Z12 = Alpha * bpf + lpf;
+
+			//lpf *= 2.0 / resonance;
+
+			lpf = fast_tanh(drive *lpf);
+
+			softClip(lpf);
+
+			return lpf;
 		}
 
 		double softClip(double s)
@@ -121,25 +131,26 @@ class SEMModel : public LadderFilterBase
 			return localSample;
 		}
         
-		virtual void SetSampleRate (float sr) override
+		virtual void SetSampleRate (double sr) override
 		{
 			sampleRate = sr;                
 		}
 	
-		virtual void SetResonance(float r) override
+		virtual void SetResonance(double r) override
 		{
 			//remap: 0 -> 1 --- 0.5 -> 25
 			resonance = (25.0 - 0.5) * (r - 0.0) / (1.0 - 0.0) + 0.5;
-
-			update();
+			
 		}
     
-		virtual void SetCutoff(float c) override
+		virtual void SetCutoff(double c) override
 		{
 			cutoff = c;
+            update();
+
 		}
     
-		virtual void SetDrive ( float d ) override
+		virtual void SetDrive (double d ) override
 		{
 			drive = d;
 		}

@@ -38,10 +38,13 @@ public:
     virtual ~LadderFilterBase() {}
     
     virtual void Process(float * samples, uint32_t n) noexcept = 0;
-    virtual void SetSampleRate(float sr) = 0;
-    virtual void SetResonance(float r) = 0;
-    virtual void SetCutoff(float c) = 0;
-    virtual void SetDrive(float d) = 0;
+    virtual void Process(double * samples, uint32_t n) noexcept = 0;
+
+	virtual void update() = 0;
+    virtual void SetSampleRate(double sr) = 0;
+    virtual void SetResonance(double r) = 0;
+    virtual void SetCutoff(double c) = 0;
+    virtual void SetDrive(double d) = 0;
     
     enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
     

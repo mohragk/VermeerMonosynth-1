@@ -32,9 +32,8 @@
 #include "MoogLadders/ImprovedModel.h"
 #include "MoogLadders/SEMModel.h"
 #include "MoogLadders/VAOnePole.h"
-#include "MoogLadders/ThreeFiveModel.h"
 #include "MoogLadders/DiodeLadderModel.h"
-
+#include "MoogLadders/ThreeFiveModel.h"
 
 #include "lfo.h"
 
@@ -217,26 +216,23 @@ private:
    
 	template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase *filter[]);
+
+	template <typename FloatType>
+	void applyFilterAlt(AudioBuffer<FloatType>& buffer);
     
 	template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
-
-	template <typename FloatType>
-	void applyAmp (AudioBuffer<FloatType>& buffer);
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
-
-    AudioBuffer<float> delayBufferFloat;
-    AudioBuffer<double> delayBufferDouble;
+    
     int delayPosition;
 
     Synthesiser synth;
     
-
 	bool noteIsPlaying = false;
     
     LadderFilterBase *filterA[2], *filterB[2], *filterC[2];
-
+    
     
     enum modTarget {
         modPitch,
@@ -268,7 +264,7 @@ private:
     
     double sampleRate;
     
-	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain;
+	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, masterGain;
 	LinearSmoothedValue<double> cutoffFromEnvelope;
 	
 	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;
