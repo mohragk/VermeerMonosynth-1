@@ -198,6 +198,8 @@ public:
     
     AudioParameterInt* oscSyncParam;
     
+    AudioParameterInt* overSampleParam;
+    
     
 private:
     //==============================================================================
@@ -209,12 +211,16 @@ private:
     void applyFilterEnvelope (AudioBuffer<float>& buffer);
 
     void applyFilter (AudioBuffer<float>& buffer, LadderFilterBase *filter[]);
+    
+    void applyFilterNorm (AudioBuffer<float>& buffer, LadderFilterBase *filter[]);
 
 	void applyFilterAlt(AudioBuffer<float>& buffer);
 
     void applyAmpEnvelope (AudioBuffer<float>& buffer);
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
+    
+    float map(float value, float inputMin, float inputMax, float outMin, float outMax);
     
     
     ScopedPointer<dsp::Oversampling<float>> oversampling;

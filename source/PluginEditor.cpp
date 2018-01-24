@@ -710,8 +710,10 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     modTargetCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 	
     
-   
-    
+    // Oversampling
+    addAndMakeVisible(overSampleSlider = new ParameterSlider(*owner.overSampleParam));  //
+    overSampleSlider->setSliderStyle(Slider::LinearVertical);
+    overSampleSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
 	
 	
@@ -1289,7 +1291,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
- 
+    overSampleSlider->setBounds(getWidth() - 24-  64, 168, 64,64);
   
     
    

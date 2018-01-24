@@ -183,7 +183,9 @@ private:
     
         lfoSyncedFreqSlider,
     
-        oscSyncSlider
+        oscSyncSlider,
+    
+        overSampleSlider
         ;
 
     ScopedPointer<Drawable> drawable1;

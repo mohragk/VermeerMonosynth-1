@@ -122,9 +122,9 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     addParameter(osc2ModeParam = new AudioParameterInt("osc2ModeChoice", "OSC2 Waveform", 0, 2, 2));
     addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 2, 2));
 
-    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (0.0, 14000.0, 0.0, 0.5, false), 12000.0));
+    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (20.0, 16000.0, 0.0, 0.5, false), 12000.0));
     addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0, 1.0, 0.0, 1.0, false), 0.0));
-    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (0, 14000.0, 0.0, 0.5, false), 0.0));
+    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (20.0, 16000.0, 0.0, 0.5, false), 0.0));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0, 5.0, 0.0, 1.0, false), 1.0));
     // Filter Select Parameter
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 0));
@@ -174,6 +174,10 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
 	addParameter(lfoSyncParam = new AudioParameterInt("lfoSync", "LFO Tempo Sync", 0, 1, 0));
     addParameter(lfoDivisionParam = new AudioParameterInt("lfoDivision", "LFO Synced Rate", 1, 6, 2));
+    
+    
+    addParameter(overSampleParam = new AudioParameterInt("overSampleParam", "Oversampling Switch", 0, 1, 0));
+
     
     initialiseSynth();
 
@@ -356,9 +360,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<float>& buffer,
     
     
     // applying our filter
-	if (*filterSelectParam == 0)		{ applyFilter(buffer, filterA); }
-	else if (*filterSelectParam == 1)	{ applyFilter(buffer, filterB); }
-	else								{ applyFilter(buffer, filterC); }
+    if (*filterSelectParam == 0)		{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA) ; }
+	else if (*filterSelectParam == 1)	{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB) ; }
+	else								{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC) ; }
 
 
     applyAmpEnvelope(buffer);
@@ -485,7 +489,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<float>& buffer, Lad
 	{
 		
 
-		double combinedCutoff   = currentCutoff + cutoff.getNextValue();
+		double combinedCutoff   = currentCutoff + cutoff.getNextValue() / oversampling->getOversamplingFactor();
 		double Q                = resonance.getNextValue();// * 4.0;
 
 		for (int channel = 0; channel < 2; channel++)
@@ -509,6 +513,57 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<float>& buffer, Lad
 	}
  
     oversampling->processSamplesDown(block);
+    
+}
+
+
+float MonosynthPluginAudioProcessor::map(float value, float inputMin, float inputMax, float outMin, float outMax)
+{
+    return outMin + ( value - inputMin ) * ( outMax - outMin ) / ( inputMax - inputMin );
+}
+
+void MonosynthPluginAudioProcessor::applyFilterNorm (AudioBuffer<float>& buffer, LadderFilterBase* filter[])
+{
+    
+    float* channelDataLeft  = buffer.getWritePointer(0);
+    float* channelDataRight = buffer.getWritePointer(1);
+    
+    const int numSamples = buffer.getNumSamples();
+    
+    //
+    //  break buffer into chunks
+    //
+    int stepSize = jmin(16, numSamples);
+    
+    int samplesLeftOver = numSamples;
+    
+    
+    for (int step = 0; step < numSamples; step += stepSize)
+    {
+        
+        
+        double combinedCutoff   = currentCutoff + cutoff.getNextValue();
+        double Q                = resonance.getNextValue();// * 4.0;
+        
+        for (int channel = 0; channel < 2; channel++)
+        {
+            filter[channel]->SetSampleRate(sampleRate * oversampling->getOversamplingFactor());
+            filter[channel]->SetResonance(Q);
+            filter[channel]->SetCutoff(combinedCutoff);
+            filter[channel]->SetDrive(drive.getNextValue());
+        }
+        
+        if (samplesLeftOver < stepSize)
+            stepSize = samplesLeftOver;
+        
+        filter[0]->Process(channelDataLeft, stepSize);
+        filter[1]->Process(channelDataRight, stepSize);
+        
+        samplesLeftOver -= stepSize;
+        
+        channelDataLeft += stepSize;
+        channelDataRight += stepSize;
+    }
     
 }
 
