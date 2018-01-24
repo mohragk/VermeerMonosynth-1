@@ -127,7 +127,8 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0, 1.0, 0.0, 1.0, false), 0.0));
     addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (0, 14000.0, 0.0, 0.5, false), 0.0));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0, 5.0, 0.0, 1.0, false), 1.0));
-
+    // Filter Select Parameter
+    addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 0));
 
     addParameter (pitchModParam = new AudioParameterFloat("pitchMod", "Pitch Modulation", NormalisableRange<float> (0, 2000.0, 0.0, 0.5, false), 0.0));
     addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24.0, 0.0));
@@ -173,25 +174,14 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 2, 0));
     addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
 	addParameter(lfoSyncParam = new AudioParameterInt("lfoSync", "LFO Tempo Sync", 0, 1, 0));
-    
-    
-    //
-    //
-    //
     addParameter(lfoDivisionParam = new AudioParameterInt("lfoDivision", "LFO Synced Rate", 1, 6, 2));
     
-    
-    // Filter Select Parameter
-    addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 0));
-
     initialiseSynth();
 
     keyboardState.addListener(this);
 
     filterEnvelope = new ADSR();
     ampEnvelope = new ADSR();
-    
-   
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
@@ -237,10 +227,9 @@ AudioProcessor::BusesProperties MonosynthPluginAudioProcessor::getBusesPropertie
 }
 
 //==============================================================================
+void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int samplesPerBlock)
 {
     sampleRate = newSampleRate;
-
-
 
     for(int channel = 0; channel < 2; channel++)
     {
@@ -282,8 +271,6 @@ AudioProcessor::BusesProperties MonosynthPluginAudioProcessor::getBusesPropertie
    
     filterEnvelope->setSampleRate(sampleRate);
     ampEnvelope->setSampleRate(sampleRate);
-    
-
 }
 
 void MonosynthPluginAudioProcessor::releaseResources()
@@ -306,7 +293,7 @@ void MonosynthPluginAudioProcessor::reset()
 	cutoffFromEnvelope.reset(sampleRate, 0.0003);
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
-	
+	masterGain.reset(sampleRate, 0.001);
 }
 
 
@@ -381,17 +368,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer,
 }
 
 
-
-
-
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer)
 {
-    
-
 	masterGain.setValue(*gainParam);
-
-	
 
     for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
         buffer.applyGain (channel, 0, buffer.getNumSamples(), masterGain.getNextValue());
@@ -894,7 +874,8 @@ bool MonosynthPluginAudioProcessor::noteIsBeingPlayed()
 
 bool MonosynthPluginAudioProcessor::lfoSynced()
 {
-	return *lfoSyncParam;
+    return (*lfoSyncParam == 1);
+	
 }
 
 
