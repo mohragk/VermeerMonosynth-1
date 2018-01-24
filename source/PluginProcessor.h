@@ -31,12 +31,9 @@
 
 #include "MoogLadders/ImprovedModel.h"
 #include "MoogLadders/SEMModel.h"
-#include "MoogLadders/VAOnePole.h";
-#include "MoogLadders/DiodeLadderModel.h";
-#include "MoogLadders/ThreeFiveModel.h";
-
-
-
+#include "MoogLadders/VAOnePole.h"
+#include "MoogLadders/DiodeLadderModel.h"
+#include "MoogLadders/ThreeFiveModel.h"
 
 #include "lfo.h"
 
@@ -237,7 +234,7 @@ private:
 	bool noteIsPlaying = false;
     
     LadderFilterBase *filterA[2], *filterB[2], *filterC[2];
-
+    
     
     enum modTarget {
         modPitch,

@@ -24,7 +24,7 @@
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="VermeerMonosynth"
                        osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"
                        enablePluginBinaryCopyStep="1"/>
-        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="VermeerMonosynth"
+        <CONFIGURATION name="Release" isDebug="0" optimisation="6" targetName="VermeerMonosynth"
                        osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"
                        enablePluginBinaryCopyStep="1"/>
       </CONFIGURATIONS>

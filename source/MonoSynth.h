@@ -103,7 +103,7 @@ public:
     void pitchWheelMoved (const int newValue) override
     {
         const double range = 24.0;
-        const float v = newValue - 8192;
+        const float v = newValue - 8192.0;
         
         //pitchBendOffset =  range * (v / 8192.0);
 		pitchBendOffset = 0;

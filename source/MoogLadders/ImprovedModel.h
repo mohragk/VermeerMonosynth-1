@@ -61,7 +61,7 @@ class ImprovedMoog : public LadderFilterBase
 			zeromem(tV, sizeof(tV));
 		}
     
-		virtual void update()
+		virtual void update() override
 		{
 			x = (MOOG_PI * cutoff) / (sampleRate * multiplier);
 			g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);
@@ -94,9 +94,8 @@ class ImprovedMoog : public LadderFilterBase
 		virtual void SetCutoff(double c) override
 		{
 			cutoff = c;
-
-			
-		}
+            update();
+        }
     
 		virtual void SetDrive (double d ) override
 		{
@@ -118,7 +117,7 @@ class ImprovedMoog : public LadderFilterBase
 	    template <typename FloatType>
 	    void renderBlock(FloatType* samples, uint32_t n)
         {
-			update();
+			
 			FloatType dV0, dV1, dV2, dV3;
 
 			for (uint32_t i = 0; i < n; i++)

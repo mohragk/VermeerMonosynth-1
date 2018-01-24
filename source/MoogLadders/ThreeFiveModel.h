@@ -99,7 +99,7 @@ public:
 	template <typename FloatType>
 	FloatType doFilter(FloatType sample )
     {
-		update();
+		
         
 		FloatType y = 0.0;
         
@@ -159,6 +159,7 @@ public:
     virtual void SetCutoff(double c) override
     {
         cutoff = c;
+        update();
     }
     
     virtual void SetDrive (double d ) override

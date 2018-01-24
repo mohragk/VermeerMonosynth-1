@@ -38,80 +38,66 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 //==============================================================================
 MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     : AudioProcessor (getBusesProperties()),
-		lastUIWidth (720),
+        lastUIWidth (720),
 		lastUIHeight (450),
 
 		gainParam (nullptr),
 
 		osc1GainParam(nullptr),
 		osc2GainParam(nullptr),
-		 osc3GainParam(nullptr),
-
-      osc1DetuneAmountParam(nullptr),
+		osc3GainParam(nullptr),
+        osc1DetuneAmountParam(nullptr),
 		osc2DetuneAmountParam(nullptr),
-       osc3DetuneAmountParam(nullptr),
+        osc3DetuneAmountParam(nullptr),
 
-osc1ModeParam(nullptr),
-osc2ModeParam(nullptr),
-osc3ModeParam(nullptr),
+        osc1ModeParam(nullptr),
+        osc2ModeParam(nullptr),
+        osc3ModeParam(nullptr),
+        oscSyncParam(nullptr),
 
+        filterParam(nullptr),
+        filterQParam(nullptr),
+        filterContourParam(nullptr),
+        filterDriveParam(nullptr),
 
-oscSyncParam(nullptr),
+        pitchModParam(nullptr),
 
+        oscOffsetParam(nullptr),
+        osc2OffsetParam(nullptr),
+        osc3OffsetParam(nullptr),
 
+        attackParam1(nullptr),
+        decayParam1(nullptr),
+        sustainParam1(nullptr),
+        releaseParam1(nullptr),
+        attackCurve1Param(nullptr),
+        decayRelCurve1Param(nullptr),
 
+        attackParam2(nullptr),
+        decayParam2(nullptr),
+        sustainParam2(nullptr),
+        releaseParam2(nullptr),
+        attackCurve2Param(nullptr),
+        decayRelCurve2Param(nullptr),
 
-      filterParam(nullptr),
-      filterQParam(nullptr),
-      filterContourParam(nullptr),
-      filterDriveParam(nullptr),
+        attackParam3(nullptr),
+        decayParam3(nullptr),
+        sustainParam3(nullptr),
+        releaseParam3(nullptr),
+        attackCurve3Param(nullptr),
+        decayRelCurve3Param(nullptr),
 
+        modTargetParam(nullptr),
 
-pitchModParam(nullptr),
+        lfoRateParam(nullptr),
+        lfoModeParam(nullptr),
+        lfoIntensityParam(nullptr),
 
-oscOffsetParam(nullptr),
-osc2OffsetParam(nullptr),
-osc3OffsetParam(nullptr),
-
-
-      attackParam1(nullptr),
-      decayParam1(nullptr),
-      sustainParam1(nullptr),
-      releaseParam1(nullptr),
-      attackCurve1Param(nullptr),
-      decayRelCurve1Param(nullptr),
-
-      attackParam2(nullptr),
-      decayParam2(nullptr),
-      sustainParam2(nullptr),
-      releaseParam2(nullptr),
-      attackCurve2Param(nullptr),
-      decayRelCurve2Param(nullptr),
-
-      attackParam3(nullptr),
-      decayParam3(nullptr),
-      sustainParam3(nullptr),
-      releaseParam3(nullptr),
-      attackCurve3Param(nullptr),
-      decayRelCurve3Param(nullptr),
-
-      modTargetParam(nullptr),
-
-lfoRateParam(nullptr),
-lfoModeParam(nullptr),
-lfoIntensityParam(nullptr),
-
-
-      filterSelectParam(nullptr),
-  lfoDivisionParam(nullptr),
-delayPosition (0),
-filterEnvelope(nullptr),
-ampEnvelope(nullptr)
-
-
-
-//Add all the rest!
-
+        filterSelectParam(nullptr),
+        lfoDivisionParam(nullptr),
+        delayPosition (0),
+        filterEnvelope(nullptr),
+        ampEnvelope(nullptr)
 {
     lastPosInfo.resetToDefault();
     
@@ -215,6 +201,9 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
 
 	synth.clearSounds();
 	synth.clearVoices();
+    
+   
+    
 
 }
 
@@ -500,16 +489,15 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     int stepSize = jmin(16, numSamples);
     
     int samplesLeftOver = numSamples;
-
-
+    
   
 	for (int step = 0; step < numSamples; step += stepSize)
 	{
 		//filter[0]->update();
 		//filter[1]->update();
 
-		double combinedCutoff = currentCutoff + cutoff.getNextValue();
-		double Q = resonance.getNextValue();// * 4.0;
+		double combinedCutoff   = currentCutoff + cutoff.getNextValue();
+		double Q                = resonance.getNextValue();// * 4.0;
 
 		for (int channel = 0; channel < 2; channel++)
 		{
