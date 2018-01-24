@@ -144,6 +144,7 @@ class ImprovedMoog : public LadderFilterBase
 				tV[3] = fast_tanh(V[3] / (2.0 * VT));
             
 				samples[i] = V[3];
+                
 			}
         }
 	

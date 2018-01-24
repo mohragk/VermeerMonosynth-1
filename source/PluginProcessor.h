@@ -64,11 +64,7 @@ public:
         process (buffer, midiMessages);
     }
 
-    void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
-    {
-        jassert (isUsingDoublePrecision());
-        process (buffer, midiMessages);
-    }
+
 
     //==============================================================================
     bool hasEditor() const override                                             { return true; }
@@ -205,27 +201,23 @@ public:
     
 private:
     //==============================================================================
-    template <typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages);
     
-	template <typename FloatType>
-    void applyGain (AudioBuffer<FloatType>& buffer);
-   
-	template <typename FloatType>
-    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
-   
-	template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase *filter[]);
+    void process (AudioBuffer<float>& buffer, MidiBuffer& midiMessages);
 
-	template <typename FloatType>
-	void applyFilterAlt(AudioBuffer<FloatType>& buffer);
-    
-	template <typename FloatType>
-    void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
+    void applyGain (AudioBuffer<float>& buffer);
+
+    void applyFilterEnvelope (AudioBuffer<float>& buffer);
+
+    void applyFilter (AudioBuffer<float>& buffer, LadderFilterBase *filter[]);
+
+	void applyFilterAlt(AudioBuffer<float>& buffer);
+
+    void applyAmpEnvelope (AudioBuffer<float>& buffer);
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
-    int delayPosition;
+    
+    ScopedPointer<dsp::Oversampling<float>> oversampling;
 
     Synthesiser synth;
     
