@@ -290,6 +290,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
 	masterGain.reset(sampleRate, 0.001);
+    oversampling->reset();
 }
 
 void MonosynthPluginAudioProcessor::reset()
