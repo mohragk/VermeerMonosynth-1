@@ -37,17 +37,17 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
 //==============================================================================
 MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
-    : AudioProcessor (getBusesProperties()),
+        : AudioProcessor (getBusesProperties()),
         lastUIWidth (720),
-		lastUIHeight (450),
+        lastUIHeight (450),
 
-		gainParam (nullptr),
+        gainParam (nullptr),
 
-		osc1GainParam(nullptr),
-		osc2GainParam(nullptr),
-		osc3GainParam(nullptr),
+        osc1GainParam(nullptr),
+        osc2GainParam(nullptr),
+        osc3GainParam(nullptr),
         osc1DetuneAmountParam(nullptr),
-		osc2DetuneAmountParam(nullptr),
+        osc2DetuneAmountParam(nullptr),
         osc3DetuneAmountParam(nullptr),
 
         osc1ModeParam(nullptr),
@@ -191,7 +191,6 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     filterEnvelope = new ADSR();
     ampEnvelope = new ADSR();
     
-    
    
 }
 
@@ -201,21 +200,13 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
 
 	synth.clearSounds();
 	synth.clearVoices();
-    
-   
-    
-
 }
 
 
 void MonosynthPluginAudioProcessor::initialiseSynth()
 {
-   
     synth.addVoice (new SineWaveVoice());
     synth.addSound (new SineWaveSound());
-    
-    
-    
 }
 
 
@@ -246,7 +237,6 @@ AudioProcessor::BusesProperties MonosynthPluginAudioProcessor::getBusesPropertie
 }
 
 //==============================================================================
-void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int /*samplesPerBlock*/)
 {
     sampleRate = newSampleRate;
 
@@ -316,7 +306,6 @@ void MonosynthPluginAudioProcessor::reset()
 	cutoffFromEnvelope.reset(sampleRate, 0.0003);
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
-	masterGain.reset(sampleRate, 0.001);	
 	
 }
 

@@ -224,9 +224,7 @@ private:
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
-
-    AudioBuffer<float> delayBufferFloat;
-    AudioBuffer<double> delayBufferDouble;
+    
     int delayPosition;
 
     Synthesiser synth;

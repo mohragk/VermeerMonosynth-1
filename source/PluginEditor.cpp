@@ -330,7 +330,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     
     addAndMakeVisible (osc3OffsetLabel = new Label ("OSC2 Offset Label",
-                                                    TRANS("Offset\n")));   //
+                                                    TRANS("Offset")));   //
     osc3OffsetLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     osc3OffsetLabel->setJustificationType (Justification::centredBottom);
     osc3OffsetLabel->setEditable (false, false, false);
@@ -338,12 +338,34 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc3OffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     addAndMakeVisible (oscSyncSlider = new ParameterSlider(*owner.oscSyncParam));
-    oscSyncSlider->setSliderStyle (Slider::LinearHorizontal);
+    oscSyncSlider->setSliderStyle (Slider::LinearVertical);
     oscSyncSlider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
     oscSyncSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     //oscSyncSlider->setDoubleClickReturnValue(true, 0.5);
    
+    addAndMakeVisible (oscSyncLabel = new Label ("oscSyncLabel",
+                                                      TRANS("Sync")));                 //
+    oscSyncLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    oscSyncLabel->setJustificationType (Justification::centredBottom);
+    oscSyncLabel->setEditable (false, false, false);
+    oscSyncLabel->setColour (TextEditor::textColourId, Colours::black);
+    oscSyncLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
+    addAndMakeVisible (oscSyncONLabel = new Label ("oscSyncONLabel",
+                                                 TRANS("-on")));                 //
+    oscSyncONLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    oscSyncONLabel->setJustificationType (Justification::centredBottom);
+    oscSyncONLabel->setEditable (false, false, false);
+    oscSyncONLabel->setColour (TextEditor::textColourId, Colours::black);
+    oscSyncONLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    addAndMakeVisible (oscSyncOFFLabel = new Label ("oscSyncOFFLabel",
+                                                   TRANS("-off")));                 //
+    oscSyncOFFLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    oscSyncOFFLabel->setJustificationType (Justification::centredBottom);
+    oscSyncOFFLabel->setEditable (false, false, false);
+    oscSyncOFFLabel->setColour (TextEditor::textColourId, Colours::black);
+    oscSyncOFFLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     
     //Pitch MODULATION SLIDER
@@ -402,6 +424,10 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     filterContourSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     filterContourSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
+    addAndMakeVisible(filterSelectSlider = new ParameterSlider(*owner.filterSelectParam));  //todo:
+    filterSelectSlider->setSliderStyle(Slider::LinearVertical);
+    filterSelectSlider->setTextBoxStyle(Slider::NoTextBox, true, 0 , 0);
+    
     
     addAndMakeVisible (filterContourLabel = new Label ("Filter Contour Label",
                                                        TRANS("Contour")));              //
@@ -422,6 +448,31 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     filterDriveLabel->setEditable (false, false, false);
     filterDriveLabel->setColour (TextEditor::textColourId, Colours::black);
     filterDriveLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    addAndMakeVisible (filterMoogLabel = new Label ("filterMoogLabel",
+                                                      TRANS("MOOG")));          //
+    filterMoogLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterMoogLabel->setJustificationType (Justification::centredLeft);
+    filterMoogLabel->setEditable (false, false, false);
+    filterMoogLabel->setColour (TextEditor::textColourId, Colours::black);
+    filterMoogLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    
+    addAndMakeVisible (filterMS20Label = new Label ("filterMS20Label",
+                                                        TRANS("MS20")));          //
+    filterMS20Label->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterMS20Label->setJustificationType (Justification::centredLeft);
+    filterMS20Label->setEditable (false, false, false);
+    filterMS20Label->setColour (TextEditor::textColourId, Colours::black);
+    filterMS20Label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    addAndMakeVisible (filter303Label = new Label ("filter303Label",
+                                                         TRANS("303")));          //
+    filter303Label->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filter303Label->setJustificationType (Justification::centredLeft);
+    filter303Label->setEditable (false, false, false);
+    filter303Label->setColour (TextEditor::textColourId, Colours::black);
+    filter303Label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
    
     
     //
@@ -661,10 +712,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
    
     
-    // FilterSwitch
-    addAndMakeVisible(filterSelectSlider = new ParameterSlider(*owner.filterSelectParam));  //todo:
-    filterSelectSlider->setSliderStyle(Slider::LinearHorizontal);
-    filterSelectSlider->setTextBoxStyle(Slider::NoTextBox, true, 0 , 0);
+    
 	
 	
     addAndMakeVisible(midiKeyboard);
@@ -713,7 +761,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     // set resize limits for this plug-in
 	
-    setResizeLimits (820, 570, 820, 570);
+    setResizeLimits (820, 590, 820, 590);
 	
 
     // set our component's initial size to be the last one that was stored in the filter's settings
@@ -848,7 +896,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
     g.fillAll (Colour (0xff0e0e0e));
     
     {
-        int x = 305, y = 64, width = 1, height = 358;
+        int x = 305, y = 64, width = 1, height = 398;
         Colour fillColour = Colour (0xffcfcfcf);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -857,7 +905,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
     }
     
     {
-        int x = 401, y = 64, width = 1, height = 358;
+        int x = 401, y = 64, width = 1, height = 398;
         Colour fillColour = Colour (0xffcfcfcf);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -866,7 +914,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
     }
     
     {
-        int x = 617, y = 64, width = 1, height = 358;
+        int x = 617, y = 64, width = 1, height = 398;
         Colour fillColour = Colour (0xffcfcfcf);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -876,7 +924,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
     
     
     {
-        int x = 713, y = 64, width = 1, height = 358;
+        int x = 713, y = 64, width = 1, height = 398;
         Colour fillColour = Colour (0xffcfcfcf);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1171,9 +1219,12 @@ void MonosynthPluginAudioProcessorEditor::resized()
     oscillatorsLabel->setBounds (88, 64, 150, 24);
     osc1TuneSlider->setBounds (16, 263, 64, 64);
     osc1TuneLabel->setBounds (16, 247, 65, 24);
+    
     osc1WaveformSlider->setBounds (16, 178, 64, 64);
-
-
+    osc1WaveformLabel->setBounds (16, 168, 65, 24);
+    
+    
+    
     osc2GainSlider->setBounds (88, 104, 64, 64);
     osc2GainLabel->setBounds (88, 88, 65, 24);
     osc2OffsetSlider->setBounds (88, 344, 64, 74);
@@ -1181,7 +1232,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     osc2TuneSlider->setBounds (88, 263, 64, 64);
     osc2TuneLabel->setBounds (88, 247, 65, 24);
     osc2WaveformSlider->setBounds (88, 178, 64, 64);
-    
+    osc2WaveformLabel->setBounds (88, 168, 64, 24);
 	
 	osc3GainSlider->setBounds (160, 104, 64, 64);
     osc3GainLabel->setBounds (160, 88, 65, 24);
@@ -1190,9 +1241,13 @@ void MonosynthPluginAudioProcessorEditor::resized()
     osc3TuneSlider->setBounds (160, 263, 64, 64);
     osc3TuneLabel->setBounds (160, 247, 65, 24);
     osc3WaveformSlider->setBounds (160, 178, 64, 64);
+    osc3WaveformLabel->setBounds (160, 168, 64, 24);
     
-    oscSyncSlider->setBounds (70, 418, 34, 34);
-    
+    oscSyncLabel->setBounds(232, 168,65,24);
+    oscSyncSlider->setBounds (232, 198, 34, 34);
+    oscSyncSlider->setAlwaysOnTop(true);
+    oscSyncONLabel->setBounds(240, 189, 64, 24);
+    oscSyncOFFLabel->setBounds(240, 206, 64, 24);
 	
 	filterLabel->setBounds (320, 64, 65, 24);
     filterCutoffSlider->setBounds (320, 104, 64, 64);
@@ -1205,9 +1260,12 @@ void MonosynthPluginAudioProcessorEditor::resized()
 	
 	filterDriveSlider->setBounds(320, 344, 64, 64);
 	filterDriveLabel->setBounds(320, 328, 65, 24);
-	filterSelectSlider->setBounds(320, 408, 64, 30);
+	filterSelectSlider->setBounds(298, 408, 64, 54);
 	
-
+   
+    filterMS20Label->setBounds (336, 424, 64, 24);
+    filter303Label->setBounds  (336, 408, 64, 24);
+    filterMoogLabel->setBounds (336, 440, 64, 24);
 	
 	
 	
@@ -1263,9 +1321,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     decRelCurveSlider1->setBounds (568, 122, 12, 60);
     pitchModSlider->setBounds (232, 104, 64, 64);
     pitchModLabel->setBounds (224, 88, 80, 24);
-    osc1WaveformLabel->setBounds (16, 168, 65, 24);
-    osc2WaveformLabel->setBounds (88, 168, 64, 24);
-    osc3WaveformLabel->setBounds (160, 168, 64, 24);
+  
     attackCurveSlider2->setBounds (554, 232, 12, 60);
     decRelCurveSlider2->setBounds (568, 232, 12, 60);
     attackCurveSlider3->setBounds (554, 346, 12, 60);
