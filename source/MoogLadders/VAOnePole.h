@@ -91,7 +91,7 @@ class VAOnePole : public LadderFilterBase
                 return hpf;
         }
         
-        void reset()
+        virtual void reset() override
         {
             Z1 = 0.0; Feedback = 0.0;
         }

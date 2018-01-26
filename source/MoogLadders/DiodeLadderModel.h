@@ -41,7 +41,7 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual ~DiodeLadderModel() {}
     
-    void reset()
+    virtual void reset() override
     {
         va_LPF1.reset();
         va_LPF2.reset();

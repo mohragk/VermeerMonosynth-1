@@ -122,12 +122,12 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     addParameter(osc2ModeParam = new AudioParameterInt("osc2ModeChoice", "OSC2 Waveform", 0, 2, 2));
     addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 2, 2));
 
-    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (20.0, 16000.0, 0.0, 0.5, false), 12000.0));
+    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (20.0, 18000.0, 0.0, 0.5, false), 12000.0));
     addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0, 1.0, 0.0, 1.0, false), 0.0));
-    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (20.0, 16000.0, 0.0, 0.5, false), 0.0));
+    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (20.0, 18000.0, 0.0, 0.5, false), 0.0));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0, 5.0, 0.0, 1.0, false), 1.0));
     // Filter Select Parameter
-    addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 0));
+    addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 2));
 
     addParameter (pitchModParam = new AudioParameterFloat("pitchMod", "Pitch Modulation", NormalisableRange<float> (0, 2000.0, 0.0, 0.5, false), 0.0));
     addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24.0, 0.0));
@@ -295,6 +295,13 @@ void MonosynthPluginAudioProcessor::releaseResources()
 	drive.reset(sampleRate, 0.001);
 	masterGain.reset(sampleRate, 0.001);
     oversampling->reset();
+    
+    for (int channel = 0; channel < 2; channel++)
+    {
+        filterA[channel]->reset();
+        filterB[channel]->reset();
+        filterC[channel]->reset();
+    }
 }
 
 void MonosynthPluginAudioProcessor::reset()
@@ -307,6 +314,13 @@ void MonosynthPluginAudioProcessor::reset()
 	drive.reset(sampleRate, 0.001);
 	masterGain.reset(sampleRate, 0.001);
     oversampling->reset();
+    
+    for (int channel = 0; channel < 2; channel++)
+    {
+        filterA[channel]->reset();
+        filterB[channel]->reset();
+        filterC[channel]->reset();
+    }
 }
 
 
@@ -436,7 +450,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<float>& buf
         const double contourRange = *filterContourParam * contourVelocity;
         currentCutoff = (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
-        if (currentCutoff > 14000.0) currentCutoff = 14000.0;
+        if (currentCutoff > 18000.0) currentCutoff = 18000.0;
         if (currentCutoff < 20.0) currentCutoff = 20.0;
         
 		
@@ -489,12 +503,13 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<float>& buffer, Lad
 	{
 		
 
-		double combinedCutoff   = currentCutoff + cutoff.getNextValue() / oversampling->getOversamplingFactor();
+        double factor = oversampling->getOversamplingFactor();
+		double combinedCutoff   = currentCutoff + cutoff.getNextValue();
 		double Q                = resonance.getNextValue();// * 4.0;
 
 		for (int channel = 0; channel < 2; channel++)
 		{
-            filter[channel]->SetSampleRate(sampleRate * oversampling->getOversamplingFactor());
+            filter[channel]->SetSampleRate(sampleRate * factor);
 			filter[channel]->SetResonance(Q);
 			filter[channel]->SetCutoff(combinedCutoff);
 			filter[channel]->SetDrive(drive.getNextValue());
@@ -547,7 +562,7 @@ void MonosynthPluginAudioProcessor::applyFilterNorm (AudioBuffer<float>& buffer,
         
         for (int channel = 0; channel < 2; channel++)
         {
-            filter[channel]->SetSampleRate(sampleRate * oversampling->getOversamplingFactor());
+            filter[channel]->SetSampleRate(sampleRate);
             filter[channel]->SetResonance(Q);
             filter[channel]->SetCutoff(combinedCutoff);
             filter[channel]->SetDrive(drive.getNextValue());

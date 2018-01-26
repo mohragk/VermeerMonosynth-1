@@ -54,7 +54,7 @@ class ImprovedMoog : public LadderFilterBase
 		{
 
 		}
-		void reset()
+		virtual void reset() override
 		{
 			zeromem(V, sizeof(V));
 			zeromem(dV, sizeof(dV));
@@ -83,7 +83,7 @@ class ImprovedMoog : public LadderFilterBase
 		virtual void SetSampleRate (double sr) override
 		{
 			sampleRate = sr;
-			multiplier = 96000.0 / sr;
+            multiplier = 96000.0 / sr;
 		}
 	
 		virtual void SetResonance(double r) override

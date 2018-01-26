@@ -36,7 +36,7 @@ class SEMModel : public LadderFilterBase
 
 		}
     
-		void reset()
+		virtual void reset() override
 		{
 			Z11 = 0.0; Z12 = 0.0;
 		}
