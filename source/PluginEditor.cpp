@@ -39,7 +39,7 @@ public:
         : Slider (p.getName (256)), param (p)
     {
         setRange (0.0, 1.0, 0.0);
-        startTimerHz (120);
+        startTimerHz (60);
         updateSliderPos();
     }
 

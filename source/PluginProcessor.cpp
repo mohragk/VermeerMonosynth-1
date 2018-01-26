@@ -92,6 +92,7 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
         lfoRateParam(nullptr),
         lfoModeParam(nullptr),
         lfoIntensityParam(nullptr),
+        lfoSyncParam(nullptr),
 
         filterSelectParam(nullptr),
         lfoDivisionParam(nullptr),
@@ -130,9 +131,9 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 2));
 
     addParameter (pitchModParam = new AudioParameterFloat("pitchMod", "Pitch Modulation", NormalisableRange<float> (0, 2000.0, 0.0, 0.5, false), 0.0));
-    addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24.0, 0.0));
-    addParameter (osc2OffsetParam = new AudioParameterInt("osc2Offset", "OSC2 Offset", -24, 24.0, 0.0));
-    addParameter (osc3OffsetParam = new AudioParameterInt("osc3Offset", "OSC3 Offset", -24, 24.0, 0.0));
+    addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24, 0.0));
+    addParameter (osc2OffsetParam = new AudioParameterInt("osc2Offset", "OSC2 Offset", -24, 24, 0.0));
+    addParameter (osc3OffsetParam = new AudioParameterInt("osc3Offset", "OSC3 Offset", -24, 24, 0.0));
     
     addParameter (oscSyncParam = new AudioParameterInt("oscSync", "osc2>osc1 sync", 0, 1, 0));
 
@@ -298,9 +299,9 @@ void MonosynthPluginAudioProcessor::releaseResources()
     
     for (int channel = 0; channel < 2; channel++)
     {
-        filterA[channel]->reset();
-        filterB[channel]->reset();
-        filterC[channel]->reset();
+        filterA[channel]->Reset();
+        filterB[channel]->Reset();
+        filterC[channel]->Reset();
     }
 }
 
@@ -317,9 +318,9 @@ void MonosynthPluginAudioProcessor::reset()
     
     for (int channel = 0; channel < 2; channel++)
     {
-        filterA[channel]->reset();
-        filterB[channel]->reset();
-        filterC[channel]->reset();
+        filterA[channel]->Reset();
+        filterB[channel]->Reset();
+        filterC[channel]->Reset();
     }
 }
 

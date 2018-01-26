@@ -40,9 +40,9 @@ public:
     virtual void Process(float * samples, uint32_t n) noexcept = 0;
     virtual void Process(double * samples, uint32_t n) noexcept = 0;
 
-	virtual void update() = 0;
-    virtual void reset() = 0;
-    virtual void SetSampleRate(double sr) = 0;
+	virtual void Update() = 0;
+    virtual void Reset() = 0;
+    virtual void SetSampleRate(double sr) {sampleRate = sr;};
     virtual void SetResonance(double r) = 0;
     virtual void SetCutoff(double c) = 0;
     virtual void SetDrive(double d) = 0;
