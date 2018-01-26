@@ -17,7 +17,7 @@
 class ThreeFiveModel : public LadderFilterBase
 {
 public:
-    ThreeFiveModel() : LadderFilterBase(), sampleRate(44100.0)
+    ThreeFiveModel() : LadderFilterBase()
     {
         //init
         K = 0.01;
@@ -32,23 +32,23 @@ public:
         
         type = LPF2;
         
-        reset();
+        Reset();
         
     }
     
     virtual ~ThreeFiveModel() {}
     
     
-    void reset()
+    virtual void Reset() override
     {
-        va_LPF1.reset();
-        va_LPF2.reset();
-        va_HPF1.reset();
-        va_HPF2.reset();
+        va_LPF1.Reset();
+        va_LPF2.Reset();
+        va_HPF1.Reset();
+        va_HPF2.Reset();
     }
     
     
-    virtual void update() override
+    virtual void Update() override
     {
         //prewarp for BZT
         double wd = 2 * MOOG_PI * cutoff;
@@ -159,7 +159,7 @@ public:
     virtual void SetCutoff(double c) override
     {
         cutoff = c;
-        update();
+        Update();
     }
     
     virtual void SetDrive (double d ) override

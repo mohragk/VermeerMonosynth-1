@@ -17,17 +17,13 @@ class SEMModel : public LadderFilterBase
 {
     public :
     
-		SEMModel() : LadderFilterBase(), sampleRate(44100.0)
+		SEMModel() : LadderFilterBase()
 		{
 			Alpha0 = 1.0;
 			Alpha = 1.0;
 			Rho = 1.0;
         
-		   // drive = 1.0f;
-        
-			SetCutoff(1000.0f); // normalized cutoff frequency
-			SetResonance(0.1f); // [0, 4]
-			reset();
+			Reset();
 		
 		}
     
@@ -36,13 +32,13 @@ class SEMModel : public LadderFilterBase
 
 		}
     
-		void reset()
+		virtual void Reset() override
 		{
 			Z11 = 0.0; Z12 = 0.0;
 		}
     
     
-		virtual void update() override
+		virtual void Update() override
 		{
         
 			// prewarp cutoff, billinear transform
@@ -146,7 +142,7 @@ class SEMModel : public LadderFilterBase
 		virtual void SetCutoff(double c) override
 		{
 			cutoff = c;
-            update();
+            Update();
 
 		}
     

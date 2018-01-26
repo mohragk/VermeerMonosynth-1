@@ -17,7 +17,7 @@ class VAOnePole : public LadderFilterBase
 {
     public :
     
-        VAOnePole() : LadderFilterBase(), sampleRate(44100.0)
+        VAOnePole() : LadderFilterBase()
         {
             Alpha = 1.0;
             Beta = 0.0;
@@ -28,13 +28,10 @@ class VAOnePole : public LadderFilterBase
             a0 = 1.0;
             Feedback = 0.0;
             
-            SetCutoff(1000.0f); // normalized cutoff frequency
-            SetResonance(0.1f); // [0, 10]
-            
             // default to lpf
             type = LPF1;
             
-            reset();
+            Reset();
             
         }
         
@@ -42,7 +39,7 @@ class VAOnePole : public LadderFilterBase
         {}
     
         
-        virtual void update() override
+        virtual void Update() override
         {
             double wd = 2 * MOOG_PI * cutoff;
             double T = 1 / sampleRate;
@@ -91,7 +88,7 @@ class VAOnePole : public LadderFilterBase
                 return hpf;
         }
         
-        void reset()
+        virtual void Reset() override
         {
             Z1 = 0.0; Feedback = 0.0;
         }

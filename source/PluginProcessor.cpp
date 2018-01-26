@@ -283,6 +283,13 @@ void MonosynthPluginAudioProcessor::releaseResources()
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
 	masterGain.reset(sampleRate, 0.001);
+    
+    for (int channel = 0; channel < 2; channel ++)
+    {
+        filterA[channel]->Reset();
+        filterB[channel]->Reset();
+        filterC[channel]->Reset();
+    }
 }
 
 void MonosynthPluginAudioProcessor::reset()
@@ -294,6 +301,13 @@ void MonosynthPluginAudioProcessor::reset()
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
 	masterGain.reset(sampleRate, 0.001);
+    
+    for (int channel = 0; channel < 2; channel ++)
+    {
+        filterA[channel]->Reset();
+        filterB[channel]->Reset();
+        filterC[channel]->Reset();
+    }
 }
 
 

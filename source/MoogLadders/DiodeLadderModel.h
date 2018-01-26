@@ -18,7 +18,7 @@ class DiodeLadderModel : public LadderFilterBase
 {
     public:
     
-    DiodeLadderModel() : LadderFilterBase(), sampleRate(44100.0)
+    DiodeLadderModel() : LadderFilterBase()
     {
         K = 0.0;
         
@@ -33,7 +33,7 @@ class DiodeLadderModel : public LadderFilterBase
         
         type = LPF4;
         
-        reset();
+        Reset();
         
         
     }
@@ -41,15 +41,15 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual ~DiodeLadderModel() {}
     
-    void reset()
+    virtual void Reset() override
     {
-        va_LPF1.reset();
-        va_LPF2.reset();
-        va_LPF3.reset();
-        va_LPF4.reset();
+        va_LPF1.Reset();
+        va_LPF2.Reset();
+        va_LPF3.Reset();
+        va_LPF4.Reset();
     }
     
-    virtual void update() override
+    virtual void Update() override
     {
         double wd = 2 * MOOG_PI * cutoff;
         double T  = 1 / sampleRate;
@@ -162,7 +162,7 @@ class DiodeLadderModel : public LadderFilterBase
     virtual void SetCutoff(double c) override
     {
         cutoff = c;
-        update();
+        Update();
     }
     
     virtual void SetDrive (double d ) override

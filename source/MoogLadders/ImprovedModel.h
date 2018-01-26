@@ -40,28 +40,25 @@ class ImprovedMoog : public LadderFilterBase
 {
 	public:
     
-		ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0)
+		ImprovedMoog() : LadderFilterBase()
 		{
 			drive = 1.0f;
-        
-			SetCutoff(1000.0f); // normalized cutoff frequency
-			SetResonance(0.1f); // [0, 4]
 		
-			reset();
+			Reset();
 		}
     
 		virtual ~ImprovedMoog()
 		{
 
 		}
-		void reset()
+		virtual void Reset() override
 		{
 			zeromem(V, sizeof(V));
 			zeromem(dV, sizeof(dV));
 			zeromem(tV, sizeof(tV));
 		}
     
-		virtual void update() override
+		virtual void Update() override
 		{
 			x = (MOOG_PI * cutoff) / (sampleRate * multiplier);
 			g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);
@@ -94,7 +91,7 @@ class ImprovedMoog : public LadderFilterBase
 		virtual void SetCutoff(double c) override
 		{
 			cutoff = c;
-            update();
+            Update();
         }
     
 		virtual void SetDrive (double d ) override
