@@ -96,6 +96,8 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
 
         filterSelectParam(nullptr),
         lfoDivisionParam(nullptr),
+
+        overSampleParam(nullptr),
         filterEnvelope(nullptr),
         ampEnvelope(nullptr)
 {
@@ -125,7 +127,7 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
 
     addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (20.0, 18000.0, 0.0, 0.5, false), 12000.0));
     addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0, 1.0, 0.0, 1.0, false), 0.0));
-    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (20.0, 18000.0, 0.0, 0.5, false), 0.0));
+    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (20.0, 18000.0, 0.0, 0.5, false), 23.0));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0, 5.0, 0.0, 1.0, false), 1.0));
     // Filter Select Parameter
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 2));

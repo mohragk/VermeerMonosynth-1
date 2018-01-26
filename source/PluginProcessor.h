@@ -148,6 +148,8 @@ public:
     AudioParameterInt* osc2ModeParam;
     AudioParameterInt* osc3ModeParam;
     
+    AudioParameterInt* oscSyncParam;
+    
     AudioParameterFloat* filterParam;
     AudioParameterFloat* filterQParam;
     AudioParameterFloat* filterContourParam;
@@ -196,7 +198,7 @@ public:
     
     AudioParameterInt* lfoDivisionParam;
     
-    AudioParameterInt* oscSyncParam;
+    
     
     AudioParameterInt* overSampleParam;
     
