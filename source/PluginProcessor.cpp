@@ -121,7 +121,7 @@ ampEnvelope(nullptr)
     addParameter (osc2DetuneAmountParam = new AudioParameterFloat("osc2DetuneAmount", "OSC2 Tune", NormalisableRange<float>(-1.0, 1.0, 0.0), 0.0));
     addParameter (osc3DetuneAmountParam = new AudioParameterFloat("osc3DetuneAmount", "OSC3 Tune", NormalisableRange<float>(-1.0, 1.0, 0.0), 0.0));
     
-    addParameter(osc1ModeParam = new AudioParameterInt("osc1ModeChoice", "OSC1 Waveform", 0, 2, 2));
+    addParameter(osc1ModeParam = new AudioParameterInt("osc1ModeChoice", "OSC1 Waveform", 0, 2, 2)); // TEST
     addParameter(osc2ModeParam = new AudioParameterInt("osc2ModeChoice", "OSC2 Waveform", 0, 2, 2));
     addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 2, 2));
     
@@ -182,6 +182,8 @@ ampEnvelope(nullptr)
     addParameter(overSampleParam = new AudioParameterInt("overSampleParam", "Oversampling Switch", 0, 1, 1));
     addParameter(filterOrderParam = new AudioParameterInt("filterOrderParam", "Filter Order", 0, 1, 0)); // 0 = VCA->filter; 1 = filter->VCA
     
+    // PWM
+    addParameter(pulsewidthParam = new AudioParameterFloat("pulsewidthParam", "PWM", 0.0f, 1.0f, 0.4f));
     
     initialiseSynth();
     
@@ -281,6 +283,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     masterGain.reset(sampleRate, 0.001);
+    pulseWidthSmooth.reset(sampleRate, 0.001);
     
     
     filterEnvelope->setSampleRate(sampleRate);
@@ -300,6 +303,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     masterGain.reset(sampleRate, 0.001);
+    pulseWidthSmooth.reset(sampleRate, 0.001);
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -321,6 +325,7 @@ void MonosynthPluginAudioProcessor::reset()
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     masterGain.reset(sampleRate, 0.001);
+    pulseWidthSmooth.reset(sampleRate, 0.001);
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -387,12 +392,16 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
    
+    
     if (*filterOrderParam == 0)
     {
-        // applying filter
-        if (*filterSelectParam == 0)        { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
-        else if (*filterSelectParam == 1)    { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
-        else                                { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+        if(filterOn)
+        {
+            // applying filter
+            if (*filterSelectParam == 0)        { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
+            else if (*filterSelectParam == 1)    { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
+            else                                { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+        }
         
         // applying VCA
         applyAmpEnvelope(buffer);
@@ -402,10 +411,13 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         // applying VCA
         applyAmpEnvelope(buffer);
         
-        // applying filter
-        if (*filterSelectParam == 0)        { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
-        else if (*filterSelectParam == 1)    { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
-        else                                { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+        if(filterOn)
+        {
+            // applying filter
+            if (*filterSelectParam == 0)        { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
+            else if (*filterSelectParam == 1)    { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
+            else                                { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+        }
     }
     
     
@@ -744,6 +756,8 @@ void inline MonosynthPluginAudioProcessor::updateParameters()
     setEnvelopeState( *ampEnvelope );
     
     setHardSync(*oscSyncParam);
+    pulseWidthSmooth.setValue( ( (modAmount * lfo.nextSample() ) + 1.0 ) / 2.0 );
+    setPulsewidth( pulseWidthSmooth.getNextValue() );
     
 }
 
@@ -816,6 +830,13 @@ void MonosynthPluginAudioProcessor::setHardSync(int sync)
     
 }
 
+void MonosynthPluginAudioProcessor::setPulsewidth(float pw)
+{
+    
+    return static_cast<SineWaveVoice*>(synth.getVoice(0))->setPulsewidth(pw);
+    
+}
+
 
 void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
 {
@@ -829,7 +850,7 @@ void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
             dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
             
             break;
-        case modPitch:
+        case modPitch: // PWM for TESTINGGGG
             dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(amount);
             
             cutoffModulationAmt = 0.0;

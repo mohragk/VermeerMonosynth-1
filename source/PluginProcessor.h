@@ -133,6 +133,7 @@ public:
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
 	void setEnvelopeState(ADSR envelope);
     void setHardSync(int sync);
+    void setPulsewidth(float pw);
 
 	bool noteIsBeingPlayed();
 
@@ -209,6 +210,7 @@ public:
     AudioParameterInt* overSampleParam;
     
     AudioParameterInt* filterOrderParam;
+    AudioParameterFloat* pulsewidthParam;
     
     
 private:
@@ -274,7 +276,7 @@ private:
     
     double sampleRate;
     
-	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, masterGain;
+	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, masterGain, pulseWidthSmooth;
 	LinearSmoothedValue<double> cutoffFromEnvelope;
 	
 	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;

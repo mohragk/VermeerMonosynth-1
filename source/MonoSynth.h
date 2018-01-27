@@ -186,6 +186,13 @@ public:
     {
         hardSync = sync;
     }
+    
+    void setPulsewidth(float pw)
+    {
+        osc1->setPulsewidth(pw);
+        osc2->setPulsewidth(pw);
+        osc3->setPulsewidth(pw);
+    }
 
 private:
     
@@ -215,8 +222,6 @@ private:
 				osc1->setFrequency(osc1Detuned);
 				osc2->setFrequency(osc2Detuned);
 				osc3->setFrequency(osc3Detuned);
-                
-               // std::cout << " OSC1: " << osc1Detuned << "OSC2: " << osc2Detuned << std::endl;
                 
                                
                 if (osc1->isRephase() && hardSync)

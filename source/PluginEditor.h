@@ -186,7 +186,9 @@ private:
         oscSyncSlider,
     
         overSampleSlider,
-        filterOrderSlider
+        filterOrderSlider,
+    
+        pulsewidthSlider
         ;
 
     ScopedPointer<Drawable> drawable1;

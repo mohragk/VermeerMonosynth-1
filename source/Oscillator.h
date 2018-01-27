@@ -57,6 +57,11 @@ public:
             mode = OSCILLATOR_MODE_NOISE;
     }
     
+    void setPulsewidth(double pwm)
+    {
+        pulsewidth = pwm;
+    }
+    
     double getPhase()
     {
         return phase;
@@ -80,21 +85,35 @@ public:
         
         if ( mode == OSCILLATOR_MODE_SINE)
         {
-            value = naiveWaveFormForMode(mode);
+            value = naiveWaveFormForMode(mode, phase);
         }
-        else if( mode == OSCILLATOR_MODE_SAW )
+        else if( mode == OSCILLATOR_MODE_SAW)
         {
-            value = naiveWaveFormForMode(mode);
+            value = naiveWaveFormForMode(mode, phase);
             value -= poly_blep( t, phaseIncrement );
         }
         else if (mode == OSCILLATOR_MODE_SQUARE)
         {
-            value = naiveWaveFormForMode(mode);
+            value = naiveWaveFormForMode(mode, phase);
             value += poly_blep( t, phaseIncrement );
-            value -= poly_blep( fmod( t + 0.5, 1.0 ), phaseIncrement );
+            value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
         } else
         {
-            value = naiveWaveFormForMode(mode);
+            double valueSaw1 = naiveWaveFormForMode(OSCILLATOR_MODE_SAW, phase);
+            valueSaw1 -= poly_blep( t, phaseIncrement );
+            
+            double valueSaw2 = naiveWaveFormForMode(OSCILLATOR_MODE_SAW, phase + (pulsewidth * two_Pi));
+            valueSaw2 -= poly_blep( fmod( t + pulsewidth, 1.0 ), phaseIncrement );
+            
+            value = 0.5 * valueSaw1 - 0.5 * valueSaw2;
+            
+            double corr = 1.0 / pulsewidth;
+            
+            if (pulsewidth < 0.5)
+                corr = 1.0 / ( 1.0 - pulsewidth);
+           
+           
+           value *= corr;
         }
         
         phase += phaseIncrement;
@@ -112,32 +131,39 @@ public:
     
 private:
     
-    double naiveWaveFormForMode(const OscillatorMode mode)
+    double naiveWaveFormForMode(const OscillatorMode mode, double phs)
     {
         const double two_Pi = 2.0 * double_Pi;
-        double value = 0.0;;
+        double value = 0.0;
+       
+        if (phs >= two_Pi)
+            phs -= two_Pi;
+        
+        
         switch (mode)
         {
             case OSCILLATOR_MODE_SINE:
-                value = sin(phase);
+                value = sin(phs);
                 break;
+                
             case OSCILLATOR_MODE_SAW:
                 //value = tanh(3.0 * value);
-                value = (2.0 * phase / two_Pi) - 1.0;
-                value = tanh(2.0 * value);
+                value = (2.0 * phs / two_Pi) - 1.0;
+                //value = tanh(2.0 * value);
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
-                if (phase <= double_Pi) {
+                if (phs <=  pulsewidth * two_Pi) {
                     value = 1.0;
                 } else {
                     value = -1.0;
                 }
                 break;
+                
             case OSCILLATOR_MODE_NOISE:
-                // Random r;
-                // value = r.nextDouble();
+                
                 break;
+                
             default:
                 break;
         }
@@ -172,6 +198,7 @@ private:
 
     double sampleRate, phase, phaseIncrement, frequency;
     double level, gain;
+    double pulsewidth;
     
     OscillatorMode mode;
     

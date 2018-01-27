@@ -720,6 +720,12 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     filterOrderSlider->setSliderStyle(Slider::LinearVertical);
     filterOrderSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
+    
+    // PWM
+    addAndMakeVisible(pulsewidthSlider = new ParameterSlider(*owner.pulsewidthParam));  //
+    pulsewidthSlider->setSliderStyle(Slider::LinearVertical);
+    pulsewidthSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+    
 	
 	
     addAndMakeVisible(midiKeyboard);
@@ -1298,6 +1304,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
 
     overSampleSlider->setBounds(getWidth() - 24-  64, 168, 64,64);
     filterOrderSlider->setBounds(getWidth() - 24-  64, 240, 64,64);
+    pulsewidthSlider->setBounds(getWidth() - 24-  64, 340, 64,64);
   
     
    
