@@ -180,6 +180,7 @@ ampEnvelope(nullptr)
     
     
     addParameter(overSampleParam = new AudioParameterInt("overSampleParam", "Oversampling Switch", 0, 1, 1));
+    addParameter(filterOrderParam = new AudioParameterInt("filterOrderParam", "Filter Order", 0, 1, 0)); // 0 = VCA->filter; 1 = filter->VCA
     
     
     initialiseSynth();
@@ -379,20 +380,36 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     synth.renderNextBlock (buffer, midiMessages, 0, numSamples);
     
     
+   
+    
     // getting our filter envelope values
     applyFilterEnvelope(buffer);
     
     
-    // applying our filter
-    if (filterOn)
+   
+    if (*filterOrderParam == 0)
     {
+        // applying filter
+        if (*filterSelectParam == 0)        { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
+        else if (*filterSelectParam == 1)    { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
+        else                                { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+        
+        // applying VCA
+        applyAmpEnvelope(buffer);
+    }
+    else
+    {
+        // applying VCA
+        applyAmpEnvelope(buffer);
+        
+        // applying filter
         if (*filterSelectParam == 0)        { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
         else if (*filterSelectParam == 1)    { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
         else                                { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
     }
     
     
-    applyAmpEnvelope(buffer);
+   
     
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't

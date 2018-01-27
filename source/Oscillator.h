@@ -57,6 +57,11 @@ public:
             mode = OSCILLATOR_MODE_NOISE;
     }
     
+    double getPhase()
+    {
+        return phase;
+    }
+    
     bool isRephase()
     {
         return rephase;

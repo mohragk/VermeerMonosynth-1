@@ -715,6 +715,11 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     overSampleSlider->setSliderStyle(Slider::LinearVertical);
     overSampleSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
+    // Filter Order; switch from VCA->filter to filter->VCA
+    addAndMakeVisible(filterOrderSlider = new ParameterSlider(*owner.filterOrderParam));  //
+    filterOrderSlider->setSliderStyle(Slider::LinearVertical);
+    filterOrderSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+    
 	
 	
     addAndMakeVisible(midiKeyboard);
@@ -1292,6 +1297,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
     overSampleSlider->setBounds(getWidth() - 24-  64, 168, 64,64);
+    filterOrderSlider->setBounds(getWidth() - 24-  64, 240, 64,64);
   
     
    

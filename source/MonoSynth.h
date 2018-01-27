@@ -168,7 +168,6 @@ public:
     void setOsc3DetuneAmount(const double fine, const int coarse)
     {
         oscDetuneAmount[2] = fine + (double) coarse; //Semitones
-        
     }
     
     void setOscModes(const int mode1, const int mode2, const int mode3)
