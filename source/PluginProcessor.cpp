@@ -191,8 +191,8 @@ ampEnvelope(nullptr)
     
     
     // Oversampling 2 times with IIR filtering
-    oversamplingFloat = new dsp::Oversampling<float> (2, 1, dsp::Oversampling<float>::filterHalfBandFIREquiripple , false);
-    oversamplingDouble = new dsp::Oversampling<double> (2, 1, dsp::Oversampling<double>::filterHalfBandFIREquiripple , false);
+    oversamplingFloat = new dsp::Oversampling<float> (2, 1, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true);
+    oversamplingDouble = new dsp::Oversampling<double> (2, 1, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true);
     
     
 }
@@ -324,12 +324,14 @@ void MonosynthPluginAudioProcessor::reset()
     oversamplingFloat->reset();
     oversamplingDouble->reset();
     
+    
     for (int channel = 0; channel < 2; channel++)
     {
         filterA[channel]->Reset();
         filterB[channel]->Reset();
         filterC[channel]->Reset();
     }
+    
 }
 
 
@@ -382,9 +384,12 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     // applying our filter
-    if (*filterSelectParam == 0)		{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
-    else if (*filterSelectParam == 1)	{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
-    else								{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+    if (filterOn)
+    {
+        if (*filterSelectParam == 0)        { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
+        else if (*filterSelectParam == 1)    { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
+        else                                { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+    }
     
     
     applyAmpEnvelope(buffer);

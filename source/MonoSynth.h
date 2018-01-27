@@ -52,6 +52,7 @@ public:
 		osc1 = new Oscillator();
 		osc2 = new Oscillator();
 		osc3 = new Oscillator();
+        
     }
     
     ~SineWaveVoice()
@@ -84,12 +85,10 @@ public:
                
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
 
-		if (envState == 0)
-		{
-			osc1->setPhase(0.0);
-			osc2->setPhase(0.0);
-			osc3->setPhase(0.0);
-		}
+		osc1->setPhase(0.0);
+		osc2->setPhase(0.0);
+		osc3->setPhase(0.0);
+		
         
         pitchEnvelope->gate(true);
     }
@@ -169,6 +168,7 @@ public:
     void setOsc3DetuneAmount(const double fine, const int coarse)
     {
         oscDetuneAmount[2] = fine + (double) coarse; //Semitones
+        
     }
     
     void setOscModes(const int mode1, const int mode2, const int mode3)
@@ -193,9 +193,7 @@ private:
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
-        osc1->setSampleRate(getSampleRate());
-        osc2->setSampleRate(getSampleRate());
-        osc3->setSampleRate(getSampleRate());
+        
         
 		if (envState != 0)
 		{
@@ -218,6 +216,8 @@ private:
 				osc1->setFrequency(osc1Detuned);
 				osc2->setFrequency(osc2Detuned);
 				osc3->setFrequency(osc3Detuned);
+                
+               // std::cout << " OSC1: " << osc1Detuned << "OSC2: " << osc2Detuned << std::endl;
                 
                                
                 if (osc1->isRephase() && hardSync)
@@ -279,6 +279,7 @@ private:
     
     double pitchModulation, ampModulation;
     double oscDetuneAmount[3];
+   
     
     double pitchBendOffset = 0;
     double glideTime;

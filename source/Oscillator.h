@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(44100.0), phase(0.0), level(0.75)
+    Oscillator() : sampleRate(48000.0), phase(0.0), level(0.75)
     {
         
     }
@@ -73,14 +73,14 @@ public:
 		if (phaseIncrement == 0.0)
 			return value;
         
-        if( mode == OSCILLATOR_MODE_SINE )
+        if ( mode == OSCILLATOR_MODE_SINE)
         {
             value = naiveWaveFormForMode(mode);
         }
-        else if (mode == OSCILLATOR_MODE_SAW)
+        else if( mode == OSCILLATOR_MODE_SAW )
         {
             value = naiveWaveFormForMode(mode);
-            value -= poly_blep(t, phaseIncrement);
+            value -= poly_blep( t, phaseIncrement );
         }
         else if (mode == OSCILLATOR_MODE_SQUARE)
         {
@@ -96,7 +96,7 @@ public:
         
         rephase = false;
         
-        while (phase >= two_Pi)
+        while(phase >= two_Pi)
         {
             phase -= two_Pi;
             rephase = true;
@@ -117,9 +117,9 @@ private:
                 value = sin(phase);
                 break;
             case OSCILLATOR_MODE_SAW:
-                value = phase / two_Pi;
-                value = tanh(3.0 * value);
-                value = 2.0 * value - 1.0;
+                //value = tanh(3.0 * value);
+                value = (2.0 * phase / two_Pi) - 1.0;
+                value = tanh(2.0 * value);
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:

@@ -282,6 +282,8 @@ private:
     
     double gainDB;
     
+    bool filterOn = false;
+    
     
     static BusesProperties getBusesProperties();
    
