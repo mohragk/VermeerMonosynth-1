@@ -61,7 +61,13 @@ public:
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
     {
         jassert (! isUsingDoublePrecision());
-        process (buffer, midiMessages);
+        process (buffer, midiMessages, oversamplingFloat);
+    }
+    
+    void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
+    {
+        jassert (! isUsingDoublePrecision());
+        process (buffer, midiMessages, oversamplingDouble);
     }
 
 
@@ -205,33 +211,35 @@ public:
     
 private:
     //==============================================================================
+    template <typename FloatType>
+    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, ScopedPointer<dsp::Oversampling<FloatType>>& os );
+
+    template <typename FloatType>
+    void applyGain (AudioBuffer<FloatType>& buffer);
+
+    template <typename FloatType>
+    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
+
+    template <typename FloatType>
+    void applyFilter (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& os);
     
-    void process (AudioBuffer<float>& buffer, MidiBuffer& midiMessages);
+    template <typename FloatType>
+    void applyFilterNorm (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[]);
 
-    void applyGain (AudioBuffer<float>& buffer);
-
-    void applyFilterEnvelope (AudioBuffer<float>& buffer);
-
-    void applyFilter (AudioBuffer<float>& buffer, LadderFilterBase *filter[]);
-    
-    void applyFilterNorm (AudioBuffer<float>& buffer, LadderFilterBase *filter[]);
-
-	void applyFilterAlt(AudioBuffer<float>& buffer);
-
-    void applyAmpEnvelope (AudioBuffer<float>& buffer);
+    template <typename FloatType>
+    void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
-    float map(float value, float inputMin, float inputMax, float outMin, float outMax);
     
-    
-    ScopedPointer<dsp::Oversampling<float>> oversampling;
+    ScopedPointer<dsp::Oversampling<float>> oversamplingFloat;
+    ScopedPointer<dsp::Oversampling<double>> oversamplingDouble;
 
     Synthesiser synth;
     
 	bool noteIsPlaying = false;
     
-    LadderFilterBase *filterA[2], *filterB[2], *filterC[2];
+    ScopedPointer<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     
     
     enum modTarget {

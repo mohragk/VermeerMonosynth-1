@@ -179,7 +179,7 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     addParameter(lfoDivisionParam = new AudioParameterInt("lfoDivision", "LFO Synced Rate", 1, 6, 2));
     
     
-    addParameter(overSampleParam = new AudioParameterInt("overSampleParam", "Oversampling Switch", 0, 1, 0));
+    addParameter(overSampleParam = new AudioParameterInt("overSampleParam", "Oversampling Switch", 0, 1, 1));
 
     
     initialiseSynth();
@@ -191,7 +191,8 @@ MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
     
     
     // Oversampling 2 times with IIR filtering
-    oversampling = new dsp::Oversampling<float> (2, 1, dsp::Oversampling<float>::filterHalfBandFIREquiripple , false);
+    oversamplingFloat = new dsp::Oversampling<float> (2, 1, dsp::Oversampling<float>::filterHalfBandFIREquiripple , false);
+    oversamplingDouble = new dsp::Oversampling<double> (2, 1, dsp::Oversampling<double>::filterHalfBandFIREquiripple , false);
 
     
 }
@@ -284,7 +285,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     filterEnvelope->setSampleRate(sampleRate);
     ampEnvelope->setSampleRate(sampleRate);
     
-    oversampling->initProcessing(samplesPerBlock);
+    oversamplingFloat->initProcessing(samplesPerBlock);
+    oversamplingDouble->initProcessing(samplesPerBlock);
 }
 
 void MonosynthPluginAudioProcessor::releaseResources()
@@ -297,7 +299,8 @@ void MonosynthPluginAudioProcessor::releaseResources()
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
 	masterGain.reset(sampleRate, 0.001);
-    oversampling->reset();
+    oversamplingFloat->reset();
+    oversamplingDouble->reset();
     
     for (int channel = 0; channel < 2; channel++)
     {
@@ -316,7 +319,8 @@ void MonosynthPluginAudioProcessor::reset()
 	resonance.reset(sampleRate, 0.001);
 	drive.reset(sampleRate, 0.001);
 	masterGain.reset(sampleRate, 0.001);
-    oversampling->reset();
+    oversamplingFloat->reset();
+    oversamplingDouble->reset();
     
     for (int channel = 0; channel < 2; channel++)
     {
@@ -354,9 +358,8 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
 
 }
 
-
-void MonosynthPluginAudioProcessor::process (AudioBuffer<float>& buffer,
-                                            MidiBuffer& midiMessages)
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, ScopedPointer<dsp::Oversampling<FloatType>>& os )
 {
     const int numSamples = buffer.getNumSamples();
    
@@ -377,10 +380,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<float>& buffer,
     
     
     // applying our filter
-    if (*filterSelectParam == 0)		{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA) ; }
-	else if (*filterSelectParam == 1)	{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB) ; }
-	else								{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC) ; }
-
+    if (*filterSelectParam == 0)		{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
+	else if (*filterSelectParam == 1)	{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
+	else								{ (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+    
 
     applyAmpEnvelope(buffer);
 
@@ -396,8 +399,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<float>& buffer,
     updateCurrentTimeInfoFromHost();
 }
 
-
-void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<float>& buffer)
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer)
 {
 	masterGain.setValue(*gainParam);
 
@@ -408,8 +411,8 @@ void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<float>& buffer)
 
 
 
-
-void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<float>& buffer)
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer)
 {
     filterEnvelope->setAttackRate(*attackParam3);
     filterEnvelope->setDecayRate(*decayParam3);
@@ -468,8 +471,8 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<float>& buf
     
 }
 
-
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<float>& buffer, LadderFilterBase* filter[])
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& oversamp)
 {
     
     //const int numSamples = buffer.getNumSamples();
@@ -477,17 +480,17 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<float>& buffer, Lad
     //float* channelDataLeft  = buffer.getWritePointer(0);
 	//float* channelDataRight = buffer.getWritePointer(1);
     
-    setLatencySamples (oversampling->getLatencyInSamples());
+    setLatencySamples (oversamp->getLatencyInSamples());
     
-    dsp::AudioBlock<float> block (buffer);
-    dsp::AudioBlock<float> oversampledBlock;
+    dsp::AudioBlock<FloatType> block (buffer);
+    dsp::AudioBlock<FloatType> oversampledBlock;
   
     
-    oversampledBlock = oversampling->processSamplesUp(block);
+    oversampledBlock = oversamp->processSamplesUp(block);
     
     
-    float* channelDataLeft  = oversampledBlock.getChannelPointer(0);
-    float* channelDataRight = oversampledBlock.getChannelPointer(1);
+    FloatType* channelDataLeft  = oversampledBlock.getChannelPointer(0);
+    FloatType* channelDataRight = oversampledBlock.getChannelPointer(1);
 
     int numSamples = oversampledBlock.getNumSamples();
     
@@ -506,9 +509,9 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<float>& buffer, Lad
 	{
 		
 
-        double factor = oversampling->getOversamplingFactor();
-		double combinedCutoff   = currentCutoff + cutoff.getNextValue();
-		double Q                = resonance.getNextValue();// * 4.0;
+        FloatType factor = oversamp->getOversamplingFactor();
+		FloatType combinedCutoff   = currentCutoff + cutoff.getNextValue();
+		FloatType Q                = resonance.getNextValue();// * 4.0;
 
 		for (int channel = 0; channel < 2; channel++)
 		{
@@ -530,21 +533,18 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<float>& buffer, Lad
 		channelDataRight += stepSize;
 	}
  
-    oversampling->processSamplesDown(block);
+    oversamp->processSamplesDown(block);
     
 }
 
 
-float MonosynthPluginAudioProcessor::map(float value, float inputMin, float inputMax, float outMin, float outMax)
-{
-    return outMin + ( value - inputMin ) * ( outMax - outMin ) / ( inputMax - inputMin );
-}
 
-void MonosynthPluginAudioProcessor::applyFilterNorm (AudioBuffer<float>& buffer, LadderFilterBase* filter[])
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applyFilterNorm (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[])
 {
     
-    float* channelDataLeft  = buffer.getWritePointer(0);
-    float* channelDataRight = buffer.getWritePointer(1);
+    FloatType* channelDataLeft  = buffer.getWritePointer(0);
+    FloatType* channelDataRight = buffer.getWritePointer(1);
     
     const int numSamples = buffer.getNumSamples();
     
@@ -586,122 +586,14 @@ void MonosynthPluginAudioProcessor::applyFilterNorm (AudioBuffer<float>& buffer,
 }
 
 
-void MonosynthPluginAudioProcessor::applyFilterAlt(AudioBuffer<float>& buffer)
-{
-
-
-	const int numSamples = buffer.getNumSamples();
-
-	float* channelDataLeft = buffer.getWritePointer(0);
-	float* channelDataRight = buffer.getWritePointer(1);
-
-	//
-	//  break buffer into chunks
-	//
-	int stepSize = jmin(16, numSamples);
-
-	int samplesLeftOver = numSamples;
-
-
-	if (*filterSelectParam == 0)
-	{
-		for (int step = 0; step < numSamples; step += stepSize)
-		{
-			//filter[0]->update();
-			//filter[1]->update();
-
-			double combinedCutoff = currentCutoff + cutoff.getNextValue();
-			double Q = resonance.getNextValue();// * 4.0;
-
-			for (int channel = 0; channel < 2; channel++)
-			{
-				filterA[channel]->SetResonance(Q);
-				filterA[channel]->SetCutoff(combinedCutoff);
-				filterA[channel]->SetDrive(drive.getNextValue());
-			}
-
-			if (samplesLeftOver < stepSize)
-				stepSize = samplesLeftOver;
-
-			filterA[0]->Process(channelDataLeft, stepSize);
-			filterA[1]->Process(channelDataRight, stepSize);
-
-			samplesLeftOver -= stepSize;
-
-			channelDataLeft += stepSize;
-			channelDataRight += stepSize;
-		}
-	}
-	else if (*filterSelectParam == 1)
-	{
-		for (int step = 0; step < numSamples; step += stepSize)
-		{
-			//filter[0]->update();
-			//filter[1]->update();
-
-			double combinedCutoff = currentCutoff + cutoff.getNextValue();
-			double Q = resonance.getNextValue();// * 4.0;
-
-			for (int channel = 0; channel < 2; channel++)
-			{
-				filterB[channel]->SetResonance(Q);
-				filterB[channel]->SetCutoff(combinedCutoff);
-				filterB[channel]->SetDrive(drive.getNextValue());
-			}
-
-			if (samplesLeftOver < stepSize)
-				stepSize = samplesLeftOver;
-
-			filterB[0]->Process(channelDataLeft, stepSize);
-			filterB[1]->Process(channelDataRight, stepSize);
-
-			samplesLeftOver -= stepSize;
-
-			channelDataLeft += stepSize;
-			channelDataRight += stepSize;
-		}
-	}
-	else
-	{
-		for (int step = 0; step < numSamples; step += stepSize)
-		{
-			//filter[0]->update();
-			//filter[1]->update();
-
-			double combinedCutoff = currentCutoff + cutoff.getNextValue();
-			double Q = resonance.getNextValue();// * 4.0;
-
-			for (int channel = 0; channel < 2; channel++)
-			{
-				filterC[channel]->SetResonance(Q);
-				filterC[channel]->SetCutoff(combinedCutoff);
-				filterC[channel]->SetDrive(drive.getNextValue());
-			}
-
-			if (samplesLeftOver < stepSize)
-				stepSize = samplesLeftOver;
-
-			filterC[0]->Process(channelDataLeft, stepSize);
-			filterC[1]->Process(channelDataRight, stepSize);
-
-			samplesLeftOver -= stepSize;
-
-			channelDataLeft += stepSize;
-			channelDataRight += stepSize;
-		}
-	}
-
-	
-}
-
-
-void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<float>& buffer)
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buffer)
 {
    
     int numSamples = buffer.getNumSamples();
     
-    float* channelDataLeft  = buffer.getWritePointer(0);
-    float* channelDataRight = buffer.getWritePointer(1);
+    FloatType* channelDataLeft  = buffer.getWritePointer(0);
+    FloatType* channelDataRight = buffer.getWritePointer(1);
     
 
     
