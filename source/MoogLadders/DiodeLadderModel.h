@@ -110,7 +110,10 @@ class DiodeLadderModel : public LadderFilterBase
 	template <typename FloatType>
     FloatType doFilter( FloatType sample )
     {
-		
+		if (cutoff <= 0.0 || cutoff > 220000.0)
+            return sample;
+        
+        
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
         va_LPF2.setFeedback( va_LPF3.getFeedbackOutput() );
@@ -128,7 +131,7 @@ class DiodeLadderModel : public LadderFilterBase
         return 2.0 * va_LPF4.doFilter( va_LPF3.doFilter( va_LPF2.doFilter( va_LPF1.doFilter( U ) ) ) ) ;
     }
     
-    virtual void Process(float* samples, uint32_t n) noexcept override
+    virtual void Process(float* samples, size_t n) noexcept override
     {
         for (uint32_t i = 0; i < n; i++)
         {
@@ -136,7 +139,7 @@ class DiodeLadderModel : public LadderFilterBase
         }
     }
 
-	virtual void Process(double* samples, uint32_t n) noexcept override
+	virtual void Process(double* samples, size_t n) noexcept override
 	{
 		for (uint32_t i = 0; i < n; i++)
 		{

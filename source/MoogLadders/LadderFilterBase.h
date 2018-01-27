@@ -37,8 +37,8 @@ public:
     LadderFilterBase() {}
     virtual ~LadderFilterBase() {}
     
-    virtual void Process(float * samples, uint32_t n) noexcept = 0;
-    virtual void Process(double * samples, uint32_t n) noexcept = 0;
+    virtual void Process(float * samples, size_t n) noexcept = 0;
+    virtual void Process(double * samples, size_t n) noexcept = 0;
 
 	virtual void Update() = 0;
     virtual void Reset() = 0;

@@ -81,14 +81,14 @@ public:
     }
     
     
-    virtual void Process(float* samples, uint32_t n) noexcept override
+    virtual void Process(float* samples, size_t n) noexcept override
     {
         for (uint32_t i = 0; i < n; i++)
         {
             samples[i] = doFilter(samples[i]);
         }
     }
-	virtual void Process(double* samples, uint32_t n) noexcept override
+	virtual void Process(double* samples, size_t n) noexcept override
 	{
 		for (uint32_t i = 0; i < n; i++)
 		{
@@ -99,7 +99,8 @@ public:
 	template <typename FloatType>
 	FloatType doFilter(FloatType sample )
     {
-		
+        if (cutoff <= 0.0 || cutoff > 220000.0)
+            return sample;
         
 		FloatType y = 0.0;
         

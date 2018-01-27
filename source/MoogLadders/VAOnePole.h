@@ -49,7 +49,7 @@ class VAOnePole : public LadderFilterBase
             Alpha = g / ( 1.0 + g );
         }
         
-        virtual void Process(float* samples, uint32_t n) noexcept override
+        virtual void Process(float* samples, size_t n) noexcept override
 		{
             for (uint32_t i = 0; i < n; i++)
 			{
@@ -57,7 +57,7 @@ class VAOnePole : public LadderFilterBase
 			}
 		}
 
-		virtual void Process(double* samples, uint32_t n) noexcept override
+		virtual void Process(double* samples, size_t n) noexcept override
 		{
 			for (uint32_t i = 0; i < n; i++)
 			{
@@ -68,7 +68,6 @@ class VAOnePole : public LadderFilterBase
 		template <typename FloatType>
         FloatType doFilter( FloatType sample )
         {
-            //update();
             
             sample = sample * Gamma + Feedback + Epsilon * getFeedbackOutput();
             

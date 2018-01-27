@@ -58,7 +58,7 @@ class SEMModel : public LadderFilterBase
         
 		}
     
-		virtual void Process(float* samples, uint32_t n) noexcept override
+		virtual void Process(float* samples, size_t n) noexcept override
 		{
 			 for (uint32_t i = 0; i < n; i++)
 			{
@@ -66,7 +66,7 @@ class SEMModel : public LadderFilterBase
 			}
 		}
 
-		virtual void Process(double* samples, uint32_t n) noexcept override
+		virtual void Process(double* samples, size_t n) noexcept override
 		{
 			for (uint32_t i = 0; i < n; i++)
 			{
@@ -78,6 +78,9 @@ class SEMModel : public LadderFilterBase
 		FloatType doFilter(FloatType sample)
 		{
 			
+            if (cutoff <= 0.0 || cutoff > 220000.0)
+                return sample;
+            
 			// form the HPF output first
 			FloatType hpf = Alpha0 * (sample - Rho * Z11 - Z12);
 
