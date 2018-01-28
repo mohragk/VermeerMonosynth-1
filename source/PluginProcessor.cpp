@@ -98,7 +98,15 @@ filterSelectParam(nullptr),
 lfoDivisionParam(nullptr),
 
 overSampleParam(nullptr),
+
+pulsewidthParam(nullptr),
+
+pulsewidthAmount1Param(nullptr),
+pulsewidthAmount2Param(nullptr),
+pulsewidthAmount3Param(nullptr),
+
 filterEnvelope(nullptr),
+
 ampEnvelope(nullptr)
 {
     lastPosInfo.resetToDefault();
@@ -185,6 +193,10 @@ ampEnvelope(nullptr)
     // PWM
     addParameter(pulsewidthParam = new AudioParameterFloat("pulsewidthParam", "PWM", 0.0f, 1.0f, 0.4f));
     
+    addParameter(pulsewidthAmount1Param = new AudioParameterFloat("pulsewidthAmount1Param", "PWM1 Amt", 0.0f, 1.0f, 0.4f));
+    addParameter(pulsewidthAmount2Param = new AudioParameterFloat("pulsewidthAmount2Param", "PWM2 Amt", 0.0f, 1.0f, 0.4f));
+    addParameter(pulsewidthAmount3Param = new AudioParameterFloat("pulsewidthAmount3Param", "PWM3 Amt", 0.0f, 1.0f, 0.4f));
+    
     initialiseSynth();
     
     keyboardState.addListener(this);
@@ -206,6 +218,76 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     
     synth.clearSounds();
     synth.clearVoices();
+    
+    gainParam = nullptr;
+    osc1GainParam = nullptr;
+    osc2GainParam = nullptr;
+    osc3GainParam = nullptr;
+    osc1DetuneAmountParam = nullptr;
+    osc2DetuneAmountParam = nullptr;
+    osc3DetuneAmountParam = nullptr;
+    
+    osc1ModeParam = nullptr;
+    osc2ModeParam = nullptr;
+    osc3ModeParam = nullptr;
+    oscSyncParam = nullptr;
+    
+    filterParam = nullptr;
+    filterQParam = nullptr;
+    filterContourParam = nullptr;
+    filterDriveParam = nullptr;
+    
+    pitchModParam = nullptr;
+    
+    oscOffsetParam = nullptr;
+    osc2OffsetParam = nullptr;
+    osc3OffsetParam = nullptr;
+    
+    attackParam1 = nullptr;
+    decayParam1 = nullptr;
+    sustainParam1 = nullptr;
+    releaseParam1 = nullptr;
+    attackCurve1Param = nullptr;
+    decayRelCurve1Param = nullptr;
+    
+    attackParam2 = nullptr;
+    decayParam2 = nullptr;
+    sustainParam2 = nullptr;
+    releaseParam2 = nullptr;
+    attackCurve2Param = nullptr;
+    decayRelCurve2Param = nullptr;
+    
+    attackParam3 = nullptr;
+    decayParam3 = nullptr;
+    sustainParam3 = nullptr;
+    releaseParam3 = nullptr;
+    attackCurve3Param = nullptr;
+    decayRelCurve3Param = nullptr;
+    
+    modTargetParam = nullptr;
+    
+    lfoRateParam = nullptr;
+    lfoModeParam = nullptr;
+    lfoIntensityParam = nullptr;
+    lfoSyncParam = nullptr;
+    
+    filterSelectParam = nullptr;
+    lfoDivisionParam = nullptr;
+    
+    overSampleParam = nullptr;
+    filterEnvelope = nullptr;
+    ampEnvelope = nullptr;
+    
+    pulsewidthAmount1Param = nullptr;
+    pulsewidthAmount2Param = nullptr;
+    pulsewidthAmount3Param = nullptr;
+    
+    filterA[0] = nullptr;
+    filterA[1] = nullptr;
+    filterB[0] = nullptr;
+    filterB[1] = nullptr;
+    filterC[0] = nullptr;
+    filterC[1] = nullptr;
 }
 
 
@@ -283,7 +365,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     masterGain.reset(sampleRate, 0.001);
-    pulseWidthSmooth.reset(sampleRate, 0.001);
+    pulseWidthSmooth.reset(sampleRate, 0.0001);
     
     
     filterEnvelope->setSampleRate(sampleRate);
@@ -303,7 +385,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     masterGain.reset(sampleRate, 0.001);
-    pulseWidthSmooth.reset(sampleRate, 0.001);
+    pulseWidthSmooth.reset(sampleRate, 0.0001);
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -325,7 +407,7 @@ void MonosynthPluginAudioProcessor::reset()
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     masterGain.reset(sampleRate, 0.001);
-    pulseWidthSmooth.reset(sampleRate, 0.001);
+    pulseWidthSmooth.reset(sampleRate, 0.0001);
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -369,22 +451,24 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, ScopedPointer<dsp::Oversampling<FloatType>>& os )
+void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, ScopedPointer<dsp::Oversampling<FloatType>>& oversampling)
 {
     const int numSamples = buffer.getNumSamples();
+    
+    updateParameters();
     
     
     // Now pass any incoming midi messages to our keyboard state object, and let it
     // add messages to the buffer if the user is clicking on the on-screen keys
     keyboardState.processNextMidiBuffer (midiMessages, 0, numSamples, true);
     
-    updateParameters();
+    
     
     
     // and now get our synth to process these midi events and generate its output.
     synth.renderNextBlock (buffer, midiMessages, 0, numSamples);
     
-    
+   
    
     
     // getting our filter envelope values
@@ -398,9 +482,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         if(filterOn)
         {
             // applying filter
-            if (*filterSelectParam == 0)        { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
-            else if (*filterSelectParam == 1)    { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
-            else                                { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+            if (*filterSelectParam == 0)         { applyFilter(buffer, filterA, oversampling) ; }
+            else if (*filterSelectParam == 1)    { applyFilter(buffer, filterB, oversampling) ; }
+            else                                 { applyFilter(buffer, filterC, oversampling) ; }
         }
         
         // applying VCA
@@ -414,9 +498,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         if(filterOn)
         {
             // applying filter
-            if (*filterSelectParam == 0)        { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterA) : applyFilter(buffer, filterA, os) ; }
-            else if (*filterSelectParam == 1)    { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterB) : applyFilter(buffer, filterB, os) ; }
-            else                                { (*overSampleParam == 0) ? applyFilterNorm(buffer, filterC) : applyFilter(buffer, filterC, os) ; }
+            if (*filterSelectParam == 0)         { applyFilter(buffer, filterA, oversampling) ; }
+            else if (*filterSelectParam == 1)    { applyFilter(buffer, filterB, oversampling) ; }
+            else                                 { applyFilter(buffer, filterC, oversampling) ; }
         }
     }
     
@@ -575,53 +659,6 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilterNorm (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[])
-{
-    
-    FloatType* channelDataLeft  = buffer.getWritePointer(0);
-    FloatType* channelDataRight = buffer.getWritePointer(1);
-    
-    const int numSamples = buffer.getNumSamples();
-    
-    //
-    //  break buffer into chunks
-    //
-    int stepSize = jmin(16, numSamples);
-    
-    int samplesLeftOver = numSamples;
-    
-    
-    for (int step = 0; step < numSamples; step += stepSize)
-    {
-        
-        
-        double combinedCutoff   = currentCutoff + cutoff.getNextValue();
-        double Q                = resonance.getNextValue();// * 4.0;
-        
-        for (int channel = 0; channel < 2; channel++)
-        {
-            filter[channel]->SetSampleRate(sampleRate);
-            filter[channel]->SetResonance(Q);
-            filter[channel]->SetCutoff(combinedCutoff);
-            filter[channel]->SetDrive(drive.getNextValue());
-        }
-        
-        if (samplesLeftOver < stepSize)
-            stepSize = samplesLeftOver;
-        
-        filter[0]->Process(channelDataLeft, stepSize);
-        filter[1]->Process(channelDataRight, stepSize);
-        
-        samplesLeftOver -= stepSize;
-        
-        channelDataLeft += stepSize;
-        channelDataRight += stepSize;
-    }
-    
-}
-
-
-template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buffer)
 {
     
@@ -756,8 +793,17 @@ void inline MonosynthPluginAudioProcessor::updateParameters()
     setEnvelopeState( *ampEnvelope );
     
     setHardSync(*oscSyncParam);
-    pulseWidthSmooth.setValue(*pulsewidthParam); //( ( (modAmount * lfo.nextSample() ) + 1.0 ) / 2.0 );
-    setPulsewidth( pulseWidthSmooth.getNextValue() );
+    pulseWidthSmooth.setValue( ( (modAmount * lfo.nextSample() ) + 1.0 ) / 2.0 );
+    
+    
+    sendLFO( lfo );
+    
+    
+    setPWAmount(*pulsewidthAmount1Param, 0);
+    setPWAmount(*pulsewidthAmount2Param, 1);
+    setPWAmount(*pulsewidthAmount3Param, 2);
+   
+    
     
 }
 
@@ -819,7 +865,7 @@ void MonosynthPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int 
 void MonosynthPluginAudioProcessor::setEnvelopeState(ADSR envelope)
 {
     
-    return static_cast<SineWaveVoice*>(synth.getVoice(0))->setEnvelopeState(envelope);
+    return static_cast<SineWaveVoice*>(synth.getVoice(0))->sendEnvelope(envelope);
     
 }
 
@@ -830,10 +876,10 @@ void MonosynthPluginAudioProcessor::setHardSync(int sync)
     
 }
 
-void MonosynthPluginAudioProcessor::setPulsewidth(float pw)
+void MonosynthPluginAudioProcessor::setPWAmount(double amt, int osc)
 {
     
-    return static_cast<SineWaveVoice*>(synth.getVoice(0))->setPulsewidth(pw);
+    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPWAmount(amt, osc);
     
 }
 
@@ -884,6 +930,11 @@ float MonosynthPluginAudioProcessor::softClip(float s)
         localSample = localSample - ( ( localSample * localSample * localSample) * 0.75f );
     }
     return localSample;
+}
+
+void MonosynthPluginAudioProcessor::sendLFO( LFO lfo )
+{
+    return static_cast<SineWaveVoice*>(synth.getVoice(0))->sendLFO(lfo);
 }
 
 

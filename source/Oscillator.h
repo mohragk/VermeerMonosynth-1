@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(48000.0), phase(0.0), level(0.75)
+    Oscillator() : sampleRate(44100.0), phase(0.0), level(0.75), frequency(0.0)
     {
         
     }
@@ -35,6 +35,7 @@ public:
        // phaseIncrement = updatePhaseIncrement(frequency);
     }
     
+    
     void setPhase(const double ph)
     {
         phase = ph;
@@ -57,10 +58,11 @@ public:
             mode = OSCILLATOR_MODE_NOISE;
     }
     
-    void setPulsewidth(double pwm)
+    void setPulsewidth(const double pwm)
     {
-        pulsewidth = pwm;
+        pulsewidth = (pwm + 1.0) / 2.0;
     }
+    
     
     double getPhase()
     {
@@ -149,7 +151,7 @@ private:
                 break;
                 
             case OSCILLATOR_MODE_NOISE:
-                value = random.nextFloat();
+                value = (random.nextFloat() * 2.0 ) - 1.0;
                 break;
                 
             default:

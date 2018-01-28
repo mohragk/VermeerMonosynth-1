@@ -133,7 +133,8 @@ public:
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
 	void setEnvelopeState(ADSR envelope);
     void setHardSync(int sync);
-    void setPulsewidth(float pw);
+    void sendLFO(LFO lfo);
+    void setPWAmount(double amt, int osc);
 
 	bool noteIsBeingPlayed();
 
@@ -212,6 +213,10 @@ public:
     AudioParameterInt* filterOrderParam;
     AudioParameterFloat* pulsewidthParam;
     
+    AudioParameterFloat* pulsewidthAmount1Param;
+    AudioParameterFloat* pulsewidthAmount2Param;
+    AudioParameterFloat* pulsewidthAmount3Param;
+    
     
 private:
     //==============================================================================
@@ -226,9 +231,6 @@ private:
 
     template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& os);
-    
-    template <typename FloatType>
-    void applyFilterNorm (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[]);
 
     template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);

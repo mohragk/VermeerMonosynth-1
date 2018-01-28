@@ -710,10 +710,6 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     modTargetCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 	
     
-    // Oversampling
-    addAndMakeVisible(overSampleSlider = new ParameterSlider(*owner.overSampleParam));  //
-    overSampleSlider->setSliderStyle(Slider::LinearVertical);
-    overSampleSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
     // Filter Order; switch from VCA->filter to filter->VCA
     addAndMakeVisible(filterOrderSlider = new ParameterSlider(*owner.filterOrderParam));  //
@@ -725,6 +721,19 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     addAndMakeVisible(pulsewidthSlider = new ParameterSlider(*owner.pulsewidthParam));  //
     pulsewidthSlider->setSliderStyle(Slider::LinearVertical);
     pulsewidthSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+    
+    
+    addAndMakeVisible(pulsewidthAmount1Slider = new ParameterSlider(*owner.pulsewidthAmount1Param));  //
+    pulsewidthAmount1Slider->setSliderStyle(Slider::LinearHorizontal);
+    pulsewidthAmount1Slider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+    
+    addAndMakeVisible(pulsewidthAmount2Slider = new ParameterSlider(*owner.pulsewidthAmount2Param));  //
+    pulsewidthAmount2Slider->setSliderStyle(Slider::LinearHorizontal);
+    pulsewidthAmount2Slider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+    
+    addAndMakeVisible(pulsewidthAmount3Slider = new ParameterSlider(*owner.pulsewidthAmount3Param));  //
+    pulsewidthAmount3Slider->setSliderStyle(Slider::LinearHorizontal);
+    pulsewidthAmount3Slider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
 	
 	
@@ -887,11 +896,14 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
     
     oscSyncSlider = nullptr;
     
-    overSampleSlider = nullptr;
+    
     filterOrderSlider = nullptr;
     
     pulsewidthSlider = nullptr;
-
+    pulsewidthAmount1Slider = nullptr;
+    pulsewidthAmount2Slider = nullptr;
+    pulsewidthAmount3Slider = nullptr;
+    
     drawable1 = nullptr;
     drawable2 = nullptr;
     drawable3 = nullptr;
@@ -1249,6 +1261,9 @@ void MonosynthPluginAudioProcessorEditor::resized()
     osc1WaveformSlider->setBounds (16, 178, 64, 64);
     osc1WaveformLabel->setBounds (16, 168, 65, 24);
     
+    pulsewidthAmount1Slider->setBounds(16, 440, 45, 24);
+    pulsewidthAmount2Slider->setBounds(88, 440, 45, 24);
+    pulsewidthAmount3Slider->setBounds(160, 440, 45, 24);
     
     
     osc2GainSlider->setBounds (88, 104, 64, 64);
@@ -1315,7 +1330,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
-    overSampleSlider->setBounds(getWidth() - 24-  64, 168, 64,64);
+   
     filterOrderSlider->setBounds(getWidth() - 24-  64, 240, 64,64);
     pulsewidthSlider->setBounds(getWidth() - 24-  64, 340, 64,64);
   

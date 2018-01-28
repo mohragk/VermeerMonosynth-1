@@ -44,7 +44,7 @@ public:
 class SineWaveVoice  : public SynthesiserVoice
 {
 public:
-    SineWaveVoice() //: pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
+    SineWaveVoice() : pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
     
     {
 		pitchEnvelope = new ADSR();
@@ -97,11 +97,11 @@ public:
     
     void pitchWheelMoved (const int newValue) override
     {
-        const double range = 24.0;
+        const double range = 2.0;
         const float v = newValue - 8192.0;
         
-        //pitchBendOffset =  range * (v / 8192.0);
-		pitchBendOffset = 0;
+        pitchBendOffset =  range * (v / 8192.0);
+		//pitchBendOffset = 0;
     }
     
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override
@@ -117,6 +117,11 @@ public:
     void renderNextBlock (AudioBuffer<double>& outputBuffer, int startSample, int numSamples) override
     {
         processBlock (outputBuffer, startSample, numSamples);
+    }
+    
+    int getNumOscillators()
+    {
+        return numOscillators;
     }
     
     
@@ -136,6 +141,7 @@ public:
     {
         pitchModAmount = pitchMod;
     }
+
     
     void setPitchModulation(const double amt)
     {
@@ -173,28 +179,42 @@ public:
         osc3->setMode(mode3);
     }
 
-	void setEnvelopeState(ADSR& envelope)
+	void sendEnvelope(ADSR& envelope)
 	{
 		envState =  envelope.getState();
 	}
+    
+    void sendLFO(LFO& lfo)
+    {
+        lfoValue = (lfo.nextSample() + 1.0) / 2.0;
+    }
     
     void setHardSync(bool sync)
     {
         hardSync = sync;
     }
     
-    void setPulsewidth(float pw)
+    void setPWAmount(double amt, int osc)
     {
-        osc1->setPulsewidth(pw);
-        osc2->setPulsewidth(pw);
-        osc3->setPulsewidth(pw);
+        if (osc == 0)
+            modAmountPW1 = amt;
+        else if (osc == 1)
+            modAmountPW2 = amt;
+        else
+            modAmountPW3 = amt;
     }
+  
 
 private:
     
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
+        
+        osc1->setPulsewidth(lfoValue * modAmountPW1);
+        osc2->setPulsewidth(lfoValue * modAmountPW2);
+        osc3->setPulsewidth(lfoValue * modAmountPW3);
+        
         if (envState == 0)
         {
             osc1->setPhase(0.0);
@@ -215,9 +235,9 @@ private:
 				double newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
-				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation, newFreq);
-				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation, newFreq);
-				double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation, newFreq);
+				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreq);
+				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreq);
+				double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreq);
 
 				//Set the new frequency
 				osc1->setFrequency(osc1Detuned);
@@ -231,16 +251,27 @@ private:
 				// Calculate samples and divide by number of oscillators
 				sample = (osc1->nextSample() + osc2->nextSample() + osc3->nextSample()) / numOscillators;
 
+                
+                FloatType* dataLeft = outputBuffer.getWritePointer(0);
+                FloatType* dataRight = outputBuffer.getWritePointer(1);
+                
+                dataLeft[startSample] = sample;
+                dataRight[startSample] = sample;
+                
+                /*
 				for (int i = 0; i < outputBuffer.getNumChannels(); i++)
 				{
-					outputBuffer.addSample(i, startSample, sample);
+                    outputBuffer.addSample(i, startSample, sample);
 				}
-
+                */
+                
 				++startSample;
 			}
 		}
     }
     
+    
+  
     
     
     double softClip(double s)
@@ -264,15 +295,13 @@ private:
     
     double inline semitoneOffsetToFreq(const double semitones, const double freq)
     {
-        return pow(2.0, (semitones / 12.0)) * freq;
+        double power = semitones / 12.0;
+        return pow(2.0, power) * freq;
     }
 
     double sampleRate;
 
     double phase = 0.0;
-    
-    ScopedPointer<ADSR> pitchEnvelope;
-    ScopedPointer<Oscillator> osc1, osc2, osc3;
 
 	int envState;
     
@@ -281,8 +310,10 @@ private:
     int initialNote = 0;
     int noteOffset;
 
+    double lfoValue, egValue;
+    double modAmountPW1, modAmountPW2, modAmountPW3;
     
-    double pitchModulation, ampModulation;
+    double pitchModulation;
     double oscDetuneAmount[3];
    
     
@@ -295,6 +326,9 @@ private:
     double pitchModAmount;
     
     bool hardSync = false;
+    
+    ScopedPointer<ADSR> pitchEnvelope;
+    ScopedPointer<Oscillator> osc1, osc2, osc3;
 };
 
 
