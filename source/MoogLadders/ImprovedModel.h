@@ -40,7 +40,7 @@ class ImprovedMoog : public LadderFilterBase
 {
 public:
     
-    ImprovedMoog() : LadderFilterBase(), sampleRate(48000.0)
+    ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0)
     {
         drive = 1.0f;
         
@@ -118,7 +118,6 @@ private:
     template <typename FloatType>
     void renderBlock(FloatType* samples, size_t n)
     {
-        
         
         FloatType dV0, dV1, dV2, dV3;
         

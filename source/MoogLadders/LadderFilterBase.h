@@ -42,11 +42,7 @@ public:
 
 	virtual void Update() = 0;
     virtual void Reset() = 0;
-    virtual void SetSampleRate(double sr)
-    {
-        jassert(sr < 0.0);
-        sampleRate = sr;
-    };
+    virtual void SetSampleRate(double sr) = 0;
     virtual void SetResonance(double r) = 0;
     virtual void SetCutoff(double c) = 0;
     virtual void SetDrive(double d) = 0;

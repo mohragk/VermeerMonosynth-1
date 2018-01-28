@@ -17,7 +17,7 @@
 class ThreeFiveModel : public LadderFilterBase
 {
 public:
-    ThreeFiveModel() : LadderFilterBase(), sampleRate(48000.0)
+    ThreeFiveModel() : LadderFilterBase(), sampleRate(44100.0)
     {
         //init
         K = 0.01;
@@ -99,9 +99,7 @@ public:
 	template <typename FloatType>
 	FloatType doFilter(FloatType sample )
     {
-        if (cutoff <= 0.0 || cutoff > 220000.0)
-            return sample;
-        
+               
 		FloatType y = 0.0;
         
         if (type == LPF2)

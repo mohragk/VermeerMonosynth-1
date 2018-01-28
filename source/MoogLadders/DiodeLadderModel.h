@@ -18,7 +18,7 @@ class DiodeLadderModel : public LadderFilterBase
 {
     public:
     
-    DiodeLadderModel() : LadderFilterBase(), sampleRate(48000.0)
+    DiodeLadderModel() : LadderFilterBase(), sampleRate(44100.0)
     {
         K = 0.0;
         
@@ -110,10 +110,7 @@ class DiodeLadderModel : public LadderFilterBase
 	template <typename FloatType>
     FloatType doFilter( FloatType sample )
     {
-		if (cutoff <= 0.0 || cutoff > 220000.0)
-            return sample;
-        
-        
+	
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
         va_LPF2.setFeedback( va_LPF3.getFeedbackOutput() );
