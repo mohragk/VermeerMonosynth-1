@@ -101,7 +101,7 @@ public:
         }
         else
         {
-           
+            value = naiveWaveFormForMode(mode, phase);
         }
         
         phase += phaseIncrement;
@@ -149,7 +149,7 @@ private:
                 break;
                 
             case OSCILLATOR_MODE_NOISE:
-                
+                value = random.nextFloat();
                 break;
                 
             default:
@@ -189,6 +189,7 @@ private:
     double pulsewidth;
     
     OscillatorMode mode;
+    Random random;
     
     bool rephase = false;
     
