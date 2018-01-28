@@ -814,6 +814,10 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
     osc3TuneLabel = nullptr;
     osc3WaveformSlider = nullptr;
     
+    oscSyncLabel = nullptr;
+    oscSyncONLabel = nullptr;
+    oscSyncOFFLabel = nullptr;
+    
     filterLabel = nullptr;
     filterCutoffSlider = nullptr;
     filterCutoffLabel = nullptr;
@@ -823,6 +827,10 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
     filterContourLabel = nullptr;
     filterDriveSlider = nullptr;
     filterDriveLabel = nullptr;
+    
+    filterMoogLabel = nullptr;
+    filterMS20Label = nullptr;
+    filter303Label = nullptr;
    
     envelopesLabel = nullptr;
     attackSlider1 = nullptr;
@@ -878,6 +886,11 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
     lfoSyncedFreqSlider = nullptr;
     
     oscSyncSlider = nullptr;
+    
+    overSampleSlider = nullptr;
+    filterOrderSlider = nullptr;
+    
+    pulsewidthSlider = nullptr;
 
     drawable1 = nullptr;
     drawable2 = nullptr;

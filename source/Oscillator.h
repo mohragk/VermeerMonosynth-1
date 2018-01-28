@@ -90,6 +90,7 @@ public:
         else if( mode == OSCILLATOR_MODE_SAW)
         {
             value = naiveWaveFormForMode(mode, phase);
+            value = fast_tanh(value * 3.0);
             value -= poly_blep( t, phaseIncrement );
         }
         else if (mode == OSCILLATOR_MODE_SQUARE)
@@ -97,23 +98,10 @@ public:
             value = naiveWaveFormForMode(mode, phase);
             value += poly_blep( t, phaseIncrement );
             value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
-        } else
+        }
+        else
         {
-            double valueSaw1 = naiveWaveFormForMode(OSCILLATOR_MODE_SAW, phase);
-            valueSaw1 -= poly_blep( t, phaseIncrement );
-            
-            double valueSaw2 = naiveWaveFormForMode(OSCILLATOR_MODE_SAW, phase + (pulsewidth * two_Pi));
-            valueSaw2 -= poly_blep( fmod( t + pulsewidth, 1.0 ), phaseIncrement );
-            
-            value = 0.5 * valueSaw1 - 0.5 * valueSaw2;
-            
-            double corr = 1.0 / pulsewidth;
-            
-            if (pulsewidth < 0.5)
-                corr = 1.0 / ( 1.0 - pulsewidth);
            
-           
-           value *= corr;
         }
         
         phase += phaseIncrement;

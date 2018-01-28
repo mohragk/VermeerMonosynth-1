@@ -85,10 +85,6 @@ public:
                
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
 
-		osc1->setPhase(0.0);
-		osc2->setPhase(0.0);
-		osc3->setPhase(0.0);
-		
         
         pitchEnvelope->gate(true);
     }
@@ -199,7 +195,12 @@ private:
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
-        
+        if (envState == 0)
+        {
+            osc1->setPhase(0.0);
+            osc2->setPhase(0.0);
+            osc3->setPhase(0.0);
+        }
         
 		if (envState != 0)
 		{

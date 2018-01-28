@@ -756,7 +756,7 @@ void inline MonosynthPluginAudioProcessor::updateParameters()
     setEnvelopeState( *ampEnvelope );
     
     setHardSync(*oscSyncParam);
-    pulseWidthSmooth.setValue( ( (modAmount * lfo.nextSample() ) + 1.0 ) / 2.0 );
+    pulseWidthSmooth.setValue(*pulsewidthParam); //( ( (modAmount * lfo.nextSample() ) + 1.0 ) / 2.0 );
     setPulsewidth( pulseWidthSmooth.getNextValue() );
     
 }
@@ -850,7 +850,7 @@ void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
             dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
             
             break;
-        case modPitch: // PWM for TESTINGGGG
+        case modPitch: 
             dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(amount);
             
             cutoffModulationAmt = 0.0;
