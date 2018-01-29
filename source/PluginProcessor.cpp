@@ -38,8 +38,8 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 //==============================================================================
 MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
 : AudioProcessor (getBusesProperties()),
-lastUIWidth (720),
-lastUIHeight (450),
+lastUIWidth (820),
+lastUIHeight (590),
 
 gainParam (nullptr),
 
@@ -328,6 +328,8 @@ AudioProcessor::BusesProperties MonosynthPluginAudioProcessor::getBusesPropertie
 void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int samplesPerBlock)
 {
     sampleRate = newSampleRate;
+
+	setLatencySamples(oversamplingDouble->getLatencyInSamples());
     
     for(int channel = 0; channel < 2; channel++)
     {
@@ -413,12 +415,12 @@ void MonosynthPluginAudioProcessor::reset()
     oversamplingDouble->reset();
     
     
-    for (int channel = 0; channel < 2; channel++)
-    {
-        filterA[channel]->Reset();
-        filterB[channel]->Reset();
-        filterC[channel]->Reset();
-    }
+	for (int channel = 0; channel < 2; channel++)
+	{
+		filterA[channel]->Reset();
+		filterB[channel]->Reset();
+		filterC[channel]->Reset();
+	}
     
 }
 
@@ -485,6 +487,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
             if (*filterSelectParam == 0)         { applyFilter(buffer, filterA, oversampling) ; }
             else if (*filterSelectParam == 1)    { applyFilter(buffer, filterB, oversampling) ; }
             else                                 { applyFilter(buffer, filterC, oversampling) ; }
+			
         }
         
         // applying VCA
@@ -600,7 +603,6 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     //float* channelDataLeft  = buffer.getWritePointer(0);
     //float* channelDataRight = buffer.getWritePointer(1);
     
-    setLatencySamples (oversamp->getLatencyInSamples());
     
     dsp::AudioBlock<FloatType> block (buffer);
     dsp::AudioBlock<FloatType> oversampledBlock;

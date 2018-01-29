@@ -15,7 +15,7 @@
               companyWebsite="www.soundcloud.com/meneervermeer" companyEmail="meneervermeermusic@gmail.com"
               pluginIsMidiEffectPlugin="0" buildAUv3="0" buildStandalone="1"
               enableIAA="0" displaySplashScreen="1" reportAppUsage="1" splashScreenColour="Dark"
-              cppLanguageStandard="14" companyCopyright="MRVR inc.">
+              cppLanguageStandard="latest" companyCopyright="MRVR inc.">
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="" rtasFolder="~/SDKs/PT_80_SDK"
                objCExtraSuffix="JuceDemo" aaxFolder="" postbuildCommand="" vst3Folder=""
