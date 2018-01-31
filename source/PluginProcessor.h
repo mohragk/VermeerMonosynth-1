@@ -230,7 +230,7 @@ private:
     void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
 
     template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& os);
+    void applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& os);
 
     template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
@@ -245,7 +245,7 @@ private:
     
 	bool noteIsPlaying = false;
     
-    ScopedPointer<LadderFilterBase> filterA[2], filterB[2], filterC[2];
+    std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     
     
     enum modTarget {

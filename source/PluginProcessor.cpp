@@ -119,7 +119,7 @@ ampEnvelope(nullptr)
     
     //addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.4f));
     
-    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float> (0.0, 2.0, 0.0, 0.5, false), 0.9));
+    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float> (0.0, 2.0, 0.0, 0.5, false), 0.75));
     
     addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain",  0.0f, 1.0f, 0.9f));
     addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain",  0.0f, 1.0f, 0.9f));
@@ -329,25 +329,26 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
 {
     sampleRate = newSampleRate;
 
-	setLatencySamples(oversamplingDouble->getLatencyInSamples());
+	if ( isUsingDoublePrecision() )	{ setLatencySamples(oversamplingDouble->getLatencyInSamples()); }
+	else							{ setLatencySamples(oversamplingFloat->getLatencyInSamples()); }
     
     for(int channel = 0; channel < 2; channel++)
     {
-        filterA[channel] = new ImprovedMoog();
+        filterA[channel] = std::unique_ptr<LadderFilterBase>(new ImprovedMoog);
         filterA[channel]->SetSampleRate(sampleRate);
         filterA[channel]->SetResonance(0.1);
         filterA[channel]->SetCutoff(12000.0);
         filterA[channel]->SetDrive(1.0);
         
         
-        filterB[channel] = new ThreeFiveModel();
+        filterB[channel] = std::unique_ptr<LadderFilterBase>(new ThreeFiveModel);
         filterB[channel]->SetSampleRate(sampleRate);
         filterB[channel]->SetResonance(0.1);
         filterB[channel]->SetCutoff(12000.0);
         filterB[channel]->SetDrive(1.0);
         
         
-        filterC[channel] = new DiodeLadderModel();
+        filterC[channel] = std::unique_ptr<LadderFilterBase>(new DiodeLadderModel);
         filterC[channel]->SetSampleRate(sampleRate);
         filterC[channel]->SetResonance(0.1);
         filterC[channel]->SetCutoff(12000.0);
@@ -595,7 +596,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& oversamp)
+void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& oversamp)
 {
     
     //const int numSamples = buffer.getNumSamples();
