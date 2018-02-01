@@ -41,7 +41,7 @@ class VAOnePole : public LadderFilterBase
         
         virtual void Update() override
         {
-            double wd = 2 * MOOG_PI * cutoff;
+            double wd = 2 * MOOG_PI * cutoff.get();
             double T = 1 / sampleRate;
             double wa = ( 2 / T ) * tan( wd * T / 2 );
             double g = wa * T / 2;
@@ -120,12 +120,12 @@ class VAOnePole : public LadderFilterBase
 	
 		virtual void SetResonance(double r) override
 		{
-            resonance = r * 10.0;;
+            resonance.set( r * 10.0);
 		}
     
 		virtual void SetCutoff(double c) override
 		{
-			cutoff = c;
+			cutoff.set(c);
             Update();
 		}
     
@@ -134,26 +134,17 @@ class VAOnePole : public LadderFilterBase
 			drive = d;
 		}
 	
-		double GetSampleRate() override
-		{
-			return sampleRate;
-		}
     
-		double GetCutoff() override
-		{
-			return cutoff;
-		}
+		double Alpha;
+		double Beta;
+		double Gamma;
+		double Delta;
+		double Epsilon;
     
-    double Alpha;
-    double Beta;
-    double Gamma;
-    double Delta;
-    double Epsilon;
+		double a0;
+		double Z1;
     
-    double a0;
-    double Z1;
-    
-    double Feedback;
+		double Feedback;
     
         
     private :

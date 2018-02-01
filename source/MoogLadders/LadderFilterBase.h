@@ -49,15 +49,15 @@ public:
     
     enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
     
-    virtual double GetResonance() { return resonance; }
-    virtual double GetCutoff() { return cutoff; }
+    virtual double GetResonance() { return resonance.get(); }
+    virtual double GetCutoff() { return cutoff.get(); }
     virtual double GetSampleRate() { return sampleRate; }
 	
 protected:
 	
 	double sampleRate;
-	double cutoff;
-	double resonance;
+	Atomic<double> cutoff;
+	Atomic<double> resonance;
 	double drive;
 };
 

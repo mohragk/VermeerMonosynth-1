@@ -20,7 +20,7 @@ class DiodeLadderModel : public LadderFilterBase
     
     DiodeLadderModel() : LadderFilterBase(), sampleRate(44100.0)
     {
-        K = 0.0;
+        resonance.set(0.0);
         
         Gamma = 0.0;
         
@@ -51,7 +51,7 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual void Update() override
     {
-        double wd = 2 * MOOG_PI * cutoff;
+        double wd = 2 * MOOG_PI * cutoff.get();
         double T  = 1 / sampleRate;
         double wa = ( 2 / T ) * tan( wd * T / 2 );
         double g = wa * T / 2;
@@ -121,7 +121,7 @@ class DiodeLadderModel : public LadderFilterBase
                         SG3 * va_LPF3.getFeedbackOutput() +
                         SG4 * va_LPF4.getFeedbackOutput();
         
-        double U = ( sample - K * Sigma ) / ( 1 + K * Gamma );
+        double U = ( sample - resonance.get() * Sigma ) / ( 1 + resonance.get() * Gamma );
         
         U = fast_tanh(drive * U);
         
@@ -156,12 +156,12 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual void SetResonance(double r) override
     {
-        K = 17.0 * r ; // remap
+        resonance.set( 17.0 * r ); // remap
     }
     
     virtual void SetCutoff(double c) override
     {
-        cutoff = c;
+        cutoff.set(c);
         Update();
     }
     
@@ -170,23 +170,15 @@ class DiodeLadderModel : public LadderFilterBase
         drive = d;
     }
     
-    double GetSampleRate() override
-    {
-        return sampleRate;
-    }
+
     
-    double GetCutoff() override
-    {
-        return cutoff;
-    }
+
     
     private:
     
     
     double sampleRate;
-    
-    double K;
-    
+        
     double Gamma;
     
     FilterType type;

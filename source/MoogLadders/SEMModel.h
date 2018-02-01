@@ -42,13 +42,13 @@ class SEMModel : public LadderFilterBase
 		{
         
 			// prewarp cutoff, billinear transform
-			double wd = 2 * MOOG_PI * cutoff;
+			double wd = 2 * MOOG_PI * cutoff.get();
 			double T  = 1 / sampleRate;
 			double wa = ( 2 / T ) * tan( wd * T / 2 );
 			double g  = wa * T / 2;
 
 			// R is damping factor
-			double R  = 1.0 / ( 2.0 * resonance );
+			double R  = 1.0 / ( 2.0 * resonance.get() );
         
         
 			// set Coeffs
@@ -91,7 +91,7 @@ class SEMModel : public LadderFilterBase
 			// LPF
 			FloatType lpf = Alpha * bpf + Z12;
 
-			FloatType R = 1.0 / (2.0 * resonance);
+			FloatType R = 1.0 / (2.0 * resonance.get());
 
 			FloatType bsf = sample - 2.0 * R * bpf;
 
@@ -135,13 +135,13 @@ class SEMModel : public LadderFilterBase
 		virtual void SetResonance(double r) override
 		{
 			//remap: 0 -> 1 --- 0.5 -> 25
-			resonance = (25.0 - 0.5) * (r - 0.0) / (1.0 - 0.0) + 0.5;
+			resonance.set( (25.0 - 0.5) * (r - 0.0) / (1.0 - 0.0) + 0.5 );
 			
 		}
     
 		virtual void SetCutoff(double c) override
 		{
-			cutoff = c;
+			cutoff.set(c);
             Update();
 
 		}
@@ -151,15 +151,7 @@ class SEMModel : public LadderFilterBase
 			drive = d;
 		}
 	
-		double GetSampleRate() override
-		{
-			return sampleRate;
-		}
-    
-		double GetCutoff() override
-		{
-			return cutoff;
-		}
+		
     
     
     private :

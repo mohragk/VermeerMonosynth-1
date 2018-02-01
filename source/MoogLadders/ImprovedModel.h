@@ -64,8 +64,8 @@ public:
     
     virtual void Update() override
     {
-        x = (MOOG_PI * cutoff) / (sampleRate * multiplier);
-        g = 4.0 * MOOG_PI * VT * cutoff * (1.0 - x) / (1.0 + x);
+        x = (MOOG_PI * cutoff.get()) / (sampleRate * multiplier);
+        g = 4.0 * MOOG_PI * VT * cutoff.get() * (1.0 - x) / (1.0 + x);
     }
     
     virtual void Process(float* samples, size_t n) noexcept override
@@ -94,7 +94,7 @@ public:
     
     virtual void SetCutoff(double c) override
     {
-        cutoff = c;
+        cutoff.set(c);
         Update();
     }
     
@@ -103,15 +103,8 @@ public:
         drive = d;
     }
     
-    double GetSampleRate() override
-    {
-        return sampleRate;
-    }
-    
-    double GetCutoff() override
-    {
-        return cutoff;
-    }
+ 
+ 
     
 private:
     
@@ -124,7 +117,7 @@ private:
         for (uint32_t i = 0; i < n; i++)
         {
             
-            dV0 = -g * (fast_tanh((drive * samples[i] + resonance * V[3]) / (2.0 * VT)) + tV[0]);
+            dV0 = -g * (fast_tanh((drive * samples[i] + resonance.get() * V[3]) / (2.0 * VT)) + tV[0]);
             V[0] += (dV0 + dV[0]) / (2.0 * sampleRate * multiplier);
             dV[0] = dV0;
             tV[0] = fast_tanh(V[0] / (2.0 * VT));

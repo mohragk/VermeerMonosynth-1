@@ -20,7 +20,7 @@ public:
     ThreeFiveModel() : LadderFilterBase(), sampleRate(44100.0)
     {
         //init
-        K = 0.01;
+        resonance.set( 0.01 );
         Alpha0 = 0;
         
         // set filter types
@@ -51,7 +51,7 @@ public:
     virtual void Update() override
     {
         //prewarp for BZT
-        double wd = 2 * MOOG_PI * cutoff;
+        double wd = 2 * MOOG_PI * cutoff.get();
         double T  = 1 / sampleRate;
         double wa = ( 2 / T ) * tan( wd * T / 2 );
         double g  = wa * T / 2;
@@ -66,11 +66,11 @@ public:
         va_HPF2.Alpha = G;
         
         // set Alpha0; same for LPF as HPF
-        Alpha0 = 1.0 / ( 1.0 - K * G + K * G * G );
+        Alpha0 = 1.0 / ( 1.0 - resonance.get() * G + resonance.get() * G * G );
         
         if (type == LPF2)
         {
-            va_LPF2.Beta = ( K - K * G ) / ( 1.0 + g );
+            va_LPF2.Beta = (resonance.get() - resonance.get() * G ) / ( 1.0 + g );
             va_HPF1.Beta = -1.0 / ( 1.0 + g);
         }
         else
@@ -113,7 +113,7 @@ public:
             
             u = fast_tanh(drive * u);
             
-            y = K * va_LPF2.doFilter(u);
+            y = resonance.get() * va_LPF2.doFilter(u);
             
             va_HPF1.doFilter(y);
         }
@@ -126,15 +126,15 @@ public:
             
 			FloatType u = Alpha0 * y1 + S35;
             
-            y = K * u;
+            y = resonance.get() * u;
             
             y = fast_tanh(drive * y);
             
             va_LPF1.doFilter(va_HPF2.doFilter(y));
         }
         
-        if (K > 0)
-            y *= 1 / K;
+        if (resonance.get() > 0)
+            y *= 1 / resonance.get();
         
         return y;
         
@@ -152,12 +152,12 @@ public:
     
     virtual void SetResonance(double r) override
     {
-        K = (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01; // remap
+        resonance.set( (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01 ); // remap
     }
     
     virtual void SetCutoff(double c) override
     {
-        cutoff = c;
+        cutoff.set(c);
         Update();
     }
     
@@ -165,16 +165,7 @@ public:
     {
         drive = d;
     }
-    
-    double GetSampleRate() override
-    {
-        return sampleRate;
-    }
-    
-    double GetCutoff() override
-    {
-        return cutoff;
-    }
+  
     
     
     private :
@@ -185,7 +176,6 @@ public:
     
     FilterType type;
     
-    double K;
     double Alpha0;
     
     
