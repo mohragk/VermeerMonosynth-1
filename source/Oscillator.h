@@ -11,9 +11,11 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(44100.0), phase(0.0), level(0.75), frequency(0.0)
+    Oscillator() : sampleRate(44100.0), level(0.75)
     {
-        
+		frequency.set(0.0);
+		phase.set(0.0);
+		gain.set(0.0);
     }
     
     
@@ -31,19 +33,19 @@ public:
     
     void setFrequency(const double f)
     {
-        frequency = f;
+        frequency.set(f);
        // phaseIncrement = updatePhaseIncrement(frequency);
     }
     
     
     void setPhase(const double ph)
     {
-        phase = ph;
+        phase.set(ph);
     }
     
     void setGain(const double g)
     {
-        gain = g;
+        gain.set(g);
     }
     
     void setMode(const int m)
@@ -66,7 +68,7 @@ public:
     
     double getPhase()
     {
-        return phase;
+        return phase.get();
     }
     
     bool isRephase()
@@ -78,45 +80,45 @@ public:
     {
         const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;
-        double t = phase / two_Pi; // normalize period
+        double t = phase.get() / two_Pi; // normalize period
         
-        phaseIncrement = updatePhaseIncrement(frequency);
+        phaseIncrement = updatePhaseIncrement(frequency.get());
 
 		if (phaseIncrement == 0.0)
 			return value;
         
         if ( mode == OSCILLATOR_MODE_SINE)
         {
-            value = naiveWaveFormForMode(mode, phase);
+            value = naiveWaveFormForMode(mode, phase.get());
         }
         else if( mode == OSCILLATOR_MODE_SAW)
         {
-            value = naiveWaveFormForMode(mode, phase);
+            value = naiveWaveFormForMode(mode, phase.get());
             value = fast_tanh(value * 3.0);
             value -= poly_blep( t, phaseIncrement );
         }
         else if (mode == OSCILLATOR_MODE_SQUARE)
         {
-            value = naiveWaveFormForMode(mode, phase);
+            value = naiveWaveFormForMode(mode, phase.get());
             value += poly_blep( t, phaseIncrement );
             value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
         }
         else
         {
-            value = naiveWaveFormForMode(mode, phase);
+            value = naiveWaveFormForMode(mode, phase.get());
         }
         
-        phase += phaseIncrement;
+        phase.set( phase.get() + phaseIncrement); //NOT SURE.....
         
         rephase = false;
         
-        while(phase >= two_Pi)
+        while(phase.get() >= two_Pi)
         {
-            phase -= two_Pi;
+            phase.set(0.0);
             rephase = true;
         }
         
-        return value * level * gain;
+        return value * level * gain.get();
     }
     
 private:
@@ -186,8 +188,9 @@ private:
     }
     
 
-    double sampleRate, phase, phaseIncrement, frequency;
-    double level, gain;
+    double sampleRate,  phaseIncrement;
+	Atomic<double> frequency, phase, gain;
+    double level;
     double pulsewidth;
     
     OscillatorMode mode;
