@@ -293,8 +293,8 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
 
 void MonosynthPluginAudioProcessor::initialiseSynth()
 {
-    synth.addVoice (new SineWaveVoice());
-    synth.addSound (new SineWaveSound());
+    synth.addVoice (new MonosynthVoice());
+    synth.addSound (new MonosynthSound());
 }
 
 
@@ -465,20 +465,15 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // add messages to the buffer if the user is clicking on the on-screen keys
     keyboardState.processNextMidiBuffer (midiMessages, 0, numSamples, true);
     
-    
-    
-    
-    // and now get our synth to process these midi events and generate its output.
+
+    // getting our synth samples
     synth.renderNextBlock (buffer, midiMessages, 0, numSamples);
     
-   
-   
-    
+	
     // getting our filter envelope values
     applyFilterEnvelope(buffer);
     
-    
-   
+
     
     if (*filterOrderParam == 0)
     {
@@ -515,7 +510,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
     for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
-        buffer.clear (i, 0, numSamples);
+		buffer.clear (i, 0, numSamples);
     
     applyGain (buffer); // apply our gain-change to the outgoing data..
     
@@ -606,19 +601,16 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     
     
     dsp::AudioBlock<FloatType> block (buffer);
+
     dsp::AudioBlock<FloatType> oversampledBlock;
     
-    
     oversampledBlock = oversamp->processSamplesUp(block);
-    
     
     FloatType* channelDataLeft  = oversampledBlock.getChannelPointer(0);
     FloatType* channelDataRight = oversampledBlock.getChannelPointer(1);
     
     int numSamples = (unsigned)oversampledBlock.getNumSamples();
-    
-    
-    
+
     
     //
     //  break buffer into chunks
@@ -655,6 +647,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         channelDataLeft += stepSize;
         channelDataRight += stepSize;
     }
+	
     
     oversamp->processSamplesDown(block);
 }
@@ -815,7 +808,7 @@ void inline MonosynthPluginAudioProcessor::updateParameters()
 void MonosynthPluginAudioProcessor::setPitchEnvelope(float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchEnvelope(attack, decay, sustain, release, attackCurve, decRelCurve);
+    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchEnvelope(attack, decay, sustain, release, attackCurve, decRelCurve);
     
 }
 
@@ -823,7 +816,7 @@ void MonosynthPluginAudioProcessor::setPitchEnvelope(float attack, float decay, 
 void MonosynthPluginAudioProcessor::setPitchEnvelopeAmount(float pitchMod)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchEnvelopeAmount(pitchMod);
+    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchEnvelopeAmount(pitchMod);
     
 }
 
@@ -831,14 +824,14 @@ void MonosynthPluginAudioProcessor::setPitchEnvelopeAmount(float pitchMod)
 void MonosynthPluginAudioProcessor::setOsc1DetuneAmount(float fine, int coarse)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setOsc1DetuneAmount(fine, coarse);
+    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOsc1DetuneAmount(fine, coarse);
     
 }
 
 void MonosynthPluginAudioProcessor::setOsc2DetuneAmount(float fine, int coarse)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setOsc2DetuneAmount(fine, coarse);
+    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOsc2DetuneAmount(fine, coarse);
     
 }
 
@@ -846,21 +839,21 @@ void MonosynthPluginAudioProcessor::setOsc2DetuneAmount(float fine, int coarse)
 void MonosynthPluginAudioProcessor::setOsc3DetuneAmount(float fine, int coarse)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setOsc3DetuneAmount(fine, coarse);
+    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOsc3DetuneAmount(fine, coarse);
     
 }
 
 void MonosynthPluginAudioProcessor::setOscGains(float osc1Gain, float osc2Gain, float osc3Gain)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setOscGains(osc1Gain, osc2Gain, osc3Gain);
+    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOscGains(osc1Gain, osc2Gain, osc3Gain);
     
 }
 
 void MonosynthPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int osc3Mode)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setOscModes(osc1Mode, osc2Mode, osc3Mode);
+    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOscModes(osc1Mode, osc2Mode, osc3Mode);
     
 }
 
@@ -868,21 +861,21 @@ void MonosynthPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int 
 void MonosynthPluginAudioProcessor::setEnvelopeState(ADSR envelope)
 {
     
-    return static_cast<SineWaveVoice*>(synth.getVoice(0))->sendEnvelope(envelope);
+    return static_cast<MonosynthVoice*>(synth.getVoice(0))->sendEnvelope(envelope);
     
 }
 
 void MonosynthPluginAudioProcessor::setHardSync(int sync)
 {
     
-    return static_cast<SineWaveVoice*>(synth.getVoice(0))->setHardSync(sync);
+    return static_cast<MonosynthVoice*>(synth.getVoice(0))->setHardSync(sync);
     
 }
 
 void MonosynthPluginAudioProcessor::setPWAmount(double amt, int osc)
 {
     
-    return dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPWAmount(amt, osc);
+    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPWAmount(amt, osc);
     
 }
 
@@ -896,18 +889,18 @@ void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
             
             cutoffModulationAmt = amount;
             
-            dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
+            dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
             
             break;
         case modPitch: 
-            dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(amount);
+            dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(amount);
             
             cutoffModulationAmt = 0.0;
             
             break;
             
         case off:
-            dynamic_cast<SineWaveVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
+            dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
             cutoffModulationAmt = 0.0;
             
             break;
@@ -937,7 +930,7 @@ float MonosynthPluginAudioProcessor::softClip(float s)
 
 void MonosynthPluginAudioProcessor::sendLFO( LFO lfo )
 {
-    return static_cast<SineWaveVoice*>(synth.getVoice(0))->sendLFO(lfo);
+    return static_cast<MonosynthVoice*>(synth.getVoice(0))->sendLFO(lfo);
 }
 
 

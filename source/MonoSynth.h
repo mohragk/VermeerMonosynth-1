@@ -27,10 +27,10 @@ DISCLAIMED.
 #include "Oscillator.h"
 
 /** A demo synth sound that's just a basic sine wave.. */
-class SineWaveSound : public SynthesiserSound
+class MonosynthSound : public SynthesiserSound
 {
 public:
-    SineWaveSound() {}
+	MonosynthSound() {}
     
     bool appliesToNote (int /*midiNoteNumber*/) override  { return true; }
     bool appliesToChannel (int /*midiChannel*/) override  { return true; }
@@ -41,10 +41,10 @@ public:
 //==============================================================================
 /** A simple demo synth voice that just plays a sine wave.. */
 
-class SineWaveVoice  : public SynthesiserVoice
+class MonosynthVoice  : public SynthesiserVoice
 {
 public:
-    SineWaveVoice() : pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
+	MonosynthVoice() : pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
     
     {
 		pitchEnvelope = new ADSR();
@@ -55,7 +55,7 @@ public:
         
     }
     
-    ~SineWaveVoice()
+    ~MonosynthVoice()
     {
         pitchEnvelope = nullptr;
         
@@ -66,7 +66,7 @@ public:
     
     bool canPlaySound (SynthesiserSound* sound) override
     {
-        return dynamic_cast<SineWaveSound*> (sound) != nullptr;
+        return dynamic_cast<MonosynthSound*> (sound) != nullptr;
     }
     
     void startNote (int midiNoteNumber, float velocity,
