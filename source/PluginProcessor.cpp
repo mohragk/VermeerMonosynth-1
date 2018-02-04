@@ -288,12 +288,7 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     pulsewidthAmount2Param = nullptr;
     pulsewidthAmount3Param = nullptr;
     
-    filterA[0] = nullptr;
-    filterA[1] = nullptr;
-    filterB[0] = nullptr;
-    filterB[1] = nullptr;
-    filterC[0] = nullptr;
-    filterC[1] = nullptr;
+    
 }
 
 
