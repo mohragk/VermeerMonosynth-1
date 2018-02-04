@@ -61,13 +61,13 @@ public:
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
     {
         jassert (! isUsingDoublePrecision());
-        process (buffer, midiMessages, oversamplingFloat, oversamplingSynthFloat);
+        process (buffer, midiMessages, oversamplingFloat);
     }
     
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
     {
         jassert (! isUsingDoublePrecision());
-        process (buffer, midiMessages, oversamplingDouble, oversamplingSynthDouble);
+        process (buffer, midiMessages, oversamplingDouble);
     }
 
 
@@ -221,7 +221,7 @@ public:
 private:
     //==============================================================================
     template <typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, ScopedPointer<dsp::Oversampling<FloatType>>& os, ScopedPointer<dsp::Oversampling<FloatType>>& os2 );
+    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, ScopedPointer<dsp::Oversampling<FloatType>>& os);
 
     template <typename FloatType>
     void applyGain (AudioBuffer<FloatType>& buffer);
@@ -238,8 +238,8 @@ private:
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
     
-    ScopedPointer<dsp::Oversampling<float>> oversamplingFloat, oversamplingSynthFloat;
-    ScopedPointer<dsp::Oversampling<double>> oversamplingDouble, oversamplingSynthDouble;
+    ScopedPointer<dsp::Oversampling<float>> oversamplingFloat;
+    ScopedPointer<dsp::Oversampling<double>> oversamplingDouble;
 
     Synthesiser synth;
     
