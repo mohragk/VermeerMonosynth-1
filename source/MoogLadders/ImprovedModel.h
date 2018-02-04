@@ -45,12 +45,11 @@ public:
         drive = 1.0f;
         
         Reset();
+
     }
     
-    virtual ~ImprovedMoog()
-    {
-        
-    }
+    virtual ~ImprovedMoog() { }
+    
     virtual void Reset() override
     {
         for (int i = 0; i < 4; i++)
@@ -94,6 +93,8 @@ public:
     
     virtual void SetCutoff(double c) override
     {
+        jassert (c > 0 && c <= (sampleRate * 0.5));
+        
         cutoff.set(c);
         Update();
     }

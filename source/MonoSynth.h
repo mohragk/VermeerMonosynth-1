@@ -249,7 +249,7 @@ private:
                     osc2->setPhase(0.0);
 
 				// Calculate samples and divide by number of oscillators
-				sample = (osc1->nextSample() + osc2->nextSample() + osc3->nextSample()) / numOscillators;
+				sample = ( osc1->nextSample() + osc2->nextSample() + osc3->nextSample() ) / numOscillators;
 
                 
                 FloatType* dataLeft = outputBuffer.getWritePointer(0);

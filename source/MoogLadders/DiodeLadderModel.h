@@ -161,6 +161,8 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual void SetCutoff(double c) override
     {
+        jassert (c > 0 && c <= (sampleRate * 0.5));
+        
         cutoff.set(c);
         Update();
     }
