@@ -377,7 +377,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     cutoffFromEnvelope.reset(sampleRate, 0.0003);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
-    masterGain.reset(sampleRate / oversamplingDouble->getOversamplingFactor(), 0.001);
+    //masterGain.reset(sampleRate / oversamplingDouble->getOversamplingFactor(), 0.001);
     pulseWidthSmooth.reset(sampleRate, 0.0001);
     
     
@@ -399,7 +399,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     cutoffFromEnvelope.reset(sampleRate, 0.0003);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
-    masterGain.reset(sampleRate, 0.001);
+   // masterGain.reset(sampleRate, 0.001);
     pulseWidthSmooth.reset(sampleRate, 0.0001);
     
     oversamplingFloat->reset();
@@ -425,7 +425,7 @@ void MonosynthPluginAudioProcessor::reset()
     cutoffFromEnvelope.reset(sampleRate, 0.0003);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
-    masterGain.reset(sampleRate, 0.001);
+    //masterGain.reset(sampleRate, 0.001);
     pulseWidthSmooth.reset(sampleRate, 0.0001);
     
     oversamplingFloat->reset();
@@ -543,8 +543,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
 
 
-    oversampling->processSamplesDown(block);
-    osBlock.clear();
     
     
     
@@ -552,9 +550,14 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
     for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
-		buffer.clear (i, 0, numSamples);
+		osBuffer.clear (i, 0, numSamples);
     
-    applyGain (buffer); // apply our gain-change to the outgoing data..
+    applyGain (osBuffer); // apply our gain-change to the outgoing data..
+
+
+	oversampling->processSamplesDown(block);
+	osBlock.clear();
+
 
 	    
     // Now ask the host for the current time so we can store it to be displayed later...
@@ -562,12 +565,26 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyGain (AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 {
-    masterGain.setValue(*gainParam);
-    
-    for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
-        buffer.applyGain ( channel, 0, buffer.getNumSamples(), masterGain.getNextValue() );
+	//masterGain.setValue(*gainParam);
+
+	masterGain = *gainParam;
+
+	if (masterGain == masterGainPrev)
+	{
+		for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
+			buffer.applyGain(channel, 0, buffer.getNumSamples(), masterGain);
+
+	}
+	else
+	{
+		for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
+			buffer.applyGainRamp(channel, 0, buffer.getNumSamples(), masterGainPrev, masterGain);
+
+		masterGainPrev = masterGain;
+	}
+
 }
 
 
@@ -737,8 +754,12 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
 
 double MonosynthPluginAudioProcessor::wave_shape(double sample, double overdrive)
 {
+	/*
 	double s = sample * overdrive;
 	return (s - (0.15 * s * s) - (0.15 * s * s * s)) / overdrive;
+	*/
+	
+	return dsp::FastMathApproximations::tanh(overdrive * sample);
 }
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()

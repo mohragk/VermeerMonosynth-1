@@ -83,6 +83,8 @@ public:
     
     virtual void SetSampleRate (double sr) override
     {
+		jassert(!isnan(sr));
+
         sampleRate = sr;
         multiplier =  jmin(1.0, 96000.0 / sr);
     }

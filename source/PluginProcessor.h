@@ -283,7 +283,7 @@ private:
     
     double sampleRate;
     
-	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, masterGain, pulseWidthSmooth;
+	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, pulseWidthSmooth;
 	LinearSmoothedValue<double> cutoffFromEnvelope;
 	
 	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;
@@ -291,7 +291,7 @@ private:
     
     int lastNotePlayed;
     
-    double gainDB;
+    double masterGain, masterGainPrev;
     
     bool filterOn = true;
     
