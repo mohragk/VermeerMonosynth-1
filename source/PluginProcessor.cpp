@@ -612,6 +612,10 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         modAmount = *lfoIntensityParam;                            // Make parameter
         applyModToTarget(*modTargetParam, lfoValue * modAmount);
         
+
+		//
+		// @BUG: Cutoff initializes to NaN
+		//
         
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
@@ -660,7 +664,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         for (int channel = 0; channel < 2; channel++)
         {
             filter[channel]->SetResonance(Q);
-            filter[channel]->SetCutoff(combinedCutoff);
+			filter[channel]->SetCutoff(combinedCutoff);
             filter[channel]->SetDrive(drive.getNextValue());
         }
         

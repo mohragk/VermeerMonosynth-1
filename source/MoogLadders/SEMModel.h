@@ -19,6 +19,9 @@ class SEMModel : public LadderFilterBase
     
 		SEMModel() : LadderFilterBase(), sampleRate(44100.0)
 		{
+			SetCutoff(1000.0);
+			SetResonance(0.0);
+
 			Alpha0 = 1.0;
 			Alpha = 1.0;
 			Rho = 1.0;

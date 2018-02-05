@@ -19,6 +19,8 @@ class ThreeFiveModel : public LadderFilterBase
 public:
     ThreeFiveModel() : LadderFilterBase(), sampleRate(44100.0)
     {
+		SetCutoff(1000.0);
+
         //init
         resonance.set( 0.01 );
         Alpha0 = 0;
@@ -152,12 +154,24 @@ public:
     
     virtual void SetResonance(double r) override
     {
-        resonance.set( (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01 ); // remap
+		double newRes = r;
+
+		if (isnan(newRes))
+			newRes = 0.0;
+
+		jassert(newRes >= 0 && newRes <= 1.0);
+
+        resonance.set( (2.0 - 0.01) * (newRes - 0.0) / (1.0 - 0.0) + 0.01 ); // remap
     }
     
     virtual void SetCutoff(double c) override
     {
-        jassert (c > 0 && c <=  (sampleRate * 0.5));
+		double newCutoff = c;
+
+		if (isnan(newCutoff))
+			newCutoff = 1000.0;
+
+		jassert(newCutoff > 0 && newCutoff <= (sampleRate * 0.5));
         
         cutoff.set(c);
         Update();

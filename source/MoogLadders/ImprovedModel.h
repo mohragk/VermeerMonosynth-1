@@ -43,7 +43,8 @@ public:
     ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0)
     {
         drive = 1.0f;
-        
+		SetCutoff(1000.0);
+		SetResonance(0.0);
         Reset();
 
     }
@@ -88,14 +89,27 @@ public:
     
     virtual void SetResonance(double r) override
     {
-        resonance = r * 4.0;
+		double newRes = r;
+
+		if (isnan(newRes))
+			newRes = 0.0;
+
+		jassert(newRes >= 0 && newRes <= 1.0);
+        
+		resonance = newRes * 4.0;
     }
     
     virtual void SetCutoff(double c) override
     {
-        jassert (c > 0 && c <= (sampleRate * 0.5));
-        
-        cutoff.set(c);
+       	double newCutoff = c;
+
+		if (isnan(newCutoff))
+			newCutoff = 1000.0;
+
+		
+		jassert(newCutoff > 0 && newCutoff <= (sampleRate * 0.5));
+
+        cutoff.set(newCutoff);
         Update();
     }
     
