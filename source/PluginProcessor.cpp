@@ -99,7 +99,7 @@ lfoDivisionParam(nullptr),
 
 overSampleParam(nullptr),
 
-pulsewidthParam(nullptr),
+waveshapeSwitchParam(nullptr),
 
 pulsewidthAmount1Param(nullptr),
 pulsewidthAmount2Param(nullptr),
@@ -108,6 +108,7 @@ pulsewidthAmount3Param(nullptr),
 filterEnvelope(nullptr),
 
 ampEnvelope(nullptr)
+
 {
     lastPosInfo.resetToDefault();
     
@@ -191,7 +192,7 @@ ampEnvelope(nullptr)
     addParameter(filterOrderParam = new AudioParameterInt("filterOrderParam", "Filter Order", 0, 1, 0)); // 0 = VCA->filter; 1 = filter->VCA
     
     // PWM
-    addParameter(pulsewidthParam = new AudioParameterFloat("pulsewidthParam", "PWM", 0.0f, 1.0f, 0.4f));
+    addParameter(waveshapeSwitchParam = new AudioParameterInt("waveShapeSwitchParam", "Waveshaping ON/OFF", 0, 1, 0));
     
     addParameter(pulsewidthAmount1Param = new AudioParameterFloat("pulsewidthAmount1Param", "PWM1 Amt", 0.0f, 1.0f, 0.4f));
     addParameter(pulsewidthAmount2Param = new AudioParameterFloat("pulsewidthAmount2Param", "PWM2 Amt", 0.0f, 1.0f, 0.4f));
@@ -288,6 +289,13 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     pulsewidthAmount2Param = nullptr;
     pulsewidthAmount3Param = nullptr;
     
+
+	filterA[0] = nullptr;
+	filterA[1] = nullptr;
+	filterB[0] = nullptr;
+	filterB[1] = nullptr;
+	filterC[0] = nullptr;
+	filterC[1] = nullptr;
     
 }
 
@@ -478,11 +486,13 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     dsp::AudioBlock<FloatType> osBlock;
     
     osBlock = oversampling->processSamplesUp(block);
+
+	FloatType* const arr[] = { osBlock.getChannelPointer(0), osBlock.getChannelPointer(1) };
     
-    AudioBuffer<FloatType> osBuffer(
-                                    (FloatType*[]) { osBlock.getChannelPointer(0), osBlock.getChannelPointer(1) },
+	AudioBuffer<FloatType> osBuffer(
+									arr,
                                     2,
-                                    static_cast<int> (osBlock.getNumSamples())
+                                    static_cast<int> ( osBlock.getNumSamples() )
                                     );
     
     
@@ -525,7 +535,14 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         }
     }
     
-    
+
+	//APPLYING WAVESHAPER
+	if(*waveshapeSwitchParam == 1)
+		applyWaveshaper(osBuffer);
+ 
+
+
+
     oversampling->processSamplesDown(block);
     osBlock.clear();
     
@@ -538,7 +555,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 		buffer.clear (i, 0, numSamples);
     
     applyGain (buffer); // apply our gain-change to the outgoing data..
-    
+
+	    
     // Now ask the host for the current time so we can store it to be displayed later...
     updateCurrentTimeInfoFromHost();
 }
@@ -651,6 +669,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         
         filter[0]->Process(channelDataLeft, stepSize);
         filter[1]->Process(channelDataRight, stepSize);
+
         
         samplesLeftOver -= stepSize;
         
@@ -660,7 +679,20 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     
 }
 
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buffer)
+{
+	const int numSamples = buffer.getNumSamples();
 
+	FloatType* dataL = buffer.getWritePointer(0);
+	FloatType* dataR = buffer.getWritePointer(1);
+
+	for (int i = 0; i < numSamples; i++)
+	{
+		dataL[i] = wave_shape(dataL[i], 2.0);
+		dataR[i] = wave_shape(dataR[i], 2.0);
+	}
+}
 
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buffer)
@@ -699,6 +731,11 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
     
 }
 
+double MonosynthPluginAudioProcessor::wave_shape(double sample, double overdrive)
+{
+	double s = sample * 3.0;
+	return s - (0.15 * s * s) - (0.15 * s * s * s);
+}
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 {

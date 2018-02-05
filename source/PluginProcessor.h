@@ -211,7 +211,7 @@ public:
     AudioParameterInt* overSampleParam;
     
     AudioParameterInt* filterOrderParam;
-    AudioParameterFloat* pulsewidthParam;
+    AudioParameterInt* waveshapeSwitchParam;
     
     AudioParameterFloat* pulsewidthAmount1Param;
     AudioParameterFloat* pulsewidthAmount2Param;
@@ -232,8 +232,13 @@ private:
     template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& os);
 
+	template <typename FloatType>
+	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
+
     template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
+
+	double wave_shape(double sample, double overdrive);
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     

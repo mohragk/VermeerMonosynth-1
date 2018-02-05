@@ -718,7 +718,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     // PWM
-    addAndMakeVisible(pulsewidthSlider = new ParameterSlider(*owner.pulsewidthParam));  //
+    addAndMakeVisible(pulsewidthSlider = new ParameterSlider(*owner.waveshapeSwitchParam));  //TODO: rename slider etc.
     pulsewidthSlider->setSliderStyle(Slider::LinearVertical);
     pulsewidthSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     

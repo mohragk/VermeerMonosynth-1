@@ -94,7 +94,7 @@ public:
         else if( mode == OSCILLATOR_MODE_SAW)
         {
             value = naiveWaveFormForMode(mode, phase.get());
-            value = fast_tanh(value * 3.0);
+            value = dsp::FastMathApproximations::tanh(value * 3.0);
             value -= poly_blep( t, phaseIncrement );
         }
         else if (mode == OSCILLATOR_MODE_SQUARE)

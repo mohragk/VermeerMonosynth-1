@@ -121,22 +121,22 @@ private:
             dV0 = -g * (fast_tanh((drive * samples[i] + resonance.get() * V[3]) / (2.0 * VT)) + tV[0]);
             V[0] += (dV0 + dV[0]) / (2.0 * sampleRate * multiplier);
             dV[0] = dV0;
-            tV[0] = fast_tanh(V[0] / (2.0 * VT));
+            tV[0] = dsp::FastMathApproximations::tanh(V[0] / (2.0 * VT));
             
             dV1 = g * (tV[0] - tV[1]);
             V[1] += (dV1 + dV[1]) / (2.0 * sampleRate * multiplier);
             dV[1] = dV1;
-            tV[1] = fast_tanh(V[1] / (2.0 * VT));
+            tV[1] = dsp::FastMathApproximations::tanh(V[1] / (2.0 * VT));
             
             dV2 = g * (tV[1] - tV[2]);
             V[2] += (dV2 + dV[2]) / (2.0 * sampleRate* multiplier);
             dV[2] = dV2;
-            tV[2] = fast_tanh(V[2] / (2.0 * VT));
+            tV[2] = dsp::FastMathApproximations::tanh(V[2] / (2.0 * VT));
             
             dV3 = g * (tV[2] - tV[3]);
             V[3] += (dV3 + dV[3]) / (2.0 * sampleRate * multiplier);
             dV[3] = dV3;
-            tV[3] = fast_tanh(V[3] / (2.0 * VT));
+            tV[3] = dsp::FastMathApproximations::tanh(V[3] / (2.0 * VT));
             
             samples[i] = V[3];
             
