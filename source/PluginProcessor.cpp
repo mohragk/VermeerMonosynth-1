@@ -737,8 +737,8 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
 
 double MonosynthPluginAudioProcessor::wave_shape(double sample, double overdrive)
 {
-	double s = sample * 3.0;
-	return s - (0.15 * s * s) - (0.15 * s * s * s);
+	double s = sample * overdrive;
+	return (s - (0.15 * s * s) - (0.15 * s * s * s)) / overdrive;
 }
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
