@@ -84,39 +84,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     : AudioProcessorEditor (owner),
         midiKeyboard (owner.keyboardState, MidiKeyboardComponent::horizontalKeyboard),
         timecodeDisplayLabel (String())
-       /*
-	   ,
-	   gainLabel (String(), "Volume"),
-
-        oscSectionLabel(String(), "Oscillators"),
-        filterSectionLabel(String(), "Filter"),
-        envelopesSectionLabel(String(), "Envelopes"),
-
-        osc1GainLabel(String(), "Gain"),
-		osc1FineTuneLabel(String(), "Tune"),
-        osc1ModeLabel(String(), "Waveform"),
-        osc2GainLabel(String(), "Gain"),
-		osc2FineTuneLabel(String(), "Tune"),
-        osc2ModeLabel(String(), "Waveform"),
-        osc3GainLabel(String(), "Gain"),
-        osc3FineTuneLabel(String(), "Tune"),
-        osc3ModeLabel(String(), "Waveform"),
-
-        filterLabel (String(), "Cutoff"),
-        filterQLabel(String(), "Resonance"),
-        filterContourLabel(String(), "Contour Amt"),
-        filterDriveLabel(String(), "Drive"),
-
-       
-        envelope1Label(String(), "Amplitude"),
-        envelope2Label(String(), "Pitch"),
-        envelope3Label(String(), "Filter Cutoff"),
-
-        oscOffsetLabel (String(), "Offset"),
-        osc2OffsetLabel (String(), "Offset"),
-        osc3OffsetLabel (String(), "Offset"),
-        pitchModLabel(String(), "Amount")
-		*/
+      
 {
     // add all the sliders..
     
@@ -734,6 +702,12 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     addAndMakeVisible(pulsewidthAmount3Slider = new ParameterSlider(*owner.pulsewidthAmount3Param));  //
     pulsewidthAmount3Slider->setSliderStyle(Slider::LinearHorizontal);
     pulsewidthAmount3Slider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+
+	//Saturation
+	addAndMakeVisible(saturationSlider = new ParameterSlider(*owner.saturationParam));  //
+	saturationSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+	saturationSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+
     
 	
 	
@@ -903,6 +877,8 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
     pulsewidthAmount1Slider = nullptr;
     pulsewidthAmount2Slider = nullptr;
     pulsewidthAmount3Slider = nullptr;
+
+	saturationSlider = nullptr;
     
     drawable1 = nullptr;
     drawable2 = nullptr;
@@ -1334,6 +1310,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     filterOrderSlider->setBounds(getWidth() - 24-  64, 240, 64,64);
     pulsewidthSlider->setBounds(getWidth() - 24-  64, 340, 64,64);
   
+
+	saturationSlider->setBounds(getWidth() - 24 - 64, 404, 64, 65);
     
    
 

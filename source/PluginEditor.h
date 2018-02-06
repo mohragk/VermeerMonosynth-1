@@ -191,7 +191,9 @@ private:
     
         pulsewidthAmount1Slider,
         pulsewidthAmount2Slider,
-        pulsewidthAmount3Slider
+        pulsewidthAmount3Slider,
+
+		saturationSlider
         ;
 
     ScopedPointer<Drawable> drawable1;

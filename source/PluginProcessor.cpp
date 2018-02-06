@@ -105,6 +105,8 @@ pulsewidthAmount1Param(nullptr),
 pulsewidthAmount2Param(nullptr),
 pulsewidthAmount3Param(nullptr),
 
+saturationParam(nullptr),
+
 filterEnvelope(nullptr),
 
 ampEnvelope(nullptr)
@@ -142,9 +144,9 @@ ampEnvelope(nullptr)
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 2));
     
     addParameter (pitchModParam = new AudioParameterFloat("pitchMod", "Pitch Modulation", NormalisableRange<float> (0, 2000.0, 0.0, 0.5, false), 0.0));
-    addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24, 0.0));
-    addParameter (osc2OffsetParam = new AudioParameterInt("osc2Offset", "OSC2 Offset", -24, 24, 0.0));
-    addParameter (osc3OffsetParam = new AudioParameterInt("osc3Offset", "OSC3 Offset", -24, 24, 0.0));
+    addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24, 0));
+    addParameter (osc2OffsetParam = new AudioParameterInt("osc2Offset", "OSC2 Offset", -24, 24, 0));
+    addParameter (osc3OffsetParam = new AudioParameterInt("osc3Offset", "OSC3 Offset", -24, 24, 0));
     
     addParameter (oscSyncParam = new AudioParameterInt("oscSync", "osc2>osc1 sync", 0, 1, 0));
     
@@ -197,6 +199,9 @@ ampEnvelope(nullptr)
     addParameter(pulsewidthAmount1Param = new AudioParameterFloat("pulsewidthAmount1Param", "PWM1 Amt", 0.0f, 1.0f, 0.4f));
     addParameter(pulsewidthAmount2Param = new AudioParameterFloat("pulsewidthAmount2Param", "PWM2 Amt", 0.0f, 1.0f, 0.4f));
     addParameter(pulsewidthAmount3Param = new AudioParameterFloat("pulsewidthAmount3Param", "PWM3 Amt", 0.0f, 1.0f, 0.4f));
+
+	//Saturation/Overdrive
+	addParameter(saturationParam = new AudioParameterFloat("saturationParam", "Saturation", 1.0f, 5.0f, 1.0f));
     
     initialiseSynth();
     
@@ -639,10 +644,6 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         const double contourRange = *filterContourParam * contourVelocity;
         currentCutoff = (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
-        if (currentCutoff > 18000.0) currentCutoff = 18000.0;
-        if (currentCutoff < 20.0) currentCutoff = 20.0;
-        
-        
         cutoff.setValue				(*filterParam);
         cutoffFromEnvelope.setValue	(currentCutoff);
         resonance.setValue			(*filterQParam);
@@ -677,6 +678,9 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         
         FloatType combinedCutoff   = currentCutoff + cutoff.getNextValue();
         FloatType Q                = resonance.getNextValue();// * 4.0;
+
+		if (combinedCutoff > 18000.0) combinedCutoff = 18000.0;
+		if (combinedCutoff < 20.0) combinedCutoff = 20.0;
         
         for (int channel = 0; channel < 2; channel++)
         {
@@ -710,8 +714,8 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 
 	for (int i = 0; i < numSamples; i++)
 	{
-		dataL[i] = wave_shape(dataL[i], 2.0);
-		dataR[i] = wave_shape(dataR[i], 2.0);
+		dataL[i] = wave_shape(dataL[i], *saturationParam);
+		dataR[i] = wave_shape(dataR[i], *saturationParam);
 	}
 }
 
@@ -760,6 +764,16 @@ double MonosynthPluginAudioProcessor::wave_shape(double sample, double overdrive
 	*/
 	
 	return dsp::FastMathApproximations::tanh(overdrive * sample);
+
+	/*
+	double s = sample * overdrive;
+
+	if (s > 0)
+		return (1 - exp(-s)) / overdrive;
+	else
+		return (-1 + exp(s)) / overdrive;
+
+    */
 }
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
@@ -928,7 +942,7 @@ void MonosynthPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int 
 }
 
 
-void MonosynthPluginAudioProcessor::setEnvelopeState(ADSR envelope)
+void MonosynthPluginAudioProcessor::setEnvelopeState(ADSR& envelope)
 {
     
     return static_cast<MonosynthVoice*>(synth.getVoice(0))->sendEnvelope(envelope);
@@ -998,7 +1012,7 @@ float MonosynthPluginAudioProcessor::softClip(float s)
     return localSample;
 }
 
-void MonosynthPluginAudioProcessor::sendLFO( LFO lfo )
+void MonosynthPluginAudioProcessor::sendLFO( LFO& lfo )
 {
     return static_cast<MonosynthVoice*>(synth.getVoice(0))->sendLFO(lfo);
 }

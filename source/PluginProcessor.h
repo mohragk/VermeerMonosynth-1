@@ -131,9 +131,9 @@ public:
     void setOsc3DetuneAmount(float fine, int coarse);
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
-	void setEnvelopeState(ADSR envelope);
+	void setEnvelopeState( ADSR& envelope);
     void setHardSync(int sync);
-    void sendLFO(LFO lfo);
+    void sendLFO( LFO& lfo);
     void setPWAmount(double amt, int osc);
 
 	bool noteIsBeingPlayed();
@@ -216,6 +216,8 @@ public:
     AudioParameterFloat* pulsewidthAmount1Param;
     AudioParameterFloat* pulsewidthAmount2Param;
     AudioParameterFloat* pulsewidthAmount3Param;
+
+	AudioParameterFloat* saturationParam;
     
     
 private:
