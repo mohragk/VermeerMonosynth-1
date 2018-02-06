@@ -70,13 +70,19 @@ public:
     
     virtual void Process(float* samples, size_t n) noexcept override
     {
-        renderBlock(samples, n);
+		for (uint32_t i = 0; i < n; i++)
+		{
+			samples[i] = doFilter(samples[i]);
+		}
         
     }
     
     virtual void Process(double* samples, size_t n) noexcept override
     {
-        renderBlock(samples, n);
+		for (uint32_t i = 0; i < n; i++)
+		{
+			samples[i] = doFilter(samples[i]);
+		}
     }
     
     
@@ -91,31 +97,26 @@ public:
     
     virtual void SetResonance(double r) override
     {
-		double newRes = r;
+		if (isnan(r))
+			r = 0.0;
 
-		if (isnan(newRes))
-			newRes = 0.0;
-
-		jassert(newRes >= 0 && newRes <= 1.0);
+		jassert(r >= 0 && r <= 1.0);
         
-		resonance = newRes * 4.0;
+		resonance = r * 4.0;
     }
     
     virtual void SetCutoff(double c) override
     {
-       	double newCutoff = c;
-
-		if (isnan(newCutoff))
-			newCutoff = 1000.0;
-
+		if (isnan(c))
+			c = 1000.0;
 		
-		jassert(newCutoff > 0 && newCutoff <= (sampleRate * 0.5));
+		jassert(c > 0 && c <= (sampleRate * 0.5));
 
-        cutoff.set(newCutoff);
+        cutoff.set(c);
         Update();
     }
     
-    virtual void SetDrive (double d ) override
+    virtual void SetDrive (double d) override
     {
         drive = d;
     }
@@ -128,36 +129,42 @@ private:
     template <typename FloatType>
     void renderBlock(FloatType* samples, size_t n)
     {
-        
-        FloatType dV0, dV1, dV2, dV3;
-        
         for (uint32_t i = 0; i < n; i++)
         {
-            
-            dV0 = -g * (fast_tanh((drive * samples[i] + resonance.get() * V[3]) / (2.0 * VT)) + tV[0]);
-            V[0] += (dV0 + dV[0]) / (2.0 * sampleRate * multiplier);
-            dV[0] = dV0;
-            tV[0] = dsp::FastMathApproximations::tanh(V[0] / (2.0 * VT));
-            
-            dV1 = g * (tV[0] - tV[1]);
-            V[1] += (dV1 + dV[1]) / (2.0 * sampleRate * multiplier);
-            dV[1] = dV1;
-            tV[1] = dsp::FastMathApproximations::tanh(V[1] / (2.0 * VT));
-            
-            dV2 = g * (tV[1] - tV[2]);
-            V[2] += (dV2 + dV[2]) / (2.0 * sampleRate* multiplier);
-            dV[2] = dV2;
-            tV[2] = dsp::FastMathApproximations::tanh(V[2] / (2.0 * VT));
-            
-            dV3 = g * (tV[2] - tV[3]);
-            V[3] += (dV3 + dV[3]) / (2.0 * sampleRate * multiplier);
-            dV[3] = dV3;
-            tV[3] = dsp::FastMathApproximations::tanh(V[3] / (2.0 * VT));
-            
-            samples[i] = V[3];
-            
+			samples[i] = doFilter(samples[i]);
         }
     }
+
+	template <typename FloatType>
+	FloatType doFilter(FloatType sample)
+	{
+		if (sampleRate <= 0.0)
+			return sample;
+
+		FloatType dV0, dV1, dV2, dV3;
+
+		dV0 = -g * (fast_tanh((drive * sample + resonance.get() * V[3]) / (2.0 * VT)) + tV[0]);
+		V[0] += (dV0 + dV[0]) / (2.0 * sampleRate * multiplier);
+		dV[0] = dV0;
+		tV[0] = dsp::FastMathApproximations::tanh(V[0] / (2.0 * VT));
+
+		dV1 = g * (tV[0] - tV[1]);
+		V[1] += (dV1 + dV[1]) / (2.0 * sampleRate * multiplier);
+		dV[1] = dV1;
+		tV[1] = dsp::FastMathApproximations::tanh(V[1] / (2.0 * VT));
+
+		dV2 = g * (tV[1] - tV[2]);
+		V[2] += (dV2 + dV[2]) / (2.0 * sampleRate* multiplier);
+		dV[2] = dV2;
+		tV[2] = dsp::FastMathApproximations::tanh(V[2] / (2.0 * VT));
+
+		dV3 = g * (tV[2] - tV[3]);
+		V[3] += (dV3 + dV[3]) / (2.0 * sampleRate * multiplier);
+		dV[3] = dV3;
+		tV[3] = dsp::FastMathApproximations::tanh(V[3] / (2.0 * VT));
+
+		return V[3];
+	}
     
     double V[4];
     double dV[4];

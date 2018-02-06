@@ -101,49 +101,54 @@ public:
 	template <typename FloatType>
 	FloatType doFilter(FloatType sample )
     {
-               
+		
+
+		if (sampleRate <= 0.0)
+			return sample;
+
 		FloatType y = 0.0;
-        
-        if (type == LPF2)
-        {
+		
+		if (type == LPF2)
+		{
 			FloatType y1 = va_LPF1.doFilter(sample);
-            
-			FloatType S35 =    va_HPF1.getFeedbackOutput() +
-                            va_LPF2.getFeedbackOutput();
-            
-			FloatType u = Alpha0 *  y1 + S35 ;
-            
-            u = fast_tanh(drive * u);
-            
-            y = resonance.get() * va_LPF2.doFilter(u);
-            
-            va_HPF1.doFilter(y);
-        }
-        else
-        {
-			FloatType y1 = va_HPF1.doFilter(sample);
-            
-			FloatType S35 =    va_HPF2.getFeedbackOutput() +
-                            va_LPF1.getFeedbackOutput();
-            
+
+			FloatType S35 = va_HPF1.getFeedbackOutput() +
+				va_LPF2.getFeedbackOutput();
+
 			FloatType u = Alpha0 * y1 + S35;
-            
-            y = resonance.get() * u;
-            
-            y = fast_tanh(drive * y);
-            
-            va_LPF1.doFilter(va_HPF2.doFilter(y));
-        }
-        
-        if (resonance.get() > 0)
-            y *= 1 / resonance.get();
-        
-        return y;
-        
+
+			u = fast_tanh(drive * u);
+
+			y = resonance.get() * va_LPF2.doFilter(u);
+
+			va_HPF1.doFilter(y);
+		}
+		else
+		{
+			FloatType y1 = va_HPF1.doFilter(sample);
+
+			FloatType S35 = va_HPF2.getFeedbackOutput() +
+				va_LPF1.getFeedbackOutput();
+
+			FloatType u = Alpha0 * y1 + S35;
+
+			y = resonance.get() * u;
+
+			y = fast_tanh(drive * y);
+
+			va_LPF1.doFilter(va_HPF2.doFilter(y));
+		}
+
+		if (resonance.get() > 0)
+			y *= 1 / resonance.get();
+				
+		return y;
     }
     
     virtual void SetSampleRate (double sr) override
     {
+		jassert(!isnan(sr));
+
         sampleRate = sr;
 
 		va_LPF1.SetSampleRate(sr);
@@ -154,24 +159,20 @@ public:
     
     virtual void SetResonance(double r) override
     {
-		double newRes = r;
+		if (isnan(r))
+			r = 0.0;
 
-		if (isnan(newRes))
-			newRes = 0.0;
+		jassert(r >= 0 && r <= 1.0);
 
-		jassert(newRes >= 0 && newRes <= 1.0);
-
-        resonance.set( (2.0 - 0.01) * (newRes - 0.0) / (1.0 - 0.0) + 0.01 ); // remap
+        resonance.set( (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01 ); // remap
     }
     
     virtual void SetCutoff(double c) override
     {
-		double newCutoff = c;
+		if (isnan(c))
+			c = 1000.0;
 
-		if (isnan(newCutoff))
-			newCutoff = 1000.0;
-
-		jassert(newCutoff > 0 && newCutoff <= (sampleRate * 0.5));
+		jassert(c > 0 && c <= (sampleRate * 0.5));
         
         cutoff.set(c);
         Update();

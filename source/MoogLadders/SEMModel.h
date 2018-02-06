@@ -80,7 +80,9 @@ class SEMModel : public LadderFilterBase
 		template <typename FloatType>
 		FloatType doFilter(FloatType sample)
 		{
-            
+			if (sampleRate <= 0.0)
+				return sample;
+
 			// form the HPF output first
 			FloatType hpf = Alpha0 * (sample - Rho * Z11 - Z12);
 
@@ -132,11 +134,16 @@ class SEMModel : public LadderFilterBase
         
 		virtual void SetSampleRate (double sr) override
 		{
+			jassert(!isnan(sr));
+
 			sampleRate = sr;                
 		}
 	
 		virtual void SetResonance(double r) override
 		{
+			if (isnan(r))
+				r = 0.0;
+
 			//remap: 0 -> 1 --- 0.5 -> 25
 			resonance.set( (25.0 - 0.5) * (r - 0.0) / (1.0 - 0.0) + 0.5 );
 			
@@ -144,6 +151,9 @@ class SEMModel : public LadderFilterBase
     
 		virtual void SetCutoff(double c) override
 		{
+			if (isnan(c))
+				c = 1000.0;
+
 			cutoff.set(c);
             Update();
 

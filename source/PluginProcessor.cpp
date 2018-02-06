@@ -212,9 +212,9 @@ ampEnvelope(nullptr)
     
     for(int channel = 0; channel < 2; channel++)
     {
-        filterA[channel] = new ImprovedMoog();
-        filterB[channel] = new ThreeFiveModel();
-        filterC[channel] = new DiodeLadderModel();
+        filterA[channel] = std::unique_ptr<LadderFilterBase>( new ImprovedMoog );
+        filterB[channel] = std::unique_ptr<LadderFilterBase>( new ThreeFiveModel );
+        filterC[channel] = std::unique_ptr<LadderFilterBase>( new DiodeLadderModel );
     }
     
     
@@ -660,7 +660,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, ScopedPointer<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& oversamp)
+void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& oversamp)
 {
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);

@@ -22,7 +22,6 @@ class DiodeLadderModel : public LadderFilterBase
     {
         resonance.set(0.0);
 		SetCutoff(1000.0);
-		SetResonance(0.0);
         
         Gamma = 0.0;
         
@@ -112,6 +111,8 @@ class DiodeLadderModel : public LadderFilterBase
 	template <typename FloatType>
     FloatType doFilter( FloatType sample )
     {
+		if (sampleRate <= 0.0)
+			return sample;
 	
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
@@ -148,6 +149,8 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual void SetSampleRate (double sr) override
     {
+		jassert(!isnan(sr));
+
         sampleRate = sr;
 
 		va_LPF1.SetSampleRate(sr);
@@ -158,26 +161,22 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual void SetResonance(double r) override
     {
-		double newRes = r;
+		if (isnan(r))
+			r = 0.0;
 
-		if (isnan(newRes))
-			newRes = 0.0;
+		jassert(r >= 0 && r <= 1.0);
 
-		jassert(newRes >= 0 && newRes <= 1.0);
-
-        resonance.set( 17.0 * newRes); // remap
+        resonance.set( 17.0 * r); // remap
     }
     
     virtual void SetCutoff(double c) override
     {
-		double newCutoff = c;
+		if (isnan(c))
+			c = 1000.0;
 
-		if (isnan(newCutoff))
-			newCutoff = 1000.0;
-
-        jassert (newCutoff > 0 && newCutoff <= (sampleRate * 0.5));
+        jassert (c > 0 && c <= (sampleRate * 0.5));
         
-        cutoff.set(newCutoff);
+        cutoff.set(c);
         Update();
     }
     
