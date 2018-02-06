@@ -444,6 +444,8 @@ void MonosynthPluginAudioProcessor::reset()
 		filterC[channel]->Reset();
 	}
     
+    std::cout << "RESET" << std::endl;
+    
 }
 
 
@@ -487,6 +489,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     keyboardState.processNextMidiBuffer (midiMessages, 0, numSamples, true);
     
 
+    // OVERSAMPLING
     dsp::AudioBlock<FloatType> block (buffer);
     dsp::AudioBlock<FloatType> osBlock;
     
@@ -560,6 +563,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     applyGain (osBuffer); // apply our gain-change to the outgoing data..
 
 
+    //DOWNSAMPLING
 	oversampling->processSamplesDown(block);
 	osBlock.clear();
 
@@ -758,10 +762,10 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
 
 double MonosynthPluginAudioProcessor::wave_shape(double sample, double overdrive)
 {
-	/*
-	double s = sample * overdrive;
-	return (s - (0.15 * s * s) - (0.15 * s * s * s)) / overdrive;
-	*/
+	
+	//double s = sample * overdrive;
+	//return (s - (0.15 * s * s) - (0.15 * s * s * s)) / overdrive;
+	
 	
 	return dsp::FastMathApproximations::tanh(overdrive * sample);
 
@@ -1030,6 +1034,10 @@ double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::CurrentPos
 }
 
 
+bool MonosynthPluginAudioProcessor::saturationOn()
+{
+    return *waveshapeSwitchParam == 1;
+}
 
 bool MonosynthPluginAudioProcessor::noteIsBeingPlayed()
 {

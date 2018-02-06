@@ -681,16 +681,11 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     // Filter Order; switch from VCA->filter to filter->VCA
     addAndMakeVisible(filterOrderSlider = new ParameterSlider(*owner.filterOrderParam));  //
-    filterOrderSlider->setSliderStyle(Slider::LinearVertical);
+    filterOrderSlider->setSliderStyle(Slider::LinearHorizontal);
     filterOrderSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
     
     // PWM
-    addAndMakeVisible(pulsewidthSlider = new ParameterSlider(*owner.waveshapeSwitchParam));  //TODO: rename slider etc.
-    pulsewidthSlider->setSliderStyle(Slider::LinearVertical);
-    pulsewidthSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
-    
-    
     addAndMakeVisible(pulsewidthAmount1Slider = new ParameterSlider(*owner.pulsewidthAmount1Param));  //
     pulsewidthAmount1Slider->setSliderStyle(Slider::LinearHorizontal);
     pulsewidthAmount1Slider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
@@ -708,6 +703,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	saturationSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
 	saturationSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 
+    addAndMakeVisible(saturationSwitchSlider = new ParameterSlider(*owner.waveshapeSwitchParam));  //TODO: rename slider etc.
+    saturationSwitchSlider->setSliderStyle(Slider::LinearVertical);
+    saturationSwitchSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
 	
 	
@@ -873,7 +871,7 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
     
     filterOrderSlider = nullptr;
     
-    pulsewidthSlider = nullptr;
+    saturationSwitchSlider = nullptr;
     pulsewidthAmount1Slider = nullptr;
     pulsewidthAmount2Slider = nullptr;
     pulsewidthAmount3Slider = nullptr;
@@ -1308,10 +1306,11 @@ void MonosynthPluginAudioProcessorEditor::resized()
 
    
     filterOrderSlider->setBounds(getWidth() - 24-  64, 240, 64,64);
-    pulsewidthSlider->setBounds(getWidth() - 24-  64, 340, 64,64);
+    
   
 
 	saturationSlider->setBounds(getWidth() - 24 - 64, 178, 64, 65);
+    saturationSwitchSlider->setBounds(getWidth() - 24, 190, 12,40);
     
    
 
@@ -1408,6 +1407,16 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 	}
 		*/
 	
+    if (getProcessor().saturationOn())
+    {
+        saturationSlider->setAlpha(1.0);
+        saturationSlider->setEnabled(true);
+    }
+    else
+    {
+        saturationSlider->setAlpha(0.6);
+        saturationSlider->setEnabled(false);
+    }
 }
 
 

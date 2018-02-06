@@ -187,7 +187,7 @@ private:
     
         filterOrderSlider,
     
-        pulsewidthSlider,
+        saturationSwitchSlider,
     
         pulsewidthAmount1Slider,
         pulsewidthAmount2Slider,

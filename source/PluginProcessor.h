@@ -137,6 +137,8 @@ public:
     void setPWAmount(double amt, int osc);
 
 	bool noteIsBeingPlayed();
+    
+    bool saturationOn();
 
 	bool lfoSynced();
 	
