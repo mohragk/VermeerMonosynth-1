@@ -1311,7 +1311,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     pulsewidthSlider->setBounds(getWidth() - 24-  64, 340, 64,64);
   
 
-	saturationSlider->setBounds(getWidth() - 24 - 64, 404, 64, 65);
+	saturationSlider->setBounds(getWidth() - 24 - 64, 178, 64, 65);
     
    
 

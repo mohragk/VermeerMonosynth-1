@@ -219,8 +219,8 @@ ampEnvelope(nullptr)
     
     
     // Oversampling 2 times with IIR filtering
-    oversamplingFloat = new dsp::Oversampling<float> (3, 1, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true);
-    oversamplingDouble = new dsp::Oversampling<double> (3, 1, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true);
+    oversamplingFloat = new dsp::Oversampling<float> (4, 1, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true);
+    oversamplingDouble = new dsp::Oversampling<double> (4, 1, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true);
     
 }
 
