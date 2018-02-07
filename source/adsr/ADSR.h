@@ -32,18 +32,18 @@ public:
         env_release
     };
 
-    float process(void);
-    void processSample(float* samples, int numSamples);
-    float getOutput(void);
+    double process(void);
+    void processSample(double* samples, int numSamples);
+    double getOutput(void);
     int getState(void);
     void gate(int on);
-    void setSampleRate(float sr);
-    void setAttackRate(float rate);
-    void setDecayRate(float rate);
-    void setReleaseRate(float rate);
-    void setSustainLevel(float level);
-    void setTargetRatioA(float targetRatio);
-    void setTargetRatioDR(float targetRatio);
+    void setSampleRate(double sr);
+    void setAttackRate(double rate);
+    void setDecayRate(double rate);
+    void setReleaseRate(double rate);
+    void setSustainLevel(double level);
+    void setTargetRatioA(double targetRatio);
+    void setTargetRatioDR(double targetRatio);
     void setState(envState newState);
     void reset(void);
     void resetToAttack(void);
@@ -51,25 +51,25 @@ public:
     
 protected:
     int state;
-    float sampleRate;
-    float output;
-    float attackRate;
-    float decayRate;
-    float releaseRate;
-    float attackCoef;
-    float decayCoef;
-    float releaseCoef;
-    float sustainLevel;
-    float targetRatioA;
-    float targetRatioDR;
-    float attackBase;
-    float decayBase;
-    float releaseBase;
+    double sampleRate;
+    double output;
+    double attackRate;
+    double decayRate;
+    double releaseRate;
+    double attackCoef;
+    double decayCoef;
+    double releaseCoef;
+    double sustainLevel;
+    double targetRatioA;
+    double targetRatioDR;
+    double attackBase;
+    double decayBase;
+    double releaseBase;
  
-    float calcCoef(float rate, float targetRatio);
+    double calcCoef(double rate, double targetRatio);
 };
 
-inline float ADSR::process() {
+inline double ADSR::process() {
     switch (state) {
         case env_idle:
             break;
@@ -99,7 +99,7 @@ inline float ADSR::process() {
     return output;
 }
 
-inline void ADSR::processSample(float *sample, int numSamples)
+inline void ADSR::processSample(double *sample, int numSamples)
 {
     for(int i = 0; i < numSamples; i++)
     {
@@ -160,7 +160,7 @@ inline void ADSR::resetToAttack() {
     state = env_attack;
 }
 
-inline float ADSR::getOutput() {
+inline double ADSR::getOutput() {
     return output;
 }
 
