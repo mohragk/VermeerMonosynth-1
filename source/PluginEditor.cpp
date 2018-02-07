@@ -85,7 +85,123 @@ public:
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
     : AudioProcessorEditor (owner),
         midiKeyboard (owner.keyboardState, MidiKeyboardComponent::horizontalKeyboard),
-        timecodeDisplayLabel (String())
+        timecodeDisplayLabel (String()),
+	mainLabel(nullptr),
+	titleLabel(nullptr),
+	osc1GainLabel(nullptr),
+	osc1WaveformLabel(nullptr),
+	osc1OffsetLabel(nullptr),
+	oscillatorsLabel(nullptr),
+	osc1TuneLabel(nullptr),
+	osc2GainLabel(nullptr),
+	osc2WaveformLabel(nullptr),
+	osc2OffsetLabel(nullptr),
+	osc2TuneLabel(nullptr),
+	osc3GainLabel(nullptr),
+	osc3WaveformLabel(nullptr),
+	osc3OffsetLabel(nullptr),
+	osc3TuneLabel(nullptr),
+
+	oscSyncLabel(nullptr),
+	oscSyncONLabel(nullptr),
+	oscSyncOFFLabel(nullptr),
+	filterLabel(nullptr),
+	filterCutoffLabel(nullptr),
+	filterResonanceLabel(nullptr),
+	filterContourLabel(nullptr),
+	filterDriveLabel(nullptr),
+
+	filterMoogLabel(nullptr),
+	filterMS20Label(nullptr),
+	filter303Label(nullptr),
+
+	envelopesLabel(nullptr),
+	envAmpLabel(nullptr),
+	envFilterLabel(nullptr),
+	envPitchLabel(nullptr),
+	volumeLabel(nullptr),
+	pitchModLabel(nullptr),
+
+	lfoLabel(nullptr),
+
+	lfoRateLabel(nullptr),
+	lfoModeLabel(nullptr),
+	lfoIntensityLabel(nullptr),
+	modTargetLabel(nullptr),
+	modTargetCutoffLabel(nullptr),
+	modTargetPitchLabel(nullptr),
+	modTargetOffLabel(nullptr),
+
+	saturationLabel(nullptr),
+
+
+	volumeSlider(nullptr),
+	osc1GainSlider(nullptr),
+	osc1OffsetSlider(nullptr),
+	osc1TuneSlider(nullptr),
+	osc1WaveformSlider(nullptr),
+
+	osc2GainSlider(nullptr),
+	osc2OffsetSlider(nullptr),
+	osc2TuneSlider(nullptr),
+	osc2WaveformSlider(nullptr),
+
+	osc3GainSlider(nullptr),
+	osc3OffsetSlider(nullptr),
+	osc3TuneSlider(nullptr),
+	osc3WaveformSlider(nullptr),
+
+	pitchModSlider(nullptr),
+
+	filterCutoffSlider(nullptr),
+	filterResonanceSlider(nullptr),
+	filterContourSlider(nullptr),
+	filterDriveSlider(nullptr),
+
+	attackSlider1(nullptr),
+	decaySlider1(nullptr),
+	sustainSlider1(nullptr),
+	releaseSlider1(nullptr),
+	attackCurveSlider1(nullptr),
+	decRelCurveSlider1(nullptr),
+
+
+	attackSlider2(nullptr),
+	decaySlider2(nullptr),
+	sustainSlider2(nullptr),
+	releaseSlider2(nullptr),
+	attackCurveSlider2(nullptr),
+	decRelCurveSlider2(nullptr),
+
+	attackSlider3(nullptr),
+	decaySlider3(nullptr),
+	sustainSlider3(nullptr),
+	releaseSlider3(nullptr),
+	attackCurveSlider3(nullptr),
+	decRelCurveSlider3(nullptr),
+
+	modTargetSlider(nullptr),
+
+	lfoRateSlider(nullptr),
+	lfoModeSlider(nullptr),
+	lfoIntensitySlider(nullptr),
+	lfoSyncSlider(nullptr),
+
+	filterSelectSlider(nullptr),
+
+	lfoSyncedFreqSlider(nullptr),
+
+	oscSyncSlider(nullptr),
+
+	filterOrderSlider(nullptr),
+
+	saturationSwitchSlider(nullptr),
+
+	pulsewidthAmount1Slider(nullptr),
+	pulsewidthAmount2Slider(nullptr),
+	pulsewidthAmount3Slider(nullptr),
+
+	saturationSlider(nullptr)
       
 {
     // add all the sliders..
@@ -729,38 +845,38 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     // Drawables for symbols/icons
     //
                        
-    drawable1 = std::unique_ptr<Drawable> ( Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
-    drawable2 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
-    drawable3 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
-    drawable4 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
-    drawable5 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
-    drawable6 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
-    drawable7 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
-    drawable8 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
-    drawable9 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
+    drawable1 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
+    drawable2 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
+    drawable3 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    drawable4 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
+    drawable5 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
+    drawable6 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    drawable7 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
+    drawable8 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
+    drawable9 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
 
 	// SIGH.. swapped the graphics out
-    drawable11 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
-    drawable10 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
+    drawable11 = Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize);
+    drawable10 = Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize);
     
-	drawable13 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
-    drawable12 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
+	drawable13 = Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize);
+    drawable12 = Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize);
     
-	drawable15 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
-    drawable14 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
+	drawable15 = Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize);
+    drawable14 = Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize);
     
-	drawable17 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
-    drawable16 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
+	drawable17 = Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize);
+    drawable16 = Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize);
  
-	drawable19 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
-    drawable18 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
+	drawable19 = Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize);
+    drawable18 = Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize);
  
-	drawable21 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
-    drawable20 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
+	drawable21 = Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize);
+    drawable20 = Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize);
     
-    drawable22 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
-    drawable23 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
-    drawable24 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
+    drawable22 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
+    drawable23 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
+    drawable24 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
     
 
     // set resize limits for this plug-in

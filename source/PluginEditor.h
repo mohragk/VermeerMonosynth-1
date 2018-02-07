@@ -198,30 +198,30 @@ private:
 		saturationSlider
         ;
 
-    std::unique_ptr<Drawable> drawable1;
-    std::unique_ptr<Drawable> drawable2;
-    std::unique_ptr<Drawable> drawable3;
-    std::unique_ptr<Drawable> drawable4;
-    std::unique_ptr<Drawable> drawable5;
-    std::unique_ptr<Drawable> drawable6;
-    std::unique_ptr<Drawable> drawable7;
-    std::unique_ptr<Drawable> drawable8;
-    std::unique_ptr<Drawable> drawable9;
-    std::unique_ptr<Drawable> drawable10;
-    std::unique_ptr<Drawable> drawable11;
-    std::unique_ptr<Drawable> drawable12;
-    std::unique_ptr<Drawable> drawable13;
-    std::unique_ptr<Drawable> drawable14;
-    std::unique_ptr<Drawable> drawable15;
-    std::unique_ptr<Drawable> drawable16;
-    std::unique_ptr<Drawable> drawable17;
-    std::unique_ptr<Drawable> drawable18;
-    std::unique_ptr<Drawable> drawable19;
-    std::unique_ptr<Drawable> drawable20;
-    std::unique_ptr<Drawable> drawable21;
-    std::unique_ptr<Drawable> drawable22;
-    std::unique_ptr<Drawable> drawable23;
-    std::unique_ptr<Drawable> drawable24;
+    ScopedPointer<Drawable> drawable1;
+    ScopedPointer<Drawable> drawable2;
+    ScopedPointer<Drawable> drawable3;
+    ScopedPointer<Drawable> drawable4;
+    ScopedPointer<Drawable> drawable5;
+    ScopedPointer<Drawable> drawable6;
+    ScopedPointer<Drawable> drawable7;
+    ScopedPointer<Drawable> drawable8;
+    ScopedPointer<Drawable> drawable9;
+    ScopedPointer<Drawable> drawable10;
+    ScopedPointer<Drawable> drawable11;
+    ScopedPointer<Drawable> drawable12;
+    ScopedPointer<Drawable> drawable13;
+    ScopedPointer<Drawable> drawable14;
+    ScopedPointer<Drawable> drawable15;
+    ScopedPointer<Drawable> drawable16;
+    ScopedPointer<Drawable> drawable17;
+    ScopedPointer<Drawable> drawable18;
+    ScopedPointer<Drawable> drawable19;
+    ScopedPointer<Drawable> drawable20;
+    ScopedPointer<Drawable> drawable21;
+    ScopedPointer<Drawable> drawable22;
+    ScopedPointer<Drawable> drawable23;
+    ScopedPointer<Drawable> drawable24;
     
     
     String font;
