@@ -219,8 +219,8 @@ ampEnvelope(nullptr)
     
     
     // Oversampling 2 times with IIR filtering
-    oversamplingFloat = new dsp::Oversampling<float> (4, 1, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true);
-    oversamplingDouble = new dsp::Oversampling<double> (4, 1, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true);
+    oversamplingFloat = new dsp::Oversampling<float> (2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true);
+    oversamplingDouble = new dsp::Oversampling<double> (2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true);
     
 }
 
@@ -341,6 +341,9 @@ AudioProcessor::BusesProperties MonosynthPluginAudioProcessor::getBusesPropertie
 //==============================================================================
 void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int samplesPerBlock)
 {
+	oversamplingFloat->initProcessing(samplesPerBlock);
+	oversamplingDouble->initProcessing(samplesPerBlock);
+
     sampleRate = newSampleRate * oversamplingDouble->getOversamplingFactor();
 
  
@@ -389,8 +392,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     filterEnvelope->setSampleRate(sampleRate);
     ampEnvelope->setSampleRate(sampleRate);
     
-    oversamplingFloat->initProcessing(samplesPerBlock);
-    oversamplingDouble->initProcessing(samplesPerBlock);
+   
 
     
 }
@@ -565,7 +567,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
     //DOWNSAMPLING
 	oversampling->processSamplesDown(block);
-	osBlock.clear();
+	//osBlock.clear();
 
 
 	    
@@ -602,6 +604,7 @@ void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer)
 {
+	//filterEnvelope->setSampleRate(sampleRate);
     filterEnvelope->setAttackRate(*attackParam3);
     filterEnvelope->setDecayRate(*decayParam3);
     filterEnvelope->setReleaseRate(*releaseParam3);
@@ -688,6 +691,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         
         for (int channel = 0; channel < 2; channel++)
         {
+			//filter[channel]->SetSampleRate(sampleRate * oversamp->getOversamplingFactor());
             filter[channel]->SetResonance(Q);
 			filter[channel]->SetCutoff(combinedCutoff);
             filter[channel]->SetDrive(drive.getNextValue());
@@ -734,7 +738,7 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
     
     
     
-    ampEnvelope->setSampleRate(getSampleRate());
+   // ampEnvelope->setSampleRate(sampleRate);
     ampEnvelope->setAttackRate(*attackParam1);
     ampEnvelope->setAttackRate(*attackParam1);
     ampEnvelope->setDecayRate(*decayParam1);

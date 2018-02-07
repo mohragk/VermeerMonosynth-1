@@ -777,6 +777,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
 MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
 {
+	/*
     osc1GainSlider = nullptr;
     osc1GainLabel = nullptr;
     osc1OffsetSlider = nullptr;
@@ -884,6 +885,7 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
     pulsewidthAmount3Slider = nullptr;
 
 	saturationSlider = nullptr;
+	saturationLabel = nullptr;
     
     drawable1 = nullptr;
     drawable2 = nullptr;
@@ -906,7 +908,7 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
     drawable19 = nullptr;
     drawable20 = nullptr;
     drawable21 = nullptr;
-	
+	*/
 }
 
 //==============================================================================

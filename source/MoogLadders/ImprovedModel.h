@@ -92,7 +92,7 @@ public:
 		jassert(!isnan(sr));
 
         sampleRate = sr;
-        multiplier =  jmin(1.0, 96000.0 / sr);
+		multiplier = 1.0;// jmin(1.0, 96000.0 / sr);
     }
     
     virtual void SetResonance(double r) override
@@ -109,7 +109,7 @@ public:
     {
 		if (isnan(c))
 			c = 1000.0;
-		
+  		
 		jassert(c > 0 && c <= (sampleRate * 0.5));
 
         cutoff.set(c);
