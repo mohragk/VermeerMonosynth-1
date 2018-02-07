@@ -225,7 +225,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     // MAIN
     //
 	
-	;
+	
     addAndMakeVisible (mainLabel = new Label("Main Label", TRANS("Main")));
     mainLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     mainLabel->setJustificationType (Justification::centredTop);
