@@ -44,7 +44,8 @@ public:
 
 		if (type == ROTARY) { setSliderStyle(Slider::RotaryVerticalDrag); }
 		else if (type == LINEARHORIZONTAL) {setSliderStyle(Slider::LinearHorizontal);}
-		else { setSliderStyle(Slider::LinearHorizontal); }
+		else { setSliderStyle(Slider::LinearVertical); }
+
 		setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     }
 
