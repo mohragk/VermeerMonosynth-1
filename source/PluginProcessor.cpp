@@ -347,8 +347,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     sampleRate = newSampleRate * oversamplingDouble->getOversamplingFactor();
 
  
-	if ( isUsingDoublePrecision() )	{ setLatencySamples(oversamplingDouble->getLatencyInSamples()); }
-	else							{ setLatencySamples(oversamplingFloat->getLatencyInSamples()); }
+	if ( isUsingDoublePrecision() )	{ setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
+	else							{ setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
  
 
     
