@@ -169,13 +169,13 @@ ampEnvelope(nullptr)
     addParameter(decayRelCurve2Param = new AudioParameterFloat("decRelCurve2", "Decay-Release Curve",	NormalisableRange<float>(0.00001f, 1.0f, 0.0f, 0.5f, false), 0.00001f));
     
     //ENV 3
-    addParameter (attackParam3 = new AudioParameterFloat ("attack3", "Filter Attack",    NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.0));
-    addParameter (decayParam3  = new AudioParameterFloat ("decay3", "Filter Decay",      NormalisableRange<float>(0.0, 11.0, 0.0, 0.5, false), 0.0));
-    addParameter (sustainParam3  = new AudioParameterFloat ("sustain3", "Filter Sustain",NormalisableRange<float>(0.0, 1.0,  0.0, 0.5, false), 0.0));
-    addParameter (releaseParam3  = new AudioParameterFloat ("release3", "Filter Release",NormalisableRange<float>(0.01, 11.0, 0.0, 0.5, false), 0.01));
+    addParameter (attackParam3 = new AudioParameterFloat ("attack3", "Filter Attack",    NormalisableRange<float>(0.0f, 11.0f, 0.0f, 0.5f, false), 0.0f));
+    addParameter (decayParam3  = new AudioParameterFloat ("decay3", "Filter Decay",      NormalisableRange<float>(0.0f, 11.0f, 0.0f, 0.5f, false), 0.0f));
+    addParameter (sustainParam3  = new AudioParameterFloat ("sustain3", "Filter Sustain",NormalisableRange<float>(0.0f, 1.0f,  0.0f, 0.5f, false), 0.0f));
+    addParameter (releaseParam3  = new AudioParameterFloat ("release3", "Filter Release",NormalisableRange<float>(0.01f, 11.0f, 0.0f, 0.5f, false), 0.01f));
     
-    addParameter(attackCurve3Param = new AudioParameterFloat("attackCurve3", "Attack Curve", NormalisableRange<float>(0.001, 1.0, 0.0, 0.5, false), 0.001));
-    addParameter(decayRelCurve3Param = new AudioParameterFloat("decRelCurve3", "Decay-Release Curve", NormalisableRange<float>(0.00001, 1.0, 0.0, 0.5, false), 0.00001));
+    addParameter(attackCurve3Param = new AudioParameterFloat("attackCurve3", "Attack Curve", NormalisableRange<float>(0.001f, 1.0f, 0.0f, 0.5f, false), 0.001f));
+    addParameter(decayRelCurve3Param = new AudioParameterFloat("decRelCurve3", "Decay-Release Curve", NormalisableRange<float>(0.00001f, 1.0f, 0.0f, 0.5f, false), 0.00001f));
     
     
     // Modulation
@@ -183,9 +183,9 @@ ampEnvelope(nullptr)
     
     
     // LFO
-    addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01, 30.0, 0.0, 0.5, false), 0.05));
+    addParameter(lfoRateParam = new AudioParameterFloat("lfoRate", "LFO Rate", NormalisableRange<float>(0.01f, 30.0f, 0.0f, 0.5f, false), 0.05f));
     addParameter(lfoModeParam = new AudioParameterInt ("lfoMode", "LFO Mode", 0, 2, 0));
-    addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0, 1.0, 0.0, 1.0, false), 0.0));
+    addParameter(lfoIntensityParam = new AudioParameterFloat("lfoIntensity", "LFO Strength", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
     addParameter(lfoSyncParam = new AudioParameterInt("lfoSync", "LFO Tempo Sync", 0, 1, 0));
     addParameter(lfoDivisionParam = new AudioParameterInt("lfoDivision", "LFO Synced Rate", 1, 6, 2));
     
@@ -1020,9 +1020,9 @@ float MonosynthPluginAudioProcessor::softClip(float s)
     return localSample;
 }
 
-void MonosynthPluginAudioProcessor::sendLFO( LFO& lfo )
+void MonosynthPluginAudioProcessor::sendLFO( LFO& thislfo )
 {
-    return static_cast<MonosynthVoice*>(synth.getVoice(0))->sendLFO(lfo);
+    return static_cast<MonosynthVoice*>(synth.getVoice(0))->sendLFO(thislfo);
 }
 
 

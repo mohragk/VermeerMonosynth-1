@@ -133,7 +133,7 @@ public:
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
 	void setEnvelopeState( ADSR& envelope);
     void setHardSync(int sync);
-    void sendLFO( LFO& lfo);
+    void sendLFO( LFO& thislfo);
     void setPWAmount(double amt, int osc);
 
 	bool noteIsBeingPlayed();

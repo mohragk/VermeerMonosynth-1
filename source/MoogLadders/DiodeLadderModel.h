@@ -119,12 +119,12 @@ class DiodeLadderModel : public LadderFilterBase
         va_LPF2.setFeedback( va_LPF3.getFeedbackOutput() );
         va_LPF1.setFeedback( va_LPF2.getFeedbackOutput() );
         
-        double Sigma =  SG1 * va_LPF1.getFeedbackOutput() +
-                        SG2 * va_LPF2.getFeedbackOutput() +
-                        SG3 * va_LPF3.getFeedbackOutput() +
-                        SG4 * va_LPF4.getFeedbackOutput();
+		FloatType Sigma =	SG1 * va_LPF1.getFeedbackOutput() +
+							SG2 * va_LPF2.getFeedbackOutput() +
+							SG3 * va_LPF3.getFeedbackOutput() +
+							SG4 * va_LPF4.getFeedbackOutput();
         
-        double U = ( sample - resonance.get() * Sigma ) / ( 1 + resonance.get() * Gamma );
+		FloatType U = ( sample - resonance.get() * Sigma ) / ( 1 + resonance.get() * Gamma );
         
         U = fast_tanh(drive * U);
         

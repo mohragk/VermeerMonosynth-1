@@ -123,7 +123,7 @@ public:
     
 private:
     
-    double naiveWaveFormForMode(const OscillatorMode mode, double phs)
+    double naiveWaveFormForMode(const OscillatorMode m, double phs)
     {
         const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;
@@ -132,7 +132,7 @@ private:
             phs -= two_Pi;
         
         
-        switch (mode)
+        switch (m)
         {
             case OSCILLATOR_MODE_SINE:
                 value = sin(phs);
@@ -163,9 +163,9 @@ private:
     }
     
     
-    double poly_blep (double t, const double phaseIncrement)
+    double poly_blep (double t, const double phaseInc)
     {
-        const double dt = phaseIncrement / (2.0 * double_Pi); // normalize phase increment
+        const double dt = phaseInc / (2.0 * double_Pi); // normalize phase increment
         
         if (t < dt)
         {

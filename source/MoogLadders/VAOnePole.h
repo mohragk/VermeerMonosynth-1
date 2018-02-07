@@ -71,15 +71,15 @@ class VAOnePole : public LadderFilterBase
             
             sample = sample * Gamma + Feedback + Epsilon * getFeedbackOutput();
             
-            double vn = ( a0 * sample - Z1 ) * Alpha;
+			FloatType vn = ( a0 * sample - Z1 ) * Alpha;
             
             //LPF
-            double lpf = vn + Z1;
+			FloatType lpf = vn + Z1;
             
             //Update memory
             Z1 = vn + lpf;
             
-            double hpf = sample - lpf;
+			FloatType hpf = sample - lpf;
             
             if (type == LPF1)
                 return lpf;
