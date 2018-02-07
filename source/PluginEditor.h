@@ -122,7 +122,9 @@ private:
         modTargetLabel,
         modTargetCutoffLabel,
         modTargetPitchLabel,
-        modTargetOffLabel
+        modTargetOffLabel,
+    
+    saturationLabel
 
             ;
     

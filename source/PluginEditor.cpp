@@ -707,6 +707,13 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     saturationSwitchSlider->setSliderStyle(Slider::LinearVertical);
     saturationSwitchSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
+    addAndMakeVisible (saturationLabel = new Label ("saturationLabel",
+                                                         TRANS("Saturation")));          //
+    saturationLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    saturationLabel->setJustificationType (Justification::centredBottom);
+    saturationLabel->setEditable (false, false, false);
+    saturationLabel->setColour (TextEditor::textColourId, Colours::black);
+    saturationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 	
 	
     addAndMakeVisible(midiKeyboard);
@@ -1309,7 +1316,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
   
 
-	saturationSlider->setBounds(getWidth() - 24 - 64, 178, 64, 65);
+	saturationSlider->setBounds(getWidth() - 24 - 64, 184, 64, 65);
+    saturationLabel->setBounds (getWidth() - 23 - 65, 168, 65, 24);
     saturationSwitchSlider->setBounds(getWidth() - 24, 190, 12,40);
     
    
