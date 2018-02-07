@@ -720,7 +720,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     lfoModeLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	lfoModeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoModeParam, ROTARY));
+	lfoModeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoModeParam, LINEARHORIZONTAL));
 	addAndMakeVisible(lfoModeSlider.get());  //
 	
 
