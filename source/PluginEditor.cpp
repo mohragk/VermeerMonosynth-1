@@ -85,8 +85,8 @@ public:
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
     : AudioProcessorEditor (owner),
         midiKeyboard (owner.keyboardState, MidiKeyboardComponent::horizontalKeyboard),
-        timecodeDisplayLabel (String())
-	/*
+        timecodeDisplayLabel (String()),
+	
 	mainLabel(nullptr),
 	titleLabel(nullptr),
 	osc1GainLabel(nullptr),
@@ -203,7 +203,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	pulsewidthAmount3Slider(nullptr),
 
 	saturationSlider(nullptr)
-	*/
+	
       
 {
     // add all the sliders..
@@ -238,7 +238,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     //
     // main volume
     //
-    addAndMakeVisible (volumeSlider = new ParameterSlider (*owner.gainParam));  //
+	volumeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.gainParam));
+    addAndMakeVisible (volumeSlider.get());  //
     volumeSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     volumeSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -265,7 +266,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     // OSC 1
-    addAndMakeVisible (osc1GainSlider = new ParameterSlider (*owner.osc1GainParam)); //
+	osc1GainSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*owner.osc1GainParam) );
+    addAndMakeVisible (osc1GainSlider.get()); //
     osc1GainSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     osc1GainSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -277,7 +279,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc1GainLabel->setColour (TextEditor::textColourId, Colours::black);
     osc1GainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (osc1WaveformSlider = new ParameterSlider (*owner.osc1ModeParam)); //no label but graphics
+	osc1WaveformSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*owner.osc1ModeParam) );
+    addAndMakeVisible (osc1WaveformSlider.get()); //no label but graphics
     osc1WaveformSlider->setSliderStyle (Slider::LinearHorizontal);
     osc1WaveformSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -289,7 +292,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc1WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
     osc1WaveformLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	addAndMakeVisible(osc1TuneSlider = new ParameterSlider(*owner.osc1DetuneAmountParam)); //
+	osc1TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc1DetuneAmountParam));
+	addAndMakeVisible(osc1TuneSlider.get()); //
 	osc1TuneSlider->setSliderStyle(Slider::RotaryVerticalDrag);
 	osc1TuneSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 	osc1TuneSlider->setDoubleClickReturnValue(true, 0.5);
@@ -302,8 +306,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc1TuneLabel->setColour (TextEditor::textColourId, Colours::black);
     osc1TuneLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    
-    addAndMakeVisible (osc1OffsetSlider = new ParameterSlider (*owner.oscOffsetParam)); //
+	osc1OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oscOffsetParam));
+    addAndMakeVisible (osc1OffsetSlider.get()); //
     osc1OffsetSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     osc1OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     osc1OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
@@ -320,7 +324,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     // OSC 2
-    addAndMakeVisible (osc2GainSlider = new ParameterSlider (*owner.osc2GainParam)); //
+	osc2GainSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2GainParam));
+    addAndMakeVisible (osc2GainSlider.get()); //
     osc2GainSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     osc2GainSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -332,7 +337,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc2GainLabel->setColour (TextEditor::textColourId, Colours::black);
     osc2GainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (osc2WaveformSlider = new ParameterSlider (*owner.osc2ModeParam)); //no label
+	osc2WaveformSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2ModeParam));
+    addAndMakeVisible (osc2WaveformSlider.get()); //no label
     osc2WaveformSlider->setSliderStyle (Slider::LinearHorizontal);
     osc2WaveformSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -344,7 +350,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc2WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
     osc2WaveformLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	addAndMakeVisible(osc2TuneSlider = new ParameterSlider(*owner.osc2DetuneAmountParam)); //
+	osc2TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2DetuneAmountParam));
+	addAndMakeVisible(osc2TuneSlider.get()); //
 	osc2TuneSlider->setSliderStyle(Slider::RotaryVerticalDrag);
 	osc2TuneSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 	osc2TuneSlider->setDoubleClickReturnValue(true, 0.5);
@@ -356,8 +363,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc2TuneLabel->setEditable (false, false, false);
     osc2TuneLabel->setColour (TextEditor::textColourId, Colours::black);
     osc2TuneLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    addAndMakeVisible (osc2OffsetSlider = new ParameterSlider (*owner.osc2OffsetParam)); //
+
+	osc2OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2OffsetParam));
+    addAndMakeVisible (osc2OffsetSlider.get()); //
     osc2OffsetSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     osc2OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     osc2OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
@@ -374,7 +382,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     
     // OSC 3
-    addAndMakeVisible (osc3GainSlider = new ParameterSlider (*owner.osc3GainParam)); //
+	osc3GainSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3GainParam));
+    addAndMakeVisible (osc3GainSlider.get()); //
     osc3GainSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     osc3GainSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -386,7 +395,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc3GainLabel->setColour (TextEditor::textColourId, Colours::black);
     osc3GainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (osc3WaveformSlider = new ParameterSlider (*owner.osc3ModeParam));    //
+	osc3WaveformSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3ModeParam));
+    addAndMakeVisible (osc3WaveformSlider.get());    //
     osc3WaveformSlider->setSliderStyle (Slider::LinearHorizontal);
     osc3WaveformSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -398,7 +408,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc3WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
     osc3WaveformLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible(osc3TuneSlider = new ParameterSlider(*owner.osc3DetuneAmountParam)); //
+	osc3TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3DetuneAmountParam));
+    addAndMakeVisible(osc3TuneSlider.get()); //
     osc3TuneSlider->setSliderStyle(Slider::RotaryVerticalDrag);
     osc3TuneSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     osc3TuneSlider->setDoubleClickReturnValue(true, 0.5);
@@ -411,7 +422,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc3TuneLabel->setColour (TextEditor::textColourId, Colours::black);
     osc3TuneLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (osc3OffsetSlider = new ParameterSlider (*owner.osc3OffsetParam)); //
+	osc3OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3OffsetParam));
+    addAndMakeVisible (osc3OffsetSlider.get()); //
     osc3OffsetSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     osc3OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     osc3OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
@@ -426,7 +438,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     osc3OffsetLabel->setColour (TextEditor::textColourId, Colours::black);
     osc3OffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (oscSyncSlider = new ParameterSlider(*owner.oscSyncParam));
+	oscSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oscSyncParam));
+    addAndMakeVisible (oscSyncSlider.get());
     oscSyncSlider->setSliderStyle (Slider::LinearVertical);
     oscSyncSlider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
     oscSyncSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
@@ -440,8 +453,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     oscSyncLabel->setColour (TextEditor::textColourId, Colours::black);
     oscSyncLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (oscSyncONLabel = new Label ("oscSyncONLabel",
-                                                 TRANS("-on")));                 //
+    addAndMakeVisible (oscSyncONLabel = new Label ("oscSyncONLabel",TRANS("-on")));                 //
     oscSyncONLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     oscSyncONLabel->setJustificationType (Justification::centredBottom);
     oscSyncONLabel->setEditable (false, false, false);
@@ -458,7 +470,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     //Pitch MODULATION SLIDER
-    addAndMakeVisible (pitchModSlider = new ParameterSlider (*owner.pitchModParam));        //
+	pitchModSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pitchModParam));
+    addAndMakeVisible (pitchModSlider.get());        //
     pitchModSlider->setSliderStyle(Slider::RotaryVerticalDrag);
     pitchModSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     pitchModSlider->setDoubleClickReturnValue(true, 0.0);
@@ -485,7 +498,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     filterLabel->setColour (TextEditor::textColourId, Colours::black);
     filterLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (filterCutoffSlider = new ParameterSlider (*owner.filterParam));   //
+	filterCutoffSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterParam));
+    addAndMakeVisible (filterCutoffSlider.get());   //
 	filterCutoffSlider->setSliderStyle (Slider::RotaryVerticalDrag);
 	filterCutoffSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -497,7 +511,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     filterCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
     filterCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (filterResonanceSlider = new ParameterSlider (*owner.filterQParam));   //
+	filterResonanceSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterQParam));
+    addAndMakeVisible (filterResonanceSlider.get());   //
     filterResonanceSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     filterResonanceSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -509,11 +524,13 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     filterResonanceLabel->setColour (TextEditor::textColourId, Colours::black);
     filterResonanceLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (filterContourSlider = new ParameterSlider (*owner.filterContourParam));  //
+	filterContourSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterContourParam));
+    addAndMakeVisible (filterContourSlider.get());  //
     filterContourSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     filterContourSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible(filterSelectSlider = new ParameterSlider(*owner.filterSelectParam));  //todo:
+	filterSelectSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterSelectParam));
+    addAndMakeVisible(filterSelectSlider.get());  //todo:
     filterSelectSlider->setSliderStyle(Slider::LinearVertical);
     filterSelectSlider->setTextBoxStyle(Slider::NoTextBox, true, 0 , 0);
     
@@ -526,7 +543,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     filterContourLabel->setColour (TextEditor::textColourId, Colours::black);
     filterContourLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (filterDriveSlider = new ParameterSlider (*owner.filterDriveParam));  //
+	filterDriveSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterDriveParam));
+    addAndMakeVisible (filterDriveSlider.get());  //
     filterDriveSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     filterDriveSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -587,19 +605,23 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     envAmpLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     // Amplitude Envelope
-    addAndMakeVisible (attackSlider1 = new ParameterSlider (*owner.attackParam1));      //
+	attackSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam1));
+    addAndMakeVisible (attackSlider1.get());      //
     attackSlider1->setSliderStyle(Slider::LinearVertical);
     attackSlider1->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible (decaySlider1 = new ParameterSlider (*owner.decayParam1));        //
+	decaySlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam1));
+    addAndMakeVisible (decaySlider1.get());        //
     decaySlider1->setSliderStyle(Slider::LinearVertical);
     decaySlider1->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible(sustainSlider1 = new ParameterSlider (*owner.sustainParam1));     //
+	sustainSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam1));
+    addAndMakeVisible(sustainSlider1.get());     //
     sustainSlider1->setSliderStyle(Slider::LinearVertical);
     sustainSlider1->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible(releaseSlider1 = new ParameterSlider (*owner.releaseParam1));     //
+	releaseSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.releaseParam1));
+    addAndMakeVisible(releaseSlider1.get());     //
     releaseSlider1->setSliderStyle(Slider::LinearVertical);
     releaseSlider1->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -615,19 +637,23 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     envFilterLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     // Filter Cutoff Envelope
-    addAndMakeVisible (attackSlider2 = new ParameterSlider (*owner.attackParam3));      //
+	attackSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam3));
+    addAndMakeVisible (attackSlider2.get());      //
     attackSlider2->setSliderStyle(Slider::LinearVertical);
     attackSlider2->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible (decaySlider2 = new ParameterSlider (*owner.decayParam3));        //
+	decaySlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam3));
+    addAndMakeVisible (decaySlider2.get());        //
     decaySlider2->setSliderStyle(Slider::LinearVertical);
     decaySlider2->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
-    
-    addAndMakeVisible(sustainSlider2 = new ParameterSlider (*owner.sustainParam3));     //
+
+	sustainSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam3));
+    addAndMakeVisible(sustainSlider2.get());     //
     sustainSlider2->setSliderStyle(Slider::LinearVertical);
     sustainSlider2->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible(releaseSlider2 = new ParameterSlider (*owner.releaseParam3));     //
+	releaseSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.releaseParam3));
+    addAndMakeVisible(releaseSlider2.get());     //
     releaseSlider2->setSliderStyle(Slider::LinearVertical);
     releaseSlider2->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -642,55 +668,59 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     // Pitch Modulation Envelope
-    addAndMakeVisible (attackSlider3 = new ParameterSlider (*owner.attackParam2));      //
+	attackSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam2));
+    addAndMakeVisible (attackSlider3.get());      //
     attackSlider3->setSliderStyle(Slider::LinearVertical);
     attackSlider3->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible (decaySlider3 = new ParameterSlider (*owner.decayParam2));        //
+	decaySlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam2));
+    addAndMakeVisible (decaySlider3.get());        //
     decaySlider3->setSliderStyle(Slider::LinearVertical);
     decaySlider3->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible(sustainSlider3 = new ParameterSlider (*owner.sustainParam2));     //
+	sustainSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam2));
+    addAndMakeVisible(sustainSlider3.get());     //
     sustainSlider3->setSliderStyle(Slider::LinearVertical);
     sustainSlider3->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible(releaseSlider3 = new ParameterSlider (*owner.releaseParam2));     //
+	releaseSlider3 = std::unique_ptr <ParameterSlider>(new ParameterSlider(*owner.releaseParam2));
+    addAndMakeVisible(releaseSlider3.get());     //
     releaseSlider3->setSliderStyle(Slider::LinearVertical);
     releaseSlider3->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    
-    addAndMakeVisible (attackCurveSlider1 = new ParameterSlider (*owner.attackCurve1Param));     //
+	attackCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve1Param));
+	addAndMakeVisible(attackCurveSlider1.get());//
     attackCurveSlider1->setTooltip (TRANS("set attack curve from exponential to linear"));
     attackCurveSlider1->setSliderStyle (Slider::LinearVertical);
     attackCurveSlider1->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
   
-    
-    addAndMakeVisible (decRelCurveSlider1 = new ParameterSlider (*owner.decayRelCurve1Param));      //
+	decRelCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve1Param));
+	addAndMakeVisible(decRelCurveSlider1.get());     //
     decRelCurveSlider1->setTooltip (TRANS("set decay and release curves from exponential to linear"));
     decRelCurveSlider1->setSliderStyle (Slider::LinearVertical);
     decRelCurveSlider1->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 
     
-    
-    addAndMakeVisible (attackCurveSlider2 = new ParameterSlider (*owner.attackCurve2Param));    //@TODO: add parameter in Processor
+	attackCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve2Param));
+    addAndMakeVisible (attackCurveSlider2.get());    //@TODO: add parameter in Processor
     attackCurveSlider2->setTooltip (TRANS("set attack curve from exponential to linear"));
     attackCurveSlider2->setSliderStyle (Slider::LinearVertical);
     attackCurveSlider2->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 
-    
-    addAndMakeVisible (decRelCurveSlider2 = new ParameterSlider (*owner.decayRelCurve2Param));  //
+	decRelCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve2Param));
+    addAndMakeVisible (decRelCurveSlider2.get());  //
     decRelCurveSlider2->setTooltip (TRANS("set decay and release curves from exponential to linear"));//@TODO: add parameter in Processor
     decRelCurveSlider2->setSliderStyle (Slider::LinearVertical);
     decRelCurveSlider2->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 
-    
-    addAndMakeVisible (attackCurveSlider3 = new ParameterSlider (*owner.attackCurve3Param));      //@TODO: add parameter in Processor
+	attackCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve3Param));
+    addAndMakeVisible (attackCurveSlider3.get());      //@TODO: add parameter in Processor
     attackCurveSlider3->setTooltip (TRANS("set attack curve from exponential to linear"));
     attackCurveSlider3->setSliderStyle (Slider::LinearVertical);
     attackCurveSlider3->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 
-    
-    addAndMakeVisible (decRelCurveSlider3 = new ParameterSlider (*owner.decayRelCurve3Param)); //@TODO: add parameter in Processor
+	decRelCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve3Param));
+    addAndMakeVisible (decRelCurveSlider3.get()); //@TODO: add parameter in Processor
     decRelCurveSlider3->setTooltip (TRANS("set decay and release curves from exponential to linear"));
     decRelCurveSlider3->setSliderStyle (Slider::LinearVertical);
     decRelCurveSlider3->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
@@ -718,7 +748,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     lfoRateLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoRateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	addAndMakeVisible(lfoRateSlider = new ParameterSlider(*owner.lfoRateParam));  //
+	lfoRateSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoRateParam));
+	addAndMakeVisible(lfoRateSlider.get());  //
 	lfoRateSlider->setSliderStyle(Slider::RotaryVerticalDrag);
 	lfoRateSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -730,7 +761,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     lfoModeLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	addAndMakeVisible(lfoModeSlider = new ParameterSlider(*owner.lfoModeParam));  //
+	lfoModeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoModeParam));
+	addAndMakeVisible(lfoModeSlider.get());  //
 	lfoModeSlider->setSliderStyle(Slider::LinearHorizontal);
 	lfoModeSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 
@@ -742,16 +774,18 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     lfoIntensityLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoIntensityLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible(lfoIntensitySlider = new ParameterSlider(*owner.lfoIntensityParam));  //
+	lfoIntensitySlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoIntensityParam));
+    addAndMakeVisible(lfoIntensitySlider.get());  //
 	lfoIntensitySlider->setSliderStyle(Slider::RotaryVerticalDrag);
 	lfoIntensitySlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    
-    addAndMakeVisible( lfoSyncedFreqSlider = new ParameterSlider(*owner.lfoDivisionParam));
+	lfoSyncedFreqSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoDivisionParam));
+    addAndMakeVisible(lfoSyncedFreqSlider.get());
     lfoSyncedFreqSlider->setSliderStyle(Slider::RotaryVerticalDrag);
     lfoSyncedFreqSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 
-	addAndMakeVisible(lfoSyncSlider = new ParameterSlider(*owner.lfoSyncParam));
+	lfoSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoSyncParam));
+	addAndMakeVisible(lfoSyncSlider.get());
 	lfoSyncSlider->setSliderStyle(Slider::LinearHorizontal);
 	lfoSyncSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 	
@@ -760,7 +794,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     //
     // Modulation Target
     //
-    addAndMakeVisible(modTargetSlider = new ParameterSlider(*owner.modTargetParam));  //
+	modTargetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.modTargetParam));
+    addAndMakeVisible(modTargetSlider.get());  //
     modTargetSlider->setSliderStyle(Slider::LinearVertical);
     modTargetSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -801,30 +836,36 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     // Filter Order; switch from VCA->filter to filter->VCA
-    addAndMakeVisible(filterOrderSlider = new ParameterSlider(*owner.filterOrderParam));  //
+	filterOrderSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterOrderParam));
+    addAndMakeVisible(filterOrderSlider.get());  //
     filterOrderSlider->setSliderStyle(Slider::LinearHorizontal);
     filterOrderSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
     
     // PWM
-    addAndMakeVisible(pulsewidthAmount1Slider = new ParameterSlider(*owner.pulsewidthAmount1Param));  //
+	pulsewidthAmount1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidthAmount1Param));
+    addAndMakeVisible(pulsewidthAmount1Slider.get());  //
     pulsewidthAmount1Slider->setSliderStyle(Slider::LinearHorizontal);
     pulsewidthAmount1Slider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible(pulsewidthAmount2Slider = new ParameterSlider(*owner.pulsewidthAmount2Param));  //
+	pulsewidthAmount2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidthAmount2Param));
+    addAndMakeVisible(pulsewidthAmount2Slider.get());  //
     pulsewidthAmount2Slider->setSliderStyle(Slider::LinearHorizontal);
     pulsewidthAmount2Slider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
-    addAndMakeVisible(pulsewidthAmount3Slider = new ParameterSlider(*owner.pulsewidthAmount3Param));  //
+	pulsewidthAmount3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidthAmount3Param));
+    addAndMakeVisible(pulsewidthAmount3Slider.get());  //
     pulsewidthAmount3Slider->setSliderStyle(Slider::LinearHorizontal);
     pulsewidthAmount3Slider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 
 	//Saturation
-	addAndMakeVisible(saturationSlider = new ParameterSlider(*owner.saturationParam));  //
+	saturationSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.saturationParam));
+	addAndMakeVisible(saturationSlider.get());  //
 	saturationSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
 	saturationSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 
-    addAndMakeVisible(saturationSwitchSlider = new ParameterSlider(*owner.waveshapeSwitchParam));  //TODO: rename slider etc.
+	saturationSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.waveshapeSwitchParam));
+    addAndMakeVisible(saturationSwitchSlider.get());  
     saturationSwitchSlider->setSliderStyle(Slider::LinearVertical);
     saturationSwitchSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
     
@@ -898,138 +939,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
 MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
 {
-	/*
-    osc1GainSlider = nullptr;
-    osc1GainLabel = nullptr;
-    osc1OffsetSlider = nullptr;
-    osc1OffsetLabel = nullptr;
-    oscillatorsLabel = nullptr;
-    osc1TuneSlider = nullptr;
-    osc1TuneLabel = nullptr;
-    osc1WaveformSlider = nullptr;
-    
-    osc2GainSlider = nullptr;
-    osc2GainLabel = nullptr;
-    osc2OffsetSlider = nullptr;
-    osc2OffsetLabel = nullptr;
-    osc2TuneSlider = nullptr;
-    osc2TuneLabel = nullptr;
-    osc2WaveformSlider = nullptr;
-   
-    osc3GainSlider = nullptr;
-    osc3GainLabel = nullptr;
-    osc3OffsetSlider = nullptr;
-    osc3OffsetLabel = nullptr;
-    osc3TuneSlider = nullptr;
-    osc3TuneLabel = nullptr;
-    osc3WaveformSlider = nullptr;
-    
-    oscSyncLabel = nullptr;
-    oscSyncONLabel = nullptr;
-    oscSyncOFFLabel = nullptr;
-    
-    filterLabel = nullptr;
-    filterCutoffSlider = nullptr;
-    filterCutoffLabel = nullptr;
-    filterResonanceSlider = nullptr;
-    filterResonanceLabel = nullptr;
-    filterContourSlider = nullptr;
-    filterContourLabel = nullptr;
-    filterDriveSlider = nullptr;
-    filterDriveLabel = nullptr;
-    
-    filterMoogLabel = nullptr;
-    filterMS20Label = nullptr;
-    filter303Label = nullptr;
-   
-    envelopesLabel = nullptr;
-    attackSlider1 = nullptr;
-    attackSlider2 = nullptr;
-    envAmpLabel = nullptr;
-    decaySlider1 = nullptr;
-    sustainSlider1 = nullptr;
-    releaseSlider1 = nullptr;
-    envFilterLabel = nullptr;
-   
-    decaySlider2 = nullptr;
-    sustainSlider2 = nullptr;
-    releaseSlider2 = nullptr;
-   
-    attackSlider3 = nullptr;
-    envPitchLabel = nullptr;
-    decaySlider3 = nullptr;
-    sustainSlider3 = nullptr;
-    releaseSlider3 = nullptr;
-    
-    volumeSlider = nullptr;
-    volumeLabel = nullptr;
-    mainLabel = nullptr;
-    titleLabel = nullptr;
-    attackCurveSlider1 = nullptr;
-    decRelCurveSlider1 = nullptr;
-    pitchModSlider = nullptr;
-    pitchModLabel = nullptr;
-    osc1WaveformLabel = nullptr;
-    osc2WaveformLabel = nullptr;
-    osc3WaveformLabel = nullptr;
-    attackCurveSlider2 = nullptr;
-    decRelCurveSlider2 = nullptr;
-    attackCurveSlider3 = nullptr;
-    decRelCurveSlider3 = nullptr;
-
-    lfoLabel = nullptr;
-    lfoRateLabel = nullptr;
-    lfoModeLabel = nullptr;
-    lfoIntensityLabel = nullptr;
-    modTargetLabel = nullptr;
-    modTargetCutoffLabel = nullptr;
-    modTargetPitchLabel = nullptr;
 	
-    modTargetSlider = nullptr;
-    lfoRateSlider = nullptr;
-    lfoModeSlider = nullptr;
-    lfoIntensitySlider = nullptr;
-    
-  
-    filterSelectSlider = nullptr;
-    
-    lfoSyncedFreqSlider = nullptr;
-    
-    oscSyncSlider = nullptr;
-    
-    
-    filterOrderSlider = nullptr;
-    
-    saturationSwitchSlider = nullptr;
-    pulsewidthAmount1Slider = nullptr;
-    pulsewidthAmount2Slider = nullptr;
-    pulsewidthAmount3Slider = nullptr;
-
-	saturationSlider = nullptr;
-	saturationLabel = nullptr;
-    
-    drawable1 = nullptr;
-    drawable2 = nullptr;
-    drawable3 = nullptr;
-    drawable4 = nullptr;
-    drawable5 = nullptr;
-    drawable6 = nullptr;
-    drawable7 = nullptr;
-    drawable8 = nullptr;
-    drawable9 = nullptr;
-    drawable10 = nullptr;
-    drawable11 = nullptr;
-    drawable12 = nullptr;
-    drawable13 = nullptr;
-    drawable14 = nullptr;
-    drawable15 = nullptr;
-    drawable16 = nullptr;
-    drawable17 = nullptr;
-    drawable18 = nullptr;
-    drawable19 = nullptr;
-    drawable20 = nullptr;
-    drawable21 = nullptr;
-	*/
 }
 
 //==============================================================================

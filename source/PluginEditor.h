@@ -128,26 +128,28 @@ private:
 
             ;
     
-    ScopedPointer<ParameterSlider> 
-        volumeSlider,
-        osc1GainSlider,
-        osc1OffsetSlider,
-        osc1TuneSlider,
-        osc1WaveformSlider,
+   std::unique_ptr<ParameterSlider>
+	   volumeSlider,
+	   osc1GainSlider,
+	   osc1OffsetSlider,
+	   osc1TuneSlider,
+	   osc1WaveformSlider,
 
-        osc2GainSlider,
-        osc2OffsetSlider,
-        osc2TuneSlider,
-        osc2WaveformSlider,
+	   osc2GainSlider,
+	   osc2OffsetSlider,
+	   osc2TuneSlider,
+	   osc2WaveformSlider,
 
-        osc3GainSlider,
-        osc3OffsetSlider,
-        osc3TuneSlider,
-        osc3WaveformSlider,
+	   osc3GainSlider,
+	   osc3OffsetSlider,
+	   osc3TuneSlider,
+	   osc3WaveformSlider,
+	   oscSyncSlider,
 
-        pitchModSlider,
+	   pitchModSlider,
 
-        filterCutoffSlider, 
+	   filterCutoffSlider,
+	
         filterResonanceSlider,
         filterContourSlider,
         filterDriveSlider,
@@ -185,7 +187,7 @@ private:
     
         lfoSyncedFreqSlider,
     
-        oscSyncSlider,
+       
     
         filterOrderSlider,
     
