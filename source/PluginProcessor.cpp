@@ -219,8 +219,8 @@ ampEnvelope(nullptr)
     
     
     // Oversampling 2 times with IIR filtering
-    oversamplingFloat = new dsp::Oversampling<float> (2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true);
-    oversamplingDouble = new dsp::Oversampling<double> (2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true);
+    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
+    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
     
 }
 
@@ -479,7 +479,7 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, ScopedPointer<dsp::Oversampling<FloatType>>& oversampling)
+void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& oversampling)
 {
     const int numSamples = buffer.getNumSamples();
     
@@ -522,9 +522,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         if(filterOn)
         {
             // applying filter
-            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA, oversampling) ; }
-            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB, oversampling) ; }
-            else                                 { applyFilter(osBuffer, filterC, oversampling) ; }
+            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA) ; }
+            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB) ; }
+            else                                 { applyFilter(osBuffer, filterC) ; }
 			
         }
         
@@ -539,9 +539,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         if(filterOn)
         {
             // applying filter
-            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA, oversampling) ; }
-            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB, oversampling) ; }
-            else                                 { applyFilter(osBuffer, filterC, oversampling) ; }
+            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA) ; }
+            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB) ; }
+            else                                 { applyFilter(osBuffer, filterC) ; }
         }
     }
     
@@ -663,7 +663,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& oversamp)
+void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[])
 {
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);

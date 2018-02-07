@@ -225,7 +225,7 @@ public:
 private:
     //==============================================================================
     template <typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, ScopedPointer<dsp::Oversampling<FloatType>>& os);
+    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);
 
     template <typename FloatType>
     void applyGain (AudioBuffer<FloatType>& buffer);
@@ -234,7 +234,7 @@ private:
     void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
 
     template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[], ScopedPointer<dsp::Oversampling<FloatType>>& os);
+    void applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[]);
 
 	template <typename FloatType>
 	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
@@ -247,8 +247,8 @@ private:
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
     
-    ScopedPointer<dsp::Oversampling<float>> oversamplingFloat;
-    ScopedPointer<dsp::Oversampling<double>> oversamplingDouble;
+    std::unique_ptr<dsp::Oversampling<float>> oversamplingFloat;
+	std::unique_ptr<dsp::Oversampling<double>> oversamplingDouble;
 
     Synthesiser synth;
     
