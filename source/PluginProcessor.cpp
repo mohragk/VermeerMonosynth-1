@@ -207,8 +207,8 @@ ampEnvelope(nullptr)
     
     keyboardState.addListener(this);
     
-    filterEnvelope = new ADSR();
-    ampEnvelope = new ADSR();
+    filterEnvelope = std::unique_ptr<ADSR>( new ADSR );
+    ampEnvelope    = std::unique_ptr<ADSR>( new ADSR );
     
     for(int channel = 0; channel < 2; channel++)
     {
@@ -287,20 +287,10 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     lfoDivisionParam = nullptr;
     
     overSampleParam = nullptr;
-    filterEnvelope = nullptr;
-    ampEnvelope = nullptr;
-    
+
     pulsewidthAmount1Param = nullptr;
     pulsewidthAmount2Param = nullptr;
     pulsewidthAmount3Param = nullptr;
-    
-
-	filterA[0] = nullptr;
-	filterA[1] = nullptr;
-	filterB[0] = nullptr;
-	filterB[1] = nullptr;
-	filterC[0] = nullptr;
-	filterC[1] = nullptr;
     
 }
 
@@ -411,8 +401,6 @@ void MonosynthPluginAudioProcessor::releaseResources()
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
-
-    
     
     for (int channel = 0; channel < 2; channel++)
     {

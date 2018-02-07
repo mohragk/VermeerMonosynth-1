@@ -265,8 +265,8 @@ private:
     
     void applyModToTarget(int target, double amount);
 
-    ScopedPointer<ADSR> filterEnvelope;
-    ScopedPointer<ADSR> ampEnvelope;
+    std::unique_ptr<ADSR> filterEnvelope;
+    std::unique_ptr<ADSR> ampEnvelope;
     LFO lfo;
     
     double modAmount;

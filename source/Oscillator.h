@@ -65,6 +65,10 @@ public:
         pulsewidth = (pwm + 1.0) / 2.0;
     }
     
+	void setVelocityFactor(float v)
+	{
+		velocityFactor = static_cast<double>(v);
+	}
     
     double getPhase()
     {
@@ -118,7 +122,7 @@ public:
             rephase = true;
         }
         
-        return value * level * gain.get();
+        return value * level * gain.get() * velocityFactor;
     }
     
 private:
@@ -189,6 +193,7 @@ private:
     
 
     double sampleRate,  phaseIncrement;
+	double velocityFactor;
 	Atomic<double> frequency, phase, gain;
     double level;
     double pulsewidth;

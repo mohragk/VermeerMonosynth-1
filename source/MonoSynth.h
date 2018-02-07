@@ -76,12 +76,18 @@ public:
         
         double sr = getSampleRate();
 
+		
+
 		// Might be abundant, but just to be safe
         pitchEnvelope->setSampleRate(sr);
         
         osc1->setSampleRate(sr);
         osc2->setSampleRate(sr);
         osc3->setSampleRate(sr);
+
+		osc1->setVelocityFactor(velocity);
+		osc2->setVelocityFactor(velocity);
+		osc3->setVelocityFactor(velocity);
                
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
 

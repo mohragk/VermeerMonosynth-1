@@ -72,6 +72,10 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <GROUP id="{9DA970F6-BF3B-E3DA-57AA-A8795465EFCD}" name="Fonts">
+      <FILE id="H9Xygf" name="FuturaPRO-Medium.otf" compile="0" resource="1"
+            file="Fonts/FuturaPRO-Medium.otf"/>
+    </GROUP>
     <FILE id="IbiCwm" name="MonoSynthIconLarge.png" compile="0" resource="1"
           file="Resources/MonoSynthIconLarge.png"/>
     <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"

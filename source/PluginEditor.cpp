@@ -220,7 +220,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 {
     // add all the sliders..
     
-    font = "Futura";
+    font = "FuturaPRO-Medium.otf";
     
     //
     // TITLE
@@ -885,7 +885,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
 MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
 {
-	
+
 }
 
 //==============================================================================
