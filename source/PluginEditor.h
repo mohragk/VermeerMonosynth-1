@@ -67,6 +67,12 @@ public:
 
 private:
     class ParameterSlider;
+	enum style
+	{
+		ROTARY = 0,
+		LINEARHORIZONTAL,
+		LINEARVERTICAL
+	};
 
     LinearSmoothedValue<float> newValueSmooth;
     
