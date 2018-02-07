@@ -85,7 +85,8 @@ public:
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
     : AudioProcessorEditor (owner),
         midiKeyboard (owner.keyboardState, MidiKeyboardComponent::horizontalKeyboard),
-        timecodeDisplayLabel (String()),
+        timecodeDisplayLabel (String())
+	/*
 	mainLabel(nullptr),
 	titleLabel(nullptr),
 	osc1GainLabel(nullptr),
@@ -202,6 +203,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	pulsewidthAmount3Slider(nullptr),
 
 	saturationSlider(nullptr)
+	*/
       
 {
     // add all the sliders..
