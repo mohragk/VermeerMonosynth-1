@@ -124,13 +124,13 @@ ampEnvelope(nullptr)
     
     addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float> (0.0f, 2.0f, 0.0f, 0.5f, false), 0.75f));
     
-    addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain",  NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
-    addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain",  0.0f, 1.0f, 0.9f));
-    addParameter (osc3GainParam  = new AudioParameterFloat ("osc3Gain",  "OSC3 Gain",  0.0f, 1.0f, 0.9f));
+    addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
+    addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
+    addParameter (osc3GainParam  = new AudioParameterFloat ("osc3Gain",  "OSC3 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
     
-    addParameter (osc1DetuneAmountParam = new AudioParameterFloat("osc1DetuneAmount", "OSC1 Tune", NormalisableRange<float>(-1.0f, 1.0f, 0.0f), 0.0f));
-    addParameter (osc2DetuneAmountParam = new AudioParameterFloat("osc2DetuneAmount", "OSC2 Tune", NormalisableRange<float>(-1.0f, 1.0f, 0.0f), 0.0f));
-    addParameter (osc3DetuneAmountParam = new AudioParameterFloat("osc3DetuneAmount", "OSC3 Tune", NormalisableRange<float>(-1.0f, 1.0f, 0.0f), 0.0f));
+    addParameter (osc1DetuneAmountParam = new AudioParameterFloat("osc1DetuneAmount", "OSC1 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
+    addParameter (osc2DetuneAmountParam = new AudioParameterFloat("osc2DetuneAmount", "OSC2 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
+    addParameter (osc3DetuneAmountParam = new AudioParameterFloat("osc3DetuneAmount", "OSC3 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
     
     addParameter(osc1ModeParam = new AudioParameterInt("osc1ModeChoice", "OSC1 Waveform", 0, 3, 2)); // TEST
     addParameter(osc2ModeParam = new AudioParameterInt("osc2ModeChoice", "OSC2 Waveform", 0, 3, 2));
