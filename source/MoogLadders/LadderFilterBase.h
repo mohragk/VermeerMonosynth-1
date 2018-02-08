@@ -39,6 +39,8 @@ public:
     
     virtual void Process(float * samples, size_t n) noexcept = 0;
     virtual void Process(double * samples, size_t n) noexcept = 0;
+    virtual void ProcessRamp(float * samples, size_t n, float beginCutoff, float endCutoff) = 0;
+    virtual void ProcessRamp(double * samples, size_t n, double beginCutoff, double endCutoff) = 0;
 
 	virtual void Update() = 0;
     virtual void Reset() = 0;

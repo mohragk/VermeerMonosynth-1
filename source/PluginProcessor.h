@@ -283,14 +283,14 @@ private:
     float contourVelocity;
 	double cutoffModulationAmt; 
     
-    float currentCutoff;
+    double currentCutoff, prevCutoff;
     
     double sampleRate;
     
 	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, pulseWidthSmooth;
 	LinearSmoothedValue<double> cutoffFromEnvelope;
 	
-	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;
+	double cutoffRampTimeDefault = 0.0002, cutoffRampTime;
 	
     
     int lastNotePlayed;

@@ -85,7 +85,29 @@ public:
 		}
     }
     
+    virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
+    {
+        const auto increment = (endCutoff - beginCutoff) / (float) n;
+        
+        for (uint32_t i = 0; i < n; i++)
+        {
+            SetCutoff(beginCutoff);
+            samples[i] = doFilter(samples[i]);
+            beginCutoff += increment;
+        }
+    }
     
+    virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
+    {
+        const auto increment = (endCutoff - beginCutoff) / (float) n;
+        
+        for (uint32_t i = 0; i < n; i++)
+        {
+            SetCutoff(beginCutoff);
+            samples[i] = doFilter(samples[i]);
+            beginCutoff += increment;
+        }
+    }
     
     virtual void SetSampleRate (double sr) override
     {

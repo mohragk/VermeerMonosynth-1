@@ -372,7 +372,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     keyboardState.reset();
     
     cutoff.reset(sampleRate, cutoffRampTimeDefault);
-    cutoffFromEnvelope.reset(sampleRate, 0.0003);
+    cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     //masterGain.reset(sampleRate / oversamplingDouble->getOversamplingFactor(), 0.001);
@@ -393,7 +393,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     // spare memory, etc.
     keyboardState.reset();
     cutoff.reset(sampleRate, cutoffRampTimeDefault);
-    cutoffFromEnvelope.reset(sampleRate, 0.0003);
+    cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
    // masterGain.reset(sampleRate, 0.001);
@@ -417,7 +417,7 @@ void MonosynthPluginAudioProcessor::reset()
     // Use this method as the place to clear any delay lines, buffers, etc, as it
     // means there's been a break in the audio's continuity.
     cutoff.reset(sampleRate, cutoffRampTimeDefault);
-    cutoffFromEnvelope.reset(sampleRate, 0.0003);
+    cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     //masterGain.reset(sampleRate, 0.001);
@@ -434,7 +434,6 @@ void MonosynthPluginAudioProcessor::reset()
 		filterC[channel]->Reset();
 	}
     
-    std::cout << "RESET" << std::endl;
     
 }
 
@@ -663,7 +662,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     //
     //  break buffer into chunks
     //
-    int stepSize = jmin(16, numSamples);
+    int stepSize = jmin(32, numSamples);
     
     int samplesLeftOver = numSamples;
     
@@ -671,7 +670,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff   = currentCutoff + cutoff.getNextValue();
+        FloatType combinedCutoff   = cutoffFromEnvelope.getNextValue() + cutoff.getNextValue();
         FloatType Q                = resonance.getNextValue();// * 4.0;
 
 		if (combinedCutoff > 18000.0) combinedCutoff = 18000.0;
@@ -688,9 +687,10 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         if (samplesLeftOver < stepSize)
             stepSize = samplesLeftOver;
         
-        filter[0]->Process(channelDataLeft, stepSize);
-        filter[1]->Process(channelDataRight, stepSize);
+        filter[0]->ProcessRamp(channelDataLeft, stepSize, prevCutoff, combinedCutoff );
+        filter[1]->ProcessRamp(channelDataRight, stepSize, prevCutoff, combinedCutoff );
 
+        prevCutoff = combinedCutoff;
         
         samplesLeftOver -= stepSize;
         
