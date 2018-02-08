@@ -283,7 +283,7 @@ private:
     float contourVelocity;
 	double cutoffModulationAmt; 
     
-    double currentCutoff, prevCutoff;
+    double currentCutoff, prevCutoff = 20.0;
     
     double sampleRate;
     
