@@ -36,7 +36,7 @@ public:
 	
     LadderFilterBase() { }
     virtual ~LadderFilterBase() { }
-    
+	
     virtual void Process(float * samples, size_t n) noexcept = 0;
     virtual void Process(double * samples, size_t n) noexcept = 0;
     virtual void ProcessRamp(float * samples, size_t n, float beginCutoff, float endCutoff) = 0;
@@ -61,6 +61,7 @@ protected:
 	Atomic<double> cutoff;
 	Atomic<double> resonance;
 	double drive;
+
 };
 
 #endif

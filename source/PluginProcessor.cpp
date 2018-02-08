@@ -219,9 +219,11 @@ ampEnvelope(nullptr)
     
     
     // Oversampling 2 times with IIR filtering
-    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
-    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
+    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 2, dsp::Oversampling<float>::filterHalfBandFIREquiripple , false ) );
+    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 2, dsp::Oversampling<double>::filterHalfBandFIREquiripple , false ) );
     
+
+	smoothing = std::unique_ptr<SmoothParam>(new SmoothParam);
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
@@ -383,7 +385,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     ampEnvelope->setSampleRate(sampleRate);
     
    
-
+	smoothing->init(sampleRate, 5);
     
 }
 
@@ -420,7 +422,6 @@ void MonosynthPluginAudioProcessor::reset()
     cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
-    //masterGain.reset(sampleRate, 0.001);
     pulseWidthSmooth.reset(sampleRate, 0.0001);
     
     oversamplingFloat->reset();
@@ -434,6 +435,7 @@ void MonosynthPluginAudioProcessor::reset()
 		filterC[channel]->Reset();
 	}
     
+	smoothing->reset();
     
 }
 
@@ -635,7 +637,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
-        const double contourRange = *filterContourParam * contourVelocity;
+        const double contourRange = *filterContourParam;
         currentCutoff = (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
         cutoff.setValue				(*filterParam);
@@ -670,25 +672,40 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff   = cutoffFromEnvelope.getNextValue() + cutoff.getNextValue();
-        FloatType Q                = resonance.getNextValue();// * 4.0;
+        FloatType combinedCutoff   = ( cutoffFromEnvelope.getNextValue() + smoothing->processSmooth( cutoff.getNextValue() ) )  * contourVelocity;
 
 		if (combinedCutoff > 18000.0) combinedCutoff = 18000.0;
 		if (combinedCutoff < 20.0) combinedCutoff = 20.0;
         
+		
+
         for (int channel = 0; channel < 2; channel++)
         {
 			//filter[channel]->SetSampleRate(sampleRate * oversamp->getOversamplingFactor());
-            filter[channel]->SetResonance(Q);
-			filter[channel]->SetCutoff(combinedCutoff);
+            filter[channel]->SetResonance(resonance.getNextValue());
             filter[channel]->SetDrive(drive.getNextValue());
         }
         
         if (samplesLeftOver < stepSize)
             stepSize = samplesLeftOver;
         
-        filter[0]->ProcessRamp(channelDataLeft, stepSize, prevCutoff, combinedCutoff );
-        filter[1]->ProcessRamp(channelDataRight, stepSize, prevCutoff, combinedCutoff );
+
+		if (prevCutoff == combinedCutoff)
+		{
+			filter[0]->SetCutoff(combinedCutoff);
+			filter[1]->SetCutoff(combinedCutoff);
+
+			filter[0]->Process(channelDataLeft, stepSize);
+			filter[1]->Process(channelDataRight, stepSize);
+		}
+		else
+		{
+			filter[0]->ProcessRamp(channelDataLeft, stepSize, prevCutoff, combinedCutoff);
+			filter[1]->ProcessRamp(channelDataRight, stepSize, prevCutoff, combinedCutoff);
+		}
+        
+
+		
 
         prevCutoff = combinedCutoff;
         

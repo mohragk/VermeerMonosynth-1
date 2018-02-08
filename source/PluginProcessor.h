@@ -223,8 +223,46 @@ public:
     
     
 private:
+
+
     //==============================================================================
-    template <typename FloatType>
+    
+	class SmoothParam {
+	public:
+		SmoothParam()
+		{
+			reset();
+		}
+
+		~SmoothParam()
+		{}
+
+		void init(double sr, double millis) 
+		{
+			a = exp(-double_Pi / (millis * 0.001 * sr));
+			b = 1.0 - a;
+			z = 0.0;
+		}
+
+		void reset()
+		{
+			a = 0.0;
+			b = 0.0;
+			z = 0.0;
+		}
+
+		inline double processSmooth(double val)
+		{
+			z = (val * b) + (z * a);
+			return z;
+		}
+
+	private:
+		double a, b, z;
+		double coeff;
+	};
+	
+	template <typename FloatType>
     void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);
 
     template <typename FloatType>
@@ -299,6 +337,7 @@ private:
     
     bool filterOn = true;
     
+	std::unique_ptr<SmoothParam> smoothing;
     
     static BusesProperties getBusesProperties();
    

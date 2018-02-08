@@ -45,6 +45,7 @@ public:
         drive = 1.0f;
 		SetCutoff(1000.0);
 		SetResonance(0.0);
+
         Reset();
 
     }
@@ -87,7 +88,7 @@ public:
     
     virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
     {
-        const auto increment = (endCutoff - beginCutoff) / (float) n;
+        const auto increment = (endCutoff - beginCutoff) / (double) n;
         
         for (uint32_t i = 0; i < n; i++)
         {
@@ -165,7 +166,7 @@ private:
 
 		FloatType dV0, dV1, dV2, dV3;
 
-		dV0 = -g * (fast_tanh((drive * sample + resonance.get() * V[3]) / (2.0 * VT)) + tV[0]);
+		dV0 = -g * (dsp::FastMathApproximations::tanh((drive * sample + resonance.get() * V[3]) / (2.0 * VT)) + tV[0]);
 		V[0] += (dV0 + dV[0]) / (2.0 * sampleRate * multiplier);
 		dV[0] = dV0;
 		tV[0] = dsp::FastMathApproximations::tanh(V[0] / (2.0 * VT));
@@ -197,6 +198,7 @@ private:
     
     double sampleRate;
     double multiplier;
+
 };
 
 #endif
