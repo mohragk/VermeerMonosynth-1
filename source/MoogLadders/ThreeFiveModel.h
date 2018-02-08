@@ -113,7 +113,7 @@ public:
     
     virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
     {
-        const auto increment = (endCutoff - beginCutoff) / (float) n;
+        const auto increment = (endCutoff - beginCutoff) / (double) n;
         
         for (uint32_t i = 0; i < n; i++)
         {
