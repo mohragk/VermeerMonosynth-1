@@ -22,11 +22,9 @@
                smallIcon="aJR5EJ" bigIcon="IbiCwm">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="VermeerMonosynth"
-                       osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"
-                       enablePluginBinaryCopyStep="1"/>
+                       osxArchitecture="64BitIntel" enablePluginBinaryCopyStep="1"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="6" targetName="VermeerMonosynth"
-                       osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"
-                       enablePluginBinaryCopyStep="1"/>
+                       osxArchitecture="64BitIntel" enablePluginBinaryCopyStep="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../../../../../../../Applications/JUCE/modules"/>
@@ -72,10 +70,8 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
-    <GROUP id="{9DA970F6-BF3B-E3DA-57AA-A8795465EFCD}" name="Fonts">
-      <FILE id="H9Xygf" name="FuturaPRO-Medium.otf" compile="0" resource="1"
-            file="Fonts/FuturaPRO-Medium.otf"/>
-    </GROUP>
+    <FILE id="IGiKJp" name="FuturaStd-Medium.otf" compile="0" resource="1"
+          file="Resources/font/FuturaStd-Medium.otf"/>
     <FILE id="IbiCwm" name="MonoSynthIconLarge.png" compile="0" resource="1"
           file="Resources/MonoSynthIconLarge.png"/>
     <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"
@@ -125,4 +121,7 @@
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
 </JUCERPROJECT>

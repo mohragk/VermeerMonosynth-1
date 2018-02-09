@@ -8,8 +8,8 @@
 
 namespace BinaryData
 {
-    extern const char*   FuturaPROMedium_otf;
-    const int            FuturaPROMedium_otfSize = 20424;
+    extern const char*   FuturaStdMedium_otf;
+    const int            FuturaStdMedium_otfSize = 26892;
 
     extern const char*   MonoSynthIconLarge_png;
     const int            MonoSynthIconLarge_pngSize = 29576;

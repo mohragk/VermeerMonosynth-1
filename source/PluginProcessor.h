@@ -328,11 +328,11 @@ private:
     float contourVelocity;
 	double cutoffModulationAmt; 
     
-    double currentCutoff, prevCutoff = 20.0;
+    double currentCutoff = 20.0, prevCutoff = 20.0;
     
     double sampleRate;
     
-	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, pulseWidthSmooth;
+	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, pulsewidthSmooth1, pulsewidthSmooth2, pulsewidthSmooth3;
 	LinearSmoothedValue<double> cutoffFromEnvelope;
 	
 	double cutoffRampTimeDefault = 0.0002, cutoffRampTime;
@@ -344,7 +344,7 @@ private:
     
     bool filterOn = true;
     
-	std::unique_ptr<SmoothParam> smoothing;
+	std::unique_ptr<SmoothParam> smoothing[6];
     
     static BusesProperties getBusesProperties();
    

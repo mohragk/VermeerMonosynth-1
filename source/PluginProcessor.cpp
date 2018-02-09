@@ -223,11 +223,12 @@ ampEnvelope(nullptr)
     
     
     // Oversampling 2 times with IIR filtering
-    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 2, dsp::Oversampling<float>::filterHalfBandFIREquiripple , false ) );
-    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 2, dsp::Oversampling<double>::filterHalfBandFIREquiripple , false ) );
+    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 2, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
+    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 2, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
     
 
-	smoothing = std::unique_ptr<SmoothParam>(new SmoothParam);
+    for (int i = 0; i < 6; i++)
+        smoothing[i] = std::unique_ptr<SmoothParam>(new SmoothParam);
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
@@ -382,14 +383,18 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
     //masterGain.reset(sampleRate / oversamplingDouble->getOversamplingFactor(), 0.001);
-    pulseWidthSmooth.reset(sampleRate, 0.0001);
-    
+    pulsewidthSmooth1.reset(sampleRate, cutoffRampTimeDefault);
+    pulsewidthSmooth2.reset(sampleRate, cutoffRampTimeDefault);
+    pulsewidthSmooth3.reset(sampleRate, cutoffRampTimeDefault);
     
     filterEnvelope->setSampleRate(sampleRate);
     ampEnvelope->setSampleRate(sampleRate);
     
    
-	smoothing->init(sampleRate, 5);
+    smoothing[0]->init(sampleRate, 10);
+    
+    for (int i = 1; i < 6; i++)
+        smoothing[i]->init(sampleRate, 0.1);
     
 }
 
@@ -402,9 +407,9 @@ void MonosynthPluginAudioProcessor::releaseResources()
     cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
-   // masterGain.reset(sampleRate, 0.001);
-    pulseWidthSmooth.reset(sampleRate, 0.0001);
-    
+    pulsewidthSmooth1.reset(sampleRate, cutoffRampTimeDefault);
+    pulsewidthSmooth2.reset(sampleRate, cutoffRampTimeDefault);
+    pulsewidthSmooth3.reset(sampleRate, cutoffRampTimeDefault);
     oversamplingFloat->reset();
     oversamplingDouble->reset();
     
@@ -414,7 +419,8 @@ void MonosynthPluginAudioProcessor::releaseResources()
         filterB[channel]->Reset();
         filterC[channel]->Reset();
     }
-    
+    for (int i = 0; i < 6; i++)
+        smoothing[i]->reset();
     
 }
 
@@ -426,7 +432,9 @@ void MonosynthPluginAudioProcessor::reset()
     cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
-    pulseWidthSmooth.reset(sampleRate, 0.0001);
+    pulsewidthSmooth1.reset(sampleRate, cutoffRampTimeDefault);
+    pulsewidthSmooth2.reset(sampleRate, cutoffRampTimeDefault);
+    pulsewidthSmooth3.reset(sampleRate, cutoffRampTimeDefault);
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -438,8 +446,8 @@ void MonosynthPluginAudioProcessor::reset()
 		filterB[channel]->Reset();
 		filterC[channel]->Reset();
 	}
-    
-	smoothing->reset();
+    for (int i = 0; i < 6; i++)
+        smoothing[i]->reset();
     
 }
 
@@ -676,7 +684,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff   = ( cutoffFromEnvelope.getNextValue() + smoothing->processSmooth( cutoff.getNextValue() ) )  * contourVelocity;
+        FloatType combinedCutoff   = ( cutoffFromEnvelope.getNextValue() + smoothing[0]->processSmooth( cutoff.getNextValue() ) )  * contourVelocity;
 
 		if (combinedCutoff > 18000.0) combinedCutoff = 18000.0;
 		if (combinedCutoff < 20.0) combinedCutoff = 20.0;
@@ -876,10 +884,13 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 {
 	int numSamples = buffer.getNumSamples();
 
-	pulseWidthSmooth.setValue(*pulsewidth1Param);
+    
 
-	for (int i = 0; i < numSamples; i++)
-	{
+    
+    
+    
+    while (--numSamples > 0)
+    {
 		// set various parameters
 		setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
 		setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
@@ -896,18 +907,21 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 		setEnvelopeState(*ampEnvelope);
 
 		setHardSync(*oscSyncParam);
-
-
-
+        
+        pulsewidthSmooth1.setValue(*pulsewidth1Param);
+        pulsewidthSmooth2.setValue(*pulsewidth2Param);
+        pulsewidthSmooth3.setValue(*pulsewidth3Param);
+        
+        
 		
-
+       
 		
 	}
 
-	setPW(pulseWidthSmooth.getNextValue(), 0);
-	setPW(*pulsewidth2Param, 1);
-	setPW(*pulsewidth3Param, 2);
-   
+	
+    setPW(smoothing[1]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
+    setPW(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
+    setPW(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
 
 	sendLFO(lfo);
 

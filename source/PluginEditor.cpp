@@ -220,7 +220,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 {
     // add all the sliders..
     
-    font = "FuturaPRO-Medium.otf";
+    font = "Futura";
     
     //
     // TITLE
@@ -1231,13 +1231,13 @@ void MonosynthPluginAudioProcessorEditor::resized()
     osc1WaveformSlider->setBounds (16, 178, 64, 64);
     osc1WaveformLabel->setBounds (16, 168, 65, 24);
     
-	pulsewidth1Slider->setBounds(16, 410, 45, 14);
-	pulsewidth2Slider->setBounds(88, 410, 45, 14);
-	pulsewidth3Slider->setBounds(160, 410, 45, 14);
+	pulsewidth1Slider->setBounds(16, 430, 64, 18);
+	pulsewidth2Slider->setBounds(88, 430, 64, 18);
+	pulsewidth3Slider->setBounds(160, 430, 64, 18);
 
-    pulsewidthAmount1Slider->setBounds(16, 440, 45, 24);
-    pulsewidthAmount2Slider->setBounds(88, 440, 45, 24);
-    pulsewidthAmount3Slider->setBounds(160, 440, 45, 24);
+    pulsewidthAmount1Slider->setBounds(16, 450, 64, 18);
+    pulsewidthAmount2Slider->setBounds(88, 450, 64, 18);
+    pulsewidthAmount3Slider->setBounds(160, 450, 64, 18);
     
     
     osc2GainSlider->setBounds (88, 104, 64, 64);
