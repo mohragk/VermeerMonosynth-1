@@ -11,11 +11,12 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(44100.0), level(0.75)
+    Oscillator() : sampleRate(44100.0), level(0.75), pulsewidth(0.5)
     {
 		frequency.set(0.0);
 		phase.set(0.0);
 		gain.set(0.0);
+		
     }
     
     
@@ -60,7 +61,9 @@ public:
             mode = OSCILLATOR_MODE_NOISE;
     }
     
-    void setPulsewidth(const double pwm)
+	
+
+    void setPulsewidth(double pwm)
     {
         pulsewidth = (pwm + 1.0) / 2.0;
     }
@@ -105,7 +108,7 @@ public:
         {
             value = naiveWaveFormForMode(mode, phase.get());
             value += poly_blep( t, phaseIncrement );
-            value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
+            value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement ); //BUG!!! 1.0 - 0.5 should be pulsewidth
         }
         else
         {
@@ -149,7 +152,7 @@ private:
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
-                if (phs <=  pulsewidth * two_Pi) {
+                if (phs <=  pulsewidth * two_Pi) { // BUG!!! 0.5 should be pulsewidth
                     value = 1.0;
                 } else {
                     value = -1.0;
@@ -196,7 +199,7 @@ private:
 	double velocityFactor;
 	Atomic<double> frequency, phase, gain;
     double level;
-    double pulsewidth;
+	double pulsewidth;
     
     OscillatorMode mode;
     Random random;

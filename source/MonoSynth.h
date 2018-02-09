@@ -44,24 +44,20 @@ public:
 class MonosynthVoice  : public SynthesiserVoice
 {
 public:
-	MonosynthVoice() : pitchEnvelope(nullptr), osc1(nullptr), osc2(nullptr), osc3(nullptr)
-    
+	MonosynthVoice() : pitchEnvelope(nullptr)
     {
 		pitchEnvelope = new ADSR();
 
-		osc1 = new Oscillator();
-		osc2 = new Oscillator();
-		osc3 = new Oscillator();
-        
+		for (int n = 0; n < numOscillators; n++)
+			osc[n] = std::unique_ptr<Oscillator>( new Oscillator );
     }
     
     ~MonosynthVoice()
     {
         pitchEnvelope = nullptr;
         
-        osc1 = nullptr;
-        osc2 = nullptr;
-        osc3 = nullptr;
+		for (int n = 0; n < numOscillators; n++)
+			osc[n] = nullptr;
     }
     
     bool canPlaySound (SynthesiserSound* sound) override
@@ -81,13 +77,13 @@ public:
 		// Might be abundant, but just to be safe
         pitchEnvelope->setSampleRate(sr);
         
-        osc1->setSampleRate(sr);
-        osc2->setSampleRate(sr);
-        osc3->setSampleRate(sr);
-
-		osc1->setVelocityFactor(velocity);
-		osc2->setVelocityFactor(velocity);
-		osc3->setVelocityFactor(velocity);
+		for (int n = 0; n < numOscillators; n++)
+		{
+			osc[n]->setSampleRate(sr);
+			osc[n]->setVelocityFactor(velocity);
+		}
+        
+       
                
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
 
@@ -158,9 +154,9 @@ public:
     
     void setOscGains(const float g1, const float g2, const float g3)
     {
-        osc1->setGain(g1);
-        osc2->setGain(g2);
-        osc3->setGain(g3);
+        osc[0]->setGain(g1);
+        osc[1]->setGain(g2);
+        osc[2]->setGain(g3);
     }
     
     void setOsc1DetuneAmount(const double fine, const int coarse)
@@ -180,9 +176,9 @@ public:
     
     void setOscModes(const int mode1, const int mode2, const int mode3)
     {
-        osc1->setMode(mode1);
-        osc2->setMode(mode2);
-        osc3->setMode(mode3);
+        osc[0]->setMode(mode1);
+        osc[1]->setMode(mode2);
+        osc[2]->setMode(mode3);
     }
 
 	void sendEnvelope(ADSR& envelope)
@@ -210,6 +206,20 @@ public:
             modAmountPW3 = amt;
     }
   
+	void setPulsewidth(double pw, int n)
+	{
+		
+		if(n == 0)
+			osc[0]->setPulsewidth(pw);
+
+		 else if (n == 1)
+			osc[1]->setPulsewidth(pw);
+
+		 else 
+			osc[2]->setPulsewidth(pw);
+
+	 
+	}
 
 private:
     
@@ -217,45 +227,46 @@ private:
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
         
-        osc1->setPulsewidth(lfoValue * modAmountPW1);
-        osc2->setPulsewidth(lfoValue * modAmountPW2);
-        osc3->setPulsewidth(lfoValue * modAmountPW3);
+       
         
         if (envState == 0)
         {
-            osc1->setPhase(0.0);
-            osc2->setPhase(0.0);
-            osc3->setPhase(0.0);
+			for (int n = 0; n < numOscillators; n++)
+				osc[n]->setPhase(0.0);
+            
         }
         
 		if (envState != 0)
 		{
 			while (--numSamples >= 0)
 			{
-				double sample = 0.0;
+				FloatType sample = 0.0;
 
 				//Get Pitch Envelope Amount
-				double pitchEnvAmt = pitchEnvelope->process();
+				FloatType pitchEnvAmt = pitchEnvelope->process();
 
 				//Apply Pitch Envelope and PitchBend Amount, deviated from current pitch
-				double newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
+				FloatType newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
-				double osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreq);
-				double osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreq);
-				double osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreq);
+				FloatType osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreq);
+				FloatType osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreq);
+				FloatType osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreq);
 
 				//Set the new frequency
-				osc1->setFrequency(osc1Detuned);
-				osc2->setFrequency(osc2Detuned);
-				osc3->setFrequency(osc3Detuned);
+				osc[0]->setFrequency(osc1Detuned);
+				osc[1]->setFrequency(osc2Detuned);
+				osc[2]->setFrequency(osc3Detuned);
                 
                                
-                if (osc1->isRephase() && hardSync)
-                    osc2->setPhase(0.0);
+                if (osc[0]->isRephase() && hardSync)
+                    osc[1]->setPhase(0.0);
 
 				// Calculate samples and divide by number of oscillators
-				sample = ( osc1->nextSample() + osc2->nextSample() + osc3->nextSample() ) / numOscillators;
+				for (int n = 0; n < numOscillators; n++)
+					sample += osc[n]->nextSample();
+
+				sample /= numOscillators;
 
                 
                 FloatType* dataLeft = outputBuffer.getWritePointer(0);
@@ -334,7 +345,7 @@ private:
     bool hardSync = false;
     
     ScopedPointer<ADSR> pitchEnvelope;
-    ScopedPointer<Oscillator> osc1, osc2, osc3;
+    std::unique_ptr<Oscillator> osc[3];
 };
 
 

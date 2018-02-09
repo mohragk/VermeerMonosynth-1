@@ -794,6 +794,16 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     // PWM
+	pulsewidth1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidth1Param, LINEARHORIZONTAL));
+	addAndMakeVisible(pulsewidth1Slider.get());
+
+	pulsewidth2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidth2Param, LINEARHORIZONTAL));
+	addAndMakeVisible(pulsewidth2Slider.get());
+
+	pulsewidth3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidth3Param, LINEARHORIZONTAL));
+	addAndMakeVisible(pulsewidth3Slider.get());
+
+
 	pulsewidthAmount1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidthAmount1Param, LINEARHORIZONTAL));
     addAndMakeVisible(pulsewidthAmount1Slider.get());  //
    
@@ -1221,6 +1231,10 @@ void MonosynthPluginAudioProcessorEditor::resized()
     osc1WaveformSlider->setBounds (16, 178, 64, 64);
     osc1WaveformLabel->setBounds (16, 168, 65, 24);
     
+	pulsewidth1Slider->setBounds(16, 410, 45, 14);
+	pulsewidth2Slider->setBounds(88, 410, 45, 14);
+	pulsewidth3Slider->setBounds(160, 410, 45, 14);
+
     pulsewidthAmount1Slider->setBounds(16, 440, 45, 24);
     pulsewidthAmount2Slider->setBounds(88, 440, 45, 24);
     pulsewidthAmount3Slider->setBounds(160, 440, 45, 24);

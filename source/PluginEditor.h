@@ -199,6 +199,12 @@ private:
     
         saturationSwitchSlider,
     
+
+
+	    pulsewidth1Slider,
+	   pulsewidth2Slider,
+	   pulsewidth3Slider,
+
         pulsewidthAmount1Slider,
         pulsewidthAmount2Slider,
         pulsewidthAmount3Slider,

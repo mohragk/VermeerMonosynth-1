@@ -134,6 +134,7 @@ public:
 	void setEnvelopeState( ADSR& envelope);
     void setHardSync(int sync);
     void sendLFO( LFO& thislfo);
+	void setPW(double amt, int osc);
     void setPWAmount(double amt, int osc);
 
 	bool noteIsBeingPlayed();
@@ -214,6 +215,10 @@ public:
     
     AudioParameterInt* filterOrderParam;
     AudioParameterInt* waveshapeSwitchParam;
+
+	AudioParameterFloat* pulsewidth1Param;
+	AudioParameterFloat* pulsewidth2Param;
+	AudioParameterFloat* pulsewidth3Param;
     
     AudioParameterFloat* pulsewidthAmount1Param;
     AudioParameterFloat* pulsewidthAmount2Param;

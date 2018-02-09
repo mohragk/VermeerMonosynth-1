@@ -195,10 +195,14 @@ ampEnvelope(nullptr)
     
     // PWM
     addParameter(waveshapeSwitchParam = new AudioParameterInt("waveShapeSwitchParam", "Waveshaping ON/OFF", 0, 1, 0));
+
+	addParameter(pulsewidth1Param = new AudioParameterFloat("pulsewidth1Param", "PW1", 0.0f, 1.0f, 0.0f));
+	addParameter(pulsewidth2Param = new AudioParameterFloat("pulsewidth2Param", "PW2", 0.0f, 1.0f, 0.0f));
+	addParameter(pulsewidth3Param = new AudioParameterFloat("pulsewidth3Param", "PW3", 0.0f, 1.0f, 0.0f));
     
-    addParameter(pulsewidthAmount1Param = new AudioParameterFloat("pulsewidthAmount1Param", "PWM1 Amt", 0.0f, 1.0f, 0.4f));
-    addParameter(pulsewidthAmount2Param = new AudioParameterFloat("pulsewidthAmount2Param", "PWM2 Amt", 0.0f, 1.0f, 0.4f));
-    addParameter(pulsewidthAmount3Param = new AudioParameterFloat("pulsewidthAmount3Param", "PWM3 Amt", 0.0f, 1.0f, 0.4f));
+    addParameter(pulsewidthAmount1Param = new AudioParameterFloat("pulsewidthAmount1Param", "PWM1 Amt", 0.0f, 1.0f, 0.0f));
+    addParameter(pulsewidthAmount2Param = new AudioParameterFloat("pulsewidthAmount2Param", "PWM2 Amt", 0.0f, 1.0f, 0.0f));
+    addParameter(pulsewidthAmount3Param = new AudioParameterFloat("pulsewidthAmount3Param", "PWM3 Amt", 0.0f, 1.0f, 0.0f));
 
 	//Saturation/Overdrive
 	addParameter(saturationParam = new AudioParameterFloat("saturationParam", "Saturation", 1.0f, 5.0f, 1.0f));
@@ -870,6 +874,8 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 void inline MonosynthPluginAudioProcessor::updateParameters()
 {
+
+
     // set various parameters
     setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
     setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
@@ -891,10 +897,15 @@ void inline MonosynthPluginAudioProcessor::updateParameters()
     
     sendLFO( lfo );
     
-    
-    setPWAmount(*pulsewidthAmount1Param, 0);
-    setPWAmount(*pulsewidthAmount2Param, 1);
-    setPWAmount(*pulsewidthAmount3Param, 2);
+	pulseWidthSmooth.setValue(*pulsewidth1Param);
+
+	setPW(pulseWidthSmooth.getNextValue(), 0);
+	setPW(*pulsewidth2Param, 1);
+	setPW(*pulsewidth3Param, 2);
+
+    //setPWAmount(*pulsewidthAmount1Param, 0);
+    //setPWAmount(*pulsewidthAmount2Param, 1);
+    //setPWAmount(*pulsewidthAmount3Param, 2);
    
     
     
@@ -967,6 +978,13 @@ void MonosynthPluginAudioProcessor::setHardSync(int sync)
     
     return static_cast<MonosynthVoice*>(synth.getVoice(0))->setHardSync(sync);
     
+}
+
+void MonosynthPluginAudioProcessor::setPW(double amt, int osc)
+{
+
+	return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPulsewidth(amt, osc);
+
 }
 
 void MonosynthPluginAudioProcessor::setPWAmount(double amt, int osc)
