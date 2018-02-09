@@ -319,7 +319,9 @@ private:
 
     void initialiseSynth();
     void updateCurrentTimeInfoFromHost();
-    void updateParameters();
+
+	template <typename FloatType>
+    void updateParameters(AudioBuffer<FloatType>& buffer);
     
     float softClip(float s);
 

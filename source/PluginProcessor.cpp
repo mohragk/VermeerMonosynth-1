@@ -476,7 +476,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 {
     const int numSamples = buffer.getNumSamples();
     
-    updateParameters();
+    updateParameters(buffer);
     
     
     // Now pass any incoming midi messages to our keyboard state object, and let it
@@ -871,37 +871,45 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 }
 
 
-
-void inline MonosynthPluginAudioProcessor::updateParameters()
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buffer)
 {
+	int numSamples = buffer.getNumSamples();
 
-
-    // set various parameters
-    setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
-    setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
-    
-    
-    setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
-    
-    setPitchEnvelopeAmount(*pitchModParam);
-    
-    setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam );
-    setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
-    setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
-    
-    setEnvelopeState( *ampEnvelope );
-    
-    setHardSync(*oscSyncParam);
-    pulseWidthSmooth.setValue( ( (modAmount * lfo.nextSample() ) + 1.0 ) / 2.0 );
-    
-    
-    sendLFO( lfo );
-    
 	pulseWidthSmooth.setValue(*pulsewidth1Param);
+
+	for (int i = 0; i < numSamples; i++)
+	{
+		// set various parameters
+		setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
+		setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
+
+
+		setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
+
+		setPitchEnvelopeAmount(*pitchModParam);
+
+		setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam);
+		setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
+		setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
+
+		setEnvelopeState(*ampEnvelope);
+
+		setHardSync(*oscSyncParam);
+
+
+
+		
+
+		
+	}
 
 	setPW(pulseWidthSmooth.getNextValue(), 0);
 	setPW(*pulsewidth2Param, 1);
 	setPW(*pulsewidth3Param, 2);
+   
+
+	sendLFO(lfo);
 
     //setPWAmount(*pulsewidthAmount1Param, 0);
     //setPWAmount(*pulsewidthAmount2Param, 1);
