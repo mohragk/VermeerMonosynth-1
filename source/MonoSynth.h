@@ -188,7 +188,7 @@ public:
     
     void sendLFO(LFO& lfo)
     {
-        lfoValue = (lfo.nextSample() + 1.0) / 2.0;
+        lfoValue = lfo.nextSample();
     }
     
     void setHardSync(bool sync)
@@ -196,29 +196,16 @@ public:
         hardSync = sync;
     }
     
-    void setPWAmount(double amt, int osc)
+    void setModAmountPW(double amt, int n)
     {
-        if (osc == 0)
-            modAmountPW1 = amt;
-        else if (osc == 1)
-            modAmountPW2 = amt;
-        else
-            modAmountPW3 = amt;
+        modAmountPW[n] = amt;
     }
   
 	void setPulsewidth(double pw, int n)
 	{
-		
-		if(n == 0)
-			osc[0]->setPulsewidth(pw);
-
-		 else if (n == 1)
-			osc[1]->setPulsewidth(pw);
-
-		 else 
-			osc[2]->setPulsewidth(pw);
-
-	 
+        double newPW = pw + ( modAmountPW[n] * (lfoValue / 2.0) );
+        
+		osc[n]->setPulsewidth( softClipParam( newPW ) );
 	}
 
 private:
@@ -310,6 +297,20 @@ private:
         return localSample;
     }
     
+    double softClipParam(double val)
+    {
+        double localVal = val;
+        
+        if (localVal > 1.0)
+            localVal = 1.0;
+        else if (localVal < 0.0)
+            localVal = 0.0;
+        else
+            localVal = localVal - (localVal * localVal * localVal);
+        
+        return localVal;
+    }
+    
     double inline semitoneOffsetToFreq(const double semitones, const double freq)
     {
         double power = semitones / 12.0;
@@ -328,7 +329,7 @@ private:
     int noteOffset;
 
     double lfoValue, egValue;
-    double modAmountPW1, modAmountPW2, modAmountPW3;
+    double modAmountPW[3];
     
     double pitchModulation;
     double oscDetuneAmount[3];

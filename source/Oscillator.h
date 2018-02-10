@@ -63,9 +63,9 @@ public:
     
 	
 
-    void setPulsewidth(double pwm)
+    void setPulsewidth(double pw)
     {
-        pulsewidth = (pwm + 1.0) / 2.0;
+        pulsewidth = pw * 0.998 + 0.001; //(pw + 1.0) / 2.0;
     }
     
 	void setVelocityFactor(float v)

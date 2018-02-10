@@ -796,12 +796,15 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     // PWM
 	pulsewidth1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidth1Param, LINEARHORIZONTAL));
 	addAndMakeVisible(pulsewidth1Slider.get());
+    pulsewidth1Slider->setDoubleClickReturnValue(true, 0.5);
 
 	pulsewidth2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidth2Param, LINEARHORIZONTAL));
 	addAndMakeVisible(pulsewidth2Slider.get());
+    pulsewidth2Slider->setDoubleClickReturnValue(true, 0.5);
 
 	pulsewidth3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidth3Param, LINEARHORIZONTAL));
 	addAndMakeVisible(pulsewidth3Slider.get());
+    pulsewidth3Slider->setDoubleClickReturnValue(true, 0.5);
 
 
 	pulsewidthAmount1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pulsewidthAmount1Param, LINEARHORIZONTAL));

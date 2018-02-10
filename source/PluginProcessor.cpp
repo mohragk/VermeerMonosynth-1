@@ -196,9 +196,9 @@ ampEnvelope(nullptr)
     // PWM
     addParameter(waveshapeSwitchParam = new AudioParameterInt("waveShapeSwitchParam", "Waveshaping ON/OFF", 0, 1, 0));
 
-	addParameter(pulsewidth1Param = new AudioParameterFloat("pulsewidth1Param", "PW1", 0.0f, 1.0f, 0.0f));
-	addParameter(pulsewidth2Param = new AudioParameterFloat("pulsewidth2Param", "PW2", 0.0f, 1.0f, 0.0f));
-	addParameter(pulsewidth3Param = new AudioParameterFloat("pulsewidth3Param", "PW3", 0.0f, 1.0f, 0.0f));
+	addParameter(pulsewidth1Param = new AudioParameterFloat("pulsewidth1Param", "PW1", 0.0f, 1.0f, 0.5f));
+	addParameter(pulsewidth2Param = new AudioParameterFloat("pulsewidth2Param", "PW2", 0.0f, 1.0f, 0.5f));
+	addParameter(pulsewidth3Param = new AudioParameterFloat("pulsewidth3Param", "PW3", 0.0f, 1.0f, 0.5f));
     
     addParameter(pulsewidthAmount1Param = new AudioParameterFloat("pulsewidthAmount1Param", "PWM1 Amt", 0.0f, 1.0f, 0.0f));
     addParameter(pulsewidthAmount2Param = new AudioParameterFloat("pulsewidthAmount2Param", "PWM2 Amt", 0.0f, 1.0f, 0.0f));
@@ -299,6 +299,10 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     pulsewidthAmount2Param = nullptr;
     pulsewidthAmount3Param = nullptr;
     
+    pulsewidth1Param = nullptr;
+    pulsewidth2Param = nullptr;
+    pulsewidth3Param = nullptr;
+    
 }
 
 
@@ -372,9 +376,6 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     }
     
     lfo.setSampleRate(sampleRate);
-    
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
     synth.setCurrentPlaybackSampleRate (sampleRate);
     keyboardState.reset();
     
@@ -382,7 +383,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
-    //masterGain.reset(sampleRate / oversamplingDouble->getOversamplingFactor(), 0.001);
+    
     pulsewidthSmooth1.reset(sampleRate, cutoffRampTimeDefault);
     pulsewidthSmooth2.reset(sampleRate, cutoffRampTimeDefault);
     pulsewidthSmooth3.reset(sampleRate, cutoffRampTimeDefault);
@@ -783,22 +784,9 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
 
 double MonosynthPluginAudioProcessor::wave_shape(double sample, double overdrive)
 {
-	
-	//double s = sample * overdrive;
-	//return (s - (0.15 * s * s) - (0.15 * s * s * s)) / overdrive;
-	
-	
+
 	return dsp::FastMathApproximations::tanh(overdrive * sample);
 
-	/*
-	double s = sample * overdrive;
-
-	if (s > 0)
-		return (1 - exp(-s)) / overdrive;
-	else
-		return (-1 + exp(s)) / overdrive;
-
-    */
 }
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
@@ -884,11 +872,6 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 {
 	int numSamples = buffer.getNumSamples();
 
-    
-
-    
-    
-    
     while (--numSamples > 0)
     {
 		// set various parameters
@@ -912,10 +895,11 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         pulsewidthSmooth2.setValue(*pulsewidth2Param);
         pulsewidthSmooth3.setValue(*pulsewidth3Param);
         
+        setPWAmount(*pulsewidthAmount1Param, 0);
+        setPWAmount(*pulsewidthAmount2Param, 1);
+        setPWAmount(*pulsewidthAmount3Param, 2);
         
-		
-       
-		
+        sendLFO(lfo);
 	}
 
 	
@@ -923,11 +907,9 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     setPW(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
     setPW(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
 
-	sendLFO(lfo);
+	
 
-    //setPWAmount(*pulsewidthAmount1Param, 0);
-    //setPWAmount(*pulsewidthAmount2Param, 1);
-    //setPWAmount(*pulsewidthAmount3Param, 2);
+    
    
     
     
@@ -1012,7 +994,7 @@ void MonosynthPluginAudioProcessor::setPW(double amt, int osc)
 void MonosynthPluginAudioProcessor::setPWAmount(double amt, int osc)
 {
     
-    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPWAmount(amt, osc);
+    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setModAmountPW(amt, osc);
     
 }
 
