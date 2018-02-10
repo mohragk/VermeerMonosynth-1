@@ -64,6 +64,8 @@ public:
 	static const int decayCurveLinear_symbol_svgSize;
 	static const char* decayCurveExponential_symbol_svg;
 	static const int decayCurveExponential_symbol_svgSize;
+	static const char* oscNoiseWaveSymbol_svg;
+    static const int oscNoiseWaveSymbol_svgSize;
 
 private:
     class ParameterSlider;
@@ -212,15 +214,23 @@ private:
 		saturationSlider
         ;
 
+    ScopedPointer<Drawable> drawable25;
     ScopedPointer<Drawable> drawable1;
     ScopedPointer<Drawable> drawable2;
     ScopedPointer<Drawable> drawable3;
+    
+    ScopedPointer<Drawable> drawable26;
     ScopedPointer<Drawable> drawable4;
     ScopedPointer<Drawable> drawable5;
     ScopedPointer<Drawable> drawable6;
+    
+    ScopedPointer<Drawable> drawable27;
     ScopedPointer<Drawable> drawable7;
     ScopedPointer<Drawable> drawable8;
     ScopedPointer<Drawable> drawable9;
+    
+    
+    
     ScopedPointer<Drawable> drawable10;
     ScopedPointer<Drawable> drawable11;
     ScopedPointer<Drawable> drawable12;
@@ -236,6 +246,7 @@ private:
     ScopedPointer<Drawable> drawable22;
     ScopedPointer<Drawable> drawable23;
     ScopedPointer<Drawable> drawable24;
+    
     
     
     String font;

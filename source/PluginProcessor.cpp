@@ -196,9 +196,9 @@ ampEnvelope(nullptr)
     // PWM
     addParameter(waveshapeSwitchParam = new AudioParameterInt("waveShapeSwitchParam", "Waveshaping ON/OFF", 0, 1, 0));
 
-	addParameter(pulsewidth1Param = new AudioParameterFloat("pulsewidth1Param", "PW1", 0.0f, 1.0f, 0.5f));
-	addParameter(pulsewidth2Param = new AudioParameterFloat("pulsewidth2Param", "PW2", 0.0f, 1.0f, 0.5f));
-	addParameter(pulsewidth3Param = new AudioParameterFloat("pulsewidth3Param", "PW3", 0.0f, 1.0f, 0.5f));
+	addParameter(pulsewidth1Param = new AudioParameterFloat("pulsewidth1Param", "PW1", 0.0f, 1.0f, 0.0f));
+	addParameter(pulsewidth2Param = new AudioParameterFloat("pulsewidth2Param", "PW2", 0.0f, 1.0f, 0.0f));
+	addParameter(pulsewidth3Param = new AudioParameterFloat("pulsewidth3Param", "PW3", 0.0f, 1.0f, 0.0f));
     
     addParameter(pulsewidthAmount1Param = new AudioParameterFloat("pulsewidthAmount1Param", "PWM1 Amt", 0.0f, 1.0f, 0.0f));
     addParameter(pulsewidthAmount2Param = new AudioParameterFloat("pulsewidthAmount2Param", "PWM2 Amt", 0.0f, 1.0f, 0.0f));

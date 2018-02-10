@@ -846,16 +846,23 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     //
     // Drawables for symbols/icons
     //
-                       
+    
+    drawable25 = Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize);
     drawable1 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
     drawable2 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
     drawable3 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    
+    drawable26 = Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize);
     drawable4 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
     drawable5 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
     drawable6 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    
+    drawable27 = Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize);
     drawable7 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
     drawable8 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
     drawable9 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    
+    
 
 	// SIGH.. swapped the graphics out
     drawable11 = Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize);
@@ -957,6 +964,17 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (Colours::black);
+        jassert (drawable25 != 0);
+        if (drawable25 != 0)
+            drawable25->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                    RectanglePlacement::centred, 1.000f);
+    }
+    
+    {
+        int x = 51, y = 224, width = 10, height = 6;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (Colours::black);
         jassert (drawable1 != 0);
         if (drawable1 != 0)
             drawable1->drawWithin (g, Rectangle<float> (x, y, width, height),
@@ -964,7 +982,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
     }
     
     {
-        int x = 44, y = 224, width = 10, height = 6;
+        int x = 36, y = 224, width = 10, height = 6;
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (Colours::black);
@@ -990,6 +1008,17 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (Colours::black);
+        jassert (drawable26 != 0);
+        if (drawable26 != 0)
+            drawable26->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                   RectanglePlacement::centred, 1.000f);
+    }
+    
+    {
+        int x = 123, y = 224, width = 10, height = 6;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (Colours::black);
         jassert (drawable4 != 0);
         if (drawable4 != 0)
             drawable4->drawWithin (g, Rectangle<float> (x, y, width, height),
@@ -997,7 +1026,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
     }
     
     {
-        int x = 116, y = 224, width = 10, height = 6;
+        int x = 108, y = 224, width = 10, height = 6;
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (Colours::black);
@@ -1023,6 +1052,17 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (Colours::black);
+        jassert (drawable27 != 0);
+        if (drawable27 != 0)
+            drawable27->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                   RectanglePlacement::centred, 1.000f);
+    }
+    
+    {
+        int x = 195, y = 224, width = 10, height = 6;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (Colours::black);
         jassert (drawable7 != 0);
         if (drawable7 != 0)
             drawable7->drawWithin (g, Rectangle<float> (x, y, width, height),
@@ -1030,7 +1070,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
     }
     
     {
-        int x = 188, y = 224, width = 10, height = 6;
+        int x = 180, y = 224, width = 10, height = 6;
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (Colours::black);
@@ -1050,6 +1090,10 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
             drawable9->drawWithin (g, Rectangle<float> (x, y, width, height),
                                    RectanglePlacement::centred, 1.000f);
     }
+    
+    
+    
+     
     
     {
         int x = 538, y = 168, width = 14, height = 8;
@@ -1484,6 +1528,23 @@ void MonosynthPluginAudioProcessorEditor::updateTimecodeDisplay (AudioPlayHead::
 
 //==============================================================================
 // Binary resources - be careful not to edit any of these sections!
+
+// JUCER_RESOURCE: oscNoiseWaveSymbol_svg, 650, "../Resources/OscNoiseWaveSymbol.svg"
+static const unsigned char resource_CustomPluginEditor_oscNoiseWaveSymbol_svg[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,117,116,102,45,
+56,34,63,62,13,10,60,33,45,45,32,71,101,110,101,114,97,116,111,114,58,32,65,100,111,98,101,32,73,108,108,117,115,116,114,97,116,111,114,32,49,57,46,48,46,48,44,32,83,86,71,32,69,120,112,111,114,116,32,
+80,108,117,103,45,73,110,32,46,32,83,86,71,32,86,101,114,115,105,111,110,58,32,54,46,48,48,32,66,117,105,108,100,32,48,41,32,32,45,45,62,13,10,60,115,118,103,32,118,101,114,115,105,111,110,61,34,49,46,
+49,34,32,105,100,61,34,76,97,97,103,95,49,34,32,120,109,108,110,115,61,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,50,48,48,48,47,115,118,103,34,32,120,109,108,110,115,58,120,108,
+105,110,107,61,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,49,57,57,57,47,120,108,105,110,107,34,32,120,61,34,48,112,120,34,32,121,61,34,48,112,120,34,13,10,9,32,118,105,101,119,
+66,111,120,61,34,48,32,48,32,50,52,32,50,52,34,32,115,116,121,108,101,61,34,101,110,97,98,108,101,45,98,97,99,107,103,114,111,117,110,100,58,110,101,119,32,48,32,48,32,50,52,32,50,52,59,34,32,120,109,
+108,58,115,112,97,99,101,61,34,112,114,101,115,101,114,118,101,34,62,13,10,60,115,116,121,108,101,32,116,121,112,101,61,34,116,101,120,116,47,99,115,115,34,62,13,10,9,46,115,116,48,123,102,105,108,108,
+58,35,69,54,69,54,69,54,59,125,13,10,60,47,115,116,121,108,101,62,13,10,60,103,32,105,100,61,34,88,77,76,73,68,95,51,95,34,62,13,10,9,60,112,111,108,121,103,111,110,32,105,100,61,34,88,77,76,73,68,95,
+52,95,34,32,99,108,97,115,115,61,34,115,116,48,34,32,112,111,105,110,116,115,61,34,49,50,44,49,56,32,49,49,44,49,51,32,49,48,44,49,50,32,56,44,49,55,32,54,46,52,44,49,50,46,55,32,53,46,53,44,49,52,32,
+51,44,49,52,32,51,44,49,50,32,52,46,53,44,49,50,32,55,46,54,44,55,46,51,32,56,44,49,50,32,57,46,55,44,54,46,52,32,13,10,9,9,49,50,46,55,44,49,49,46,55,32,49,51,46,50,44,49,51,46,50,32,49,54,44,56,32,49,
+55,46,52,44,49,51,46,54,32,49,56,46,53,44,49,50,32,50,49,44,49,50,32,50,49,44,49,52,32,49,57,44,49,52,32,49,54,46,54,44,49,56,46,52,32,49,53,46,50,44,49,51,46,52,32,9,34,47,62,13,10,60,47,103,62,13,10,
+60,47,115,118,103,62,13,10,0,0};
+
+const char* MonosynthPluginAudioProcessorEditor::oscNoiseWaveSymbol_svg = (const char*) resource_CustomPluginEditor_oscNoiseWaveSymbol_svg;
+const int MonosynthPluginAudioProcessorEditor::oscNoiseWaveSymbol_svgSize = 650;
 
 // JUCER_RESOURCE: oscSquareWaveSymbol_svg, 599, "../../../../../../Pictures/OscSquareWaveSymbol.svg"
 static const unsigned char resource_CustomPluginEditor_oscSquareWaveSymbol_svg[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,117,116,

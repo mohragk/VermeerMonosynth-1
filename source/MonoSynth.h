@@ -203,9 +203,15 @@ public:
   
 	void setPulsewidth(double pw, int n)
 	{
-        double newPW = pw + ( modAmountPW[n] * (lfoValue / 2.0) );
+        double newPW = pw + ( modAmountPW[n] * ((lfoValue + 1.0) / 2.0) );
         
-		osc[n]->setPulsewidth( softClipParam( newPW ) );
+        if (newPW > 1.0)
+            newPW = 1.0;
+        
+        if(newPW < 0.0)
+            newPW = 0.0;
+        
+		osc[n]->setPulsewidth( newPW  );
 	}
 
 private:
