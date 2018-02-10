@@ -76,9 +76,6 @@ private:
 		LINEARVERTICAL
 	};
 
-    LinearSmoothedValue<float> newValueSmooth;
-    
-    
     Colour lineColour;
     
     MidiKeyboardComponent midiKeyboard;

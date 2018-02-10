@@ -223,8 +223,8 @@ ampEnvelope(nullptr)
     
     
     // Oversampling 2 times with IIR filtering
-    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 2, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
-    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 2, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
+    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
+    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
     
 
     for (int i = 0; i < 6; i++)
@@ -392,10 +392,10 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     ampEnvelope->setSampleRate(sampleRate);
     
    
-    smoothing[0]->init(sampleRate, 10);
+    smoothing[0]->init(sampleRate, 4.0);
     
-    for (int i = 1; i < 6; i++)
-        smoothing[i]->init(sampleRate, 0.1);
+    for (int i = 0; i < 6; i++)
+        smoothing[i]->init(sampleRate, 2.0);
     
 }
 
@@ -677,7 +677,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     //
     //  break buffer into chunks
     //
-    int stepSize = jmin(32, numSamples);
+    int stepSize = jmin(16, numSamples);
     
     int samplesLeftOver = numSamples;
     
@@ -871,8 +871,11 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buffer)
 {
 	int numSamples = buffer.getNumSamples();
-
-    while (--numSamples > 0)
+    int stepSize = jmin(16, numSamples);
+    
+    
+    
+    for (int i = 0; i < numSamples; i++)
     {
 		// set various parameters
 		setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
@@ -900,18 +903,16 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         setPWAmount(*pulsewidthAmount3Param, 2);
         
         sendLFO(lfo);
+        
+        if (i % stepSize == 0)
+        {
+            setPW(smoothing[1]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
+            setPW(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
+            setPW(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
+        }
+        
 	}
 
-	
-    setPW(smoothing[1]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
-    setPW(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
-    setPW(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
-
-	
-
-    
-   
-    
     
 }
 
