@@ -847,45 +847,45 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     // Drawables for symbols/icons
     //
     
-    drawable25 = Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize);
-    drawable1 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
-    drawable2 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
-    drawable3 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    drawable25 = std::unique_ptr<Drawable>( Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize));
+    drawable1 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
+    drawable2 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
+    drawable3 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
     
-    drawable26 = Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize);
-    drawable4 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
-    drawable5 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
-    drawable6 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    drawable26 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize));
+    drawable4 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
+    drawable5 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
+    drawable6 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
     
-    drawable27 = Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize);
-    drawable7 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
-    drawable8 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
-    drawable9 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    drawable27 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize));
+    drawable7 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
+    drawable8 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
+    drawable9 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
     
     
 
 	// SIGH.. swapped the graphics out
-    drawable11 = Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize);
-    drawable10 = Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize);
+    drawable11 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
+    drawable10 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
     
-	drawable13 = Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize);
-    drawable12 = Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize);
+	drawable13 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
+    drawable12 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
     
-	drawable15 = Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize);
-    drawable14 = Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize);
+	drawable15 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
+    drawable14 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
     
-	drawable17 = Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize);
-    drawable16 = Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize);
+	drawable17 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
+    drawable16 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
  
-	drawable19 = Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize);
-    drawable18 = Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize);
+	drawable19 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
+    drawable18 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
  
-	drawable21 = Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize);
-    drawable20 = Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize);
+	drawable21 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
+    drawable20 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
     
-    drawable22 = Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size);
-    drawable23 = Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize);
-    drawable24 = Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize);
+    drawable22 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
+    drawable23 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
+    drawable24 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
     
 
     // set resize limits for this plug-in

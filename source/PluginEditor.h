@@ -214,6 +214,42 @@ private:
 		saturationSlider
         ;
 
+    
+    std::unique_ptr<Drawable>
+    drawable25,
+    drawable1,
+    drawable2,
+    drawable3,
+    
+    drawable26,
+    drawable4,
+    drawable5,
+    drawable6,
+    
+    drawable27,
+    drawable7,
+    drawable8,
+    drawable9,
+    
+    
+    
+    drawable10,
+    drawable11,
+    drawable12,
+    drawable13,
+    drawable14,
+    drawable15,
+    drawable16,
+    drawable17,
+    drawable18,
+    drawable19,
+    drawable20,
+    drawable21,
+    drawable22,
+    drawable23,
+    drawable24;
+    
+    /*
     ScopedPointer<Drawable> drawable25;
     ScopedPointer<Drawable> drawable1;
     ScopedPointer<Drawable> drawable2;
@@ -246,7 +282,7 @@ private:
     ScopedPointer<Drawable> drawable22;
     ScopedPointer<Drawable> drawable23;
     ScopedPointer<Drawable> drawable24;
-    
+    */
     
     
     String font;
