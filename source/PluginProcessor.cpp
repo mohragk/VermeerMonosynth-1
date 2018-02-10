@@ -107,6 +107,8 @@ pulsewidthAmount3Param(nullptr),
 
 saturationParam(nullptr),
 
+oversampleSwitchParam(nullptr),
+
 filterEnvelope(nullptr),
 
 ampEnvelope(nullptr)
@@ -309,6 +311,9 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     pulsewidth1Param = nullptr;
     pulsewidth2Param = nullptr;
     pulsewidth3Param = nullptr;
+    
+    saturationParam = nullptr;
+    oversampleSwitchParam = nullptr;
     
 }
 
@@ -516,6 +521,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(double sr)
 
 void MonosynthPluginAudioProcessor::setOversampleQuality(int q = 0)
 {
+    
     if(q == 0)
         hqOversampling = false;
      else
@@ -523,12 +529,11 @@ void MonosynthPluginAudioProcessor::setOversampleQuality(int q = 0)
     
     if (prevHqOversampling != hqOversampling)
     {
-        resetSamplerates(getSampleRate());
+        resetSamplerates( getSampleRate() );
         prevHqOversampling = hqOversampling;
     }
     
-    
-    
+   
     
 }
 
@@ -537,6 +542,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 {
     
     setOversampleQuality(*oversampleSwitchParam);
+    
     
     const int numSamples = buffer.getNumSamples();
     
@@ -763,8 +769,11 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 			filter[0]->SetCutoff(combinedCutoff);
 			filter[1]->SetCutoff(combinedCutoff);
 
-			filter[0]->Process(channelDataLeft, stepSize);
-			filter[1]->Process(channelDataRight, stepSize);
+            if (filter[0]->SetCutoff(combinedCutoff))
+                filter[0]->Process(channelDataLeft, stepSize);
+            
+            if (filter[1]->SetCutoff(combinedCutoff))
+                filter[1]->Process(channelDataRight, stepSize);
 		}
 		else
 		{

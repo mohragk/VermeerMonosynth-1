@@ -193,15 +193,17 @@ public:
         resonance.set( (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01 ); // remap
     }
     
-    virtual void SetCutoff(double c) override
+    virtual bool SetCutoff(double c) override
     {
 		if (isnan(c))
-			c = 1000.0;
+            return false;
 
 		jassert(c > 0 && c <= (sampleRate * 0.5));
         
         cutoff.set(c);
         Update();
+        
+        return true;
     }
     
     virtual void SetDrive (double d ) override

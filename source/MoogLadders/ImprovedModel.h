@@ -128,15 +128,17 @@ public:
 		resonance = r * 4.0;
     }
     
-    virtual void SetCutoff(double c) override
+    virtual bool SetCutoff(double c) override
     {
 		if (isnan(c))
-			c = 1000.0;
+			return false;
   		
 		jassert(c > 0 && c <= (sampleRate * 0.5));
 
         cutoff.set(c);
         Update();
+        
+        return true;
     }
     
     virtual void SetDrive (double d) override

@@ -149,13 +149,15 @@ class SEMModel : public LadderFilterBase
 			
 		}
     
-		virtual void SetCutoff(double c) override
+		virtual bool SetCutoff(double c) override
 		{
 			if (isnan(c))
 				c = 1000.0;
 
 			cutoff.set(c);
             Update();
+            
+            return true;
 
 		}
     

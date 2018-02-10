@@ -147,10 +147,14 @@ class VAOnePole : public LadderFilterBase
             resonance.set( r * 10.0);
 		}
     
-		virtual void SetCutoff(double c) override
+		virtual bool SetCutoff(double c) override
 		{
+            if (isnan(c))
+                return false;
+            
 			cutoff.set(c);
             Update();
+            return true;
 		}
     
 		virtual void SetDrive (double d ) override

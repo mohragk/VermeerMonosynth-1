@@ -317,7 +317,7 @@ private:
 	bool noteIsPlaying = false;
     
    // ScopedPointer<LadderFilterBase> filterA[2], filterB[2], filterC[2];
-	std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
+	
     
     enum modTarget {
         modPitch,
@@ -364,6 +364,8 @@ private:
     bool filterOn = true;
     
 	std::unique_ptr<SmoothParam> smoothing[6];
+    
+    std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     
     static BusesProperties getBusesProperties();
    
