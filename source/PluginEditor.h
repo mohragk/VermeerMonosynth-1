@@ -208,7 +208,9 @@ private:
         pulsewidthAmount2Slider,
         pulsewidthAmount3Slider,
 
-		saturationSlider
+		saturationSlider,
+    
+        oversampleSwitchSlider
         ;
 
     

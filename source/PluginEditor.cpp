@@ -214,7 +214,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	pulsewidthAmount2Slider(nullptr),
 	pulsewidthAmount3Slider(nullptr),
 
-	saturationSlider(nullptr)
+	saturationSlider(nullptr),
+
+oversampleSwitchSlider(nullptr)
 	
       
 {
@@ -837,6 +839,13 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     saturationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 	
 	
+    
+    //Oversample switch
+    oversampleSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oversampleSwitchParam, LINEARHORIZONTAL));
+    addAndMakeVisible(oversampleSwitchSlider.get());
+    
+    
+    // Keyboard
     addAndMakeVisible(midiKeyboard);
     midiKeyboard.setAvailableRange(12, 115);
     midiKeyboard.setLowestVisibleKey(36);
@@ -1359,6 +1368,9 @@ void MonosynthPluginAudioProcessorEditor::resized()
 	saturationSlider->setBounds(getWidth() - 24 - 64, 184, 64, 65);
     saturationLabel->setBounds (getWidth() - 23 - 65, 168, 65, 24);
     saturationSwitchSlider->setBounds(getWidth() - 24, 190, 12,40);
+    
+    
+    oversampleSwitchSlider->setBounds(getWidth() - 24- 64, 350, 64,40);
     
    
 

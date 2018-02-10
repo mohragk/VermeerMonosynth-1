@@ -207,6 +207,9 @@ ampEnvelope(nullptr)
 	//Saturation/Overdrive
 	addParameter(saturationParam = new AudioParameterFloat("saturationParam", "Saturation", 1.0f, 5.0f, 1.0f));
     
+    // Oversampling HQ switch
+    addParameter(oversampleSwitchParam = new AudioParameterInt("oversampleSwitchParam", "HQ ON/OFF", 0, 1, 0));
+    
     initialiseSynth();
     
     keyboardState.addListener(this);
@@ -222,9 +225,13 @@ ampEnvelope(nullptr)
     }
     
     
-    // Oversampling 2 times with IIR filtering
-    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
-    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
+    // Oversampling 2 times with FIR filtering
+    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 1, dsp::Oversampling<float>::filterHalfBandFIREquiripple , false ) );
+    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 1, dsp::Oversampling<double>::filterHalfBandFIREquiripple , false ) );
+    
+    // HQ Oversampling 8 times with FIR filtering
+    oversamplingFloatHQ  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
+    oversamplingDoubleHQ = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
     
 
     for (int i = 0; i < 6; i++)
@@ -344,58 +351,31 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
 {
 	oversamplingFloat->initProcessing(samplesPerBlock);
 	oversamplingDouble->initProcessing(samplesPerBlock);
-
-    sampleRate = newSampleRate * oversamplingDouble->getOversamplingFactor();
-
- 
-	if ( isUsingDoublePrecision() )	{ setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
-	else							{ setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
- 
-
+    oversamplingFloatHQ->initProcessing(samplesPerBlock);
+    oversamplingDoubleHQ->initProcessing(samplesPerBlock);
+    
+    resetSamplerates(newSampleRate);
+    
+    keyboardState.reset();
     
     for(int channel = 0; channel < 2; channel++)
     {
         
-        filterA[channel]->SetSampleRate(sampleRate);
         filterA[channel]->SetResonance(0.1);
         filterA[channel]->SetCutoff(12000.0);
         filterA[channel]->SetDrive(1.0);
         
         
-        filterB[channel]->SetSampleRate(sampleRate);
         filterB[channel]->SetResonance(0.1);
         filterB[channel]->SetCutoff(12000.0);
         filterB[channel]->SetDrive(1.0);
         
         
-        filterC[channel]->SetSampleRate(sampleRate);
         filterC[channel]->SetResonance(0.1);
         filterC[channel]->SetCutoff(12000.0);
         filterC[channel]->SetDrive(1.0);
         
     }
-    
-    lfo.setSampleRate(sampleRate);
-    synth.setCurrentPlaybackSampleRate (sampleRate);
-    keyboardState.reset();
-    
-    cutoff.reset(sampleRate, cutoffRampTimeDefault);
-    cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
-    resonance.reset(sampleRate, 0.001);
-    drive.reset(sampleRate, 0.001);
-    
-    pulsewidthSmooth1.reset(sampleRate, cutoffRampTimeDefault);
-    pulsewidthSmooth2.reset(sampleRate, cutoffRampTimeDefault);
-    pulsewidthSmooth3.reset(sampleRate, cutoffRampTimeDefault);
-    
-    filterEnvelope->setSampleRate(sampleRate);
-    ampEnvelope->setSampleRate(sampleRate);
-    
-   
-    smoothing[0]->init(sampleRate, 4.0);
-    
-    for (int i = 0; i < 6; i++)
-        smoothing[i]->init(sampleRate, 2.0);
     
 }
 
@@ -411,8 +391,11 @@ void MonosynthPluginAudioProcessor::releaseResources()
     pulsewidthSmooth1.reset(sampleRate, cutoffRampTimeDefault);
     pulsewidthSmooth2.reset(sampleRate, cutoffRampTimeDefault);
     pulsewidthSmooth3.reset(sampleRate, cutoffRampTimeDefault);
+    
     oversamplingFloat->reset();
     oversamplingDouble->reset();
+    oversamplingFloatHQ->reset();
+    oversamplingDoubleHQ->reset();
     
     for (int channel = 0; channel < 2; channel++)
     {
@@ -439,6 +422,8 @@ void MonosynthPluginAudioProcessor::reset()
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
+    oversamplingFloatHQ->reset();
+    oversamplingDoubleHQ->reset();
     
     
 	for (int channel = 0; channel < 2; channel++)
@@ -480,9 +465,79 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
     
 }
 
+void MonosynthPluginAudioProcessor::resetSamplerates(double sr)
+{
+    double newsr = sr;
+    
+    if(hqOversampling)
+    {
+        newsr *= oversamplingDoubleHQ->getOversamplingFactor();
+        if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDoubleHQ->getLatencyInSamples())); }
+        else                            { setLatencySamples(roundToInt(oversamplingFloatHQ->getLatencyInSamples())); }
+    }
+    else
+    {
+        newsr *= oversamplingDouble->getOversamplingFactor();
+        if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
+        else                            { setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
+    }
+    
+    for(int channel = 0; channel < 2; channel++)
+    {
+        filterA[channel]->SetSampleRate(newsr);
+        filterB[channel]->SetSampleRate(newsr);
+        filterC[channel]->SetSampleRate(newsr);
+    }
+    
+    lfo.setSampleRate(newsr);
+    synth.setCurrentPlaybackSampleRate (newsr);
+    
+    
+    cutoff.reset(newsr, cutoffRampTimeDefault);
+    cutoffFromEnvelope.reset(newsr, cutoffRampTimeDefault);
+    resonance.reset(newsr, 0.001);
+    drive.reset(newsr, 0.001);
+    
+    pulsewidthSmooth1.reset(newsr, cutoffRampTimeDefault);
+    pulsewidthSmooth2.reset(newsr, cutoffRampTimeDefault);
+    pulsewidthSmooth3.reset(newsr, cutoffRampTimeDefault);
+    
+    filterEnvelope->setSampleRate(newsr);
+    ampEnvelope->setSampleRate(newsr);
+    
+    
+    smoothing[0]->init(newsr, 4.0);
+    
+    for (int i = 0; i < 6; i++)
+        smoothing[i]->init(newsr, 2.0);
+    
+    
+}
+
+void MonosynthPluginAudioProcessor::setOversampleQuality(int q = 0)
+{
+    if(q == 0)
+        hqOversampling = false;
+     else
+        hqOversampling = true;
+    
+    if (prevHqOversampling != hqOversampling)
+    {
+        resetSamplerates(getSampleRate());
+        prevHqOversampling = hqOversampling;
+    }
+    
+    
+    
+    
+}
+
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& oversampling)
 {
+    
+    setOversampleQuality(*oversampleSwitchParam);
+    
     const int numSamples = buffer.getNumSamples();
     
     updateParameters(buffer);
@@ -717,9 +772,6 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 			filter[1]->ProcessRamp(channelDataRight, stepSize, prevCutoff, combinedCutoff);
 		}
         
-
-		
-
         prevCutoff = combinedCutoff;
         
         samplesLeftOver -= stepSize;
@@ -903,6 +955,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         setPWAmount(*pulsewidthAmount3Param, 2);
         
         sendLFO(lfo);
+        
         
         if (i % stepSize == 0)
         {

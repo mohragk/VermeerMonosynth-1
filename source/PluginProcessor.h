@@ -60,14 +60,22 @@ public:
     //==============================================================================
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
     {
+
         jassert (! isUsingDoublePrecision());
-        process (buffer, midiMessages, oversamplingFloat);
+        if (hqOversampling)
+            process (buffer, midiMessages, oversamplingFloatHQ);
+        else
+            process (buffer, midiMessages, oversamplingFloat);
     }
     
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
     {
+
         jassert (! isUsingDoublePrecision());
-        process (buffer, midiMessages, oversamplingDouble);
+        if (hqOversampling)
+            process (buffer, midiMessages, oversamplingDoubleHQ);
+        else
+            process (buffer, midiMessages, oversamplingDouble);
     }
 
 
@@ -226,6 +234,8 @@ public:
 
 	AudioParameterFloat* saturationParam;
     
+    AudioParameterInt* oversampleSwitchParam;
+    
     
 private:
 
@@ -289,9 +299,18 @@ private:
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
+    void resetSamplerates(double sr);
+    void setOversampleQuality(int q);
+    
     
     std::unique_ptr<dsp::Oversampling<float>> oversamplingFloat;
 	std::unique_ptr<dsp::Oversampling<double>> oversamplingDouble;
+    
+    std::unique_ptr<dsp::Oversampling<float>> oversamplingFloatHQ;
+    std::unique_ptr<dsp::Oversampling<double>> oversamplingDoubleHQ;
+    
+    bool hqOversampling = false;
+    bool prevHqOversampling = false;
 
     Synthesiser synth;
     
