@@ -124,7 +124,7 @@ ampEnvelope(nullptr)
     
     //addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.4f));
     
-    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float> (0.0f, 2.0f, 0.0f, 0.5f, false), 0.75f));
+    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float> (0.0f, 2.0f, 0.0f, 0.5f, false), 0.50f));
     
     addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
     addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
@@ -138,9 +138,9 @@ ampEnvelope(nullptr)
     addParameter(osc2ModeParam = new AudioParameterInt("osc2ModeChoice", "OSC2 Waveform", 0, 3, 2));
     addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 3, 2));
     
-    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (20.0f, 18000.0f, 0.0f, 0.5f, false), 12000.0f));
+    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.25f, false), 20000.0f));
     addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
-    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (20.0f, 18000.0f, 0.0f, 0.5f, false), 20.0f));
+    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.25f, false), 40.0f));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0f, 5.0f, 0.0f, 1.0f, false), 1.0f));
     // Filter Select Parameter
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 2));
@@ -746,10 +746,10 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff   = ( cutoffFromEnvelope.getNextValue() + smoothing[0]->processSmooth( cutoff.getNextValue() ) )  * contourVelocity;
+        FloatType combinedCutoff   =  cutoffFromEnvelope.getNextValue() + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
 
-		if (combinedCutoff > 18000.0) combinedCutoff = 18000.0;
-		if (combinedCutoff < 20.0) combinedCutoff = 20.0;
+		if (combinedCutoff > 20000.0) combinedCutoff = 20000.0;
+		if (combinedCutoff < 40.0) combinedCutoff = 40.0;
         
 		
 

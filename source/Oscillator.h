@@ -102,12 +102,13 @@ public:
         else if( mode == OSCILLATOR_MODE_SAW)
         {
             value = naiveWaveFormForMode(mode, phase.get());
-            value = dsp::FastMathApproximations::tanh(value * 3.0);
+            //value = dsp::FastMathApproximations::tanh(value * 3.0);
             value -= poly_blep( t, phaseIncrement );
         }
         else if (mode == OSCILLATOR_MODE_SQUARE)
         {
             value = naiveWaveFormForMode(mode, phase.get());
+            value = dsp::FastMathApproximations::sinh(value);
             value += poly_blep( t, phaseIncrement );
             value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement ); //BUG!!! 1.0 - 0.5 should be pulsewidth
         }
@@ -126,7 +127,7 @@ public:
             rephase = true;
         }
         
-        return value * level * gain.get() * velocityFactor;
+        return value * level * gain.get();// * velocityFactor;
     }
     
 private:
@@ -154,9 +155,9 @@ private:
                 
             case OSCILLATOR_MODE_SQUARE:
                 if (phs <=  pulsewidth * two_Pi) { // BUG!!! 0.5 should be pulsewidth
-                    value = 1.0;
+                    value = 1.0 - (1.0 * phs / two_Pi);
                 } else {
-                    value = -1.0;
+                    value = (0.5 * (phs - pulsewidth * two_Pi) / double_Pi ) - 1.0;
                 }
                 break;
                 
