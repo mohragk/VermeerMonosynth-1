@@ -124,7 +124,7 @@ public:
         {
             phase.set(0.0);
             rephase = true;
-            deviation = random.nextFloat() * 0.2;
+            deviation = random.nextFloat() * 0.15;
             
         }
         
