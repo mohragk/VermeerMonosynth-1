@@ -60,15 +60,25 @@ public:
     //==============================================================================
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
     {
-        jassert (! isUsingDoublePrecision());
-        process (buffer, midiMessages);
-    }
 
+        jassert (! isUsingDoublePrecision());
+        if (hqOversampling)
+            process (buffer, midiMessages, oversamplingFloatHQ);
+        else
+            process (buffer, midiMessages, oversamplingFloat);
+    }
+    
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
     {
-        jassert (isUsingDoublePrecision());
-        process (buffer, midiMessages);
+
+        jassert (! isUsingDoublePrecision());
+        if (hqOversampling)
+            process (buffer, midiMessages, oversamplingDoubleHQ);
+        else
+            process (buffer, midiMessages, oversamplingDouble);
     }
+
+
 
     //==============================================================================
     bool hasEditor() const override                                             { return true; }
@@ -129,10 +139,15 @@ public:
     void setOsc3DetuneAmount(float fine, int coarse);
     void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
     void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
-	void setEnvelopeState(ADSR envelope);
+	void setEnvelopeState( ADSR& envelope);
     void setHardSync(int sync);
+    void sendLFO( LFO& thislfo);
+	void setPW(double amt, int osc);
+    void setPWAmount(double amt, int osc);
 
 	bool noteIsBeingPlayed();
+    
+    bool saturationOn();
 
 	bool lfoSynced();
 	
@@ -151,6 +166,8 @@ public:
     AudioParameterInt* osc1ModeParam;
     AudioParameterInt* osc2ModeParam;
     AudioParameterInt* osc3ModeParam;
+    
+    AudioParameterInt* oscSyncParam;
     
     AudioParameterFloat* filterParam;
     AudioParameterFloat* filterQParam;
@@ -200,39 +217,107 @@ public:
     
     AudioParameterInt* lfoDivisionParam;
     
-    AudioParameterInt* oscSyncParam;
+    
+    
+    AudioParameterInt* overSampleParam;
+    
+    AudioParameterInt* filterOrderParam;
+    AudioParameterInt* waveshapeSwitchParam;
+
+	AudioParameterFloat* pulsewidth1Param;
+	AudioParameterFloat* pulsewidth2Param;
+	AudioParameterFloat* pulsewidth3Param;
+    
+    AudioParameterFloat* pulsewidthAmount1Param;
+    AudioParameterFloat* pulsewidthAmount2Param;
+    AudioParameterFloat* pulsewidthAmount3Param;
+
+	AudioParameterFloat* saturationParam;
+    
+    AudioParameterInt* oversampleSwitchParam;
     
     
 private:
+
+
     //==============================================================================
-    template <typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages);
     
+	class SmoothParam {
+	public:
+		SmoothParam()
+		{
+			reset();
+		}
+
+		~SmoothParam()
+		{}
+
+		void init(double sr, double millis) 
+		{
+			a = exp(-double_Pi / (millis * 0.001 * sr));
+			b = 1.0 - a;
+			z = 0.0;
+		}
+
+		void reset()
+		{
+			a = 0.0;
+			b = 0.0;
+			z = 0.0;
+		}
+
+		inline double processSmooth(double val)
+		{
+			z = (val * b) + (z * a);
+			return z;
+		}
+
+	private:
+		double a, b, z;
+		double coeff;
+	};
+	
 	template <typename FloatType>
+    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);
+
+    template <typename FloatType>
     void applyGain (AudioBuffer<FloatType>& buffer);
-   
-	template <typename FloatType>
+
+    template <typename FloatType>
     void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
-   
-	template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase *filter[]);
+
+    template <typename FloatType>
+    void applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[]);
 
 	template <typename FloatType>
-	void applyFilterAlt(AudioBuffer<FloatType>& buffer);
-    
-	template <typename FloatType>
+	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
+
+    template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
+
+	double wave_shape(double sample, double overdrive);
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
-    int delayPosition;
+    void resetSamplerates(double sr);
+    void setOversampleQuality(int q);
+    
+    
+    std::unique_ptr<dsp::Oversampling<float>> oversamplingFloat;
+	std::unique_ptr<dsp::Oversampling<double>> oversamplingDouble;
+    
+    std::unique_ptr<dsp::Oversampling<float>> oversamplingFloatHQ;
+    std::unique_ptr<dsp::Oversampling<double>> oversamplingDoubleHQ;
+    
+    bool hqOversampling = false;
+    bool prevHqOversampling = false;
 
     Synthesiser synth;
     
 	bool noteIsPlaying = false;
     
-    LadderFilterBase *filterA[2], *filterB[2], *filterC[2];
-    
+   // ScopedPointer<LadderFilterBase> filterA[2], filterB[2], filterC[2];
+	
     
     enum modTarget {
         modPitch,
@@ -242,8 +327,8 @@ private:
     
     void applyModToTarget(int target, double amount);
 
-    ScopedPointer<ADSR> filterEnvelope;
-    ScopedPointer<ADSR> ampEnvelope;
+    std::unique_ptr<ADSR> filterEnvelope;
+    std::unique_ptr<ADSR> ampEnvelope;
     LFO lfo;
     
     double modAmount;
@@ -253,27 +338,34 @@ private:
 
     void initialiseSynth();
     void updateCurrentTimeInfoFromHost();
-    void updateParameters();
+
+	template <typename FloatType>
+    void updateParameters(AudioBuffer<FloatType>& buffer);
     
     float softClip(float s);
 
     float contourVelocity;
 	double cutoffModulationAmt; 
     
-    float currentCutoff;
+    double currentCutoff = 20.0, prevCutoff = 20.0;
     
     double sampleRate;
     
-	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, masterGain;
+	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, pulsewidthSmooth1, pulsewidthSmooth2, pulsewidthSmooth3;
 	LinearSmoothedValue<double> cutoffFromEnvelope;
 	
-	double cutoffRampTimeDefault = 0.0025, cutoffRampTime;
+	double cutoffRampTimeDefault = 0.0002, cutoffRampTime;
 	
     
     int lastNotePlayed;
     
-    double gainDB;
+    double masterGain, masterGainPrev;
     
+    bool filterOn = true;
+    
+	std::unique_ptr<SmoothParam> smoothing[6];
+    
+    std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     
     static BusesProperties getBusesProperties();
    

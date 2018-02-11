@@ -64,20 +64,25 @@ public:
 	static const int decayCurveLinear_symbol_svgSize;
 	static const char* decayCurveExponential_symbol_svg;
 	static const int decayCurveExponential_symbol_svgSize;
+	static const char* oscNoiseWaveSymbol_svg;
+    static const int oscNoiseWaveSymbol_svgSize;
 
 private:
     class ParameterSlider;
+	enum style
+	{
+		ROTARY = 0,
+		LINEARHORIZONTAL,
+		LINEARVERTICAL
+	};
 
-    LinearSmoothedValue<float> newValueSmooth;
-    
-    
     Colour lineColour;
     
     MidiKeyboardComponent midiKeyboard;
 
 	Label timecodeDisplayLabel;
 
-    ScopedPointer<Label>  
+   ScopedPointer<Label>  
         mainLabel,
         titleLabel,
         osc1GainLabel,
@@ -122,30 +127,34 @@ private:
         modTargetLabel,
         modTargetCutoffLabel,
         modTargetPitchLabel,
-        modTargetOffLabel
+        modTargetOffLabel,
+    
+    saturationLabel
 
             ;
     
-    ScopedPointer<ParameterSlider> 
-        volumeSlider,
-        osc1GainSlider,
-        osc1OffsetSlider,
-        osc1TuneSlider,
-        osc1WaveformSlider,
+   std::unique_ptr<ParameterSlider>
+	   volumeSlider,
+	   osc1GainSlider,
+	   osc1OffsetSlider,
+	   osc1TuneSlider,
+	   osc1WaveformSlider,
 
-        osc2GainSlider,
-        osc2OffsetSlider,
-        osc2TuneSlider,
-        osc2WaveformSlider,
+	   osc2GainSlider,
+	   osc2OffsetSlider,
+	   osc2TuneSlider,
+	   osc2WaveformSlider,
 
-        osc3GainSlider,
-        osc3OffsetSlider,
-        osc3TuneSlider,
-        osc3WaveformSlider,
+	   osc3GainSlider,
+	   osc3OffsetSlider,
+	   osc3TuneSlider,
+	   osc3WaveformSlider,
+	   oscSyncSlider,
 
-        pitchModSlider,
+	   pitchModSlider,
 
-        filterCutoffSlider, 
+	   filterCutoffSlider,
+	
         filterResonanceSlider,
         filterContourSlider,
         filterDriveSlider,
@@ -183,18 +192,80 @@ private:
     
         lfoSyncedFreqSlider,
     
-        oscSyncSlider
+       
+    
+        filterOrderSlider,
+    
+        saturationSwitchSlider,
+    
+
+
+	    pulsewidth1Slider,
+	   pulsewidth2Slider,
+	   pulsewidth3Slider,
+
+        pulsewidthAmount1Slider,
+        pulsewidthAmount2Slider,
+        pulsewidthAmount3Slider,
+
+		saturationSlider,
+    
+        oversampleSwitchSlider
         ;
 
+    
+    std::unique_ptr<Drawable>
+    drawable25,
+    drawable1,
+    drawable2,
+    drawable3,
+    
+    drawable26,
+    drawable4,
+    drawable5,
+    drawable6,
+    
+    drawable27,
+    drawable7,
+    drawable8,
+    drawable9,
+    
+    
+    
+    drawable10,
+    drawable11,
+    drawable12,
+    drawable13,
+    drawable14,
+    drawable15,
+    drawable16,
+    drawable17,
+    drawable18,
+    drawable19,
+    drawable20,
+    drawable21,
+    drawable22,
+    drawable23,
+    drawable24;
+    
+    /*
+    ScopedPointer<Drawable> drawable25;
     ScopedPointer<Drawable> drawable1;
     ScopedPointer<Drawable> drawable2;
     ScopedPointer<Drawable> drawable3;
+    
+    ScopedPointer<Drawable> drawable26;
     ScopedPointer<Drawable> drawable4;
     ScopedPointer<Drawable> drawable5;
     ScopedPointer<Drawable> drawable6;
+    
+    ScopedPointer<Drawable> drawable27;
     ScopedPointer<Drawable> drawable7;
     ScopedPointer<Drawable> drawable8;
     ScopedPointer<Drawable> drawable9;
+    
+    
+    
     ScopedPointer<Drawable> drawable10;
     ScopedPointer<Drawable> drawable11;
     ScopedPointer<Drawable> drawable12;
@@ -210,6 +281,7 @@ private:
     ScopedPointer<Drawable> drawable22;
     ScopedPointer<Drawable> drawable23;
     ScopedPointer<Drawable> drawable24;
+    */
     
     
     String font;

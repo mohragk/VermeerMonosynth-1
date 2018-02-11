@@ -19,8 +19,10 @@ class ThreeFiveModel : public LadderFilterBase
 public:
     ThreeFiveModel() : LadderFilterBase()
     {
+		SetCutoff(1000.0);
+
         //init
-        K = 0.01;
+        resonance.set( 0.01 );
         Alpha0 = 0;
         
         // set filter types
@@ -51,7 +53,7 @@ public:
     virtual void Update() override
     {
         //prewarp for BZT
-        double wd = 2 * MOOG_PI * cutoff;
+        double wd = 2 * MOOG_PI * cutoff.get();
         double T  = 1 / sampleRate;
         double wa = ( 2 / T ) * tan( wd * T / 2 );
         double g  = wa * T / 2;
@@ -66,11 +68,11 @@ public:
         va_HPF2.Alpha = G;
         
         // set Alpha0; same for LPF as HPF
-        Alpha0 = 1.0 / ( 1.0 - K * G + K * G * G );
+        Alpha0 = 1.0 / ( 1.0 - resonance.get() * G + resonance.get() * G * G );
         
         if (type == LPF2)
         {
-            va_LPF2.Beta = ( K - K * G ) / ( 1.0 + g );
+            va_LPF2.Beta = (resonance.get() - resonance.get() * G ) / ( 1.0 + g );
             va_HPF1.Beta = -1.0 / ( 1.0 + g);
         }
         else
@@ -81,14 +83,14 @@ public:
     }
     
     
-    virtual void Process(float* samples, uint32_t n) noexcept override
+    virtual void Process(float* samples, size_t n) noexcept override
     {
         for (uint32_t i = 0; i < n; i++)
         {
             samples[i] = doFilter(samples[i]);
         }
     }
-	virtual void Process(double* samples, uint32_t n) noexcept override
+	virtual void Process(double* samples, size_t n) noexcept override
 	{
 		for (uint32_t i = 0; i < n; i++)
 		{
@@ -96,53 +98,83 @@ public:
 		}
 	}
     
+    virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
+    {
+        const auto increment = (endCutoff - beginCutoff) / (float) n;
+        
+        for (uint32_t i = 0; i < n; i++)
+        {
+            SetCutoff(beginCutoff);
+            samples[i] = doFilter(samples[i]);
+            beginCutoff += increment;
+        }
+    }
+    
+    
+    virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
+    {
+        const auto increment = (endCutoff - beginCutoff) / (double) n;
+        
+        for (uint32_t i = 0; i < n; i++)
+        {
+            SetCutoff(beginCutoff);
+            samples[i] = doFilter(samples[i]);
+            beginCutoff += increment;
+        }
+    }
+    
+    
 	template <typename FloatType>
 	FloatType doFilter(FloatType sample )
     {
 		
-        
+
+		if (sampleRate <= 0.0)
+			return sample;
+
 		FloatType y = 0.0;
-        
-        if (type == LPF2)
-        {
+		
+		if (type == LPF2)
+		{
 			FloatType y1 = va_LPF1.doFilter(sample);
-            
-			FloatType S35 =    va_HPF1.getFeedbackOutput() +
-                            va_LPF2.getFeedbackOutput();
-            
-			FloatType u = Alpha0 *  y1 + S35 ;
-            
-            u = fast_tanh(drive * u);
-            
-            y = K * va_LPF2.doFilter(u);
-            
-            va_HPF1.doFilter(y);
-        }
-        else
-        {
-			FloatType y1 = va_HPF1.doFilter(sample);
-            
-			FloatType S35 =    va_HPF2.getFeedbackOutput() +
-                            va_LPF1.getFeedbackOutput();
-            
+
+			FloatType S35 = va_HPF1.getFeedbackOutput() +
+				va_LPF2.getFeedbackOutput();
+
 			FloatType u = Alpha0 * y1 + S35;
-            
-            y = K * u;
-            
-            y = fast_tanh(drive * y);
-            
-            va_LPF1.doFilter(va_HPF2.doFilter(y));
-        }
-        
-        if (K > 0)
-            y *= 1 / K;
-        
-        return y;
-        
+
+			u = fast_tanh(drive * u);
+
+			y = resonance.get() * va_LPF2.doFilter(u);
+
+			va_HPF1.doFilter(y);
+		}
+		else
+		{
+			FloatType y1 = va_HPF1.doFilter(sample);
+
+			FloatType S35 = va_HPF2.getFeedbackOutput() +
+				va_LPF1.getFeedbackOutput();
+
+			FloatType u = Alpha0 * y1 + S35;
+
+			y = resonance.get() * u;
+
+			y = fast_tanh(drive * y);
+
+			va_LPF1.doFilter(va_HPF2.doFilter(y));
+		}
+
+		if (resonance.get() > 0)
+			y *= 1 / resonance.get();
+				
+		return y;
     }
     
     virtual void SetSampleRate (double sr) override
     {
+		jassert(!isnan(sr));
+
         sampleRate = sr;
 
 		va_LPF1.SetSampleRate(sr);
@@ -153,29 +185,33 @@ public:
     
     virtual void SetResonance(double r) override
     {
-        K = (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01; // remap
+		if (isnan(r))
+			r = 0.0;
+
+		jassert(r >= 0 && r <= 1.0);
+
+        resonance.set( (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01 ); // remap
     }
     
-    virtual void SetCutoff(double c) override
+    virtual bool SetCutoff(double c) override
     {
-        cutoff = c;
+
+		    if (isnan(c))
+            return false;
+
+		    jassert(c > 0 && c <= (sampleRate * 0.5));
+        
+        cutoff.set(c);
         Update();
+        
+        return true;
     }
     
     virtual void SetDrive (double d ) override
     {
         drive = d;
     }
-    
-    double GetSampleRate() override
-    {
-        return sampleRate;
-    }
-    
-    double GetCutoff() override
-    {
-        return cutoff;
-    }
+  
     
     
     private :
@@ -186,7 +222,6 @@ public:
     
     FilterType type;
     
-    double K;
     double Alpha0;
     
     

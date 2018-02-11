@@ -20,7 +20,8 @@ class DiodeLadderModel : public LadderFilterBase
     
     DiodeLadderModel() : LadderFilterBase()
     {
-        K = 0.0;
+        resonance.set(0.0);
+		SetCutoff(1000.0);
         
         Gamma = 0.0;
         
@@ -51,7 +52,7 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual void Update() override
     {
-        double wd = 2 * MOOG_PI * cutoff;
+        double wd = 2 * MOOG_PI * cutoff.get();
         double T  = 1 / sampleRate;
         double wa = ( 2 / T ) * tan( wd * T / 2 );
         double g = wa * T / 2;
@@ -110,25 +111,27 @@ class DiodeLadderModel : public LadderFilterBase
 	template <typename FloatType>
     FloatType doFilter( FloatType sample )
     {
-		
+		if (sampleRate <= 0.0)
+			return sample;
+	
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
         va_LPF2.setFeedback( va_LPF3.getFeedbackOutput() );
         va_LPF1.setFeedback( va_LPF2.getFeedbackOutput() );
         
-        double Sigma =  SG1 * va_LPF1.getFeedbackOutput() +
-                        SG2 * va_LPF2.getFeedbackOutput() +
-                        SG3 * va_LPF3.getFeedbackOutput() +
-                        SG4 * va_LPF4.getFeedbackOutput();
+		FloatType Sigma =	SG1 * va_LPF1.getFeedbackOutput() +
+							SG2 * va_LPF2.getFeedbackOutput() +
+							SG3 * va_LPF3.getFeedbackOutput() +
+							SG4 * va_LPF4.getFeedbackOutput();
         
-        double U = ( sample - K * Sigma ) / ( 1 + K * Gamma );
+		FloatType U = ( sample - resonance.get() * Sigma ) / ( 1 + resonance.get() * Gamma );
         
         U = fast_tanh(drive * U);
         
         return 2.0 * va_LPF4.doFilter( va_LPF3.doFilter( va_LPF2.doFilter( va_LPF1.doFilter( U ) ) ) ) ;
     }
     
-    virtual void Process(float* samples, uint32_t n) noexcept override
+    virtual void Process(float* samples, size_t n) noexcept override
     {
         for (uint32_t i = 0; i < n; i++)
         {
@@ -136,7 +139,7 @@ class DiodeLadderModel : public LadderFilterBase
         }
     }
 
-	virtual void Process(double* samples, uint32_t n) noexcept override
+	virtual void Process(double* samples, size_t n) noexcept override
 	{
 		for (uint32_t i = 0; i < n; i++)
 		{
@@ -144,8 +147,34 @@ class DiodeLadderModel : public LadderFilterBase
 		}
 	}
     
+    virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
+    {
+        const auto increment = (endCutoff - beginCutoff) / (float) n;
+        
+        for (uint32_t i = 0; i < n; i++)
+        {
+            SetCutoff(beginCutoff);
+            samples[i] = doFilter(samples[i]);
+            beginCutoff += increment;
+        }
+    }
+    
+    virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
+    {
+        const auto increment = (endCutoff - beginCutoff) / (double) n;
+        
+        for (uint32_t i = 0; i < n; i++)
+        {
+            SetCutoff(beginCutoff);
+            samples[i] = doFilter(samples[i]);
+            beginCutoff += increment;
+        }
+    }
+    
     virtual void SetSampleRate (double sr) override
     {
+		jassert(!isnan(sr));
+
         sampleRate = sr;
 
 		va_LPF1.SetSampleRate(sr);
@@ -156,13 +185,26 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual void SetResonance(double r) override
     {
-        K = 17.0 * r ; // remap
+		if (isnan(r))
+			r = 0.0;
+
+		jassert(r >= 0 && r <= 1.0);
+
+        resonance.set( 17.0 * r); // remap
     }
     
-    virtual void SetCutoff(double c) override
+    virtual bool SetCutoff(double c) override
     {
-        cutoff = c;
+
+		if (isnan(c))
+			return false;
+
+        jassert (c > 0 && c <= (sampleRate * 0.5));
+        
+        cutoff.set(c);
         Update();
+        
+        return true;
     }
     
     virtual void SetDrive (double d ) override
@@ -170,23 +212,15 @@ class DiodeLadderModel : public LadderFilterBase
         drive = d;
     }
     
-    double GetSampleRate() override
-    {
-        return sampleRate;
-    }
+
     
-    double GetCutoff() override
-    {
-        return cutoff;
-    }
+
     
     private:
     
     
     double sampleRate;
-    
-    double K;
-    
+        
     double Gamma;
     
     FilterType type;

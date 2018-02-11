@@ -19,6 +19,9 @@ class SEMModel : public LadderFilterBase
     
 		SEMModel() : LadderFilterBase()
 		{
+			SetCutoff(1000.0);
+			SetResonance(0.0);
+
 			Alpha0 = 1.0;
 			Alpha = 1.0;
 			Rho = 1.0;
@@ -42,13 +45,13 @@ class SEMModel : public LadderFilterBase
 		{
         
 			// prewarp cutoff, billinear transform
-			double wd = 2 * MOOG_PI * cutoff;
+			double wd = 2 * MOOG_PI * cutoff.get();
 			double T  = 1 / sampleRate;
 			double wa = ( 2 / T ) * tan( wd * T / 2 );
 			double g  = wa * T / 2;
 
 			// R is damping factor
-			double R  = 1.0 / ( 2.0 * resonance );
+			double R  = 1.0 / ( 2.0 * resonance.get() );
         
         
 			// set Coeffs
@@ -58,7 +61,7 @@ class SEMModel : public LadderFilterBase
         
 		}
     
-		virtual void Process(float* samples, uint32_t n) noexcept override
+		virtual void Process(float* samples, size_t n) noexcept override
 		{
 			 for (uint32_t i = 0; i < n; i++)
 			{
@@ -66,7 +69,7 @@ class SEMModel : public LadderFilterBase
 			}
 		}
 
-		virtual void Process(double* samples, uint32_t n) noexcept override
+		virtual void Process(double* samples, size_t n) noexcept override
 		{
 			for (uint32_t i = 0; i < n; i++)
 			{
@@ -77,7 +80,9 @@ class SEMModel : public LadderFilterBase
 		template <typename FloatType>
 		FloatType doFilter(FloatType sample)
 		{
-			
+			if (sampleRate <= 0.0)
+				return sample;
+
 			// form the HPF output first
 			FloatType hpf = Alpha0 * (sample - Rho * Z11 - Z12);
 
@@ -91,7 +96,7 @@ class SEMModel : public LadderFilterBase
 			// LPF
 			FloatType lpf = Alpha * bpf + Z12;
 
-			FloatType R = 1.0 / (2.0 * resonance);
+			FloatType R = 1.0 / (2.0 * resonance.get());
 
 			FloatType bsf = sample - 2.0 * R * bpf;
 
@@ -129,21 +134,31 @@ class SEMModel : public LadderFilterBase
         
 		virtual void SetSampleRate (double sr) override
 		{
+			jassert(!isnan(sr));
+
 			sampleRate = sr;                
 		}
 	
 		virtual void SetResonance(double r) override
 		{
+			if (isnan(r))
+				r = 0.0;
+
 			//remap: 0 -> 1 --- 0.5 -> 25
-			resonance = (25.0 - 0.5) * (r - 0.0) / (1.0 - 0.0) + 0.5;
+			resonance.set( (25.0 - 0.5) * (r - 0.0) / (1.0 - 0.0) + 0.5 );
 			
 		}
     
-		virtual void SetCutoff(double c) override
+		virtual bool SetCutoff(double c) override
 		{
-			cutoff = c;
-            Update();
 
+			if (isnan(c))
+				c = 1000.0;
+
+			cutoff.set(c);
+      Update();
+            
+      return true;
 		}
     
 		virtual void SetDrive (double d ) override
@@ -151,15 +166,7 @@ class SEMModel : public LadderFilterBase
 			drive = d;
 		}
 	
-		double GetSampleRate() override
-		{
-			return sampleRate;
-		}
-    
-		double GetCutoff() override
-		{
-			return cutoff;
-		}
+		
     
     
     private :

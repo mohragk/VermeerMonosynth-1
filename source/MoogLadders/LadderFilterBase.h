@@ -34,31 +34,34 @@ class LadderFilterBase
 {
 public:
 	
-    LadderFilterBase() {}
-    virtual ~LadderFilterBase() {}
-    
-    virtual void Process(float * samples, uint32_t n) noexcept = 0;
-    virtual void Process(double * samples, uint32_t n) noexcept = 0;
+    LadderFilterBase() { }
+    virtual ~LadderFilterBase() { }
+	
+    virtual void Process(float * samples, size_t n) noexcept = 0;
+    virtual void Process(double * samples, size_t n) noexcept = 0;
+    virtual void ProcessRamp(float * samples, size_t n, float beginCutoff, float endCutoff) = 0;
+    virtual void ProcessRamp(double * samples, size_t n, double beginCutoff, double endCutoff) = 0;
 
 	virtual void Update() = 0;
     virtual void Reset() = 0;
     virtual void SetSampleRate(double sr) = 0;
     virtual void SetResonance(double r) = 0;
-    virtual void SetCutoff(double c) = 0;
+    virtual bool SetCutoff(double c) = 0;
     virtual void SetDrive(double d) = 0;
     
     enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
     
-    virtual double GetResonance() { return resonance; }
-    virtual double GetCutoff() { return cutoff; }
+    virtual double GetResonance() { return resonance.get(); }
+    virtual double GetCutoff() { return cutoff.get(); }
     virtual double GetSampleRate() { return sampleRate; }
 	
 protected:
 	
 	double sampleRate;
-	double cutoff;
-	double resonance;
+	Atomic<double> cutoff;
+	Atomic<double> resonance;
 	double drive;
+
 };
 
 #endif

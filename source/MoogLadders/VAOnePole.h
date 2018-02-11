@@ -41,7 +41,7 @@ class VAOnePole : public LadderFilterBase
         
         virtual void Update() override
         {
-            double wd = 2 * MOOG_PI * cutoff;
+            double wd = 2 * MOOG_PI * cutoff.get();
             double T = 1 / sampleRate;
             double wa = ( 2 / T ) * tan( wd * T / 2 );
             double g = wa * T / 2;
@@ -49,7 +49,7 @@ class VAOnePole : public LadderFilterBase
             Alpha = g / ( 1.0 + g );
         }
         
-        virtual void Process(float* samples, uint32_t n) noexcept override
+        virtual void Process(float* samples, size_t n) noexcept override
 		{
             for (uint32_t i = 0; i < n; i++)
 			{
@@ -57,7 +57,7 @@ class VAOnePole : public LadderFilterBase
 			}
 		}
 
-		virtual void Process(double* samples, uint32_t n) noexcept override
+		virtual void Process(double* samples, size_t n) noexcept override
 		{
 			for (uint32_t i = 0; i < n; i++)
 			{
@@ -65,22 +65,45 @@ class VAOnePole : public LadderFilterBase
 			}
 		}
     
+        virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
+        {
+            const auto increment = (endCutoff - beginCutoff) / (float) n;
+            
+            for (uint32_t i = 0; i < n; i++)
+            {
+                SetCutoff(beginCutoff);
+                samples[i] = doFilter(samples[i]);
+                beginCutoff += increment;
+            }
+        }
+    
+        virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
+        {
+            const auto increment = (endCutoff - beginCutoff) / (double) n;
+            
+            for (uint32_t i = 0; i < n; i++)
+            {
+                SetCutoff(beginCutoff);
+                samples[i] = doFilter(samples[i]);
+                beginCutoff += increment;
+            }
+        }
+    
 		template <typename FloatType>
         FloatType doFilter( FloatType sample )
         {
-            //update();
             
             sample = sample * Gamma + Feedback + Epsilon * getFeedbackOutput();
             
-            double vn = ( a0 * sample - Z1 ) * Alpha;
+			FloatType vn = ( a0 * sample - Z1 ) * Alpha;
             
             //LPF
-            double lpf = vn + Z1;
+			FloatType lpf = vn + Z1;
             
             //Update memory
             Z1 = vn + lpf;
             
-            double hpf = sample - lpf;
+			FloatType hpf = sample - lpf;
             
             if (type == LPF1)
                 return lpf;
@@ -121,12 +144,17 @@ class VAOnePole : public LadderFilterBase
 	
 		virtual void SetResonance(double r) override
 		{
-            resonance = r * 10.0;;
+            resonance.set( r * 10.0);
 		}
     
-		virtual void SetCutoff(double c) override
+		virtual bool SetCutoff(double c) override
 		{
-			cutoff = c;
+            if (isnan(c))
+                return false;
+            
+			cutoff.set(c);
+            Update();
+            return true;
 		}
     
 		virtual void SetDrive (double d ) override
@@ -134,26 +162,17 @@ class VAOnePole : public LadderFilterBase
 			drive = d;
 		}
 	
-		double GetSampleRate() override
-		{
-			return sampleRate;
-		}
     
-		double GetCutoff() override
-		{
-			return cutoff;
-		}
+		double Alpha;
+		double Beta;
+		double Gamma;
+		double Delta;
+		double Epsilon;
     
-    double Alpha;
-    double Beta;
-    double Gamma;
-    double Delta;
-    double Epsilon;
+		double a0;
+		double Z1;
     
-    double a0;
-    double Z1;
-    
-    double Feedback;
+		double Feedback;
     
         
     private :

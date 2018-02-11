@@ -11,9 +11,12 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(44100.0), phase(0.0), level(0.75)
+    Oscillator() : sampleRate(44100.0), level(0.75), pulsewidth(0.5)
     {
-        
+		frequency.set(0.0);
+		phase.set(0.0);
+		gain.set(0.0);
+		
     }
     
     
@@ -31,18 +34,18 @@ public:
     
     void setFrequency(const double f)
     {
-        frequency = f;
-       // phaseIncrement = updatePhaseIncrement(frequency);
+        frequency.set(f + deviation);
     }
+    
     
     void setPhase(const double ph)
     {
-        phase = ph;
+        phase.set(ph);
     }
     
     void setGain(const double g)
     {
-        gain = g;
+        gain.set(g);
     }
     
     void setMode(const int m)
@@ -57,6 +60,24 @@ public:
             mode = OSCILLATOR_MODE_NOISE;
     }
     
+	
+
+    void setPulsewidth(double pw)
+    {
+        //pulsewidth = pw * 0.998 + 0.001; //(pw + 1.0) / 2.0;
+        pulsewidth = (pw + 1.0) / 2.0;
+    }
+    
+	void setVelocityFactor(float v)
+	{
+		velocityFactor = static_cast<double>(v);
+	}
+    
+    double getPhase()
+    {
+        return phase.get();
+    }
+    
     bool isRephase()
     {
         return rephase;
@@ -66,73 +87,85 @@ public:
     {
         const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;
-        double t = phase / two_Pi; // normalize period
+        double t = phase.get() / two_Pi; // normalize period
         
-        phaseIncrement = updatePhaseIncrement(frequency);
+        phaseIncrement = updatePhaseIncrement(frequency.get());
 
 		if (phaseIncrement == 0.0)
 			return value;
         
-        if( mode == OSCILLATOR_MODE_SINE )
+        if ( mode == OSCILLATOR_MODE_SINE)
         {
-            value = naiveWaveFormForMode(mode);
+            value = naiveWaveFormForMode(mode, phase.get());
         }
-        else if (mode == OSCILLATOR_MODE_SAW)
+        else if( mode == OSCILLATOR_MODE_SAW)
         {
-            value = naiveWaveFormForMode(mode);
-            value -= poly_blep(t, phaseIncrement);
+            value = naiveWaveFormForMode(mode, phase.get());
+            //value = dsp::FastMathApproximations::tanh(value * 3.0);
+            value -= poly_blep( t, phaseIncrement );
         }
         else if (mode == OSCILLATOR_MODE_SQUARE)
         {
-            value = naiveWaveFormForMode(mode);
+            value = naiveWaveFormForMode(mode, phase.get());
+            value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi);
             value += poly_blep( t, phaseIncrement );
-            value -= poly_blep( fmod( t + 0.5, 1.0 ), phaseIncrement );
-        } else
+            value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement ); //BUG!!! 1.0 - 0.5 should be pulsewidth
+        }
+        else
         {
-            value = naiveWaveFormForMode(mode);
+            value = naiveWaveFormForMode(mode, phase.get());
         }
         
-        phase += phaseIncrement;
+        phase.set( phase.get() + phaseIncrement); //NOT SURE.....
         
         rephase = false;
         
-        while (phase >= two_Pi)
+        if(phase.get() >= two_Pi)
         {
-            phase -= two_Pi;
+            phase.set(0.0);
             rephase = true;
+            deviation = random.nextFloat() * 0.15;
+            
         }
         
-        return value * level * gain;
+        return value * level * gain.get();// * velocityFactor;
     }
     
 private:
     
-    double naiveWaveFormForMode(const OscillatorMode mode)
+    double naiveWaveFormForMode(const OscillatorMode m, double phs)
     {
         const double two_Pi = 2.0 * double_Pi;
-        double value = 0.0;;
-        switch (mode)
+        double value = 0.0;
+       
+        if (phs >= two_Pi)
+            phs -= two_Pi;
+        
+        
+        switch (m)
         {
             case OSCILLATOR_MODE_SINE:
-                value = sin(phase);
+                value = sin(phs);
                 break;
+                
             case OSCILLATOR_MODE_SAW:
-                value = phase / two_Pi;
-                value = tanh(3.0 * value);
-                value = 2.0 * value - 1.0;
+                //value = tanh(3.0 * value);
+                value = (2.0 * phs / two_Pi) - 1.0;
+                //value = tanh(2.0 * value);
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
-                if (phase <= double_Pi) {
-                    value = 1.0;
+                if (phs <=  pulsewidth * two_Pi) { // BUG!!! 0.5 should be pulsewidth
+                    value = 1.0 - (1.0 * phs / two_Pi);
                 } else {
-                    value = -1.0;
+                    value = (0.5 * (phs - pulsewidth * two_Pi) / double_Pi ) - 1.0;
                 }
                 break;
+                
             case OSCILLATOR_MODE_NOISE:
-                // Random r;
-                // value = r.nextDouble();
+                value = (random.nextFloat() * 2.0 ) - 1.0;
                 break;
+                
             default:
                 break;
         }
@@ -140,9 +173,9 @@ private:
     }
     
     
-    double poly_blep (double t, const double phaseIncrement)
+    double poly_blep (double t, const double phaseInc)
     {
-        const double dt = phaseIncrement / (2.0 * double_Pi); // normalize phase increment
+        const double dt = phaseInc / (2.0 * double_Pi); // normalize phase increment
         
         if (t < dt)
         {
@@ -165,10 +198,15 @@ private:
     }
     
 
-    double sampleRate, phase, phaseIncrement, frequency;
-    double level, gain;
+    double sampleRate,  phaseIncrement;
+	double velocityFactor;
+	Atomic<double> frequency, phase, gain;
+    double level;
+	double pulsewidth;
     
     OscillatorMode mode;
+    Random random;
+    double deviation;
     
     bool rephase = false;
     
