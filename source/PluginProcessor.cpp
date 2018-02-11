@@ -138,9 +138,9 @@ ampEnvelope(nullptr)
     addParameter(osc2ModeParam = new AudioParameterInt("osc2ModeChoice", "OSC2 Waveform", 0, 3, 2));
     addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 3, 2));
     
-    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.25f, false), 20000.0f));
+    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
     addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
-    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.25f, false), 40.0f));
+    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 40.0f));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0f, 5.0f, 0.0f, 1.0f, false), 1.0f));
     // Filter Select Parameter
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 2));
@@ -228,8 +228,8 @@ ampEnvelope(nullptr)
     
     
     // Oversampling 2 times with FIR filtering
-    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 1, dsp::Oversampling<float>::filterHalfBandFIREquiripple , false ) );
-    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 1, dsp::Oversampling<double>::filterHalfBandFIREquiripple , false ) );
+    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 1, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
+    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 1, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
     
     // HQ Oversampling 8 times with FIR filtering
     oversamplingFloatHQ  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
@@ -452,7 +452,9 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
     
     lfo.setPhase(0.0);
     
-    filterEnvelope->gate(true);
+    if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
+        filterEnvelope->gate(true);
+    
     ampEnvelope->gate(true);
     
     lastNotePlayed = midiNoteNumber;

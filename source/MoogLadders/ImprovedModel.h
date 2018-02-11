@@ -115,7 +115,7 @@ public:
 		jassert(!isnan(sr));
 
         sampleRate = sr;
-		multiplier = 1.0;// jmin(1.0, 96000.0 / sr);
+		multiplier =  jmax(1.0, 96000.0 / sr);
     }
     
     virtual void SetResonance(double r) override

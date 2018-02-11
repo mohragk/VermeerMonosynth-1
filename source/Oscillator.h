@@ -34,8 +34,7 @@ public:
     
     void setFrequency(const double f)
     {
-        frequency.set(f);
-       // phaseIncrement = updatePhaseIncrement(frequency);
+        frequency.set(f + deviation);
     }
     
     
@@ -108,7 +107,7 @@ public:
         else if (mode == OSCILLATOR_MODE_SQUARE)
         {
             value = naiveWaveFormForMode(mode, phase.get());
-            value = dsp::FastMathApproximations::sinh(value);
+            value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi);
             value += poly_blep( t, phaseIncrement );
             value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement ); //BUG!!! 1.0 - 0.5 should be pulsewidth
         }
@@ -121,10 +120,12 @@ public:
         
         rephase = false;
         
-        while(phase.get() >= two_Pi)
+        if(phase.get() >= two_Pi)
         {
             phase.set(0.0);
             rephase = true;
+            deviation = random.nextFloat() * 0.2;
+            
         }
         
         return value * level * gain.get();// * velocityFactor;
@@ -205,6 +206,7 @@ private:
     
     OscillatorMode mode;
     Random random;
+    double deviation;
     
     bool rephase = false;
     

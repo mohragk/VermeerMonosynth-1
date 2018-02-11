@@ -1370,7 +1370,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     saturationSwitchSlider->setBounds(getWidth() - 24, 190, 12,40);
     
     
-    oversampleSwitchSlider->setBounds(getWidth() - 24- 64, 350, 64,40);
+    oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36);
     
    
 
