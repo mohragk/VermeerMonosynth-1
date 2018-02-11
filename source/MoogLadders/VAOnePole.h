@@ -17,7 +17,7 @@ class VAOnePole : public LadderFilterBase
 {
     public :
     
-        VAOnePole() : LadderFilterBase(), sampleRate(44100.0)
+        VAOnePole() : LadderFilterBase()
         {
             Alpha = 1.0;
             Beta = 0.0;

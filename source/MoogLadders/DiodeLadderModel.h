@@ -18,7 +18,7 @@ class DiodeLadderModel : public LadderFilterBase
 {
     public:
     
-    DiodeLadderModel() : LadderFilterBase(), sampleRate(44100.0)
+    DiodeLadderModel() : LadderFilterBase()
     {
         resonance.set(0.0);
 		SetCutoff(1000.0);
@@ -195,6 +195,7 @@ class DiodeLadderModel : public LadderFilterBase
     
     virtual bool SetCutoff(double c) override
     {
+
 		if (isnan(c))
 			return false;
 

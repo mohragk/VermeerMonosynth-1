@@ -72,6 +72,7 @@ public:
     virtual void Process(float* samples, size_t n) noexcept override
     {
 		for (uint32_t i = 0; i < n; i++)
+
 		{
 			samples[i] = doFilter(samples[i]);
 		}
@@ -127,7 +128,7 @@ public:
         
 		resonance = r * 4.0;
     }
-    
+
     virtual bool SetCutoff(double c) override
     {
 		if (isnan(c))
@@ -140,6 +141,8 @@ public:
         
         return true;
     }
+
+
     
     virtual void SetDrive (double d) override
     {

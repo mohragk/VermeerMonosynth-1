@@ -389,6 +389,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     keyboardState.reset();
+
     cutoff.reset(sampleRate, cutoffRampTimeDefault);
     cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
@@ -408,15 +409,16 @@ void MonosynthPluginAudioProcessor::releaseResources()
         filterB[channel]->Reset();
         filterC[channel]->Reset();
     }
+
     for (int i = 0; i < 6; i++)
         smoothing[i]->reset();
-    
 }
 
 void MonosynthPluginAudioProcessor::reset()
 {
     // Use this method as the place to clear any delay lines, buffers, etc, as it
     // means there's been a break in the audio's continuity.
+
     cutoff.reset(sampleRate, cutoffRampTimeDefault);
     cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
@@ -439,7 +441,6 @@ void MonosynthPluginAudioProcessor::reset()
 	}
     for (int i = 0; i < 6; i++)
         smoothing[i]->reset();
-    
 }
 
 
@@ -755,15 +756,15 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         
 		
 
-        for (int channel = 0; channel < 2; channel++)
-        {
+    for (int channel = 0; channel < 2; channel++)
+    {
 			//filter[channel]->SetSampleRate(sampleRate * oversamp->getOversamplingFactor());
-            filter[channel]->SetResonance(resonance.getNextValue());
-            filter[channel]->SetDrive(drive.getNextValue());
-        }
-        
-        if (samplesLeftOver < stepSize)
-            stepSize = samplesLeftOver;
+        filter[channel]->SetResonance(resonance.getNextValue());
+        filter[channel]->SetDrive(drive.getNextValue());
+    }
+
+    if (samplesLeftOver < stepSize)
+        stepSize = samplesLeftOver;
         
 
 		if (prevCutoff == combinedCutoff)
@@ -771,11 +772,11 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 			filter[0]->SetCutoff(combinedCutoff);
 			filter[1]->SetCutoff(combinedCutoff);
 
-            if (filter[0]->SetCutoff(combinedCutoff))
-                filter[0]->Process(channelDataLeft, stepSize);
-            
-            if (filter[1]->SetCutoff(combinedCutoff))
-                filter[1]->Process(channelDataRight, stepSize);
+      if (filter[0]->SetCutoff(combinedCutoff))
+          filter[0]->Process(channelDataLeft, stepSize);
+
+      if (filter[1]->SetCutoff(combinedCutoff))
+          filter[1]->Process(channelDataRight, stepSize);
 		}
 		else
 		{
@@ -783,12 +784,12 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 			filter[1]->ProcessRamp(channelDataRight, stepSize, prevCutoff, combinedCutoff);
 		}
         
-        prevCutoff = combinedCutoff;
-        
-        samplesLeftOver -= stepSize;
-        
-        channelDataLeft += stepSize;
-        channelDataRight += stepSize;
+    prevCutoff = combinedCutoff;
+
+    samplesLeftOver -= stepSize;
+
+    channelDataLeft += stepSize;
+    channelDataRight += stepSize;
     }
     
 }
@@ -933,51 +934,46 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buffer)
 {
-	int numSamples = buffer.getNumSamples();
+	  int numSamples = buffer.getNumSamples();
     int stepSize = jmin(16, numSamples);
-    
-    
     
     for (int i = 0; i < numSamples; i++)
     {
-		// set various parameters
-		setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
-		setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
+        // set various parameters
+        setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
+        setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
 
 
-		setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
+        setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
 
-		setPitchEnvelopeAmount(*pitchModParam);
+        setPitchEnvelopeAmount(*pitchModParam);
 
-		setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam);
-		setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
-		setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
+        setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam);
+        setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
+        setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
 
-		setEnvelopeState(*ampEnvelope);
+        setEnvelopeState(*ampEnvelope);
 
-		setHardSync(*oscSyncParam);
-        
+        setHardSync(*oscSyncParam);
+
         pulsewidthSmooth1.setValue(*pulsewidth1Param);
         pulsewidthSmooth2.setValue(*pulsewidth2Param);
         pulsewidthSmooth3.setValue(*pulsewidth3Param);
-        
+
         setPWAmount(*pulsewidthAmount1Param, 0);
         setPWAmount(*pulsewidthAmount2Param, 1);
         setPWAmount(*pulsewidthAmount3Param, 2);
-        
+
         sendLFO(lfo);
-        
-        
+
+
         if (i % stepSize == 0)
         {
             setPW(smoothing[1]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
             setPW(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
             setPW(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
         }
-        
-	}
-
-    
+	  }
 }
 
 

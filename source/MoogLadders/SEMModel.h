@@ -17,7 +17,7 @@ class SEMModel : public LadderFilterBase
 {
     public :
     
-		SEMModel() : LadderFilterBase(), sampleRate(44100.0)
+		SEMModel() : LadderFilterBase()
 		{
 			SetCutoff(1000.0);
 			SetResonance(0.0);
@@ -151,14 +151,14 @@ class SEMModel : public LadderFilterBase
     
 		virtual bool SetCutoff(double c) override
 		{
+
 			if (isnan(c))
 				c = 1000.0;
 
 			cutoff.set(c);
-            Update();
+      Update();
             
-            return true;
-
+      return true;
 		}
     
 		virtual void SetDrive (double d ) override

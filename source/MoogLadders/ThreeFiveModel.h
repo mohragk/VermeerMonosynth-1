@@ -17,7 +17,7 @@
 class ThreeFiveModel : public LadderFilterBase
 {
 public:
-    ThreeFiveModel() : LadderFilterBase(), sampleRate(44100.0)
+    ThreeFiveModel() : LadderFilterBase()
     {
 		SetCutoff(1000.0);
 
@@ -195,10 +195,11 @@ public:
     
     virtual bool SetCutoff(double c) override
     {
-		if (isnan(c))
+
+		    if (isnan(c))
             return false;
 
-		jassert(c > 0 && c <= (sampleRate * 0.5));
+		    jassert(c > 0 && c <= (sampleRate * 0.5));
         
         cutoff.set(c);
         Update();
