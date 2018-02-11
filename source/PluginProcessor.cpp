@@ -748,7 +748,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff   =  cutoffFromEnvelope.getNextValue() + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
+        FloatType combinedCutoff   =  currentCutoff + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
 
 		if (combinedCutoff > 20000.0) combinedCutoff = 20000.0;
 		if (combinedCutoff < 40.0) combinedCutoff = 40.0;
