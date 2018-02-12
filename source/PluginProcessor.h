@@ -277,7 +277,7 @@ private:
 		double a, b, z;
 		double coeff;
 	};
-	
+
 	template <typename FloatType>
     void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);
 
@@ -348,7 +348,7 @@ private:
     float contourVelocity;
 	double cutoffModulationAmt; 
     
-    double currentCutoff = 20.0, prevCutoff = 20.0;
+    double currentCutoff = 40.0, prevCutoff = 40.0;
     
     double sampleRate;
     
@@ -360,7 +360,7 @@ private:
     
     int lastNotePlayed;
     
-    double masterGain, masterGainPrev;
+    double masterGain = 0.0, masterGainPrev = 0.0;
     
     bool filterOn = true;
     

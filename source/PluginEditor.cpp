@@ -254,7 +254,8 @@ oversampleSwitchSlider(nullptr)
     //
 	volumeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.gainParam, ROTARY));
     addAndMakeVisible (volumeSlider.get());  //
-  
+	volumeSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 10);
+	volumeSlider->setColour(Slider::textBoxOutlineColourId, Colour(0x008e989b));
     
     addAndMakeVisible (volumeLabel = new Label ("Main Volume Label",
                                                 TRANS("Volume")));              //

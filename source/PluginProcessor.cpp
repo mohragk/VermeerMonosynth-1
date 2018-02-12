@@ -123,7 +123,17 @@ ampEnvelope(nullptr)
     
     //addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.4f));
     
-    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float> (0.0f, 2.0f, 0.0f, 0.5f, false), 0.50f));
+	NormalisableRange<float> decibelRange = NormalisableRange<float>(-100.0f, 0.0f,
+		[](float start, float end, float gain)	{ return gain > 0.0f ? 20.0f * log10(gain) : start; },
+		[](float start, float end, float dB)	{ return dB > start ? std::pow(10.0f, dB * 0.05f) : 0.0; }
+		) ;
+
+	NormalisableRange<float> cutoffRange = NormalisableRange<float>(40.0f, 20000.0f,
+		[](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); },
+		[](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); }
+		) ;
+
+    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , decibelRange, -6.0f));
     
     addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
     addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
@@ -139,15 +149,11 @@ ampEnvelope(nullptr)
     
    
     
-   // addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
-    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (20.0f, 20000.0f,
-                                                                                                                              
-                                                                                                                              [](float currentRangeStart, float currentRangeEnd, float proportion) { return std::pow (10.0, (3.0 * proportion + std::log10 (20.0)));},
-                                                                                                                              [](float currentRangeStart, float currentRangeEnd, float normalisedValue) { return (std::log10 (normalisedValue / 20.0)) / 3.0; }
-                                                                                                                              ), 18000.0f));
+	// addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
+	addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff", cutoffRange, 20000.0f));
     
 	addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
-    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 40.0f));
+    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",	cutoffRange, 40.0f));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0f, 5.0f, 0.0f, 1.0f, false), 1.0f));
     
     // Filter Select Parameter
@@ -750,7 +756,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-		FloatType combinedCutoff = currentCutoff + cutoff.getNextValue();//smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
+		FloatType combinedCutoff = currentCutoff + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
 
 		if (combinedCutoff > 20000.0) combinedCutoff = 20000.0;
 		if (combinedCutoff < 20.0) combinedCutoff = 20.0;
