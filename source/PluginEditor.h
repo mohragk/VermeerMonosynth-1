@@ -154,7 +154,6 @@ private:
 	   pitchModSlider,
 
 	   filterCutoffSlider,
-	
         filterResonanceSlider,
         filterContourSlider,
         filterDriveSlider,
@@ -187,10 +186,11 @@ private:
         lfoModeSlider,
         lfoIntensitySlider,
 		lfoSyncSlider,
+        lfoSyncedFreqSlider,
     
         filterSelectSlider,
     
-        lfoSyncedFreqSlider,
+    
     
        
     

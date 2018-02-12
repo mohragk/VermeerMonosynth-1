@@ -196,10 +196,10 @@ public:
     virtual bool SetCutoff(double c) override
     {
 
-		    if (isnan(c))
-            return false;
+        if (isnan(c))
+            c = 1000.0;
 
-		    jassert(c > 0 && c <= (sampleRate * 0.5));
+        jassert(c > 0 && c <= (sampleRate * 0.5));
         
         cutoff.set(c);
         Update();

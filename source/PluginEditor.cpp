@@ -163,6 +163,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	osc3OffsetSlider(nullptr),
 	osc3TuneSlider(nullptr),
 	osc3WaveformSlider(nullptr),
+    oscSyncSlider(nullptr),
 
 	pitchModSlider(nullptr),
 
@@ -199,12 +200,11 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	lfoModeSlider(nullptr),
 	lfoIntensitySlider(nullptr),
 	lfoSyncSlider(nullptr),
-
-	filterSelectSlider(nullptr),
-
 	lfoSyncedFreqSlider(nullptr),
 
-	oscSyncSlider(nullptr),
+filterSelectSlider(nullptr),
+
+
 
 	filterOrderSlider(nullptr),
 

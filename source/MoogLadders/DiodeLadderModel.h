@@ -197,7 +197,7 @@ class DiodeLadderModel : public LadderFilterBase
     {
 
 		if (isnan(c))
-			return false;
+			c = 1000.0;
 
         jassert (c > 0 && c <= (sampleRate * 0.5));
         

@@ -117,6 +117,13 @@ ampEnvelope(nullptr)
     lastPosInfo.resetToDefault();
     
     
+    auto linToLogLambda = [](double v) {
+        return (std::log10 (v / 20.0)) / 3.0;
+    };
+    
+    auto logToLinLambda = [](double start, double end, double v) {
+        return std::pow (10.0, (3.0 * v + std::log10 (20.0)));
+    };
     
     // This creates our parameters. We'll keep some raw pointers to them in this class,
     // so that we can easily access them later, but the base class will take care of
@@ -138,10 +145,20 @@ ampEnvelope(nullptr)
     addParameter(osc2ModeParam = new AudioParameterInt("osc2ModeChoice", "OSC2 Waveform", 0, 3, 2));
     addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 3, 2));
     
-    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
+   
+    
+    //addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
+    addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (20.0f, 20000.0f,
+                                                                                                                              
+                                                                                                                              [](float currentRangeStart, float currentRangeEnd, float proportion) {
+                                                                                                                                  return std::pow (10.0, (3.0 * proportion + std::log10 (20.0)));
+                                                                                                                              },
+                                                                                                                              [](float currentRangeStart, float currentRangeEnd, float normalisedValue) {                                                                                                                                return (std::log10 (normalisedValue / 20.0)) / 3.0; }
+                                                                                                                              ), 20000.0f));
     addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
     addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 40.0f));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0f, 5.0f, 0.0f, 1.0f, false), 1.0f));
+    
     // Filter Select Parameter
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 2));
     
@@ -161,6 +178,7 @@ ampEnvelope(nullptr)
     
     addParameter (attackCurve1Param = new AudioParameterFloat("attackCurve1", "Attack Curve",           NormalisableRange<float>(0.001f, 1.0f, 0.0f, 0.5f, false), 0.001f));
     addParameter (decayRelCurve1Param = new AudioParameterFloat("decRelCurve1", "Decay-Release Curve",  NormalisableRange<float>(0.00001f, 1.0f, 0.0f, 0.5f, false), 0.00001f));
+    
     //ENV 2
     addParameter (attackParam2 = new AudioParameterFloat ("attack2", "Pitch Attack",     NormalisableRange<float>(0.0f, 11.0f, 0.0f, 0.5f, false), 0.0f));
     addParameter (decayParam2  = new AudioParameterFloat ("decay2", "Pitch Decay",       NormalisableRange<float>(0.0f, 11.0f, 0.0f, 0.5f, false), 0.0f));
@@ -389,14 +407,6 @@ void MonosynthPluginAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     keyboardState.reset();
-
-    cutoff.reset(sampleRate, cutoffRampTimeDefault);
-    cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
-    resonance.reset(sampleRate, 0.001);
-    drive.reset(sampleRate, 0.001);
-    pulsewidthSmooth1.reset(sampleRate, cutoffRampTimeDefault);
-    pulsewidthSmooth2.reset(sampleRate, cutoffRampTimeDefault);
-    pulsewidthSmooth3.reset(sampleRate, cutoffRampTimeDefault);
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -752,19 +762,19 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         FloatType combinedCutoff   =  currentCutoff + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
 
 		if (combinedCutoff > 20000.0) combinedCutoff = 20000.0;
-		if (combinedCutoff < 40.0) combinedCutoff = 40.0;
+		if (combinedCutoff < 20.0) combinedCutoff = 20.0;
         
 		
 
-    for (int channel = 0; channel < 2; channel++)
-    {
-			//filter[channel]->SetSampleRate(sampleRate * oversamp->getOversamplingFactor());
-        filter[channel]->SetResonance(resonance.getNextValue());
-        filter[channel]->SetDrive(drive.getNextValue());
-    }
+        for (int channel = 0; channel < 2; channel++)
+        {
+                //filter[channel]->SetSampleRate(sampleRate * oversamp->getOversamplingFactor());
+            filter[channel]->SetResonance(resonance.getNextValue());
+            filter[channel]->SetDrive(drive.getNextValue());
+        }
 
-    if (samplesLeftOver < stepSize)
-        stepSize = samplesLeftOver;
+        if (samplesLeftOver < stepSize)
+            stepSize = samplesLeftOver;
         
 
 		if (prevCutoff == combinedCutoff)
@@ -772,11 +782,11 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 			filter[0]->SetCutoff(combinedCutoff);
 			filter[1]->SetCutoff(combinedCutoff);
 
-      if (filter[0]->SetCutoff(combinedCutoff))
-          filter[0]->Process(channelDataLeft, stepSize);
+            if (filter[0]->SetCutoff(combinedCutoff))
+                filter[0]->Process(channelDataLeft, stepSize);
 
-      if (filter[1]->SetCutoff(combinedCutoff))
-          filter[1]->Process(channelDataRight, stepSize);
+            if (filter[1]->SetCutoff(combinedCutoff))
+                filter[1]->Process(channelDataRight, stepSize);
 		}
 		else
 		{
@@ -784,12 +794,12 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 			filter[1]->ProcessRamp(channelDataRight, stepSize, prevCutoff, combinedCutoff);
 		}
         
-    prevCutoff = combinedCutoff;
+        prevCutoff = combinedCutoff;
 
-    samplesLeftOver -= stepSize;
+        samplesLeftOver -= stepSize;
 
-    channelDataLeft += stepSize;
-    channelDataRight += stepSize;
+        channelDataLeft += stepSize;
+        channelDataRight += stepSize;
     }
     
 }
@@ -818,9 +828,6 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
     FloatType* channelDataRight = buffer.getWritePointer(1);
     
-    
-    
-   // ampEnvelope->setSampleRate(sampleRate);
     ampEnvelope->setAttackRate(*attackParam1);
     ampEnvelope->setAttackRate(*attackParam1);
     ampEnvelope->setDecayRate(*decayParam1);
@@ -829,7 +836,6 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
     ampEnvelope->setTargetRatioA(*attackCurve1Param);
     ampEnvelope->setTargetRatioDR(*decayRelCurve1Param);
     
-    // std::cout << filterEnvelope->getState() << std::endl;
     
     int i = 0;
     
@@ -841,9 +847,6 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
         channelDataRight[i] *= envGain.getNextValue();
         i++;
     }
-    
-    
-    
 }
 
 double MonosynthPluginAudioProcessor::wave_shape(double sample, double overdrive)
@@ -934,7 +937,7 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buffer)
 {
-	  int numSamples = buffer.getNumSamples();
+    int numSamples = buffer.getNumSamples();
     int stepSize = jmin(16, numSamples);
     
     for (int i = 0; i < numSamples; i++)

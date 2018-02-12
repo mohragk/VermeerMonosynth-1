@@ -44,12 +44,32 @@ public:
 class MonosynthVoice  : public SynthesiserVoice
 {
 public:
-	MonosynthVoice() : pitchEnvelope(nullptr), numOscillators(3)
+    MonosynthVoice() :
+        sampleRate(44100.0),
+        phase(0.0),
+        envState(0),
+        numOscillators(3),
+        initialNote(0),
+        noteOffset(0),
+        lfoValue(0.0),
+        egValue(0.0),
+        //modAmountPW[3];
+        pitchModulation(0.0),
+        pitchBendOffset(0.0),
+        glideTime(0.0),
+        midiFrequency(0.0),
+        maxFreq(0.0), minFreq(0.0),
+        pitchModAmount(0.0),
+        hardSync(false)
     {
 		pitchEnvelope = new ADSR();
-
+        
 		for (int n = 0; n < numOscillators; n++)
+        {
+            modAmountPW[n] = 0.0;
+            oscDetuneAmount[n] = 0.0;
 			osc[n] = std::unique_ptr<Oscillator>( new Oscillator );
+        }
     }
     
     ~MonosynthVoice()
@@ -69,11 +89,8 @@ public:
                     SynthesiserSound* /*sound*/,
                     int /*currentPitchWheelPosition*/) override
     {
-        
         double sr = getSampleRate();
-
-		
-
+        
 		// Might be abundant, but just to be safe
         pitchEnvelope->setSampleRate(sr);
         
@@ -83,10 +100,7 @@ public:
 			osc[n]->setVelocityFactor(velocity);
 		}
         
-       
-               
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
-
         
         pitchEnvelope->gate(true);
     }

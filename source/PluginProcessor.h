@@ -150,7 +150,8 @@ public:
     bool saturationOn();
 
 	bool lfoSynced();
-	
+    
+   
   
     
     // Our parameters
