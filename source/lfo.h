@@ -13,7 +13,7 @@
 class LFO
 {
     public:
-        LFO() : phase(0.0)
+        LFO() : sampleRate(44100.0), phase(0.0)
         {
            
         }
@@ -26,15 +26,16 @@ class LFO
                 OSCILLATOR_MODE_NOISE
          };
         
-        void setSampleRate(const double sr) noexcept
+        void setSampleRate(const double sr)
         {
             sampleRate = sr;
         }
             
         void setFrequency(const double f)
         {
-            frequency = f;
-			phaseIncrement = updatePhaseIncrement(frequency);
+            frequency.set(f);
+            
+			
         }
         
         void setPhase(const double ph)
@@ -59,6 +60,8 @@ class LFO
             const double two_Pi = 2.0 * double_Pi;
             double value = 0.0;
             
+            updatePhaseIncrement();
+            
             switch (mode) 
             {
                 case OSCILLATOR_MODE_SINE:
@@ -75,7 +78,6 @@ class LFO
                     }
                     break;
                 case OSCILLATOR_MODE_NOISE:   
-                    Random r;
                     value = r.nextDouble();
                     break;
 
@@ -89,22 +91,26 @@ class LFO
                 phase -= 2.0 * double_Pi;
             }
             
+            
+            
+            
             return value;
         }
         
     private:
     
      
-        double updatePhaseIncrement(const double freq)
+        void updatePhaseIncrement()
         {
-            return ( ( 2.0 * double_Pi ) * freq ) / sampleRate;
+            phaseIncrement =  ( ( 2.0 * double_Pi ) * frequency.get() ) / sampleRate;
+            
         }
     
         
-        double sampleRate, phase, phaseIncrement, frequency;
-        
+        double sampleRate, phase, phaseIncrement;
+        Atomic<double> frequency;
         OscillatorMode mode;
-       
-    
+
+        Random r;
     
 };

@@ -123,9 +123,9 @@ ampEnvelope(nullptr)
     
     //addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.4f));
     
-	NormalisableRange<float> decibelRange = NormalisableRange<float>(-100.0f, 0.0f,
+	NormalisableRange<float> decibelRange = NormalisableRange<float>(-144.0f, 0.0f,
 		[](float start, float end, float gain)	{ return gain > 0.0f ? 20.0f * log10(gain) : start; },
-		[](float start, float end, float dB)	{ return dB > start ? std::pow(10.0f, dB * 0.05f) : 0.0; }
+		[](float start, float end, float dB)	{ return dB > start ? pow(10.0f, dB * 0.05f) : 0.0; }
 		) ;
 
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(40.0f, 20000.0f,
@@ -653,7 +653,7 @@ void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 {
 	//masterGain.setValue(*gainParam);
 
-	masterGain = *gainParam;
+    masterGain = decibelsToGain(*gainParam);
 
 	if (masterGain == masterGainPrev)
 	{
@@ -721,14 +721,21 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
-        const double contourRange = static_cast<double>( *filterContourParam );
+        const double contourRange = *filterContourParam;
         currentCutoff = (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
-        cutoff.setValue				(static_cast<double>(*filterParam));
+        cutoff.setValue				(*filterParam);
         cutoffFromEnvelope.setValue	(currentCutoff);
         resonance.setValue			(*filterQParam);
         drive.setValue				(*filterDriveParam);
         
+        if (counter > 65536)
+            counter = 0;
+        
+        if(counter % 65536 == 0)
+            std::cout << numSamples << std::endl;
+        
+        counter++;
         
     }
     
@@ -756,7 +763,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-		FloatType combinedCutoff = currentCutoff + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
+        FloatType combinedCutoff = currentCutoff + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
 
 		if (combinedCutoff > 20000.0) combinedCutoff = 20000.0;
 		if (combinedCutoff < 20.0) combinedCutoff = 20.0;

@@ -277,6 +277,14 @@ private:
 		double a, b, z;
 		double coeff;
 	};
+    
+    //
+    int counter = 0; // TEST TEST
+    //
+    
+    
+    float gainToDecibels(float gain)    { return gain > 0.0f ? 20.0f * log10(gain) : -144.0f; };
+    float decibelsToGain(float dB)      { return dB > -144.0f ? std::pow(10.0f, dB * 0.05f) : 0.0; }
 
 	template <typename FloatType>
     void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);
