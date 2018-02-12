@@ -33,6 +33,8 @@
 #include <iostream>
 
 #define MIN_INFINITY_DB -96.0f
+#define CUTOFF_MIN 40.0f
+#define CUTOFF_MAX 20000.0f
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
@@ -137,7 +139,7 @@ ampEnvelope(nullptr)
                                                                      [](float start, float end, float dB)    { return Decibels::decibelsToGain(dB, start); }
                                                                      ) ;
 
-	NormalisableRange<float> cutoffRange = NormalisableRange<float>(40.0f, 20000.0f,
+	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,
 		[](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); },
 		[](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); }
 		) ;
@@ -159,10 +161,10 @@ ampEnvelope(nullptr)
    
     
 	// addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
-	addParameter (filterCutoffParam = new AudioParameterFloat("filter", "Filter Cutoff", cutoffRange, 20000.0f));
+	addParameter (filterCutoffParam = new AudioParameterFloat("filter", "Filter Cutoff", cutoffRange, CUTOFF_MAX));
     
 	addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
-    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",	cutoffRange, 40.0f));
+    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",	cutoffRange, CUTOFF_MIN));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0f, 5.0f, 0.0f, 1.0f, false), 1.0f));
     
     // Filter Select Parameter
@@ -706,8 +708,8 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         
         FloatType combinedCutoff = currentCutoff + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
 
-		if (combinedCutoff > 20000.0) combinedCutoff = 20000.0;
-		if (combinedCutoff < 20.0) combinedCutoff = 20.0;
+		if (combinedCutoff > CUTOFF_MAX) combinedCutoff = CUTOFF_MAX;
+		if (combinedCutoff < CUTOFF_MIN) combinedCutoff = CUTOFF_MIN;
         
 		
 
