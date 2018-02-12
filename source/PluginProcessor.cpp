@@ -115,15 +115,7 @@ ampEnvelope(nullptr)
 
 {
     lastPosInfo.resetToDefault();
-    
-    
-    auto linToLogLambda = [](double v) {
-        return (std::log10 (v / 20.0)) / 3.0;
-    };
-    
-    auto logToLinLambda = [](double start, double end, double v) {
-        return std::pow (10.0, (3.0 * v + std::log10 (20.0)));
-    };
+
     
     // This creates our parameters. We'll keep some raw pointers to them in this class,
     // so that we can easily access them later, but the base class will take care of
@@ -147,15 +139,14 @@ ampEnvelope(nullptr)
     
    
     
-    //addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
+   // addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
     addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (20.0f, 20000.0f,
                                                                                                                               
-                                                                                                                              [](float currentRangeStart, float currentRangeEnd, float proportion) {
-                                                                                                                                  return std::pow (10.0, (3.0 * proportion + std::log10 (20.0)));
-                                                                                                                              },
-                                                                                                                              [](float currentRangeStart, float currentRangeEnd, float normalisedValue) {                                                                                                                                return (std::log10 (normalisedValue / 20.0)) / 3.0; }
-                                                                                                                              ), 20000.0f));
-    addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
+                                                                                                                              [](float currentRangeStart, float currentRangeEnd, float proportion) { return std::pow (10.0, (3.0 * proportion + std::log10 (20.0)));},
+                                                                                                                              [](float currentRangeStart, float currentRangeEnd, float normalisedValue) { return (std::log10 (normalisedValue / 20.0)) / 3.0; }
+                                                                                                                              ), 18000.0f));
+    
+	addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
     addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",   NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 40.0f));
     addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0f, 5.0f, 0.0f, 1.0f, false), 1.0f));
     
@@ -724,10 +715,10 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
-        const double contourRange = *filterContourParam;
+        const double contourRange = static_cast<double>( *filterContourParam );
         currentCutoff = (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
-        cutoff.setValue				(*filterParam);
+        cutoff.setValue				(static_cast<double>(*filterParam));
         cutoffFromEnvelope.setValue	(currentCutoff);
         resonance.setValue			(*filterQParam);
         drive.setValue				(*filterDriveParam);
@@ -759,7 +750,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff   =  currentCutoff + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
+		FloatType combinedCutoff = currentCutoff + cutoff.getNextValue();//smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
 
 		if (combinedCutoff > 20000.0) combinedCutoff = 20000.0;
 		if (combinedCutoff < 20.0) combinedCutoff = 20.0;

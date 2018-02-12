@@ -492,6 +492,8 @@ oversampleSwitchSlider(nullptr)
     
 	filterCutoffSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterParam, ROTARY));
     addAndMakeVisible (filterCutoffSlider.get());   //
+	filterCutoffSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 10);
+	filterCutoffSlider->setColour(Slider::textBoxOutlineColourId, Colour(0x008e989b));
     
     addAndMakeVisible (filterCutoffLabel = new Label ("Filter Cutoff Label",
                                                       TRANS("Cutoff")));            //

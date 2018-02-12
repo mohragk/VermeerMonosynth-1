@@ -89,7 +89,7 @@ public:
     
     virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
     {
-        const auto increment = (endCutoff - beginCutoff) / (double) n;
+		const auto increment = (endCutoff - beginCutoff) / static_cast<double> (n);
         
         for (uint32_t i = 0; i < n; i++)
         {
@@ -101,7 +101,7 @@ public:
     
     virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
     {
-        const auto increment = (endCutoff - beginCutoff) / (float) n;
+		const auto increment = (endCutoff - beginCutoff) / static_cast<float> (n);
         
         for (uint32_t i = 0; i < n; i++)
         {
