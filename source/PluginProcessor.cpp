@@ -32,6 +32,8 @@
 #include <math.h>
 #include <iostream>
 
+#define MIN_INFINITY_DB -96.0f
+
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
 
@@ -55,7 +57,7 @@ osc2ModeParam(nullptr),
 osc3ModeParam(nullptr),
 oscSyncParam(nullptr),
 
-filterParam(nullptr),
+filterCutoffParam(nullptr),
 filterQParam(nullptr),
 filterContourParam(nullptr),
 filterDriveParam(nullptr),
@@ -123,10 +125,17 @@ ampEnvelope(nullptr)
     
     //addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.4f));
     
-	NormalisableRange<float> decibelRange = NormalisableRange<float>(-144.0f, 0.0f,
+	/*
+    NormalisableRange<float> decibelRange = NormalisableRange<float>(-144.0f, 0.0f,
 		[](float start, float end, float gain)	{ return gain > 0.0f ? 20.0f * log10(gain) : start; },
-		[](float start, float end, float dB)	{ return dB > start ? pow(10.0f, dB * 0.05f) : 0.0; }
+        [](float start, float end, float dB)	{ return dB > start ? std::pow(10.0f, dB * 0.05f) : 0.0; }
 		) ;
+     */
+    
+    NormalisableRange<float> decibelRange = NormalisableRange<float>(MIN_INFINITY_DB, 0.0f,
+                                                                     [](float start, float end, float gain)  { return Decibels::gainToDecibels(gain, start); },
+                                                                     [](float start, float end, float dB)    { return Decibels::decibelsToGain(dB, start); }
+                                                                     ) ;
 
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(40.0f, 20000.0f,
 		[](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); },
@@ -135,9 +144,9 @@ ampEnvelope(nullptr)
 
     addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , decibelRange, -6.0f));
     
-    addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
-    addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
-    addParameter (osc3GainParam  = new AudioParameterFloat ("osc3Gain",  "OSC3 Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 0.9f));
+    addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain", decibelRange, -1.0f));
+    addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain", decibelRange, -1.0f));
+    addParameter (osc3GainParam  = new AudioParameterFloat ("osc3Gain",  "OSC3 Gain", decibelRange, -1.0f));
     
     addParameter (osc1DetuneAmountParam = new AudioParameterFloat("osc1DetuneAmount", "OSC1 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
     addParameter (osc2DetuneAmountParam = new AudioParameterFloat("osc2DetuneAmount", "OSC2 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
@@ -150,7 +159,7 @@ ampEnvelope(nullptr)
    
     
 	// addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
-	addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff", cutoffRange, 20000.0f));
+	addParameter (filterCutoffParam = new AudioParameterFloat("filter", "Filter Cutoff", cutoffRange, 20000.0f));
     
 	addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
     addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",	cutoffRange, 40.0f));
@@ -261,74 +270,6 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     
     synth.clearSounds();
     synth.clearVoices();
-    
-    gainParam = nullptr;
-    osc1GainParam = nullptr;
-    osc2GainParam = nullptr;
-    osc3GainParam = nullptr;
-    osc1DetuneAmountParam = nullptr;
-    osc2DetuneAmountParam = nullptr;
-    osc3DetuneAmountParam = nullptr;
-    
-    osc1ModeParam = nullptr;
-    osc2ModeParam = nullptr;
-    osc3ModeParam = nullptr;
-    oscSyncParam = nullptr;
-    
-    filterParam = nullptr;
-    filterQParam = nullptr;
-    filterContourParam = nullptr;
-    filterDriveParam = nullptr;
-    
-    pitchModParam = nullptr;
-    
-    oscOffsetParam = nullptr;
-    osc2OffsetParam = nullptr;
-    osc3OffsetParam = nullptr;
-    
-    attackParam1 = nullptr;
-    decayParam1 = nullptr;
-    sustainParam1 = nullptr;
-    releaseParam1 = nullptr;
-    attackCurve1Param = nullptr;
-    decayRelCurve1Param = nullptr;
-    
-    attackParam2 = nullptr;
-    decayParam2 = nullptr;
-    sustainParam2 = nullptr;
-    releaseParam2 = nullptr;
-    attackCurve2Param = nullptr;
-    decayRelCurve2Param = nullptr;
-    
-    attackParam3 = nullptr;
-    decayParam3 = nullptr;
-    sustainParam3 = nullptr;
-    releaseParam3 = nullptr;
-    attackCurve3Param = nullptr;
-    decayRelCurve3Param = nullptr;
-    
-    modTargetParam = nullptr;
-    
-    lfoRateParam = nullptr;
-    lfoModeParam = nullptr;
-    lfoIntensityParam = nullptr;
-    lfoSyncParam = nullptr;
-    
-    filterSelectParam = nullptr;
-    lfoDivisionParam = nullptr;
-    
-    overSampleParam = nullptr;
-
-    pulsewidthAmount1Param = nullptr;
-    pulsewidthAmount2Param = nullptr;
-    pulsewidthAmount3Param = nullptr;
-    
-    pulsewidth1Param = nullptr;
-    pulsewidth2Param = nullptr;
-    pulsewidth3Param = nullptr;
-    
-    saturationParam = nullptr;
-    oversampleSwitchParam = nullptr;
     
 }
 
@@ -653,7 +594,7 @@ void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 {
 	//masterGain.setValue(*gainParam);
 
-    masterGain = decibelsToGain(*gainParam);
+    masterGain = decibelsToGain(*gainParam, -144.0f);
 
 	if (masterGain == masterGainPrev)
 	{
@@ -724,7 +665,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         const double contourRange = *filterContourParam;
         currentCutoff = (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
-        cutoff.setValue				(*filterParam);
+        cutoff.setValue				(*filterCutoffParam);
         cutoffFromEnvelope.setValue	(currentCutoff);
         resonance.setValue			(*filterQParam);
         drive.setValue				(*filterDriveParam);
@@ -947,7 +888,12 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     for (int i = 0; i < numSamples; i++)
     {
         // set various parameters
-        setOscGains(*osc1GainParam, *osc2GainParam, *osc3GainParam);
+        setOscGains(
+                    decibelsToGain(*osc1GainParam, MIN_INFINITY_DB),
+                    decibelsToGain(*osc2GainParam, MIN_INFINITY_DB),
+                    decibelsToGain(*osc3GainParam, MIN_INFINITY_DB)
+                    );
+        
         setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
 
 

@@ -39,6 +39,7 @@
 
 
 
+
 //==============================================================================
 /**
     As the name suggest, this class does the actual audio processing.
@@ -170,7 +171,7 @@ public:
     
     AudioParameterInt* oscSyncParam;
     
-    AudioParameterFloat* filterParam;
+    AudioParameterFloat* filterCutoffParam;
     AudioParameterFloat* filterQParam;
     AudioParameterFloat* filterContourParam;
     AudioParameterFloat* filterDriveParam;
@@ -283,8 +284,8 @@ private:
     //
     
     
-    float gainToDecibels(float gain)    { return gain > 0.0f ? 20.0f * log10(gain) : -144.0f; };
-    float decibelsToGain(float dB)      { return dB > -144.0f ? std::pow(10.0f, dB * 0.05f) : 0.0; }
+    inline float gainToDecibels(float gain, float min)    { return gain > 0.0f ? 20.0f * log10(gain) : min; };
+    inline float decibelsToGain(float dB, float min)      { return dB > min ? std::pow(10.0f, dB * 0.05f) : 0.0; }
 
 	template <typename FloatType>
     void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);

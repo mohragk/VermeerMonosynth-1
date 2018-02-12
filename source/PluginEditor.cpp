@@ -254,8 +254,6 @@ oversampleSwitchSlider(nullptr)
     //
 	volumeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.gainParam, ROTARY));
     addAndMakeVisible (volumeSlider.get());  //
-	volumeSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 10);
-	volumeSlider->setColour(Slider::textBoxOutlineColourId, Colour(0x008e989b));
     
     addAndMakeVisible (volumeLabel = new Label ("Main Volume Label",
                                                 TRANS("Volume")));              //
@@ -491,10 +489,9 @@ oversampleSwitchSlider(nullptr)
     filterLabel->setColour (TextEditor::textColourId, Colours::black);
     filterLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	filterCutoffSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterParam, ROTARY));
+	filterCutoffSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterCutoffParam, ROTARY));
     addAndMakeVisible (filterCutoffSlider.get());   //
-	filterCutoffSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 10);
-	filterCutoffSlider->setColour(Slider::textBoxOutlineColourId, Colour(0x008e989b));
+	
     
     addAndMakeVisible (filterCutoffLabel = new Label ("Filter Cutoff Label",
                                                       TRANS("Cutoff")));            //
