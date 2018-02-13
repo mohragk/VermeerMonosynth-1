@@ -125,9 +125,9 @@ ampEnvelope(nullptr)
     // so that we can easily access them later, but the base class will take care of
     // deleting them for us.
     
-    NormalisableRange<float> decibelRange = NormalisableRange<float>(MIN_INFINITY_DB, 0.0f,
-                                                                     [](float start, float end, float gain)  { return Decibels::gainToDecibels(gain, start); },
-                                                                     [](float start, float end, float dB)    { return Decibels::decibelsToGain(dB, start); }
+    NormalisableRange<float> decibelRange = NormalisableRange<float>(MIN_INFINITY_DB, 12.0f,
+                                                                     [](float min, float end, float gain)  { return gain > 0.0f ? 20.0f * std::log10(gain) : min; },
+                                                                     [](float min, float end, float dB)    { return dB > min ? std::pow(10.0f, dB * 0.05f) : 0.0; }
                                                                      ) ;
 
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,
@@ -587,7 +587,7 @@ void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 {
 	//masterGain.setValue(*gainParam);
 
-    masterGain = decibelsToGain(*gainParam, -144.0f);
+    masterGain = dbToGain(*gainParam, MIN_INFINITY_DB);
 
 	if (masterGain == masterGainPrev)
 	{
@@ -662,14 +662,6 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         cutoffFromEnvelope.setValue	(currentCutoff);
         resonance.setValue			(*filterQParam);
         drive.setValue				(*filterDriveParam);
-        
-        if (counter > 65536)
-            counter = 0;
-        
-        if(counter % 65536 == 0)
-            std::cout << numSamples << std::endl;
-        
-        counter++;
         
     }
     
@@ -882,9 +874,9 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     {
         // set various parameters
         setOscGains(
-                    decibelsToGain(*osc1GainParam, MIN_INFINITY_DB),
-                    decibelsToGain(*osc2GainParam, MIN_INFINITY_DB),
-                    decibelsToGain(*osc3GainParam, MIN_INFINITY_DB)
+                    dbToGain(*osc1GainParam, MIN_INFINITY_DB),
+                    dbToGain(*osc2GainParam, MIN_INFINITY_DB),
+                    dbToGain(*osc3GainParam, MIN_INFINITY_DB)
                     );
         
         setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);

@@ -86,8 +86,7 @@ public:
     }
 
     AudioProcessorParameter& param;
-    
-    //LinearSmoothedValue<float> newValueSmooth;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
 };
@@ -224,6 +223,8 @@ oversampleSwitchSlider(nullptr)
     
     font = "Futura";
     
+
+	typedef ParameterSlider::style knobStyle;
     //
     // TITLE
     //
@@ -252,7 +253,7 @@ oversampleSwitchSlider(nullptr)
     //
     // main volume
     //
-	volumeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.gainParam, ROTARY));
+	volumeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.gainParam, knobStyle(ROTARY)));
     addAndMakeVisible (volumeSlider.get());  //
     
     addAndMakeVisible (volumeLabel = new Label ("Main Volume Label",
@@ -278,7 +279,7 @@ oversampleSwitchSlider(nullptr)
     
     
     // OSC 1
-	osc1GainSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*owner.osc1GainParam, ROTARY) );
+	osc1GainSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*owner.osc1GainParam, knobStyle(ROTARY)) );
     addAndMakeVisible (osc1GainSlider.get()); //
     
 	addAndMakeVisible(osc1GainLabel = new Label("OSC1 Gain Label",
@@ -289,7 +290,7 @@ oversampleSwitchSlider(nullptr)
     osc1GainLabel->setColour (TextEditor::textColourId, Colours::black);
     osc1GainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	osc1WaveformSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*owner.osc1ModeParam, LINEARHORIZONTAL) );
+	osc1WaveformSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*owner.osc1ModeParam, knobStyle(LINEARHORIZONTAL)) );
     addAndMakeVisible (osc1WaveformSlider.get()); //no label but graphics
     
     
@@ -301,7 +302,7 @@ oversampleSwitchSlider(nullptr)
     osc1WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
     osc1WaveformLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	osc1TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc1DetuneAmountParam, ROTARY));
+	osc1TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc1DetuneAmountParam, knobStyle(ROTARY)));
 	addAndMakeVisible(osc1TuneSlider.get()); //
 	osc1TuneSlider->setDoubleClickReturnValue(true, 0.5);
     
@@ -313,7 +314,7 @@ oversampleSwitchSlider(nullptr)
     osc1TuneLabel->setColour (TextEditor::textColourId, Colours::black);
     osc1TuneLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	osc1OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oscOffsetParam, ROTARY));
+	osc1OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oscOffsetParam, knobStyle(ROTARY)));
     addAndMakeVisible (osc1OffsetSlider.get()); //
     osc1OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     osc1OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
@@ -330,7 +331,7 @@ oversampleSwitchSlider(nullptr)
     
     
     // OSC 2
-	osc2GainSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2GainParam, ROTARY));
+	osc2GainSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2GainParam, knobStyle(ROTARY)));
     addAndMakeVisible (osc2GainSlider.get()); //
     
     addAndMakeVisible (osc2GainLabel = new Label ("OSC2 Gain Label",
@@ -341,7 +342,7 @@ oversampleSwitchSlider(nullptr)
     osc2GainLabel->setColour (TextEditor::textColourId, Colours::black);
     osc2GainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	osc2WaveformSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2ModeParam, LINEARHORIZONTAL));
+	osc2WaveformSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2ModeParam, knobStyle(LINEARHORIZONTAL)));
     addAndMakeVisible (osc2WaveformSlider.get()); //no label
    
     
@@ -353,7 +354,7 @@ oversampleSwitchSlider(nullptr)
     osc2WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
     osc2WaveformLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	osc2TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2DetuneAmountParam, ROTARY));
+	osc2TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2DetuneAmountParam, knobStyle(ROTARY)));
 	addAndMakeVisible(osc2TuneSlider.get()); //
 	osc2TuneSlider->setDoubleClickReturnValue(true, 0.5);
     
@@ -365,7 +366,7 @@ oversampleSwitchSlider(nullptr)
     osc2TuneLabel->setColour (TextEditor::textColourId, Colours::black);
     osc2TuneLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	osc2OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2OffsetParam, ROTARY));
+	osc2OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc2OffsetParam, knobStyle(ROTARY)));
     addAndMakeVisible (osc2OffsetSlider.get()); //
     osc2OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     osc2OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
@@ -382,7 +383,7 @@ oversampleSwitchSlider(nullptr)
 
     
     // OSC 3
-	osc3GainSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3GainParam, ROTARY));
+	osc3GainSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3GainParam, knobStyle(ROTARY)));
     addAndMakeVisible (osc3GainSlider.get()); //
 
     
@@ -394,7 +395,7 @@ oversampleSwitchSlider(nullptr)
     osc3GainLabel->setColour (TextEditor::textColourId, Colours::black);
     osc3GainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	osc3WaveformSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3ModeParam, LINEARHORIZONTAL));
+	osc3WaveformSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3ModeParam, knobStyle(LINEARHORIZONTAL)));
     addAndMakeVisible (osc3WaveformSlider.get());    //
    
     
@@ -406,7 +407,7 @@ oversampleSwitchSlider(nullptr)
     osc3WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
     osc3WaveformLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	osc3TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3DetuneAmountParam, ROTARY));
+	osc3TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3DetuneAmountParam, knobStyle(ROTARY)));
     addAndMakeVisible(osc3TuneSlider.get()); //
     osc3TuneSlider->setDoubleClickReturnValue(true, 0.5);
     
@@ -418,7 +419,7 @@ oversampleSwitchSlider(nullptr)
     osc3TuneLabel->setColour (TextEditor::textColourId, Colours::black);
     osc3TuneLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	osc3OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3OffsetParam, ROTARY));
+	osc3OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.osc3OffsetParam, knobStyle(ROTARY)));
     addAndMakeVisible (osc3OffsetSlider.get()); //
     osc3OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     osc3OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
@@ -433,7 +434,7 @@ oversampleSwitchSlider(nullptr)
     osc3OffsetLabel->setColour (TextEditor::textColourId, Colours::black);
     osc3OffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	oscSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oscSyncParam, LINEARVERTICAL));
+	oscSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oscSyncParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (oscSyncSlider.get());
     oscSyncSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     //oscSyncSlider->setDoubleClickReturnValue(true, 0.5);
@@ -463,7 +464,7 @@ oversampleSwitchSlider(nullptr)
     
     
     //Pitch MODULATION SLIDER
-	pitchModSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pitchModParam, ROTARY));
+	pitchModSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.pitchModParam, knobStyle(ROTARY)));
     addAndMakeVisible (pitchModSlider.get());        //
     pitchModSlider->setDoubleClickReturnValue(true, 0.0);
     
@@ -489,7 +490,7 @@ oversampleSwitchSlider(nullptr)
     filterLabel->setColour (TextEditor::textColourId, Colours::black);
     filterLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	filterCutoffSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterCutoffParam, ROTARY));
+	filterCutoffSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterCutoffParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterCutoffSlider.get());   //
 	
     
@@ -501,7 +502,7 @@ oversampleSwitchSlider(nullptr)
     filterCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
     filterCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	filterResonanceSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterQParam, ROTARY));
+	filterResonanceSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterQParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterResonanceSlider.get());   //
     
     addAndMakeVisible (filterResonanceLabel = new Label ("Filter Resonance Label",
@@ -512,10 +513,10 @@ oversampleSwitchSlider(nullptr)
     filterResonanceLabel->setColour (TextEditor::textColourId, Colours::black);
     filterResonanceLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	filterContourSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterContourParam, ROTARY));
+	filterContourSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterContourParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterContourSlider.get());  //
     
-	filterSelectSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterSelectParam, LINEARVERTICAL));
+	filterSelectSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterSelectParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(filterSelectSlider.get());  //todo:
     
     
@@ -527,7 +528,7 @@ oversampleSwitchSlider(nullptr)
     filterContourLabel->setColour (TextEditor::textColourId, Colours::black);
     filterContourLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	filterDriveSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterDriveParam, ROTARY));
+	filterDriveSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterDriveParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterDriveSlider.get());  //
     
     addAndMakeVisible (filterDriveLabel = new Label ("Filter Drive Label",
@@ -587,19 +588,19 @@ oversampleSwitchSlider(nullptr)
     envAmpLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     // Amplitude Envelope
-	attackSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam1, LINEARVERTICAL));
+	attackSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackSlider1.get());      //
    
     
-	decaySlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam1, LINEARVERTICAL));
+	decaySlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decaySlider1.get());        //
    
     
-	sustainSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam1, LINEARVERTICAL));
+	sustainSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(sustainSlider1.get());     //
    
     
-	releaseSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.releaseParam1, LINEARVERTICAL));
+	releaseSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.releaseParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(releaseSlider1.get());     //
    
     
@@ -615,19 +616,19 @@ oversampleSwitchSlider(nullptr)
     envFilterLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     // Filter Cutoff Envelope
-	attackSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam3, LINEARVERTICAL));
+	attackSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam3, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackSlider2.get());      //
    
     
-	decaySlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam3, LINEARVERTICAL));
+	decaySlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam3, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decaySlider2.get());        //
   
 
-	sustainSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam3, LINEARVERTICAL));
+	sustainSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam3, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(sustainSlider2.get());     //
     
     
-	releaseSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.releaseParam3, LINEARVERTICAL));
+	releaseSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.releaseParam3, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(releaseSlider2.get());     //
    
     
@@ -642,48 +643,48 @@ oversampleSwitchSlider(nullptr)
     
     
     // Pitch Modulation Envelope
-	attackSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam2, LINEARVERTICAL));
+	attackSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam2, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackSlider3.get());      //
    
     
-	decaySlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam2, LINEARVERTICAL));
+	decaySlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam2, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decaySlider3.get());        //
     
     
-	sustainSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam2, LINEARVERTICAL));
+	sustainSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam2, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(sustainSlider3.get());     //
     
     
-	releaseSlider3 = std::unique_ptr <ParameterSlider>(new ParameterSlider(*owner.releaseParam2, LINEARVERTICAL));
+	releaseSlider3 = std::unique_ptr <ParameterSlider>(new ParameterSlider(*owner.releaseParam2, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(releaseSlider3.get());     //
    
     
-	attackCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve1Param, LINEARVERTICAL));
+	attackCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve1Param, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(attackCurveSlider1.get());//
     attackCurveSlider1->setTooltip (TRANS("set attack curve from exponential to linear"));
    
-	decRelCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve1Param, LINEARVERTICAL));
+	decRelCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve1Param, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(decRelCurveSlider1.get());     //
     decRelCurveSlider1->setTooltip (TRANS("set decay and release curves from exponential to linear"));
    
 
     
-	attackCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve2Param, LINEARVERTICAL));
+	attackCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve2Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackCurveSlider2.get());    //@TODO: add parameter in Processor
     attackCurveSlider2->setTooltip (TRANS("set attack curve from exponential to linear"));
    
 
-	decRelCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve2Param, LINEARVERTICAL));
+	decRelCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve2Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decRelCurveSlider2.get());  //
     decRelCurveSlider2->setTooltip (TRANS("set decay and release curves from exponential to linear"));//@TODO: add parameter in Processor
     
 
-	attackCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve3Param, LINEARVERTICAL));
+	attackCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve3Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackCurveSlider3.get());      //@TODO: add parameter in Processor
     attackCurveSlider3->setTooltip (TRANS("set attack curve from exponential to linear"));
    
 
-	decRelCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve3Param, LINEARVERTICAL));
+	decRelCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve3Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decRelCurveSlider3.get()); //@TODO: add parameter in Processor
     decRelCurveSlider3->setTooltip (TRANS("set decay and release curves from exponential to linear"));
    
@@ -711,7 +712,7 @@ oversampleSwitchSlider(nullptr)
     lfoRateLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoRateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	lfoRateSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoRateParam, ROTARY));
+	lfoRateSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoRateParam, knobStyle(ROTARY)));
 	addAndMakeVisible(lfoRateSlider.get());  //
     
     addAndMakeVisible (lfoModeLabel = new Label ("lfoModeLabel",
@@ -734,10 +735,10 @@ oversampleSwitchSlider(nullptr)
     lfoIntensityLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoIntensityLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	lfoIntensitySlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoIntensityParam, ROTARY));
+	lfoIntensitySlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoIntensityParam, knobStyle(ROTARY)));
     addAndMakeVisible(lfoIntensitySlider.get());  //
     
-	lfoSyncedFreqSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoDivisionParam, ROTARY));
+	lfoSyncedFreqSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoDivisionParam, knobStyle(ROTARY)));
     addAndMakeVisible(lfoSyncedFreqSlider.get());
 
 	lfoSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoSyncParam, LINEARHORIZONTAL));
@@ -749,7 +750,7 @@ oversampleSwitchSlider(nullptr)
     //
     // Modulation Target
     //
-	modTargetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.modTargetParam, LINEARVERTICAL));
+	modTargetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.modTargetParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(modTargetSlider.get());  //
   
     
@@ -822,11 +823,11 @@ oversampleSwitchSlider(nullptr)
    
 
 	//Saturation
-	saturationSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.saturationParam, ROTARY));
+	saturationSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.saturationParam, knobStyle(ROTARY)));
 	addAndMakeVisible(saturationSlider.get());  //
 
 
-	saturationSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.waveshapeSwitchParam, LINEARVERTICAL));
+	saturationSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.waveshapeSwitchParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(saturationSwitchSlider.get());  
    
     

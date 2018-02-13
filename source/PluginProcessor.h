@@ -279,13 +279,9 @@ private:
 		double coeff;
 	};
     
-    //
-    int counter = 0; // TEST TEST
-    //
-    
-    
-    inline float gainToDecibels(float gain, float min)    { return gain > 0.0f ? 20.0f * log10(gain) : min; };
-    inline float decibelsToGain(float dB, float min)      { return dB > min ? std::pow(10.0f, dB * 0.05f) : 0.0; }
+      
+    inline float gainToDb(float gain, float min)    { return gain > 0.0f ? 20.0f * std::log10(gain) : min; };
+    inline float dbToGain(float dB, float min)      { return dB > min ? std::pow(10.0f, dB * 0.05f) : 0.0; }
 
 	template <typename FloatType>
     void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);
