@@ -125,24 +125,15 @@ ampEnvelope(nullptr)
     // so that we can easily access them later, but the base class will take care of
     // deleting them for us.
     
-    //addParameter (gainParam  = new AudioParameterFloat ("volume",  "Volume",           0.0f, 1.0f, 0.4f));
-    
-	/*
-    NormalisableRange<float> decibelRange = NormalisableRange<float>(-144.0f, 0.0f,
-		[](float start, float end, float gain)	{ return gain > 0.0f ? 20.0f * log10(gain) : start; },
-        [](float start, float end, float dB)	{ return dB > start ? std::pow(10.0f, dB * 0.05f) : 0.0; }
-		) ;
-     */
-    
     NormalisableRange<float> decibelRange = NormalisableRange<float>(MIN_INFINITY_DB, 0.0f,
                                                                      [](float start, float end, float gain)  { return Decibels::gainToDecibels(gain, start); },
                                                                      [](float start, float end, float dB)    { return Decibels::decibelsToGain(dB, start); }
                                                                      ) ;
 
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,
-		[](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); },
-		[](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); }
-		) ;
+                                                                    [](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); },
+                                                                    [](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); }
+                                                                    ) ;
 
     addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , decibelRange, -6.0f));
     
