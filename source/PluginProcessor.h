@@ -279,7 +279,9 @@ private:
 		double coeff;
 	};
     
-      
+	float linToLog(float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
+	float logToLin(float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
+
     inline float gainToDb(float gain, float min)    { return gain > 0.0f ? 20.0f * std::log10(gain) : min; };
     inline float dbToGain(float dB, float min)      { return dB > min ? std::pow(10.0f, dB * 0.05f) : 0.0; }
 

@@ -124,10 +124,12 @@ ampEnvelope(nullptr)
     // This creates our parameters. We'll keep some raw pointers to them in this class,
     // so that we can easily access them later, but the base class will take care of
     // deleting them for us.
+
+
     
-    NormalisableRange<float> decibelRange = NormalisableRange<float>(MIN_INFINITY_DB, 12.0f,
-                                                                     [](float min, float end, float gain)  { return gain > 0.0f ? 20.0f * std::log10(gain) : min; },
-                                                                     [](float min, float end, float dB)    { return dB > min ? std::pow(10.0f, dB * 0.05f) : 0.0; }
+    NormalisableRange<float> decibelRange = NormalisableRange<float>(MIN_INFINITY_DB, 6.0f,
+                                                                     [](float min, float end, float gain)   { return gain > 0.0f ? 20.0f * std::log10( gain * Decibels::decibelsToGain(end) ) : min; },
+                                                                     [](float min, float end, float dB)		{ return dB > min ?  std::pow(10.0f, dB * 0.05f) / Decibels::decibelsToGain(end)  : 0.0; }
                                                                      ) ;
 
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,
