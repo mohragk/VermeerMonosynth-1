@@ -360,7 +360,7 @@ private:
     double sampleRate;
     
 	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, pulsewidthSmooth1, pulsewidthSmooth2, pulsewidthSmooth3;
-	LinearSmoothedValue<double> cutoffFromEnvelope;
+	LinearSmoothedValue<double> cutoffFromEnvelope, saturationAmount;
 	
 	double cutoffRampTimeDefault = 0.0002, cutoffRampTime;
 	

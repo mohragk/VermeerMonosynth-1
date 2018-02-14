@@ -32,7 +32,7 @@
 #include <math.h>
 #include <iostream>
 
-#define MIN_INFINITY_DB -72.0f
+#define MIN_INFINITY_DB -144.0f
 #define CUTOFF_MIN 40.0f
 #define CUTOFF_MAX 20000.0f
 
@@ -127,13 +127,13 @@ ampEnvelope(nullptr)
 
 	auto decibelToGainLambda = [](auto min, auto end, auto dB)  { return dB > min ? std::pow(10.0f, dB * 0.05f) / Decibels::decibelsToGain(end) : 0.0; };
 	auto gainToDecibelLambda = [](auto min, auto end, auto gain){ return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end)) : -std::numeric_limits<float>::infinity(); };
-    
-   
+	
+	auto linToLogLambda = [](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
+	auto logToLinLambda = [](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
 
-	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,
-                                                                    [](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); },
-                                                                    [](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); }
-                                                                    ) ;
+	
+
+	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,	linToLogLambda, logToLinLambda) ;
 
     addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float>(MIN_INFINITY_DB, 6.0f, gainToDecibelLambda, decibelToGainLambda), -6.0f));
     
@@ -179,7 +179,7 @@ ampEnvelope(nullptr)
     addParameter (decayRelCurve1Param = new AudioParameterFloat("decRelCurve1", "Decay-Release Curve",  NormalisableRange<float>(0.00001f, 1.0f, 0.0f, 0.5f, false), 0.00001f));
     
     //ENV 2
-    addParameter (attackParam2 = new AudioParameterFloat ("attack2", "Pitch Attack",     NormalisableRange<float>(0.0f, 11.0f, 0.0f, 0.5f, false), 0.0f));
+    addParameter (attackParam2 = new AudioParameterFloat ("attack2", "Pitch Attack",     NormalisableRange<float>(0.001f, 11.0f, 0.0f, 0.5f, false), 0.001f));
     addParameter (decayParam2  = new AudioParameterFloat ("decay2", "Pitch Decay",       NormalisableRange<float>(0.0f, 11.0f, 0.0f, 0.5f, false), 0.0f));
     addParameter (sustainParam2  = new AudioParameterFloat ("sustain2", "Pitch Sustain", NormalisableRange<float>(0.0f, 1.0f,  0.0f, 0.5f, false), 0.0f));
     addParameter (releaseParam2  = new AudioParameterFloat ("release2", "Pitch Release", NormalisableRange<float>(0.0f, 11.0f, 0.0f, 0.5f, false), 0.0f));
@@ -188,7 +188,7 @@ ampEnvelope(nullptr)
     addParameter(decayRelCurve2Param = new AudioParameterFloat("decRelCurve2", "Decay-Release Curve",	NormalisableRange<float>(0.00001f, 1.0f, 0.0f, 0.5f, false), 0.00001f));
     
     //ENV 3
-    addParameter (attackParam3 = new AudioParameterFloat ("attack3", "Filter Attack",    NormalisableRange<float>(0.0f, 11.0f, 0.0f, 0.5f, false), 0.0f));
+	addParameter(attackParam3 = new AudioParameterFloat("attack3", "Filter Attack",		 NormalisableRange<float>(0.001f, 11.0f, 0.0f, 0.5f, false), 0.001f));
     addParameter (decayParam3  = new AudioParameterFloat ("decay3", "Filter Decay",      NormalisableRange<float>(0.0f, 11.0f, 0.0f, 0.5f, false), 0.0f));
     addParameter (sustainParam3  = new AudioParameterFloat ("sustain3", "Filter Sustain",NormalisableRange<float>(0.0f, 1.0f,  0.0f, 0.5f, false), 0.0f));
     addParameter (releaseParam3  = new AudioParameterFloat ("release3", "Filter Release",NormalisableRange<float>(0.01f, 11.0f, 0.0f, 0.5f, false), 0.01f));
@@ -367,6 +367,7 @@ void MonosynthPluginAudioProcessor::reset()
     pulsewidthSmooth1.reset(sampleRate, cutoffRampTimeDefault);
     pulsewidthSmooth2.reset(sampleRate, cutoffRampTimeDefault);
     pulsewidthSmooth3.reset(sampleRate, cutoffRampTimeDefault);
+	saturationAmount.reset(sampleRate, cutoffRampTimeDefault);
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -742,10 +743,14 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 	FloatType* dataL = buffer.getWritePointer(0);
 	FloatType* dataR = buffer.getWritePointer(1);
 
+	
+
+	auto saturation = saturationAmount.getNextValue();
+
 	for (int i = 0; i < numSamples; i++)
 	{
-		dataL[i] = wave_shape(dataL[i], *saturationParam);
-		dataR[i] = wave_shape(dataR[i], *saturationParam);
+		dataL[i] = wave_shape(dataL[i], saturation);
+		dataR[i] = wave_shape(dataR[i], saturation);
 	}
 }
 
@@ -901,6 +906,8 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         setPWAmount(*pulsewidthAmount1Param, 0);
         setPWAmount(*pulsewidthAmount2Param, 1);
         setPWAmount(*pulsewidthAmount3Param, 2);
+
+		saturationAmount.setValue(*saturationParam);
 
         sendLFO(lfo);
 
