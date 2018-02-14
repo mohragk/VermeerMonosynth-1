@@ -128,7 +128,7 @@ ampEnvelope(nullptr)
 	auto decibelToGainLambda = [](auto min, auto end, auto dB)  { return dB > min ? std::pow(10.0f, dB * 0.05f) / Decibels::decibelsToGain(end) : 0.0; };
 	auto gainToDecibelLambda = [](auto min, auto end, auto gain){ return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end)) : min; };
     
-    NormalisableRange<float> decibelRange = NormalisableRange<float>(MIN_INFINITY_DB, 6.0f,	gainToDecibelLambda, decibelToGainLambda ) ;
+   
 
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,
                                                                     [](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); },
@@ -172,7 +172,7 @@ ampEnvelope(nullptr)
     //ENV 1
     addParameter (attackParam1 = new AudioParameterFloat ("attack1", "Amp Attack",       NormalisableRange<float>(0.001f, 11.0f, 0.0f, 0.5f, false), 0.001f));
     addParameter (decayParam1  = new AudioParameterFloat ("decay1", "Amp Decay",         NormalisableRange<float>(0.001f, 11.0f, 0.0f, 0.5f, false), 0.001f));
-    addParameter (sustainParam1  = new AudioParameterFloat ("sustain1", "Amp Sustain",   NormalisableRange<float>(0.0f, 1.0f,  0.0f, 0.5f, false), 1.0f));
+    addParameter (sustainParam1  = new AudioParameterFloat ("sustain1", "Amp Sustain",   NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda ), -0.75f));
     addParameter (releaseParam1  = new AudioParameterFloat ("release1", "Amp Release",   NormalisableRange<float>(0.001f, 11.0f, 0.0f, 0.5f, false), 0.01f));
     
     addParameter (attackCurve1Param = new AudioParameterFloat("attackCurve1", "Attack Curve",           NormalisableRange<float>(0.001f, 1.0f, 0.0f, 0.5f, false), 0.001f));
@@ -762,7 +762,7 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
     ampEnvelope->setAttackRate(*attackParam1);
     ampEnvelope->setDecayRate(*decayParam1);
     ampEnvelope->setReleaseRate(*releaseParam1);
-    ampEnvelope->setSustainLevel(*sustainParam1);
+    ampEnvelope->setSustainLevel(dbToGain(*sustainParam1, MIN_INFINITY_DB));
     ampEnvelope->setTargetRatioA(*attackCurve1Param);
     ampEnvelope->setTargetRatioDR(*decayRelCurve1Param);
     
