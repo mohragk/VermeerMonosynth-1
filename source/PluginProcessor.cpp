@@ -32,7 +32,7 @@
 #include <math.h>
 #include <iostream>
 
-#define MIN_INFINITY_DB -96.0f
+#define MIN_INFINITY_DB -72.0f
 #define CUTOFF_MIN 40.0f
 #define CUTOFF_MAX 20000.0f
 
@@ -126,7 +126,7 @@ ampEnvelope(nullptr)
     // deleting them for us.
 
 	auto decibelToGainLambda = [](auto min, auto end, auto dB)  { return dB > min ? std::pow(10.0f, dB * 0.05f) / Decibels::decibelsToGain(end) : 0.0; };
-	auto gainToDecibelLambda = [](auto min, auto end, auto gain){ return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end)) : min; };
+	auto gainToDecibelLambda = [](auto min, auto end, auto gain){ return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end)) : -std::numeric_limits<float>::infinity(); };
     
    
 
