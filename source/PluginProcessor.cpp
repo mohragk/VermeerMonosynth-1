@@ -125,23 +125,21 @@ ampEnvelope(nullptr)
     // so that we can easily access them later, but the base class will take care of
     // deleting them for us.
 
-
+	auto decibelToGainLambda = [](auto min, auto end, auto dB)  { return dB > min ? std::pow(10.0f, dB * 0.05f) / Decibels::decibelsToGain(end) : 0.0; };
+	auto gainToDecibelLambda = [](auto min, auto end, auto gain){ return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end)) : min; };
     
-    NormalisableRange<float> decibelRange = NormalisableRange<float>(MIN_INFINITY_DB, 6.0f,
-                                                                     [](float min, float end, float gain)   { return gain > 0.0f ? 20.0f * std::log10( gain * Decibels::decibelsToGain(end) ) : min; },
-                                                                     [](float min, float end, float dB)		{ return dB > min ?  std::pow(10.0f, dB * 0.05f) / Decibels::decibelsToGain(end)  : 0.0; }
-                                                                     ) ;
+    NormalisableRange<float> decibelRange = NormalisableRange<float>(MIN_INFINITY_DB, 6.0f,	gainToDecibelLambda, decibelToGainLambda ) ;
 
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,
                                                                     [](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); },
                                                                     [](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); }
                                                                     ) ;
 
-    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , decibelRange, -6.0f));
+    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float>(MIN_INFINITY_DB, 6.0f, gainToDecibelLambda, decibelToGainLambda), -6.0f));
     
-    addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain", decibelRange, -1.0f));
-    addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain", decibelRange, -1.0f));
-    addParameter (osc3GainParam  = new AudioParameterFloat ("osc3Gain",  "OSC3 Gain", decibelRange, -1.0f));
+    addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
+    addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
+    addParameter (osc3GainParam  = new AudioParameterFloat ("osc3Gain",  "OSC3 Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
     
     addParameter (osc1DetuneAmountParam = new AudioParameterFloat("osc1DetuneAmount", "OSC1 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
     addParameter (osc2DetuneAmountParam = new AudioParameterFloat("osc2DetuneAmount", "OSC2 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
