@@ -28,71 +28,51 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
+Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) 
+: processor(p),
+                                Pitch1Slider(nullptr),
+                                Pitch2Slider(nullptr),
+                                Pitch3Slider(nullptr),
+                                Pitch4Slider(nullptr),
+                                Pitch5Slider(nullptr),
+                                Pitch6Slider(nullptr),
+                                Pitch7Slider(nullptr),
+                                Pitch8Slider(nullptr)
+
+
 {
     typedef ParameterSlider::style knobStyle;
     
     Pitch1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch1Param, knobStyle(2)));
     addAndMakeVisible (Pitch1Slider.get());  //
-
-   
-
     Pitch1Slider->setBounds (64, 0, 24, 112);
-
-    addAndMakeVisible (Pitch2Slider = new Slider ("Pitch 2"));
-    Pitch2Slider->setRange (0, 10, 0);
-    Pitch2Slider->setSliderStyle (Slider::LinearVertical);
-    Pitch2Slider->setTextBoxStyle (Slider::TextBoxBelow, true, 24, 20);
-    Pitch2Slider->addListener (this);
-
+    
+    Pitch2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch2Param, knobStyle(2)));
+    addAndMakeVisible (Pitch2Slider.get());  //
     Pitch2Slider->setBounds (96, 0, 24, 112);
 
-    addAndMakeVisible (Pitch3Slider = new Slider ("Pitch 3"));
-    Pitch3Slider->setRange (0, 10, 0);
-    Pitch3Slider->setSliderStyle (Slider::LinearVertical);
-    Pitch3Slider->setTextBoxStyle (Slider::TextBoxBelow, true, 24, 20);
-    Pitch3Slider->addListener (this);
-
+    Pitch3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch3Param, knobStyle(2)));
+    addAndMakeVisible (Pitch3Slider.get());  //
     Pitch3Slider->setBounds (128, 0, 24, 112);
 
-    addAndMakeVisible (Pitch4Slider = new Slider ("Pitch 4"));
-    Pitch4Slider->setRange (0, 10, 0);
-    Pitch4Slider->setSliderStyle (Slider::LinearVertical);
-    Pitch4Slider->setTextBoxStyle (Slider::TextBoxBelow, true, 24, 20);
-    Pitch4Slider->addListener (this);
-
+    Pitch4Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch4Param, knobStyle(2)));
+    addAndMakeVisible (Pitch4Slider.get());  //
     Pitch4Slider->setBounds (160, 0, 24, 112);
 
-    addAndMakeVisible (Pitch5Slider = new Slider ("Pitch 5"));
-    Pitch5Slider->setRange (0, 10, 0);
-    Pitch5Slider->setSliderStyle (Slider::LinearVertical);
-    Pitch5Slider->setTextBoxStyle (Slider::TextBoxBelow, true, 24, 20);
-    Pitch5Slider->addListener (this);
-
+    Pitch5Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch5Param, knobStyle(2)));
+    addAndMakeVisible (Pitch5Slider.get());  //
     Pitch5Slider->setBounds (208, 0, 24, 112);
 
-    addAndMakeVisible (Pitch6Slider = new Slider ("Pitch 6"));
-    Pitch6Slider->setRange (0, 10, 0);
-    Pitch6Slider->setSliderStyle (Slider::LinearVertical);
-    Pitch6Slider->setTextBoxStyle (Slider::TextBoxBelow, true, 24, 20);
-    Pitch6Slider->addListener (this);
-
+    Pitch6Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch6Param, knobStyle(2)));
+    addAndMakeVisible (Pitch6Slider.get());  //
     Pitch6Slider->setBounds (240, 0, 24, 112);
 
-    addAndMakeVisible (Pitch7Slider = new Slider ("Pitch 7"));
-    Pitch7Slider->setRange (0, 10, 0);
-    Pitch7Slider->setSliderStyle (Slider::LinearVertical);
-    Pitch7Slider->setTextBoxStyle (Slider::TextBoxBelow, true, 24, 20);
-    Pitch7Slider->addListener (this);
-
+    Pitch7Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch7Param, knobStyle(2)));
+    addAndMakeVisible (Pitch7Slider.get());  //
     Pitch7Slider->setBounds (272, 0, 24, 112);
 
-    addAndMakeVisible (Pitch8Slider = new Slider ("Pitch 8"));
-    Pitch8Slider->setRange (0, 10, 0);
-    Pitch8Slider->setSliderStyle (Slider::LinearVertical);
-    Pitch8Slider->setTextBoxStyle (Slider::TextBoxBelow, true, 24, 20);
-    Pitch8Slider->addListener (this);
-
+    Pitch8Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch8Param, knobStyle(2)));
+    addAndMakeVisible (Pitch8Slider.get());  //
     Pitch8Slider->setBounds (304, 0, 24, 112);
 
     addAndMakeVisible (syncToTempoSwitchSlider = new Slider ("Sync to Tempo Slider"));
@@ -119,14 +99,6 @@ Sequencer::~Sequencer()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    Pitch1Slider = nullptr;
-    Pitch2Slider = nullptr;
-    Pitch3Slider = nullptr;
-    Pitch4Slider = nullptr;
-    Pitch5Slider = nullptr;
-    Pitch6Slider = nullptr;
-    Pitch7Slider = nullptr;
-    Pitch8Slider = nullptr;
     syncToTempoSwitchSlider = nullptr;
 
 
@@ -157,50 +129,7 @@ void Sequencer::resized()
 
 void Sequencer::sliderValueChanged (Slider* sliderThatWasMoved)
 {
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
-
-    if (sliderThatWasMoved == Pitch2Slider)
-    {
-        //[UserSliderCode_Pitch2Slider] -- add your slider handling code here..
-        //[/UserSliderCode_Pitch2Slider]
-    }
-    else if (sliderThatWasMoved == Pitch3Slider)
-    {
-        //[UserSliderCode_Pitch3Slider] -- add your slider handling code here..
-        //[/UserSliderCode_Pitch3Slider]
-    }
-    else if (sliderThatWasMoved == Pitch4Slider)
-    {
-        //[UserSliderCode_Pitch4Slider] -- add your slider handling code here..
-        //[/UserSliderCode_Pitch4Slider]
-    }
-    else if (sliderThatWasMoved == Pitch5Slider)
-    {
-        //[UserSliderCode_Pitch5Slider] -- add your slider handling code here..
-        //[/UserSliderCode_Pitch5Slider]
-    }
-    else if (sliderThatWasMoved == Pitch6Slider)
-    {
-        //[UserSliderCode_Pitch6Slider] -- add your slider handling code here..
-        //[/UserSliderCode_Pitch6Slider]
-    }
-    else if (sliderThatWasMoved == Pitch7Slider)
-    {
-        //[UserSliderCode_Pitch7Slider] -- add your slider handling code here..
-        //[/UserSliderCode_Pitch7Slider]
-    }
-    else if (sliderThatWasMoved == Pitch8Slider)
-    {
-        //[UserSliderCode_Pitch8Slider] -- add your slider handling code here..
-        //[/UserSliderCode_Pitch8Slider]
-    }
-    else if (sliderThatWasMoved == syncToTempoSwitchSlider)
-    {
-        //[UserSliderCode_syncToTempoSwitchSlider] -- add your slider handling code here..
-        //[/UserSliderCode_syncToTempoSwitchSlider]
-    }
-
+    
     //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
 }

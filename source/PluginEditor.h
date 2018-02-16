@@ -84,7 +84,7 @@ private:
 
 	Label timecodeDisplayLabel;
 	
-	Sequencer* sequencer;
+    std::unique_ptr<Sequencer> sequencer;
 
    ScopedPointer<Label>  
         mainLabel,

@@ -101,17 +101,27 @@ lfoSyncParam(nullptr),
 filterSelectParam(nullptr),
 lfoDivisionParam(nullptr),
 
-overSampleParam(nullptr),
-
+saturationParam(nullptr),
 waveshapeSwitchParam(nullptr),
+waveshapeModeParam(nullptr),
 
 pulsewidthAmount1Param(nullptr),
 pulsewidthAmount2Param(nullptr),
 pulsewidthAmount3Param(nullptr),
 
-saturationParam(nullptr),
-
+overSampleParam(nullptr),
 oversampleSwitchParam(nullptr),
+
+softClipSwitchParam(nullptr),
+
+sequencerPitch1Param(nullptr),
+sequencerPitch2Param(nullptr),
+sequencerPitch3Param(nullptr),
+sequencerPitch4Param(nullptr),
+sequencerPitch5Param(nullptr),
+sequencerPitch6Param(nullptr),
+sequencerPitch7Param(nullptr),
+sequencerPitch8Param(nullptr),
 
 filterEnvelope(nullptr),
 

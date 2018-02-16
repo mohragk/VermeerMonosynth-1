@@ -56,14 +56,15 @@ private:
     MonosynthPluginAudioProcessor& processor;
 
     //==============================================================================
-    std::unique_ptr<Slider> Pitch1Slider;
-    ScopedPointer<Slider> Pitch2Slider;
-    ScopedPointer<Slider> Pitch3Slider;
-    ScopedPointer<Slider> Pitch4Slider;
-    ScopedPointer<Slider> Pitch5Slider;
-    ScopedPointer<Slider> Pitch6Slider;
-    ScopedPointer<Slider> Pitch7Slider;
-    ScopedPointer<Slider> Pitch8Slider;
+    std::unique_ptr<Slider> Pitch1Slider,
+                            Pitch2Slider,
+                            Pitch3Slider,
+                            Pitch4Slider,
+                            Pitch5Slider,
+                            Pitch6Slider,
+                            Pitch7Slider,
+                            Pitch8Slider;
+    
     ScopedPointer<Slider> syncToTempoSwitchSlider;
 
 

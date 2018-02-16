@@ -799,8 +799,8 @@ oversampleSwitchSlider(nullptr),
     midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
     
     //SEQUENCER
-    sequencer = new Sequencer(owner);
-    addAndMakeVisible(sequencer);
+    sequencer = std::unique_ptr<Sequencer>(new Sequencer(owner));
+    addAndMakeVisible(sequencer.get());
     
                        
     //
@@ -1365,6 +1365,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     Rectangle<int> r(getLocalBounds().reduced(8));
     midiKeyboard.setBounds(r.removeFromBottom(100));
+    
     sequencer->setBounds(r.removeFromBottom(midiKeyboard.getHeight() + 40));
    
 
