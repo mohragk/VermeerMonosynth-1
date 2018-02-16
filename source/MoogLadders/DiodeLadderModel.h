@@ -18,21 +18,22 @@ class DiodeLadderModel : public LadderFilterBase
 {
     public:
     
-    DiodeLadderModel() : LadderFilterBase()
+    DiodeLadderModel() : LadderFilterBase(),
+                            sampleRate(44100.0),
+                            Gamma(0.0),
+                            type(LPF4),
+                            SG1(0.0), SG2(0.0), SG3(0.0), SG4(0.0)
+    
     {
         resonance.set(0.0);
 		SetCutoff(1000.0);
         
-        Gamma = 0.0;
-        
-        SG1 = 0.0; SG2 = 0.0; SG3 = 0.0; SG4 = 0.0;
         
         va_LPF1.setFilterType(LPF1);
         va_LPF2.setFilterType(LPF1);
         va_LPF3.setFilterType(LPF1);
         va_LPF4.setFilterType(LPF1);
         
-        type = LPF4;
         
         Reset();
         

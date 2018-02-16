@@ -17,13 +17,10 @@
 class ThreeFiveModel : public LadderFilterBase
 {
 public:
-    ThreeFiveModel() : LadderFilterBase(), type(LPF2)
+    ThreeFiveModel() : LadderFilterBase(), sampleRate(44100.0), type(LPF2), Alpha0(0.0)
     {
 		SetCutoff(1000.0);
-
-        //init
         SetResonance( 0.0 );
-        Alpha0 = 0;
         
         // set filter types
         va_LPF1.setFilterType(LPF1);
@@ -31,8 +28,6 @@ public:
         va_HPF1.setFilterType(HPF1);
         va_HPF2.setFilterType(HPF1);
         
-        
-        type = LPF2;
         
         Reset();
         

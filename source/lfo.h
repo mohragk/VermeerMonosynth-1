@@ -60,7 +60,7 @@ class LFO
             const double two_Pi = 2.0 * double_Pi;
             double value = 0.0;
             
-            updatePhaseIncrement();
+            phaseIncrement = getPhaseIncrement(frequency.get(), sampleRate);
             
             switch (mode) 
             {
@@ -92,17 +92,16 @@ class LFO
             }
             
             
-            
-            
             return value;
         }
         
     private:
     
      
-        void updatePhaseIncrement()
+        double getPhaseIncrement(double freq, double sr)
         {
-            phaseIncrement =  ( ( 2.0 * double_Pi ) * frequency.get() ) / sampleRate;
+            const double nyFreq = jmin( freq, sr / 2.0 );
+            return ( ( 2.0 * double_Pi ) * nyFreq ) / sr;
             
         }
     

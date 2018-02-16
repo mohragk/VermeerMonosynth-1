@@ -69,7 +69,8 @@ public:
 
 private:
     class ParameterSlider;
-	enum style
+	
+    enum style
 	{
 		ROTARY = 0,
 		LINEARHORIZONTAL,

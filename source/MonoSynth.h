@@ -230,12 +230,10 @@ public:
 
 private:
     
+    
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
-        
-       
-        
         if (envState == 0)
         {
 			for (int n = 0; n < numOscillators; n++)
@@ -254,6 +252,7 @@ private:
 
 				//Apply Pitch Envelope and PitchBend Amount, deviated from current pitch
 				FloatType newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
+                
 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
 				FloatType osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreq);

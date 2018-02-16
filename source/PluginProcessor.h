@@ -125,27 +125,6 @@ public:
     // resized.
     int lastUIWidth, lastUIHeight;
     
-
-    
-    
-    //Set Envelope values
-    void setPitchEnvelope(float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve);
-   
-
-    
-    void setPitchEnvelopeAmount( float pitchMod);
-    //void setOscOffset(float offset);
-    void setOsc1DetuneAmount(float fine, int coarse);
-    void setOsc2DetuneAmount(float fine, int coarse);
-    void setOsc3DetuneAmount(float fine, int coarse);
-    void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
-    void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
-	void setEnvelopeState( ADSR& envelope);
-    void setHardSync(int sync);
-    void sendLFO( LFO& thislfo);
-	void setPW(double amt, int osc);
-    void setPWAmount(double amt, int osc);
-
 	bool noteIsBeingPlayed();
     
     bool saturationOn();

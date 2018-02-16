@@ -17,22 +17,20 @@ class VAOnePole : public LadderFilterBase
 {
     public :
     
-        VAOnePole() : LadderFilterBase()
+        VAOnePole() : LadderFilterBase(),
+    
+                        Alpha(1.0),
+                        Beta(0.0),
+                        Gamma(1.0),
+                        Delta(0.0),
+                        Epsilon(0.0),
+                        a0(1.0),
+                        Z1(0.0),
+                        Feedback(0.0),
+                        type(LPF1),
+                        sampleRate(44100.0)
         {
-            Alpha = 1.0;
-            Beta = 0.0;
-            Z1 = 0.0;
-            Gamma = 1.0;
-            Delta = 0.0;
-            Epsilon = 0.0;
-            a0 = 1.0;
-            Feedback = 0.0;
-            
-            // default to lpf
-            type = LPF1;
-            
             Reset();
-            
         }
         
         virtual ~VAOnePole()

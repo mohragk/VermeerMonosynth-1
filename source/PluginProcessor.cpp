@@ -32,7 +32,7 @@
 #include <math.h>
 #include <iostream>
 
-#define MIN_INFINITY_DB -144.0f
+#define MIN_INFINITY_DB -96.0f
 #define CUTOFF_MIN 40.0f
 #define CUTOFF_MAX 20000.0f
 
@@ -126,16 +126,17 @@ ampEnvelope(nullptr)
     // deleting them for us.
 
 	auto decibelToGainLambda = [](auto min, auto end, auto dB)  { return dB > min ? std::pow(10.0f, dB * 0.05f) / Decibels::decibelsToGain(end) : 0.0; };
-	auto gainToDecibelLambda = [](auto min, auto end, auto gain){ return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end)) : -std::numeric_limits<float>::infinity(); };
+	//auto gainToDecibelLambda = [](auto min, auto end, auto gain){ return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end)) : -std::numeric_limits<float>::infinity(); };
+    
+    auto gainToDecibelLambda = [](auto min, auto end, auto gain) { return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end) ) : -std::numeric_limits<float>::infinity(); };
 	
 	auto linToLogLambda = [](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
 	auto logToLinLambda = [](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
 
-	
 
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,	linToLogLambda, logToLinLambda) ;
 
-    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float>(MIN_INFINITY_DB, 6.0f, gainToDecibelLambda, decibelToGainLambda), -6.0f));
+    addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float>(MIN_INFINITY_DB, 6.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
     
     addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
     addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
@@ -419,6 +420,8 @@ void MonosynthPluginAudioProcessor::resetSamplerates(double sr)
 {
     double newsr = sr;
     
+    
+    
     if(hqOversampling)
     {
         newsr *= oversamplingDoubleHQ->getOversamplingFactor();
@@ -431,6 +434,8 @@ void MonosynthPluginAudioProcessor::resetSamplerates(double sr)
         if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
         else                            { setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
     }
+    
+    sampleRate = newsr;
     
     for(int channel = 0; channel < 2; channel++)
     {
@@ -629,7 +634,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         //
         lfo.setMode(*lfoModeParam);
         
-        double lfo_division = pow(2.0, *lfoDivisionParam);
+        const double lfo_division = pow(2.0, *lfoDivisionParam);
         
         if (*lfoSyncParam == 1)
             lfo.setFrequency(getLFOSyncedFreq(lastPosInfo, lfo_division)); //*lfoRateParam);
@@ -875,134 +880,61 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     int numSamples = buffer.getNumSamples();
     int stepSize = jmin(16, numSamples);
     
+    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+    
+    
+    
     for (int i = 0; i < numSamples; i++)
     {
         // set various parameters
-        setOscGains(
+        synthVoice->setOscGains(
                     dbToGain(*osc1GainParam, MIN_INFINITY_DB),
                     dbToGain(*osc2GainParam, MIN_INFINITY_DB),
                     dbToGain(*osc3GainParam, MIN_INFINITY_DB)
                     );
         
-        setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
+        synthVoice->setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
 
+        synthVoice->setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
 
-        setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
+        synthVoice->setPitchEnvelopeAmount(*pitchModParam);
 
-        setPitchEnvelopeAmount(*pitchModParam);
+        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam);
+        synthVoice->setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
+        synthVoice->setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
 
-        setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam);
-        setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
-        setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
+        
 
-        setEnvelopeState(*ampEnvelope);
+        synthVoice->setHardSync(*oscSyncParam);
 
-        setHardSync(*oscSyncParam);
+        
 
+        synthVoice->setModAmountPW(*pulsewidthAmount1Param, 0);
+        synthVoice->setModAmountPW(*pulsewidthAmount2Param, 1);
+        synthVoice->setModAmountPW(*pulsewidthAmount3Param, 2);
+
+		saturationAmount.setValue(*saturationParam);
+        
         pulsewidthSmooth1.setValue(*pulsewidth1Param);
         pulsewidthSmooth2.setValue(*pulsewidth2Param);
         pulsewidthSmooth3.setValue(*pulsewidth3Param);
 
-        setPWAmount(*pulsewidthAmount1Param, 0);
-        setPWAmount(*pulsewidthAmount2Param, 1);
-        setPWAmount(*pulsewidthAmount3Param, 2);
-
-		saturationAmount.setValue(*saturationParam);
-
-        sendLFO(lfo);
+        synthVoice->sendLFO(lfo);
+        synthVoice->sendEnvelope(*ampEnvelope);
 
 
         if (i % stepSize == 0)
         {
-            setPW(smoothing[1]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
-            setPW(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
-            setPW(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
+            synthVoice->setPulsewidth(smoothing[1]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
+            synthVoice->setPulsewidth(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
+            synthVoice->setPulsewidth(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
         }
-	  }
+    }
 }
 
 
 
-void MonosynthPluginAudioProcessor::setPitchEnvelope(float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve)
-{
-    
-    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchEnvelope(attack, decay, sustain, release, attackCurve, decRelCurve);
-    
-}
 
-
-void MonosynthPluginAudioProcessor::setPitchEnvelopeAmount(float pitchMod)
-{
-    
-    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchEnvelopeAmount(pitchMod);
-    
-}
-
-
-void MonosynthPluginAudioProcessor::setOsc1DetuneAmount(float fine, int coarse)
-{
-    
-    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOsc1DetuneAmount(fine, coarse);
-    
-}
-
-void MonosynthPluginAudioProcessor::setOsc2DetuneAmount(float fine, int coarse)
-{
-    
-    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOsc2DetuneAmount(fine, coarse);
-    
-}
-
-
-void MonosynthPluginAudioProcessor::setOsc3DetuneAmount(float fine, int coarse)
-{
-    
-    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOsc3DetuneAmount(fine, coarse);
-    
-}
-
-void MonosynthPluginAudioProcessor::setOscGains(float osc1Gain, float osc2Gain, float osc3Gain)
-{
-    
-    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOscGains(osc1Gain, osc2Gain, osc3Gain);
-    
-}
-
-void MonosynthPluginAudioProcessor::setOscModes(int osc1Mode, int osc2Mode, int osc3Mode)
-{
-    
-    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setOscModes(osc1Mode, osc2Mode, osc3Mode);
-    
-}
-
-
-void MonosynthPluginAudioProcessor::setEnvelopeState(ADSR& envelope)
-{
-    
-    return static_cast<MonosynthVoice*>(synth.getVoice(0))->sendEnvelope(envelope);
-    
-}
-
-void MonosynthPluginAudioProcessor::setHardSync(int sync)
-{
-    
-    return static_cast<MonosynthVoice*>(synth.getVoice(0))->setHardSync(sync);
-    
-}
-
-void MonosynthPluginAudioProcessor::setPW(double amt, int osc)
-{
-
-	return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPulsewidth(amt, osc);
-
-}
-
-void MonosynthPluginAudioProcessor::setPWAmount(double amt, int osc)
-{
-    
-    return dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setModAmountPW(amt, osc);
-    
-}
 
 
 void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
@@ -1053,10 +985,7 @@ float MonosynthPluginAudioProcessor::softClip(float s)
     return localSample;
 }
 
-void MonosynthPluginAudioProcessor::sendLFO( LFO& thislfo )
-{
-    return static_cast<MonosynthVoice*>(synth.getVoice(0))->sendLFO(thislfo);
-}
+
 
 
 double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division )

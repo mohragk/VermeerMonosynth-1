@@ -17,15 +17,11 @@ class SEMModel : public LadderFilterBase
 {
     public :
     
-		SEMModel() : LadderFilterBase()
+		SEMModel() : LadderFilterBase(), sampleRate(44100.0), Alpha0(1.0), Alpha(1.0), Rho(1.0)
 		{
 			SetCutoff(1000.0);
 			SetResonance(0.0);
 
-			Alpha0 = 1.0;
-			Alpha = 1.0;
-			Rho = 1.0;
-        
 			Reset();
 		
 		}
@@ -173,7 +169,7 @@ class SEMModel : public LadderFilterBase
     
 		double sampleRate;
     
-		double Alpha, Alpha0;
+		double Alpha0, Alpha;
 		double Rho;
 		double Z11, Z12;
 };
