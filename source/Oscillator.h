@@ -124,12 +124,6 @@ public:
         {
             phase.set(0.0);
             rephase = true;
-<<<<<<< HEAD
-			deviation *= -1.0;
-            
-=======
-			deviation *= -1.0;  
->>>>>>> dev
         }
     
         
