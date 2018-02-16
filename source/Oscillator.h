@@ -124,9 +124,9 @@ public:
         {
             phase.set(0.0);
             rephase = true;
-            deviation = random.nextFloat() * 0.15;
-            
+			deviation *= -1.0;  
         }
+    
         
         return value * level * gain.get();// * velocityFactor;
     }
