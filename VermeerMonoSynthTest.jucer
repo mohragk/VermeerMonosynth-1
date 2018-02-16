@@ -104,6 +104,10 @@
     <FILE id="upR4CX" name="MonoSynth.h" compile="0" resource="0" file="source/MonoSynth.h"/>
     <FILE id="BU8U7s" name="Oscillator.h" compile="0" resource="0" file="source/Oscillator.h"/>
     <FILE id="yf17tA" name="lfo.h" compile="0" resource="0" file="source/lfo.h"/>
+    <FILE id="ib4Mjy" name="ParameterSlider.h" compile="0" resource="0"
+          file="source/ParameterSlider.h"/>
+    <FILE id="DKiKDX" name="Sequencer.cpp" compile="1" resource="0" file="source/Sequencer.cpp"/>
+    <FILE id="OvmAYW" name="Sequencer.h" compile="0" resource="0" file="source/Sequencer.h"/>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
   <MODULES>

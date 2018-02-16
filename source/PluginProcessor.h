@@ -203,7 +203,7 @@ public:
     AudioParameterInt* overSampleParam;
     
     AudioParameterInt* filterOrderParam;
-    AudioParameterInt* waveshapeSwitchParam;
+    
 
 	AudioParameterFloat* pulsewidth1Param;
 	AudioParameterFloat* pulsewidth2Param;
@@ -214,9 +214,20 @@ public:
     AudioParameterFloat* pulsewidthAmount3Param;
 
 	AudioParameterFloat* saturationParam;
+    AudioParameterInt* waveshapeSwitchParam;
+    AudioParameterInt* waveshapeModeParam;
     
     AudioParameterInt* oversampleSwitchParam;
     AudioParameterInt* softClipSwitchParam;
+    
+    AudioParameterInt* sequencerPitch1Param;
+    AudioParameterInt* sequencerPitch2Param;
+    AudioParameterInt* sequencerPitch3Param;
+    AudioParameterInt* sequencerPitch4Param;
+    AudioParameterInt* sequencerPitch5Param;
+    AudioParameterInt* sequencerPitch6Param;
+    AudioParameterInt* sequencerPitch7Param;
+    AudioParameterInt* sequencerPitch8Param;
     
     
 private:
@@ -283,7 +294,19 @@ private:
     template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
 
-	double wave_shape(double sample, double overdrive);
+	double getWaveshaped(double sample, double overdrive, int mode)
+    {
+        
+        // tanh
+        if (mode == 0)
+            return dsp::FastMathApproximations::tanh(overdrive * sample);
+        
+        
+        //Arraya
+        return (3.0 * (sample * overdrive) / 2) * (1 - ((sample * overdrive) * (sample * overdrive)) / 3.0);
+        
+    };
+
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     

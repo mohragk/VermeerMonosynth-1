@@ -1,61 +1,75 @@
 /*
   ==============================================================================
 
-    Sequencer.h
-    Created: 16 Feb 2018 11:30:54am
-    Author:  Sander Vermeer
+  This is an automatically generated GUI class created by the Projucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Projucer version: 5.2.1
+
+  ------------------------------------------------------------------------------
+
+  The Projucer is part of the JUCE library.
+  Copyright (c) 2017 - ROLI Ltd.
 
   ==============================================================================
 */
 
 #pragma once
 
+//[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "PluginProcessor.h"
+
+
 
 //==============================================================================
-/*
+/**
+                                                                    //[Comments]
+    An auto-generated component, created by the Projucer.
+
+    Describe your class and how it works here!
+                                                                    //[/Comments]
 */
-class Sequencer    : public Component
+class Sequencer  : public Component,
+                   public Slider::Listener
 {
 public:
-    Sequencer()
-    {
-        // In your constructor, you should add any child components, and
-        // initialise any special settings that your component needs.
+    //==============================================================================
+    Sequencer (MonosynthPluginAudioProcessor& p);
+    ~Sequencer();
 
-    }
+    //==============================================================================
+    //[UserMethods]     -- You can add your own custom methods in this section.
+    //[/UserMethods]
 
-    ~Sequencer()
-    {
-    }
+    void paint (Graphics& g) override;
+    void resized() override;
+    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void parentSizeChanged() override;
 
-    void paint (Graphics& g) override
-    {
-        /* This demo code just fills the component's background and
-           draws some placeholder text to get you started.
 
-           You should replace everything in this method with your own
-           drawing code..
-        */
-
-        g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
-
-        g.setColour (Colours::grey);
-        g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
-        g.setColour (Colours::white);
-        g.setFont (14.0f);
-        g.drawText ("Sequencer", getLocalBounds(),
-                    Justification::centred, true);   // draw some placeholder text
-    }
-
-    void resized() override
-    {
-        // This method is where you should set the bounds of any child
-        // components that your component contains..
-
-    }
 
 private:
+    MonosynthPluginAudioProcessor& processor;
+
+    //==============================================================================
+    std::unique_ptr<Slider> Pitch1Slider;
+    ScopedPointer<Slider> Pitch2Slider;
+    ScopedPointer<Slider> Pitch3Slider;
+    ScopedPointer<Slider> Pitch4Slider;
+    ScopedPointer<Slider> Pitch5Slider;
+    ScopedPointer<Slider> Pitch6Slider;
+    ScopedPointer<Slider> Pitch7Slider;
+    ScopedPointer<Slider> Pitch8Slider;
+    ScopedPointer<Slider> syncToTempoSwitchSlider;
+
+
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sequencer)
 };
+
+//[EndFile] You can add extra defines here...
+//[/EndFile]

@@ -27,70 +27,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-//==============================================================================
-// This is a handy slider subclass that controls an AudioProcessorParameter
-// (may move this class into the library itself at some point in the future..)
-
-class MonosynthPluginAudioProcessorEditor::ParameterSlider   : public Slider,
-                                                              private Timer
-{
-public:
-	ParameterSlider(AudioProcessorParameter& p, int type)
-		: Slider(p.getName(256)), param(p)
-	{
-		setRange(0.0, 1.0, 0.0);
-		startTimerHz(60);
-		updateSliderPos();
-
-		if (type == ROTARY) { setSliderStyle(Slider::RotaryVerticalDrag); }
-		else if (type == LINEARHORIZONTAL) {setSliderStyle(Slider::LinearHorizontal);}
-		else { setSliderStyle(Slider::LinearVertical); }
-
-		setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
-    }
-
-	enum style 
-	{
-		ROTARY = 0,
-		LINEARHORIZONTAL,
-		LINEARVERTICAL
-	};
-
-    void valueChanged() override
-    {
-        if (isMouseButtonDown())
-            param.setValueNotifyingHost ((float) Slider::getValue());
-        else
-            param.setValue ((float) Slider::getValue());
-    }
-
-    void timerCallback() override       { updateSliderPos(); }
-
-    void startedDragging() override     { param.beginChangeGesture();  }
-    void stoppedDragging() override     { param.endChangeGesture();   }
-
-	
-
-    double getValueFromText (const String& text) override   { return param.getValueForText (text); }
-    String getTextFromValue (double value) override         { return param.getText ((float) value, 1024); }
-
-    void updateSliderPos()
-    {
-        const float newValue = param.getValue();
-
-        if (newValue != (float) Slider::getValue() && ! isMouseButtonDown())
-        {           
-            Slider::setValue (newValue);
-        }
-        
-    }
-
-    AudioProcessorParameter& param;
-
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
-};
-
 
 //==============================================================================
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
@@ -829,7 +765,11 @@ oversampleSwitchSlider(nullptr),
 
 
 	saturationSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.waveshapeSwitchParam, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(saturationSwitchSlider.get());  
+    addAndMakeVisible(saturationSwitchSlider.get());
+    
+    
+    saturationModeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.waveshapeModeParam, knobStyle(LINEARHORIZONTAL)));
+    addAndMakeVisible(saturationModeSlider.get());
    
     
     addAndMakeVisible (saturationLabel = new Label ("saturationLabel",
@@ -857,6 +797,10 @@ oversampleSwitchSlider(nullptr),
     midiKeyboard.setAvailableRange(12, 115);
     midiKeyboard.setLowestVisibleKey(36);
     midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
+    
+    //SEQUENCER
+    sequencer = new Sequencer(owner);
+    addAndMakeVisible(sequencer);
     
                        
     //
@@ -906,7 +850,7 @@ oversampleSwitchSlider(nullptr),
 
     // set resize limits for this plug-in
 	
-    setResizeLimits (820, 590, 820, 590);
+    setResizeLimits (820, 720, 820, 720);
 	
 
     // set our component's initial size to be the last one that was stored in the filter's settings
@@ -1369,13 +1313,14 @@ void MonosynthPluginAudioProcessorEditor::resized()
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
    
-    filterOrderSlider->setBounds(getWidth() - 24-  64, 240, 64,64);
+    filterOrderSlider->setBounds(getWidth() - 24-  64, 340, 64,64);
     
   
 
 	saturationSlider->setBounds(getWidth() - 24 - 64, 184, 64, 65);
     saturationLabel->setBounds (getWidth() - 23 - 65, 168, 65, 24);
     saturationSwitchSlider->setBounds(getWidth() - 24, 190, 12,40);
+    saturationModeSlider->setBounds(getWidth() - 24 - 64, 240, 64,64);
     
     
     oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36);
@@ -1420,6 +1365,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     Rectangle<int> r(getLocalBounds().reduced(8));
     midiKeyboard.setBounds(r.removeFromBottom(100));
+    sequencer->setBounds(r.removeFromBottom(midiKeyboard.getHeight() + 40));
    
 
     getProcessor().lastUIWidth = getWidth();

@@ -28,6 +28,8 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "ParameterSlider.h"
+#include "Sequencer.h"
 
 
 //==============================================================================
@@ -68,7 +70,6 @@ public:
     static const int oscNoiseWaveSymbol_svgSize;
 
 private:
-    class ParameterSlider;
 	
     enum style
 	{
@@ -82,6 +83,8 @@ private:
     MidiKeyboardComponent midiKeyboard;
 
 	Label timecodeDisplayLabel;
+	
+	Sequencer* sequencer;
 
    ScopedPointer<Label>  
         mainLabel,
@@ -197,7 +200,9 @@ private:
     
         filterOrderSlider,
     
+        saturationSlider,
         saturationSwitchSlider,
+        saturationModeSlider,
     
 
 
@@ -209,7 +214,7 @@ private:
         pulsewidthAmount2Slider,
         pulsewidthAmount3Slider,
 
-		saturationSlider,
+		
     
         oversampleSwitchSlider,
         softClipSwitchSlider

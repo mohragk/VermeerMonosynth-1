@@ -214,9 +214,7 @@ ampEnvelope(nullptr)
     addParameter(filterOrderParam = new AudioParameterInt("filterOrderParam", "Filter Order", 0, 1, 0)); // 0 = VCA->filter; 1 = filter->VCA
     
     // PWM
-    addParameter(waveshapeSwitchParam = new AudioParameterInt("waveShapeSwitchParam", "Waveshaping ON/OFF", 0, 1, 0));
-
-	addParameter(pulsewidth1Param = new AudioParameterFloat("pulsewidth1Param", "PW1", 0.0f, 1.0f, 0.0f));
+    addParameter(pulsewidth1Param = new AudioParameterFloat("pulsewidth1Param", "PW1", 0.0f, 1.0f, 0.0f));
 	addParameter(pulsewidth2Param = new AudioParameterFloat("pulsewidth2Param", "PW2", 0.0f, 1.0f, 0.0f));
 	addParameter(pulsewidth3Param = new AudioParameterFloat("pulsewidth3Param", "PW3", 0.0f, 1.0f, 0.0f));
     
@@ -226,12 +224,25 @@ ampEnvelope(nullptr)
 
 	//Saturation/Overdrive
 	addParameter(saturationParam = new AudioParameterFloat("saturationParam", "Saturation", 1.0f, 5.0f, 1.0f));
+    addParameter(waveshapeSwitchParam = new AudioParameterInt("waveshapeSwitchParam", "Waveshaping ON/OFF", 0, 1, 0));
+    addParameter(waveshapeModeParam = new AudioParameterInt("waveshapeModeParam", "Waveshape", 0, 1, 0));
     
     // Oversampling HQ switch
     addParameter(oversampleSwitchParam = new AudioParameterInt("oversampleSwitchParam", "HQ ON/OFF", 0, 1, 0));
     
     // Softclip switch
     addParameter(softClipSwitchParam = new AudioParameterInt("softClipSwitchParam", "Softclip ON/OFF", 0, 1, 0));
+    
+    //SEQUENCER
+    addParameter(sequencerPitch1Param = new AudioParameterInt("sequencerPitch1Param", "Seq. Pitch 1", -24, 24, 0));
+    addParameter(sequencerPitch2Param = new AudioParameterInt("sequencerPitch2Param", "Seq. Pitch 2", -24, 24, 0));
+    addParameter(sequencerPitch3Param = new AudioParameterInt("sequencerPitch3Param", "Seq. Pitch 3", -24, 24, 0));
+    addParameter(sequencerPitch4Param = new AudioParameterInt("sequencerPitch4Param", "Seq. Pitch 4", -24, 24, 0));
+    
+    addParameter(sequencerPitch5Param = new AudioParameterInt("sequencerPitch5Param", "Seq. Pitch 5", -24, 24, 0));
+    addParameter(sequencerPitch6Param = new AudioParameterInt("sequencerPitch6Param", "Seq. Pitch 6", -24, 24, 0));
+    addParameter(sequencerPitch7Param = new AudioParameterInt("sequencerPitch7Param", "Seq. Pitch 7", -24, 24, 0));
+    addParameter(sequencerPitch8Param = new AudioParameterInt("sequencerPitch8Param", "Seq. Pitch 8", -24, 24, 0));
     
     initialiseSynth();
     
@@ -566,11 +577,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 	if(*waveshapeSwitchParam == 1)
 		applyWaveshaper(osBuffer);
  
-
-
-
-    
-    
     
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't
@@ -578,19 +584,19 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
 		osBuffer.clear (i, 0, numSamples);
     
+    
+    // APPLY VOLUME
     applyGain (osBuffer); // apply our gain-change to the outgoing data..
     
     
     
-    //SOFTCLIP
+    // APPLY SOFTCLIP
     if (*softClipSwitchParam == 1)
         softClipBuffer(osBuffer);
 
 
     //DOWNSAMPLING
 	oversampling->processSamplesDown(block);
-	//osBlock.clear();
-
 
 	    
     // Now ask the host for the current time so we can store it to be displayed later...
@@ -754,6 +760,9 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 {
 	const int numSamples = buffer.getNumSamples();
 
+    const FloatType* readLeft = buffer.getReadPointer(0);
+    const FloatType* readRight = buffer.getReadPointer(1);
+    
 	FloatType* dataL = buffer.getWritePointer(0);
 	FloatType* dataR = buffer.getWritePointer(1);
 
@@ -763,8 +772,8 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 
 	for (int i = 0; i < numSamples; i++)
 	{
-		dataL[i] = wave_shape(dataL[i], saturation);
-		dataR[i] = wave_shape(dataR[i], saturation);
+		dataL[i] = getWaveshaped(readLeft[i], saturation, *waveshapeModeParam);
+		dataR[i] = getWaveshaped(readRight[i], saturation, *waveshapeModeParam);
 	}
 }
 
@@ -798,12 +807,7 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
     }
 }
 
-double MonosynthPluginAudioProcessor::wave_shape(double sample, double overdrive)
-{
 
-	return dsp::FastMathApproximations::tanh(overdrive * sample);
-
-}
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 {
@@ -908,7 +912,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 
         synthVoice->setPitchEnvelopeAmount(*pitchModParam);
 
-        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam);
+        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam + *sequencerPitch1Param); //TEST
         synthVoice->setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
         synthVoice->setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
 
@@ -1001,6 +1005,9 @@ void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<FloatType>& buffe
 {
     const int numSamples = buffer.getNumSamples();
     
+    const FloatType* readLeft = buffer.getReadPointer(0);
+    const FloatType* readRight = buffer.getReadPointer(1);
+    
     FloatType* dataLeft = buffer.getWritePointer(0);
     FloatType* dataRight = buffer.getWritePointer(1);
     
@@ -1008,17 +1015,14 @@ void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<FloatType>& buffe
     
     auto softClipLambda = [](auto sample)
     {
-        auto localSample = sample;
-        
-        localSample = std::atan(localSample);
-        
-        return localSample * (2 / FloatType(double_Pi));
+        return std::atan(sample) * ( 2 / FloatType(double_Pi) );
     };
     
     for (int i = 0; i < numSamples; i++)
     {
-        dataLeft[i]  = softClipLambda(dataLeft[i]);
-        dataRight[i] = softClipLambda(dataRight[i]);
+        
+        dataLeft[i]  = softClipLambda(readLeft[i]);
+        dataRight[i] = softClipLambda(readRight[i]);
     }
     
     
