@@ -71,10 +71,6 @@
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
     <FILE id="RMtzUq" name="colorcheck.cpp" compile="1" resource="0" file="source/colorcheck.cpp"/>
     <FILE id="gLySbD" name="colorcheck.h" compile="0" resource="0" file="source/colorcheck.h"/>
-    <FILE id="SDib0U" name="OscillatorSection.cpp" compile="1" resource="0"
-          file="source/OscillatorSection.cpp"/>
-    <FILE id="x0XULL" name="OscillatorSection.h" compile="0" resource="0"
-          file="source/OscillatorSection.h"/>
     <FILE id="OuARf9" name="OscNoiseWaveSymbol.svg" compile="0" resource="1"
           file="Resources/OscNoiseWaveSymbol.svg"/>
     <FILE id="IGiKJp" name="FuturaStd-Medium.otf" compile="0" resource="1"
@@ -99,6 +95,8 @@
       <FILE id="Sk6Jz4" name="ADSR.cpp" compile="1" resource="0" file="Source/adsr/ADSR.cpp"/>
       <FILE id="NQi4xi" name="ADSR.h" compile="0" resource="0" file="Source/adsr/ADSR.h"/>
     </GROUP>
+    <FILE id="ib4Mjy" name="ParameterSlider.h" compile="0" resource="0"
+          file="source/ParameterSlider.h"/>
     <FILE id="Iif5nfHL" name="PluginEditor.h" compile="0" resource="0"
           file="Source/PluginEditor.h"/>
     <FILE id="RCFlkTAef" name="PluginEditor.cpp" compile="1" resource="0"
@@ -110,8 +108,13 @@
     <FILE id="upR4CX" name="MonoSynth.h" compile="0" resource="0" file="source/MonoSynth.h"/>
     <FILE id="BU8U7s" name="Oscillator.h" compile="0" resource="0" file="source/Oscillator.h"/>
     <FILE id="yf17tA" name="lfo.h" compile="0" resource="0" file="source/lfo.h"/>
-    <FILE id="ib4Mjy" name="ParameterSlider.h" compile="0" resource="0"
-          file="source/ParameterSlider.h"/>
+    <FILE id="SDib0U" name="OscillatorSection.cpp" compile="1" resource="0"
+          file="source/OscillatorSection.cpp"/>
+    <FILE id="x0XULL" name="OscillatorSection.h" compile="0" resource="0"
+          file="source/OscillatorSection.h"/>
+    <FILE id="PjAReP" name="FilterSection.cpp" compile="1" resource="0"
+          file="source/FilterSection.cpp"/>
+    <FILE id="Jc3nge" name="FilterSection.h" compile="0" resource="0" file="source/FilterSection.h"/>
     <FILE id="DKiKDX" name="Sequencer.cpp" compile="1" resource="0" file="source/Sequencer.cpp"/>
     <FILE id="OvmAYW" name="Sequencer.h" compile="0" resource="0" file="source/Sequencer.h"/>
   </MAINGROUP>

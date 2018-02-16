@@ -308,7 +308,7 @@ OscillatorSection::~OscillatorSection()
 
 void OscillatorSection::paint (Graphics& g)
 {
-    g.fillAll (Colours::crimson);
+    //g.fillAll (Colours::crimson);
     
     {
         int x = 305, y = 64, width = 1, height = 398;
@@ -347,14 +347,7 @@ void OscillatorSection::paint (Graphics& g)
         g.fillRect (x, y, width, height);
     }
     
-    {
-        int x = proportionOfWidth (0.5000f) - (proportionOfWidth (0.9500f) / 2), y = 49, width = proportionOfWidth (0.9500f), height = 1;
-        Colour fillColour = Colour (0xffcfcfcf);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
+    
     
     {
         int x = 66, y = 224, width = 10, height = 6;
@@ -497,8 +490,8 @@ void OscillatorSection::resized()
     int headerHeight = 48;
     
     //Rectangle<int> headerArea (area.removeFromTop (headerHeight));
-    oscillatorsLabel->setBounds (area.removeFromTop(headerHeight).reduced(8, 8));
-    
+    oscillatorsLabel->setBounds (area.removeFromTop(headerHeight));
+    oscillatorsLabel->setJustificationType(Justification::centred);
     
     
     int stripWith = 72;

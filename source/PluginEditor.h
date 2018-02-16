@@ -31,6 +31,7 @@
 #include "ParameterSlider.h"
 #include "Sequencer.h"
 #include "OscillatorSection.h"
+#include "FilterSection.h"
 
 
 //==============================================================================
@@ -51,14 +52,7 @@ public:
     void timerCallback() override;
 
 	// Binary resources:
-	static const char* oscSquareWaveSymbol_svg;
-	static const int oscSquareWaveSymbol_svgSize;
-	static const char* oscSquareWaveSymbol_svg2;
-	static const int oscSquareWaveSymbol_svg2Size;
-	static const char* oscSawWaveSymbol_svg;
-	static const int oscSawWaveSymbol_svgSize;
-	static const char* oscSineWaveSymbol_svg;
-	static const int oscSineWaveSymbol_svgSize;
+	
 	static const char* attackCurveLinear_symbol_svg;
 	static const int attackCurveLinear_symbol_svgSize;
 	static const char* attackCurveExponential_symbol_svg;
@@ -67,8 +61,7 @@ public:
 	static const int decayCurveLinear_symbol_svgSize;
 	static const char* decayCurveExponential_symbol_svg;
 	static const int decayCurveExponential_symbol_svgSize;
-	static const char* oscNoiseWaveSymbol_svg;
-    static const int oscNoiseWaveSymbol_svgSize;
+
 
 private:
 	
@@ -87,6 +80,7 @@ private:
 	
     std::unique_ptr<Sequencer> sequencer;
     std::unique_ptr<OscillatorSection> oscillatorSection;
+    std::unique_ptr<FilterSection> filterSection;
 
    ScopedPointer<Label>  
         mainLabel,
@@ -124,12 +118,6 @@ private:
     
    std::unique_ptr<ParameterSlider>
 	   volumeSlider,
-	
-
-	   filterCutoffSlider,
-        filterResonanceSlider,
-        filterContourSlider,
-        filterDriveSlider,
 
         attackSlider1,
         decaySlider1,
@@ -161,7 +149,6 @@ private:
 		lfoSyncSlider,
         lfoSyncedFreqSlider,
     
-        filterSelectSlider,
     
     
     
@@ -179,20 +166,7 @@ private:
 
     
     std::unique_ptr<Drawable>
-    drawable25,
-    drawable1,
-    drawable2,
-    drawable3,
     
-    drawable26,
-    drawable4,
-    drawable5,
-    drawable6,
-    
-    drawable27,
-    drawable7,
-    drawable8,
-    drawable9,
     
     
     
