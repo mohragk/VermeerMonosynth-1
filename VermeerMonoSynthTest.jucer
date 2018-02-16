@@ -115,6 +115,10 @@
     <FILE id="PjAReP" name="FilterSection.cpp" compile="1" resource="0"
           file="source/FilterSection.cpp"/>
     <FILE id="Jc3nge" name="FilterSection.h" compile="0" resource="0" file="source/FilterSection.h"/>
+    <FILE id="UKg7OS" name="EnvelopeSection.cpp" compile="1" resource="0"
+          file="source/EnvelopeSection.cpp"/>
+    <FILE id="GT5m5N" name="EnvelopeSection.h" compile="0" resource="0"
+          file="source/EnvelopeSection.h"/>
     <FILE id="DKiKDX" name="Sequencer.cpp" compile="1" resource="0" file="source/Sequencer.cpp"/>
     <FILE id="OvmAYW" name="Sequencer.h" compile="0" resource="0" file="source/Sequencer.h"/>
   </MAINGROUP>

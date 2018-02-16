@@ -37,20 +37,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	mainLabel(nullptr),
 	titleLabel(nullptr),
 
-	filterLabel(nullptr),
-	filterCutoffLabel(nullptr),
-	filterResonanceLabel(nullptr),
-	filterContourLabel(nullptr),
-	filterDriveLabel(nullptr),
 
-	filterMoogLabel(nullptr),
-	filterMS20Label(nullptr),
-	filter303Label(nullptr),
-
-	envelopesLabel(nullptr),
-	envAmpLabel(nullptr),
-	envFilterLabel(nullptr),
-	envPitchLabel(nullptr),
 	volumeLabel(nullptr),
 
 
@@ -71,27 +58,6 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
 
 
-	attackSlider1(nullptr),
-	decaySlider1(nullptr),
-	sustainSlider1(nullptr),
-	releaseSlider1(nullptr),
-	attackCurveSlider1(nullptr),
-	decRelCurveSlider1(nullptr),
-
-
-	attackSlider2(nullptr),
-	decaySlider2(nullptr),
-	sustainSlider2(nullptr),
-	releaseSlider2(nullptr),
-	attackCurveSlider2(nullptr),
-	decRelCurveSlider2(nullptr),
-
-	attackSlider3(nullptr),
-	decaySlider3(nullptr),
-	sustainSlider3(nullptr),
-	releaseSlider3(nullptr),
-	attackCurveSlider3(nullptr),
-	decRelCurveSlider3(nullptr),
 
 	modTargetSlider(nullptr),
 
@@ -137,6 +103,10 @@ oversampleSwitchSlider(nullptr),
     filterSection = std::unique_ptr<FilterSection> (new FilterSection(owner));
     addAndMakeVisible(filterSection.get());
     
+    
+    //Envelope Section
+    envelopeSection = std::unique_ptr<EnvelopeSection> (new EnvelopeSection(owner));
+    addAndMakeVisible(envelopeSection.get());
     
     //
     // TITLE
@@ -184,128 +154,7 @@ oversampleSwitchSlider(nullptr),
    
    
     
-    //
-    // ENVELOPES
-    //
     
-    
-    addAndMakeVisible (envelopesLabel = new Label ("Envelopes",
-                                                   TRANS("Envelopes")));        //
-    envelopesLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
-    envelopesLabel->setJustificationType (Justification::centredTop);
-    envelopesLabel->setEditable (false, false, false);
-    envelopesLabel->setColour (TextEditor::textColourId, Colours::black);
-    envelopesLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    
-    addAndMakeVisible (envAmpLabel = new Label ("Envelope Amp Label",
-                                                TRANS("Amplitude")));           //
-    envAmpLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    envAmpLabel->setJustificationType (Justification::centredBottom);
-    envAmpLabel->setEditable (false, false, false);
-    envAmpLabel->setColour (TextEditor::textColourId, Colours::black);
-    envAmpLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    // Amplitude Envelope
-	attackSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam1, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (attackSlider1.get());      //
-   
-    
-	decaySlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam1, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (decaySlider1.get());        //
-   
-    
-	sustainSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam1, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(sustainSlider1.get());     //
-   
-    
-	releaseSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.releaseParam1, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(releaseSlider1.get());     //
-   
-    
-   
-    
-    
-    addAndMakeVisible (envFilterLabel = new Label ("Envelope Filter Label",
-                                                   TRANS("Filter Cutoff")));            //
-    envFilterLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    envFilterLabel->setJustificationType (Justification::centredBottom);
-    envFilterLabel->setEditable (false, false, false);
-    envFilterLabel->setColour (TextEditor::textColourId, Colours::black);
-    envFilterLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    // Filter Cutoff Envelope
-	attackSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam3, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (attackSlider2.get());      //
-   
-    
-	decaySlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam3, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (decaySlider2.get());        //
-  
-
-	sustainSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam3, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(sustainSlider2.get());     //
-    
-    
-	releaseSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.releaseParam3, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(releaseSlider2.get());     //
-   
-    
-    
-    addAndMakeVisible (envPitchLabel = new Label ("Envelope Pitch Label",
-                                                  TRANS("Pitch Mod.")));          //
-    envPitchLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    envPitchLabel->setJustificationType (Justification::centredBottom);
-    envPitchLabel->setEditable (false, false, false);
-    envPitchLabel->setColour (TextEditor::textColourId, Colours::black);
-    envPitchLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    
-    // Pitch Modulation Envelope
-	attackSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackParam2, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (attackSlider3.get());      //
-   
-    
-	decaySlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayParam2, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (decaySlider3.get());        //
-    
-    
-	sustainSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.sustainParam2, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(sustainSlider3.get());     //
-    
-    
-	releaseSlider3 = std::unique_ptr <ParameterSlider>(new ParameterSlider(*owner.releaseParam2, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(releaseSlider3.get());     //
-   
-    
-	attackCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve1Param, knobStyle(LINEARVERTICAL)));
-	addAndMakeVisible(attackCurveSlider1.get());//
-    attackCurveSlider1->setTooltip (TRANS("set attack curve from exponential to linear"));
-   
-	decRelCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve1Param, knobStyle(LINEARVERTICAL)));
-	addAndMakeVisible(decRelCurveSlider1.get());     //
-    decRelCurveSlider1->setTooltip (TRANS("set decay and release curves from exponential to linear"));
-   
-
-    
-	attackCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve2Param, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (attackCurveSlider2.get());    //@TODO: add parameter in Processor
-    attackCurveSlider2->setTooltip (TRANS("set attack curve from exponential to linear"));
-   
-
-	decRelCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve2Param, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (decRelCurveSlider2.get());  //
-    decRelCurveSlider2->setTooltip (TRANS("set decay and release curves from exponential to linear"));//@TODO: add parameter in Processor
-    
-
-	attackCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.attackCurve3Param, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (attackCurveSlider3.get());      //@TODO: add parameter in Processor
-    attackCurveSlider3->setTooltip (TRANS("set attack curve from exponential to linear"));
-   
-
-	decRelCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.decayRelCurve3Param, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible (decRelCurveSlider3.get()); //@TODO: add parameter in Processor
-    decRelCurveSlider3->setTooltip (TRANS("set decay and release curves from exponential to linear"));
    
 
 
@@ -774,24 +623,9 @@ void MonosynthPluginAudioProcessorEditor::resized()
     filterSection->setBounds (parameterArea.removeFromLeft(stripWidth + moduleMarginX));
 	
 	
-	
-	// ENVELOPES
-    envelopesLabel->setBounds (464, 64, 100, 24);
-    attackSlider1->setBounds (424, 112, 14, 80);
-    attackSlider2->setBounds (424, 224, 14, 80);
-    envAmpLabel->setBounds (416, 88, 100, 24);
-    decaySlider1->setBounds (448, 112, 14, 80);
-    sustainSlider1->setBounds (472, 112, 14, 80);
-    releaseSlider1->setBounds (496, 112, 14, 80);
-    envFilterLabel->setBounds (416, 200, 100, 24);
-    decaySlider2->setBounds (448, 224, 14, 80);
-    sustainSlider2->setBounds (472, 224, 14, 80);
-    releaseSlider2->setBounds (496, 224, 14, 80);
-    attackSlider3->setBounds (424, 336, 14, 80);
-    envPitchLabel->setBounds (416, 312, 100, 24);
-    decaySlider3->setBounds (448, 336, 14, 80);
-    sustainSlider3->setBounds (472, 336, 14, 80);
-    releaseSlider3->setBounds (496, 336, 14, 80);
+    //ENVELOPES
+    envelopeSection->setBounds(parameterArea.removeFromLeft((stripWidth * 3) + moduleMarginX));
+    envelopeSection->setAlwaysOnTop(true);
     
     
     // MAIN
@@ -841,12 +675,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
    
     
     
-    attackCurveSlider1->setBounds (554, 122, 12, 60);
-    decRelCurveSlider1->setBounds (568, 122, 12, 60);
-    attackCurveSlider2->setBounds (554, 232, 12, 60);
-    decRelCurveSlider2->setBounds (568, 232, 12, 60);
-    attackCurveSlider3->setBounds (554, 346, 12, 60);
-    decRelCurveSlider3->setBounds (568, 346, 12, 60);
+    
    
     
     Rectangle<int> r(getLocalBounds().reduced(8));

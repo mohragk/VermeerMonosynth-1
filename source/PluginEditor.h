@@ -32,6 +32,7 @@
 #include "Sequencer.h"
 #include "OscillatorSection.h"
 #include "FilterSection.h"
+#include "EnvelopeSection.h"
 
 
 //==============================================================================
@@ -81,25 +82,13 @@ private:
     std::unique_ptr<Sequencer> sequencer;
     std::unique_ptr<OscillatorSection> oscillatorSection;
     std::unique_ptr<FilterSection> filterSection;
+    std::unique_ptr<EnvelopeSection> envelopeSection;
 
    ScopedPointer<Label>  
         mainLabel,
         titleLabel,
     
-        filterLabel,
-        filterCutoffLabel,
-        filterResonanceLabel,
-        filterContourLabel,
-        filterDriveLabel,
     
-        filterMoogLabel,
-        filterMS20Label,
-        filter303Label,
-    
-        envelopesLabel,
-        envAmpLabel,
-        envFilterLabel,
-        envPitchLabel,
         volumeLabel,
     
         lfoLabel,
@@ -119,27 +108,6 @@ private:
    std::unique_ptr<ParameterSlider>
 	   volumeSlider,
 
-        attackSlider1,
-        decaySlider1,
-        sustainSlider1,
-        releaseSlider1,
-        attackCurveSlider1,
-        decRelCurveSlider1,
-
-
-        attackSlider2,
-        decaySlider2,
-        sustainSlider2,
-        releaseSlider2,
-        attackCurveSlider2,
-        decRelCurveSlider2,
-
-        attackSlider3,
-        decaySlider3,
-        sustainSlider3,
-        releaseSlider3,
-        attackCurveSlider3,
-        decRelCurveSlider3,
 
         modTargetSlider,
 
