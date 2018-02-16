@@ -69,6 +69,12 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="RMtzUq" name="colorcheck.cpp" compile="1" resource="0" file="source/colorcheck.cpp"/>
+    <FILE id="gLySbD" name="colorcheck.h" compile="0" resource="0" file="source/colorcheck.h"/>
+    <FILE id="SDib0U" name="OscillatorSection.cpp" compile="1" resource="0"
+          file="source/OscillatorSection.cpp"/>
+    <FILE id="x0XULL" name="OscillatorSection.h" compile="0" resource="0"
+          file="source/OscillatorSection.h"/>
     <FILE id="OuARf9" name="OscNoiseWaveSymbol.svg" compile="0" resource="1"
           file="Resources/OscNoiseWaveSymbol.svg"/>
     <FILE id="IGiKJp" name="FuturaStd-Medium.otf" compile="0" resource="1"

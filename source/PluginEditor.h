@@ -30,6 +30,7 @@
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
 #include "Sequencer.h"
+#include "OscillatorSection.h"
 
 
 //==============================================================================
@@ -85,27 +86,12 @@ private:
 	Label timecodeDisplayLabel;
 	
     std::unique_ptr<Sequencer> sequencer;
+    std::unique_ptr<OscillatorSection> oscillatorSection;
 
    ScopedPointer<Label>  
         mainLabel,
         titleLabel,
-        osc1GainLabel,
-        osc1WaveformLabel,
-        osc1OffsetLabel,
-        oscillatorsLabel,
-        osc1TuneLabel,
-        osc2GainLabel,
-        osc2WaveformLabel,
-        osc2OffsetLabel,
-        osc2TuneLabel,
-        osc3GainLabel,
-        osc3WaveformLabel,
-        osc3OffsetLabel,
-        osc3TuneLabel,
     
-        oscSyncLabel,
-        oscSyncONLabel,
-        oscSyncOFFLabel,
         filterLabel,
         filterCutoffLabel,
         filterResonanceLabel,
@@ -121,7 +107,6 @@ private:
         envFilterLabel,
         envPitchLabel,
         volumeLabel,
-        pitchModLabel,
     
         lfoLabel,
     
@@ -139,23 +124,7 @@ private:
     
    std::unique_ptr<ParameterSlider>
 	   volumeSlider,
-	   osc1GainSlider,
-	   osc1OffsetSlider,
-	   osc1TuneSlider,
-	   osc1WaveformSlider,
-
-	   osc2GainSlider,
-	   osc2OffsetSlider,
-	   osc2TuneSlider,
-	   osc2WaveformSlider,
-
-	   osc3GainSlider,
-	   osc3OffsetSlider,
-	   osc3TuneSlider,
-	   osc3WaveformSlider,
-	   oscSyncSlider,
-
-	   pitchModSlider,
+	
 
 	   filterCutoffSlider,
         filterResonanceSlider,
@@ -203,19 +172,7 @@ private:
         saturationSlider,
         saturationSwitchSlider,
         saturationModeSlider,
-    
 
-
-	    pulsewidth1Slider,
-	   pulsewidth2Slider,
-	   pulsewidth3Slider,
-
-        pulsewidthAmount1Slider,
-        pulsewidthAmount2Slider,
-        pulsewidthAmount3Slider,
-
-		
-    
         oversampleSwitchSlider,
         softClipSwitchSlider
         ;
