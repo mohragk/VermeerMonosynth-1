@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(44100.0), phaseIncrement(0.0), level(0.75), pulsewidth(0.5), deviation(0.0), rephase(false)
+    Oscillator() : sampleRate(44100.0), phaseIncrement(0.0), level(1.0), pulsewidth(0.5), deviation(0.0), rephase(false)
     {
 		frequency.set(0.0);
 		phase.set(0.0);

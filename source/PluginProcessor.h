@@ -216,6 +216,7 @@ public:
 	AudioParameterFloat* saturationParam;
     
     AudioParameterInt* oversampleSwitchParam;
+    AudioParameterInt* softClipSwitchParam;
     
     
 private:
@@ -329,7 +330,11 @@ private:
 	template <typename FloatType>
     void updateParameters(AudioBuffer<FloatType>& buffer);
     
-    float softClip(float s);
+    template <typename FloatType>
+    FloatType softClip(FloatType s);
+    
+    template <typename FloatType>
+    void softClipBuffer(AudioBuffer<FloatType>& buffer);
 
     float contourVelocity;
 	double cutoffModulationAmt; 

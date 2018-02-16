@@ -215,7 +215,8 @@ filterSelectSlider(nullptr),
 
 	saturationSlider(nullptr),
 
-oversampleSwitchSlider(nullptr)
+oversampleSwitchSlider(nullptr),
+    softClipSwitchSlider(nullptr)
 	
       
 {
@@ -842,8 +843,13 @@ oversampleSwitchSlider(nullptr)
 	
     
     //Oversample switch
-    oversampleSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oversampleSwitchParam, LINEARHORIZONTAL));
+    oversampleSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oversampleSwitchParam, knobStyle(LINEARHORIZONTAL)));
     addAndMakeVisible(oversampleSwitchSlider.get());
+    
+    
+    //Softclip switch
+    softClipSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.softClipSwitchParam, knobStyle(LINEARVERTICAL)));
+    addAndMakeVisible(softClipSwitchSlider.get());
     
     
     // Keyboard
@@ -1359,6 +1365,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     releaseSlider3->setBounds (496, 336, 14, 80);
     
     volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
+    softClipSwitchSlider->setBounds(getWidth() - 24, 110, 12, 40);
     volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
 
    
@@ -1372,6 +1379,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     
     oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36);
+    
+    
     
    
 

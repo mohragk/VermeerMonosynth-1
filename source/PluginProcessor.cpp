@@ -230,6 +230,9 @@ ampEnvelope(nullptr)
     // Oversampling HQ switch
     addParameter(oversampleSwitchParam = new AudioParameterInt("oversampleSwitchParam", "HQ ON/OFF", 0, 1, 0));
     
+    // Softclip switch
+    addParameter(softClipSwitchParam = new AudioParameterInt("softClipSwitchParam", "Softclip ON/OFF", 0, 1, 0));
+    
     initialiseSynth();
     
     keyboardState.addListener(this);
@@ -576,6 +579,12 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 		osBuffer.clear (i, 0, numSamples);
     
     applyGain (osBuffer); // apply our gain-change to the outgoing data..
+    
+    
+    
+    //SOFTCLIP
+    if (*softClipSwitchParam == 1)
+        softClipBuffer(osBuffer);
 
 
     //DOWNSAMPLING
@@ -966,25 +975,55 @@ void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
     }
 }
 
-float MonosynthPluginAudioProcessor::softClip(float s)
+template <typename FloatType>
+FloatType MonosynthPluginAudioProcessor::softClip(FloatType s)
 {
-    float localSample = s;
-    if (localSample > 0.3f)
+    FloatType localSample = s;
+    if (localSample > 1.0)
     {
-        localSample = 0.25f;
+        localSample = FloatType(1.0);
     }
-    else if (localSample < -0.3f)
+    else if (localSample < -1.0)
     {
-        localSample = -0.25f;
+        localSample = FloatType(-1.0);
         
     }
     else
     {
-        localSample = localSample - ( ( localSample * localSample * localSample) * 0.75f );
+        localSample = localSample - (  localSample * localSample * localSample );
     }
     return localSample;
 }
 
+
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<FloatType>& buffer)
+{
+    const int numSamples = buffer.getNumSamples();
+    
+    FloatType* dataLeft = buffer.getWritePointer(0);
+    FloatType* dataRight = buffer.getWritePointer(1);
+    
+
+    
+    auto softClipLambda = [](auto sample)
+    {
+        auto localSample = sample;
+        
+        localSample = std::atan(localSample);
+        
+        return localSample * (2 / FloatType(double_Pi));
+    };
+    
+    for (int i = 0; i < numSamples; i++)
+    {
+        dataLeft[i]  = softClipLambda(dataLeft[i]);
+        dataRight[i] = softClipLambda(dataRight[i]);
+    }
+    
+    
+    
+}
 
 
 

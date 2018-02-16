@@ -211,7 +211,8 @@ private:
 
 		saturationSlider,
     
-        oversampleSwitchSlider
+        oversampleSwitchSlider,
+        softClipSwitchSlider
         ;
 
     
