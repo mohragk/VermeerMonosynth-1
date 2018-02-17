@@ -142,31 +142,28 @@ void LFOSection::resized()
     lfoLabel->setJustificationType(Justification::centred);
     
     
-    int stripWith = 72;
     int labelHeight = 24;
     int rotaryHeight = 64;
-    int rotaryTextHeight = 10;
-    int vertSliderHeight = 24;
     int marginX = 8;
-    int marginY = 4;
+    
     
     {
-        Rectangle<int> lfoArea (area.removeFromTop(600));
-        lfoRateLabel->setBounds(lfoArea.removeFromTop(labelHeight));
+        Rectangle<int> strip (area.removeFromTop(600));
+        lfoRateLabel->setBounds(strip.removeFromTop(labelHeight));
         
-        lfoRateSlider->setBounds(lfoArea.removeFromTop(rotaryHeight));
+        lfoRateSlider->setBounds(strip.removeFromTop(rotaryHeight));
         lfoSyncedFreqSlider->setBounds(lfoRateSlider->getBounds()); //Same spot as normal rate slider
         
-        lfoModeLabel->setBounds(lfoArea.removeFromTop(labelHeight));
-        lfoModeSlider->setBounds(lfoArea.removeFromTop(rotaryHeight).reduced(marginX, 0));
+        lfoModeLabel->setBounds(strip.removeFromTop(labelHeight));
+        lfoModeSlider->setBounds(strip.removeFromTop(rotaryHeight).reduced(marginX, 0));
         
-        lfoIntensityLabel->setBounds(lfoArea.removeFromTop(labelHeight));
-        lfoIntensitySlider->setBounds(lfoArea.removeFromTop(rotaryHeight));
+        lfoIntensityLabel->setBounds(strip.removeFromTop(labelHeight));
+        lfoIntensitySlider->setBounds(strip.removeFromTop(rotaryHeight));
         
-        modTargetLabel->setBounds(lfoArea.removeFromTop(labelHeight));
+        modTargetLabel->setBounds(strip.removeFromTop(labelHeight));
         
         int selectSize = 48;
-        Rectangle<int> selectArea (lfoArea.removeFromTop(selectSize));
+        Rectangle<int> selectArea (strip.removeFromTop(selectSize));
         selectArea.translate(12,8);
         modTargetSlider->setBounds(selectArea.removeFromLeft(selectSize / 3));
         
@@ -179,7 +176,7 @@ void LFOSection::resized()
         modTargetPitchLabel->setBounds(selectArea.removeFromTop(selectSize/ 3));
         modTargetPitchLabel->setJustificationType(Justification::bottomLeft);
         
-        lfoSyncSlider->setBounds(lfoArea.removeFromTop(rotaryHeight).reduced(marginX, 0));
+        lfoSyncSlider->setBounds(strip.removeFromTop(rotaryHeight).reduced(marginX, 0));
         
         
     }

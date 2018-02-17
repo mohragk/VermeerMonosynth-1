@@ -122,6 +122,9 @@
           file="source/EnvelopeSection.h"/>
     <FILE id="GWDlCX" name="LFOSection.cpp" compile="1" resource="0" file="source/LFOSection.cpp"/>
     <FILE id="bS13ig" name="LFOSection.h" compile="0" resource="0" file="source/LFOSection.h"/>
+    <FILE id="GsSnhP" name="MasterSection.cpp" compile="1" resource="0"
+          file="source/MasterSection.cpp"/>
+    <FILE id="ch1fWv" name="MasterSection.h" compile="0" resource="0" file="source/MasterSection.h"/>
     <FILE id="DKiKDX" name="Sequencer.cpp" compile="1" resource="0" file="source/Sequencer.cpp"/>
     <FILE id="OvmAYW" name="Sequencer.h" compile="0" resource="0" file="source/Sequencer.h"/>
   </MAINGROUP>

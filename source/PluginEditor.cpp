@@ -35,29 +35,12 @@
 
 //==============================================================================
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
-    : AudioProcessorEditor (owner),
-        midiKeyboard (owner.keyboardState, MidiKeyboardComponent::horizontalKeyboard),
-        timecodeDisplayLabel (String()),
+        :   AudioProcessorEditor (owner),
+            midiKeyboard (owner.keyboardState, MidiKeyboardComponent::horizontalKeyboard),
+            timecodeDisplayLabel (String()),
 	
-	mainLabel(nullptr),
-	titleLabel(nullptr),
-
-	volumeLabel(nullptr),
-
-	saturationLabel(nullptr),
-
-
-	volumeSlider(nullptr),
-
-	filterOrderSlider(nullptr),
-
-	saturationSwitchSlider(nullptr),
-
-	saturationSlider(nullptr),
-
-    oversampleSwitchSlider(nullptr),
-    softClipSwitchSlider(nullptr)
-	
+            titleLabel(nullptr),
+            oversampleSwitchSlider(nullptr)
       
 {
     // add all the sliders..
@@ -92,11 +75,17 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     lfoSection = std::unique_ptr<LFOSection> (new LFOSection(owner));
     addAndMakeVisible(lfoSection.get());
     
+    
+    // MASTER SECTION
+    masterSection = std::unique_ptr<MasterSection> (new MasterSection(owner));
+    addAndMakeVisible(masterSection.get());
+    
+    
     //
     // TITLE
     //
-    addAndMakeVisible (titleLabel = new Label ("Title",
-                                               TRANS("Vermeer Monosynth-1")));
+    titleLabel = std::unique_ptr<Label> ( new Label ("Title", TRANS("Vermeer Monosynth-1")));
+    addAndMakeVisible (titleLabel.get());
     titleLabel->setFont (Font (font, 24.00f, Font::plain).withExtraKerningFactor (0.150f));
     titleLabel->setJustificationType (Justification::centredBottom);
     titleLabel->setEditable (false, false, false);
@@ -105,74 +94,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     titleLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     
-    //
-    // MAIN
-    //
-	
-	
-    addAndMakeVisible (mainLabel = new Label("Main Label", TRANS("Main")));
-    mainLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
-    mainLabel->setJustificationType (Justification::centredTop);
-    mainLabel->setEditable (false, false, false);
-    mainLabel->setColour (TextEditor::textColourId, Colours::black);
-    mainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    //
-    // main volume
-    //
-	volumeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.gainParam, knobStyle(ROTARY)));
-    addAndMakeVisible (volumeSlider.get());  //
-    
-    addAndMakeVisible (volumeLabel = new Label ("Main Volume Label",
-                                                TRANS("Volume")));              //
-    volumeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    volumeLabel->setJustificationType (Justification::centredBottom);
-    volumeLabel->setEditable (false, false, false);
-    volumeLabel->setColour (TextEditor::textColourId, Colours::black);
-    volumeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    
-    
-    // Filter Order; switch from VCA->filter to filter->VCA
-	filterOrderSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.filterOrderParam, LINEARHORIZONTAL));
-    addAndMakeVisible(filterOrderSlider.get());  //
-   
-    
-    
-    
-   
-
-	//Saturation
-	saturationSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.saturationParam, knobStyle(ROTARY)));
-	addAndMakeVisible(saturationSlider.get());  //
-
-
-	saturationSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.waveshapeSwitchParam, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(saturationSwitchSlider.get());
-    
-    
-    saturationModeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.waveshapeModeParam, knobStyle(LINEARHORIZONTAL)));
-    addAndMakeVisible(saturationModeSlider.get());
-   
-    
-    addAndMakeVisible (saturationLabel = new Label ("saturationLabel",
-                                                         TRANS("Saturation")));          //
-    saturationLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    saturationLabel->setJustificationType (Justification::centredBottom);
-    saturationLabel->setEditable (false, false, false);
-    saturationLabel->setColour (TextEditor::textColourId, Colours::black);
-    saturationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-	
-	
-    
     //Oversample switch
     oversampleSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oversampleSwitchParam, knobStyle(LINEARHORIZONTAL)));
     addAndMakeVisible(oversampleSwitchSlider.get());
-    
-    
-    //Softclip switch
-    softClipSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.softClipSwitchParam, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(softClipSwitchSlider.get());
     
     
     // Keyboard
@@ -229,8 +153,12 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
 
     // set resize limits for this plug-in
-	
-    setResizeLimits (840, TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT, 840, TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT);
+    int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 12);
+    int height= TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT;
+    setResizeLimits (width,
+                     height,
+                     width,
+                     height);
 	
 
     // set our component's initial size to be the last one that was stored in the filter's settings
@@ -446,47 +374,36 @@ void MonosynthPluginAudioProcessorEditor::resized()
     int titleHeight = 48;
     titleLabel->setBounds (area.removeFromTop(titleHeight));
     titleLabel->setJustificationType(Justification::centred);
+    oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36); // TODO
     
+    //
+    // MODULES
+    //
     Rectangle<int> parameterArea (area.removeFromTop(PARAMETER_AREA_HEIGHT));
-    
     
     // OSCILLATOR SECTION
     oscillatorSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 4) + MODULE_MARGIN));
     
 	
-    // FILTER
+    // FILTER SECTION
     filterSection->setBounds (parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
 	
 	
-    //ENVELOPES
+    // ENVELOPES
     envelopeSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 2) + MODULE_MARGIN));
     
-    //LFO
+    // LFO SECTION
     lfoSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
     
-    
-    // MAIN
-    mainLabel->setBounds (getWidth() - 24 - 64, 64, 64, 24);
-    volumeSlider->setBounds (getWidth() - 24 - 64, 104, 64, 65);
-    softClipSwitchSlider->setBounds(getWidth() - 24, 110, 12, 40);
-    volumeLabel->setBounds (getWidth() - 23 - 65, 88, 65, 24);
-
-   
-    filterOrderSlider->setBounds(getWidth() - 24-  64, 340, 64,64);
-    
-  
-
-	saturationSlider->setBounds(getWidth() - 24 - 64, 184, 64, 65);
-    saturationLabel->setBounds (getWidth() - 23 - 65, 168, 65, 24);
-    saturationSwitchSlider->setBounds(getWidth() - 24, 190, 12,40);
-    saturationModeSlider->setBounds(getWidth() - 24 - 64, 240, 64,64);
-    
-    
-    oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36);
+    // MASTER SECTION
+    masterSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
     
     
     
-   
+    
+    
+    
+    // KEYBOARD SECTION
     Rectangle<int> keyArea (getLocalBounds());
     midiKeyboard.setBounds(area.removeFromBottom(KEYBOARD_HEIGHT).reduced(8));
     
@@ -503,67 +420,6 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 {
     updateTimecodeDisplay (getProcessor().lastPosInfo);
 
-	
-    if (getProcessor().saturationOn())
-    {
-        saturationSlider->setAlpha(1.0f);
-        saturationSlider->setEnabled(true);
-        
-        
-        Rectangle<int> area(getLocalBounds());
-        // TITLE
-        
-        int titleHeight = 48;
-        titleLabel->setBounds (area.removeFromTop(titleHeight));
-        titleLabel->setJustificationType(Justification::centred);
-        
-        Rectangle<int> parameterArea (area.removeFromTop(PARAMETER_AREA_HEIGHT));
-        
-        
-        // OSCILLATOR SECTION
-        oscillatorSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 4) + MODULE_MARGIN));
-        
-        //ENVELOPES
-        envelopeSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 2) + MODULE_MARGIN));
-        
-        // FILTER
-        filterSection->setBounds (parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
-        
-        //LFO
-        lfoSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
-    }
-    else
-    {
-        saturationSlider->setAlpha(0.6f);
-        saturationSlider->setEnabled(false);
-        
-        
-        
-        Rectangle<int> area(getLocalBounds());
-        // TITLE
-        
-        int titleHeight = 48;
-        titleLabel->setBounds (area.removeFromTop(titleHeight));
-        titleLabel->setJustificationType(Justification::centred);
-        
-        Rectangle<int> parameterArea (area.removeFromTop(PARAMETER_AREA_HEIGHT));
-        
-        
-        // OSCILLATOR SECTION
-        oscillatorSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 4) + MODULE_MARGIN));
-        
-        
-        // FILTER
-        filterSection->setBounds (parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
-        
-        
-        //ENVELOPES
-        envelopeSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 2) + MODULE_MARGIN));
-        
-        //LFO
-        lfoSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
-    }
-    
 }
 
 

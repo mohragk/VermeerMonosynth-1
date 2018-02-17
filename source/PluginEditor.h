@@ -33,6 +33,7 @@
 #include "FilterSection.h"
 #include "EnvelopeSection.h"
 #include "LFOSection.h"
+#include "MasterSection.h"
 
 
 
@@ -85,26 +86,14 @@ private:
     std::unique_ptr<FilterSection> filterSection;
     std::unique_ptr<EnvelopeSection> envelopeSection;
     std::unique_ptr<LFOSection> lfoSection;
+    std::unique_ptr<MasterSection> masterSection;
 
-   ScopedPointer<Label>  
-        mainLabel,
-        titleLabel,
-        volumeLabel,
-    
-        saturationLabel
-
+    std::unique_ptr<Label>
+        titleLabel
    ;
     
    std::unique_ptr<ParameterSlider>
-        volumeSlider,
-        filterOrderSlider,
-    
-        saturationSlider,
-        saturationSwitchSlider,
-        saturationModeSlider,
-
-        oversampleSwitchSlider,
-        softClipSwitchSlider
+        oversampleSwitchSlider
     ;
 
     
