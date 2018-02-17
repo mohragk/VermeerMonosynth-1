@@ -51,11 +51,6 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	typedef ParameterSlider::style knobStyle;
     
     
-    
-    
-    
-    
-    
     // OSCILLATOR SECTION
     oscillatorSection = std::unique_ptr<OscillatorSection>(new OscillatorSection(owner));
     addAndMakeVisible(oscillatorSection.get());
@@ -93,15 +88,16 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     titleLabel->setColour (TextEditor::textColourId, Colours::black);
     titleLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    
-    //Oversample switch
-    //oversampleSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oversampleSwitchParam, knobStyle(LINEARHORIZONTAL)));
-    //addAndMakeVisible(oversampleSwitchSlider.get());
-    
     //Oversample button
     hqOversamplingButton = std::unique_ptr<ToggleButton> ( new ToggleButton ("HQ OVersampling On/Off"));
     addAndMakeVisible (hqOversamplingButton.get());
     hqOversamplingButton->addListener (this);
+    
+    toggleSequencerSection = std::unique_ptr<ToggleButton> (new ToggleButton(""));
+    addAndMakeVisible(toggleSequencerSection.get());
+    toggleSequencerSection->addListener (this);
+    
+    
     
     // Keyboard
     addAndMakeVisible(midiKeyboard);
@@ -110,8 +106,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
     
     //SEQUENCER
-    //sequencer = std::unique_ptr<Sequencer>(new Sequencer(owner));
-    //addAndMakeVisible(sequencer.get());
+    sequencerSection = std::unique_ptr<Sequencer>(new Sequencer(owner));
+    addAndMakeVisible(sequencerSection.get());
+    sequencerSection->setVisible(false);
     
     
     
@@ -139,6 +136,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     drawable20 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
     
    
+    
+    // ANIMATOR
+    animator = std::unique_ptr<ComponentAnimator> (new ComponentAnimator);
     
 
     // set resize limits for this plug-in
@@ -391,19 +391,24 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     // MASTER SECTION
     masterSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN * 2));
+    toggleSequencerSection->setBounds(masterSection.get()->getBounds().removeFromBottom(100)); // Should be in MasterSection but whatevs
     
-    
-    
+    //SEQUENCER SECTION
+    //sequencerSection->setBounds(area.removeFromBottom(midiKeyboard.getHeight()));
     
     
     
     // KEYBOARD SECTION
     Rectangle<int> keyArea (getLocalBounds());
-    midiKeyboard.setBounds(area.removeFromBottom(KEYBOARD_HEIGHT).reduced(8));
+    midiKeyboard.setBounds(keyArea.removeFromBottom(KEYBOARD_HEIGHT).reduced(8));
+    midiKeyboard.setAlwaysOnTop(true);
     midiKeyboard.setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, Colour (0xffc8e6ff));
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     
-    //sequencer->setBounds(r.removeFromBottom(midiKeyboard.getHeight() + 40));
+    
+    
+    
+    
     
    
 
@@ -430,6 +435,33 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
         int state = hqOversamplingButton.get()->getToggleState();
         getProcessor().toggleHQOversampling(state);
     }
+    
+    if (buttonThatWasClicked == toggleSequencerSection.get())
+    {
+        
+        if(toggleSequencerSection.get()->getToggleState())
+        {
+            int w = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
+            int h = TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT + 80;
+            setSize (w, h);
+            
+            Rectangle<int> fin ( getLocalBounds().removeFromBottom(KEYBOARD_HEIGHT + 80) );
+            sequencerSection->setBounds(fin);
+            sequencerSection->setVisible(true);
+            sequencerSection->setAlpha(0.0f);
+            animator.get()->fadeIn( sequencerSection.get(), 500 );
+            
+        }
+        else
+        {
+            int w = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
+            int h = TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT;
+            setSize (w, h);
+            sequencerSection->setVisible(false);
+        }
+        
+    }
+
     
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]

@@ -83,7 +83,7 @@ private:
 
 	Label timecodeDisplayLabel;
 	
-    std::unique_ptr<Sequencer> sequencer;
+    std::unique_ptr<Sequencer> sequencerSection;
     std::unique_ptr<OscillatorSection> oscillatorSection;
     std::unique_ptr<FilterSection> filterSection;
     std::unique_ptr<EnvelopeSection> envelopeSection;
@@ -117,9 +117,9 @@ private:
         drawable24
     ;
     
-    std::unique_ptr<ToggleButton> hqOversamplingButton;
+    std::unique_ptr<ToggleButton> hqOversamplingButton, toggleSequencerSection;
     
-    
+    std::unique_ptr<ComponentAnimator> animator;
    
     
     String font;

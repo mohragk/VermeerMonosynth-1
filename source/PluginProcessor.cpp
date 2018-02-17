@@ -510,28 +510,18 @@ void MonosynthPluginAudioProcessor::resetSamplerates(double sr)
 
 void MonosynthPluginAudioProcessor::setOversampleQuality(int q = 0)
 {
-    
-    if(q == 0)
-        hqOversampling = false;
-     else
-        hqOversampling = true;
-    
-    if (prevHqOversampling != hqOversampling)
-    {
-        resetSamplerates( getSampleRate() );
-        prevHqOversampling = hqOversampling;
-    }
-    
-   
-    
+    hqOversampling = bool(q);
 }
 
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& oversampling)
 {
     
-    //setOversampleQuality(*oversampleSwitchParam);
-    
+    if (prevHqOversampling != hqOversampling)
+    {
+        resetSamplerates( getSampleRate() );
+        prevHqOversampling = hqOversampling;
+    }
     
     const int numSamples = buffer.getNumSamples();
     

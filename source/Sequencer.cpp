@@ -42,37 +42,29 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p)
 {
     typedef ParameterSlider::style knobStyle;
     
-    Pitch1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch1Param, knobStyle(2)));
+    Pitch1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch1Param, knobStyle(ROTARY)));
     addAndMakeVisible (Pitch1Slider.get());  //
-    Pitch1Slider->setBounds (64, 0, 24, 112);
     
-    Pitch2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch2Param, knobStyle(2)));
+    Pitch2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch2Param, knobStyle(ROTARY)));
     addAndMakeVisible (Pitch2Slider.get());  //
-    Pitch2Slider->setBounds (96, 0, 24, 112);
 
-    Pitch3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch3Param, knobStyle(2)));
+    Pitch3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch3Param, knobStyle(ROTARY)));
     addAndMakeVisible (Pitch3Slider.get());  //
-    Pitch3Slider->setBounds (128, 0, 24, 112);
 
-    Pitch4Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch4Param, knobStyle(2)));
+    Pitch4Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch4Param, knobStyle(ROTARY)));
     addAndMakeVisible (Pitch4Slider.get());  //
-    Pitch4Slider->setBounds (160, 0, 24, 112);
 
-    Pitch5Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch5Param, knobStyle(2)));
+    Pitch5Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch5Param, knobStyle(ROTARY)));
     addAndMakeVisible (Pitch5Slider.get());  //
-    Pitch5Slider->setBounds (208, 0, 24, 112);
 
-    Pitch6Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch6Param, knobStyle(2)));
+    Pitch6Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch6Param, knobStyle(ROTARY)));
     addAndMakeVisible (Pitch6Slider.get());  //
-    Pitch6Slider->setBounds (240, 0, 24, 112);
 
-    Pitch7Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch7Param, knobStyle(2)));
+    Pitch7Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch7Param, knobStyle(ROTARY)));
     addAndMakeVisible (Pitch7Slider.get());  //
-    Pitch7Slider->setBounds (272, 0, 24, 112);
 
-    Pitch8Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch8Param, knobStyle(2)));
+    Pitch8Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerPitch8Param, knobStyle(ROTARY)));
     addAndMakeVisible (Pitch8Slider.get());  //
-    Pitch8Slider->setBounds (304, 0, 24, 112);
 
     addAndMakeVisible (syncToTempoSwitchSlider = new Slider ("Sync to Tempo Slider"));
     syncToTempoSwitchSlider->setRange (0, 10, 0);
@@ -86,7 +78,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p)
     //[UserPreSize]
     //[/UserPreSize]
 
-    setSize (890, 160);
+    setSize (890, 80);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -119,11 +111,32 @@ void Sequencer::paint (Graphics& g)
 
 void Sequencer::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
-    //[/UserPreResize]
-
-    //[UserResized] Add your own custom resize handling here..
-    //[/UserResized]
+    Rectangle<int> area (getLocalBounds());
+    
+    int rotarySize = 60;
+    int marginX = 24;
+    int marginY = 8;
+    
+    Rectangle<int> strip (area.removeFromTop(rotarySize + marginY * 2));
+    
+    syncToTempoSwitchSlider->setBounds(strip.removeFromLeft(rotarySize));
+    
+    {
+        Rectangle<int> block (strip.removeFromLeft((rotarySize * 4) + marginX) );
+        Pitch1Slider->setBounds(block.removeFromLeft(rotarySize));
+        Pitch2Slider->setBounds(block.removeFromLeft(rotarySize));
+        Pitch3Slider->setBounds(block.removeFromLeft(rotarySize));
+        Pitch4Slider->setBounds(block.removeFromLeft(rotarySize));
+    }
+    
+    {
+        Rectangle<int> block (strip.removeFromLeft((rotarySize * 4) + marginX) );
+        Pitch5Slider->setBounds(block.removeFromLeft(rotarySize));
+        Pitch6Slider->setBounds(block.removeFromLeft(rotarySize));
+        Pitch7Slider->setBounds(block.removeFromLeft(rotarySize));
+        Pitch8Slider->setBounds(block.removeFromLeft(rotarySize));
+    }
+    
 }
 
 void Sequencer::sliderValueChanged (Slider* sliderThatWasMoved)
