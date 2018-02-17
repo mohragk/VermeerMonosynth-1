@@ -613,10 +613,10 @@ void MonosynthPluginAudioProcessorEditor::resized()
     titleLabel->setJustificationType(Justification::centred);
     
     Rectangle<int> parameterArea (area.removeFromTop(600));
+    
+    
     // OSCILLATOR SECTION
-    int oscHeight = 520;
-    int oscWidth = stripWidth * 4;
-    oscillatorSection->setBounds(parameterArea.removeFromLeft(oscWidth + moduleMarginX));
+    oscillatorSection->setBounds(parameterArea.removeFromLeft((stripWidth * 4) + moduleMarginX));
     
 	
     // FILTER
@@ -624,7 +624,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
 	
 	
     //ENVELOPES
-    envelopeSection->setBounds(parameterArea.removeFromLeft((stripWidth * 3) + moduleMarginX));
+    envelopeSection->setBounds(parameterArea.removeFromLeft((stripWidth * 2) + moduleMarginX));
     envelopeSection->setAlwaysOnTop(true);
     
     
