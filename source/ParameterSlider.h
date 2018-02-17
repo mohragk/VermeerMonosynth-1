@@ -27,6 +27,7 @@ public:
 		else { setSliderStyle(Slider::LinearVertical); }
 
 		setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+        setColour(thumbColourId, Colour (0xff3e7db3));
     }
 
 	enum style 

@@ -406,6 +406,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     // KEYBOARD SECTION
     Rectangle<int> keyArea (getLocalBounds());
     midiKeyboard.setBounds(area.removeFromBottom(KEYBOARD_HEIGHT).reduced(8));
+    midiKeyboard.setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, Colour (0xffc8e6ff));
+    midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     
     //sequencer->setBounds(r.removeFromBottom(midiKeyboard.getHeight() + 40));
     
