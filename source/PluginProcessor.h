@@ -104,6 +104,8 @@ public:
     void getStateInformation (MemoryBlock&) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    void toggleHQOversampling(int q);
+    
     //==============================================================================
     // These properties are public so that our editor component can access them
     // A bit of a hacky way to do it, but it's only a demo! Obviously in your own

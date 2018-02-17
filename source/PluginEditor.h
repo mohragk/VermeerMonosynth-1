@@ -41,6 +41,7 @@
 /** This is the editor component that our filter will display.
 */
 class MonosynthPluginAudioProcessorEditor  : public AudioProcessorEditor,
+                                            public Button::Listener,
 										
                                             private Timer
                                             //private MidiKeyboardStateListener
@@ -53,6 +54,7 @@ public:
     void paint (Graphics&) override;
     void resized() override;
     void timerCallback() override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
 
 	// Binary resources:
 	
@@ -115,7 +117,10 @@ private:
         drawable24
     ;
     
+    std::unique_ptr<ToggleButton> hqOversamplingButton;
     
+    
+   
     
     String font;
     //==============================================================================

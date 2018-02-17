@@ -55,8 +55,16 @@ public:
 
 private:
     MonosynthPluginAudioProcessor& processor;
+    
+    
+    enum style
+    {
+        ROTARY = 0,
+        LINEARHORIZONTAL,
+        LINEARVERTICAL
+    };
+    
 
-    //==============================================================================
     std::unique_ptr<Slider> Pitch1Slider,
                             Pitch2Slider,
                             Pitch3Slider,

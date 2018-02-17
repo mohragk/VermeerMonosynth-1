@@ -95,9 +95,13 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     //Oversample switch
-    oversampleSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oversampleSwitchParam, knobStyle(LINEARHORIZONTAL)));
-    addAndMakeVisible(oversampleSwitchSlider.get());
+    //oversampleSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.oversampleSwitchParam, knobStyle(LINEARHORIZONTAL)));
+    //addAndMakeVisible(oversampleSwitchSlider.get());
     
+    //Oversample button
+    hqOversamplingButton = std::unique_ptr<ToggleButton> ( new ToggleButton ("HQ OVersampling On/Off"));
+    addAndMakeVisible (hqOversamplingButton.get());
+    hqOversamplingButton->addListener (this);
     
     // Keyboard
     addAndMakeVisible(midiKeyboard);
@@ -111,25 +115,10 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-                       
     //
     // Drawables for symbols/icons
     //
     
-   
-    
-    
-
 	// SIGH.. swapped the graphics out
     drawable11 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
     drawable10 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
@@ -374,7 +363,12 @@ void MonosynthPluginAudioProcessorEditor::resized()
     int titleHeight = 48;
     titleLabel->setBounds (area.removeFromTop(titleHeight));
     titleLabel->setJustificationType(Justification::centred);
-    oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36); // TODO
+    //oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36); // TODO
+    
+    Rectangle<int> buttonArea (titleLabel->getBounds());
+    hqOversamplingButton->setBounds(buttonArea.removeFromRight(48));
+    hqOversamplingButton->setButtonText("");
+    
     
     //
     // MODULES
@@ -425,7 +419,21 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 }
 
 
-
+void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasClicked)
+{
+    //[UserbuttonClicked_Pre]
+    //[/UserbuttonClicked_Pre]
+    
+    if (buttonThatWasClicked == hqOversamplingButton.get())
+    {
+        
+        int state = hqOversamplingButton.get()->getToggleState();
+        getProcessor().toggleHQOversampling(state);
+    }
+    
+    //[UserbuttonClicked_Post]
+    //[/UserbuttonClicked_Post]
+}
 
 
 

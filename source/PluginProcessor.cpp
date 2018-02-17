@@ -299,6 +299,21 @@ void MonosynthPluginAudioProcessor::initialiseSynth()
 }
 
 
+void MonosynthPluginAudioProcessor::toggleHQOversampling(int q)
+{
+    std::cout << q << std::endl;
+    
+    if(q == 0)
+        hqOversampling = false;
+    else
+        hqOversampling = true;
+    
+    if (prevHqOversampling != hqOversampling)
+    {
+        resetSamplerates( getSampleRate() );
+        prevHqOversampling = hqOversampling;
+    }
+}
 
 //==============================================================================
 bool MonosynthPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -515,7 +530,7 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& oversampling)
 {
     
-    setOversampleQuality(*oversampleSwitchParam);
+    //setOversampleQuality(*oversampleSwitchParam);
     
     
     const int numSamples = buffer.getNumSamples();
