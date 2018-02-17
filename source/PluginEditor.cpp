@@ -391,7 +391,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     // MASTER SECTION
     masterSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN * 2));
-    toggleSequencerSection->setBounds(masterSection.get()->getBounds().removeFromBottom(100)); // Should be in MasterSection but whatevs
+    Rectangle<int> seqBtnArea (masterSection.get()->getBounds() .removeFromRight(24));
+    toggleSequencerSection->setBounds(seqBtnArea.removeFromBottom(24)); // Should be in MasterSection but whatevs
     
     //SEQUENCER SECTION
     //sequencerSection->setBounds(area.removeFromBottom(midiKeyboard.getHeight()));
@@ -399,19 +400,12 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     
     // KEYBOARD SECTION
-    Rectangle<int> keyArea (getLocalBounds());
-    midiKeyboard.setBounds(keyArea.removeFromBottom(KEYBOARD_HEIGHT).reduced(8));
+    midiKeyboard.setBounds(area.removeFromBottom(KEYBOARD_HEIGHT).reduced(8));
     midiKeyboard.setAlwaysOnTop(true);
     midiKeyboard.setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, Colour (0xffc8e6ff));
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     
     
-    
-    
-    
-    
-   
-
     getProcessor().lastUIWidth = getWidth();
     getProcessor().lastUIHeight = getHeight();
 }
@@ -432,7 +426,7 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
     if (buttonThatWasClicked == hqOversamplingButton.get())
     {
         
-        int state = hqOversamplingButton.get()->getToggleState();
+        bool state =  hqOversamplingButton.get()->getToggleState();
         getProcessor().toggleHQOversampling(state);
     }
     

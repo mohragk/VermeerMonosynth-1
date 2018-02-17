@@ -110,12 +110,12 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     
     
-	attackCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve1Param, knobStyle(ROTARY)));
+	attackCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve1Param, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(attackCurveSlider1.get());//
     attackCurveSlider1->setTooltip (TRANS("set attack curve from exponential to linear"));
    
 	
-    decRelCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve1Param, knobStyle(ROTARY)));
+    decRelCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve1Param, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(decRelCurveSlider1.get());     //
     decRelCurveSlider1->setTooltip (TRANS("set decay and release curves from exponential to linear"));
    
@@ -131,12 +131,12 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     decRelCurveSlider2->setTooltip (TRANS("set decay and release curves from exponential to linear"));//@TODO: add parameter in Processor
     
 
-	attackCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve3Param, knobStyle(ROTARY)));
+	attackCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve3Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackCurveSlider3.get());      //@TODO: add parameter in Processor
     attackCurveSlider3->setTooltip (TRANS("set attack curve from exponential to linear"));
    
 
-	decRelCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve3Param, knobStyle(ROTARY)));
+	decRelCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve3Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decRelCurveSlider3.get()); //@TODO: add parameter in Processor
     decRelCurveSlider3->setTooltip (TRANS("set decay and release curves from exponential to linear"));
     
@@ -176,26 +176,28 @@ void EnvelopeSection::resized()
     
     int labelHeight = 24;
     int envelopeWidth = 72;
-    int envelopeHeight = 108;
+    int envelopeHeight = 96;
     int envMargin = 0;
-    int sliderWidth = 20;
-    int sliderMargin = 4;
+    int sliderWidth = 18;
+    int sliderMargin = 2;
     int rotarySize = 48;
     
     {
-        Rectangle<int> envArea (area.removeFromTop(envelopeHeight).reduced(16, 0));
+        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
         
         envAmpLabel->setBounds(envArea.removeFromTop(labelHeight));
         envAmpLabel->setJustificationType(Justification::centredBottom);
         
-        attackSlider1->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        decaySlider1->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        sustainSlider1->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        releaseSlider1->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+        Rectangle<int> envBlock (envArea.removeFromLeft(sliderWidth * 4 ));
+    
+        attackSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+        decaySlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+        sustainSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+        releaseSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
         
-        Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth). reduced(envMargin, 0));
-        attackCurveSlider1->setBounds(tweakArea.removeFromTop(rotarySize). reduced(sliderMargin, 0));
-        decRelCurveSlider1->setBounds(tweakArea.removeFromTop(rotarySize).reduced (sliderMargin, 0));
+        Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth));
+        attackCurveSlider1->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+        decRelCurveSlider1->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
         
         
         
@@ -204,23 +206,25 @@ void EnvelopeSection::resized()
     {
         Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
         
-        envFilterLabel->setBounds(envArea.removeFromTop(labelHeight * 2));
+        envFilterLabel->setBounds(envArea.removeFromTop(labelHeight));
         envFilterLabel->setJustificationType(Justification::centredBottom);
         
-        attackSlider2->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        decaySlider2->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        sustainSlider2->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        releaseSlider2->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+        Rectangle<int> envBlock (envArea.removeFromLeft(sliderWidth * 4 ));
         
-        Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth). reduced(envMargin, 0));
-        attackCurveSlider2->setBounds(tweakArea.removeFromTop(rotarySize). reduced(sliderMargin, 0));
-        decRelCurveSlider2->setBounds(tweakArea.removeFromTop(rotarySize).reduced (sliderMargin, 0));
+        attackSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+        decaySlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+        sustainSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+        releaseSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+        
+        Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth));
+        attackCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2));
+        decRelCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2));
         
         
         
     }
     {
-        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
+        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight * 2).reduced(16, 0));
         
         envPitchLabel->setBounds(envArea.removeFromTop(labelHeight * 2));
         envPitchLabel->setJustificationType(Justification::centredBottom);

@@ -299,14 +299,12 @@ void MonosynthPluginAudioProcessor::initialiseSynth()
 }
 
 
-void MonosynthPluginAudioProcessor::toggleHQOversampling(int q)
+void MonosynthPluginAudioProcessor::toggleHQOversampling(bool q)
 {
     std::cout << q << std::endl;
     
-    if(q == 0)
-        hqOversampling = false;
-    else
-        hqOversampling = true;
+    hqOversampling = q;
+
     
     if (prevHqOversampling != hqOversampling)
     {
@@ -522,6 +520,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         resetSamplerates( getSampleRate() );
         prevHqOversampling = hqOversampling;
     }
+    
+  
+   
     
     const int numSamples = buffer.getNumSamples();
     
