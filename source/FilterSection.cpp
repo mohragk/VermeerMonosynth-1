@@ -150,7 +150,7 @@ void FilterSection::resized()
     
     int stripWith = area.getWidth();
     int labelHeight = 24;
-    int rotaryHeight = 64;
+    int rotaryHeight = 60;
     int rotaryTextHeight = 10;
     int vertSliderHeight = 24;
     int marginX = 8;

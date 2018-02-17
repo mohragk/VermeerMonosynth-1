@@ -120,6 +120,9 @@ LFOSection::~LFOSection()
 
 void LFOSection::paint (Graphics& g)
 {
+    
+   //g.fillAll(Colours::darkgreen);
+    
     int marginY = 8;
     
     {
@@ -143,7 +146,7 @@ void LFOSection::resized()
     
     
     int labelHeight = 24;
-    int rotaryHeight = 64;
+    int rotaryHeight = 60;
     int marginX = 8;
     
     

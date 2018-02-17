@@ -308,7 +308,7 @@ OscillatorSection::~OscillatorSection()
 
 void OscillatorSection::paint (Graphics& g)
 {
-    //g.fillAll (Colours::crimson);
+    //g.fillAll (Colours::seagreen);
     
     
     int marginY = 8;
@@ -472,7 +472,7 @@ void OscillatorSection::resized()
     
     int stripWith = 72;
     int labelHeight = 24;
-    int rotaryHeight = 64;
+    int rotaryHeight = 60;
     int rotaryTextHeight = 10;
     int vertSliderHeight = 24;
     int marginX = 8;

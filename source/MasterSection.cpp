@@ -77,6 +77,8 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     saturationLabel->setEditable (false, false, false);
     saturationLabel->setColour (TextEditor::textColourId, Colours::black);
     saturationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    startTimerHz(60);
 
 }
 
@@ -86,7 +88,7 @@ MasterSection::~MasterSection()
 
 void MasterSection::paint (Graphics& g)
 {
-    
+   // g.fillAll(Colours::crimson);
 }
 
 void MasterSection::timerCallback()
@@ -117,9 +119,9 @@ void MasterSection::resized()
     mainLabel->setJustificationType(Justification::centred);
     
     
-    int stripWidth = 72;
+    int stripWidth = area.getWidth();
     int labelHeight = 24;
-    int rotaryHeight = 64;
+    int rotaryHeight = 60;
     
     {
         
@@ -129,18 +131,21 @@ void MasterSection::resized()
         volumeLabel->setJustificationType(Justification::centredBottom);
         volumeSlider->setBounds (strip.removeFromTop(rotaryHeight));
         
-        softClipSwitchSlider->setBounds(getWidth() - 24, 110, 12, 40); //TODO
+        
+        Rectangle<int> mini (volumeSlider->getBounds());
+        softClipSwitchSlider->setBounds(mini.removeFromRight(12).reduced(0, 8));
         
         saturationLabel->setBounds (strip.removeFromTop(labelHeight));
         saturationLabel->setJustificationType(Justification::centredBottom);
         saturationSlider->setBounds (strip.removeFromTop(rotaryHeight));
         
-        saturationSwitchSlider->setBounds(getWidth() - 24, 190, 12,40); //TODO
+        Rectangle<int> mini2 (saturationSlider->getBounds());
+        saturationSwitchSlider->setBounds(mini2.removeFromRight(12).reduced(0, 8));
         
       
-        saturationModeSlider->setBounds (strip.removeFromTop(rotaryHeight));
+        saturationModeSlider->setBounds (strip.removeFromTop(rotaryHeight).reduced(8, 0));
         
-        filterOrderSlider->setBounds (strip.removeFromTop(rotaryHeight)); //TODO
+        filterOrderSlider->setBounds (strip.removeFromTop(rotaryHeight).reduced(8, 0));
        
     }
     

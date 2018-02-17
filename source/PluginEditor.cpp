@@ -29,9 +29,9 @@
 
 #define TITLE_HEIGHT 48
 #define STRIP_WIDTH 72
-#define MODULE_MARGIN 16
-#define PARAMETER_AREA_HEIGHT 480
-#define KEYBOARD_HEIGHT 160
+#define MODULE_MARGIN 24
+#define PARAMETER_AREA_HEIGHT 460
+#define KEYBOARD_HEIGHT 140
 
 //==============================================================================
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
@@ -153,7 +153,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
 
     // set resize limits for this plug-in
-    int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 12);
+    int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
     int height= TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT;
     setResizeLimits (width,
                      height,
@@ -184,7 +184,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
     
     
     {
-        int x = proportionOfWidth (0.5000f) - (proportionOfWidth (0.9500f) / 2), y = 49, width = proportionOfWidth (0.9500f), height = 1;
+        int x = 8 , y = 49, width = getWidth() - 16, height = 1;
         Colour fillColour = Colour (0xffcfcfcf);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -379,7 +379,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     //
     // MODULES
     //
-    Rectangle<int> parameterArea (area.removeFromTop(PARAMETER_AREA_HEIGHT));
+    Rectangle<int> parameterArea (area.removeFromTop(PARAMETER_AREA_HEIGHT).reduced(MODULE_MARGIN,0));
     
     // OSCILLATOR SECTION
     oscillatorSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 4) + MODULE_MARGIN));
@@ -396,7 +396,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     lfoSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
     
     // MASTER SECTION
-    masterSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
+    masterSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN * 2));
     
     
     
