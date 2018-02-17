@@ -69,6 +69,7 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="uGPIXG" name="EditorDefines.h" compile="0" resource="0" file="source/EditorDefines.h"/>
     <FILE id="RMtzUq" name="colorcheck.cpp" compile="1" resource="0" file="source/colorcheck.cpp"/>
     <FILE id="gLySbD" name="colorcheck.h" compile="0" resource="0" file="source/colorcheck.h"/>
     <FILE id="OuARf9" name="OscNoiseWaveSymbol.svg" compile="0" resource="1"
@@ -119,6 +120,8 @@
           file="source/EnvelopeSection.cpp"/>
     <FILE id="GT5m5N" name="EnvelopeSection.h" compile="0" resource="0"
           file="source/EnvelopeSection.h"/>
+    <FILE id="GWDlCX" name="LFOSection.cpp" compile="1" resource="0" file="source/LFOSection.cpp"/>
+    <FILE id="bS13ig" name="LFOSection.h" compile="0" resource="0" file="source/LFOSection.h"/>
     <FILE id="DKiKDX" name="Sequencer.cpp" compile="1" resource="0" file="source/Sequencer.cpp"/>
     <FILE id="OvmAYW" name="Sequencer.h" compile="0" resource="0" file="source/Sequencer.h"/>
   </MAINGROUP>

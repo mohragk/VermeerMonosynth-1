@@ -27,6 +27,11 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#define TITLE_HEIGHT 48
+#define STRIP_WIDTH 72
+#define MODULE_MARGIN 16
+#define PARAMETER_AREA_HEIGHT 480
+#define KEYBOARD_HEIGHT 160
 
 //==============================================================================
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
@@ -37,38 +42,12 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	mainLabel(nullptr),
 	titleLabel(nullptr),
 
-
 	volumeLabel(nullptr),
-
-
-	lfoLabel(nullptr),
-
-	lfoRateLabel(nullptr),
-	lfoModeLabel(nullptr),
-	lfoIntensityLabel(nullptr),
-	modTargetLabel(nullptr),
-	modTargetCutoffLabel(nullptr),
-	modTargetPitchLabel(nullptr),
-	modTargetOffLabel(nullptr),
 
 	saturationLabel(nullptr),
 
 
 	volumeSlider(nullptr),
-
-
-
-
-	modTargetSlider(nullptr),
-
-	lfoRateSlider(nullptr),
-	lfoModeSlider(nullptr),
-	lfoIntensitySlider(nullptr),
-	lfoSyncSlider(nullptr),
-	lfoSyncedFreqSlider(nullptr),
-
-
-
 
 	filterOrderSlider(nullptr),
 
@@ -76,7 +55,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
 	saturationSlider(nullptr),
 
-oversampleSwitchSlider(nullptr),
+    oversampleSwitchSlider(nullptr),
     softClipSwitchSlider(nullptr)
 	
       
@@ -107,6 +86,11 @@ oversampleSwitchSlider(nullptr),
     //Envelope Section
     envelopeSection = std::unique_ptr<EnvelopeSection> (new EnvelopeSection(owner));
     addAndMakeVisible(envelopeSection.get());
+    
+    
+    //LFO Section
+    lfoSection = std::unique_ptr<LFOSection> (new LFOSection(owner));
+    addAndMakeVisible(lfoSection.get());
     
     //
     // TITLE
@@ -147,115 +131,6 @@ oversampleSwitchSlider(nullptr),
     volumeLabel->setColour (TextEditor::textColourId, Colours::black);
     volumeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    
-   
-    
-    
-   
-   
-    
-    
-   
-
-
-	
-
-
-	//
-	// LFO
-	//
-    addAndMakeVisible (lfoLabel = new Label ("lfoLabel",
-                                                TRANS("LFO")));                          //
-    lfoLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
-    lfoLabel->setJustificationType (Justification::centredTop);
-    lfoLabel->setEditable (false, false, false);
-    lfoLabel->setColour (TextEditor::textColourId, Colours::black);
-    lfoLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    addAndMakeVisible (lfoRateLabel = new Label ("lfoRateLabel",
-                                                    TRANS("Rate")));          //
-    lfoRateLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    lfoRateLabel->setJustificationType (Justification::centredBottom);
-    lfoRateLabel->setEditable (false, false, false);
-    lfoRateLabel->setColour (TextEditor::textColourId, Colours::black);
-    lfoRateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-	lfoRateSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoRateParam, knobStyle(ROTARY)));
-	addAndMakeVisible(lfoRateSlider.get());  //
-    
-    addAndMakeVisible (lfoModeLabel = new Label ("lfoModeLabel",
-                                                 TRANS("Shape")));          //
-    lfoModeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    lfoModeLabel->setJustificationType (Justification::centredBottom);
-    lfoModeLabel->setEditable (false, false, false);
-    lfoModeLabel->setColour (TextEditor::textColourId, Colours::black);
-    lfoModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-	lfoModeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoModeParam, LINEARHORIZONTAL));
-	addAndMakeVisible(lfoModeSlider.get());  //
-	
-
-    addAndMakeVisible (lfoIntensityLabel = new Label ("lfoIntensityLabel",
-                                                 TRANS("Mod Amt")));          //
-    lfoIntensityLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    lfoIntensityLabel->setJustificationType (Justification::centredBottom);
-    lfoIntensityLabel->setEditable (false, false, false);
-    lfoIntensityLabel->setColour (TextEditor::textColourId, Colours::black);
-    lfoIntensityLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-	lfoIntensitySlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoIntensityParam, knobStyle(ROTARY)));
-    addAndMakeVisible(lfoIntensitySlider.get());  //
-    
-	lfoSyncedFreqSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoDivisionParam, knobStyle(ROTARY)));
-    addAndMakeVisible(lfoSyncedFreqSlider.get());
-
-	lfoSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.lfoSyncParam, LINEARHORIZONTAL));
-	addAndMakeVisible(lfoSyncSlider.get());
-	
-	
-    
-    
-    //
-    // Modulation Target
-    //
-	modTargetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*owner.modTargetParam, knobStyle(LINEARVERTICAL)));
-    addAndMakeVisible(modTargetSlider.get());  //
-  
-    
-    addAndMakeVisible (modTargetLabel = new Label ("modTargetLabel",
-                                                      TRANS("Target")));          //
-    modTargetLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    modTargetLabel->setJustificationType (Justification::centredBottom);
-    modTargetLabel->setEditable (false, false, false);
-    modTargetLabel->setColour (TextEditor::textColourId, Colours::black);
-    modTargetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    
-    addAndMakeVisible (modTargetOffLabel = new Label ("modTargetOffLabel",
-                                                        TRANS("-off")));          //
-    modTargetOffLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
-    modTargetOffLabel->setJustificationType (Justification::centredLeft);
-    modTargetOffLabel->setEditable (false, false, false);
-    modTargetOffLabel->setColour (TextEditor::textColourId, Colours::black);
-    modTargetOffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    
-    addAndMakeVisible (modTargetPitchLabel = new Label ("modTargetPitchLabel",
-                                                      TRANS("-pitch")));          //
-    modTargetPitchLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
-    modTargetPitchLabel->setJustificationType (Justification::centredLeft);
-    modTargetPitchLabel->setEditable (false, false, false);
-    modTargetPitchLabel->setColour (TextEditor::textColourId, Colours::black);
-    modTargetPitchLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    addAndMakeVisible (modTargetCutoffLabel = new Label ("modTargetCutoffLabel",
-                                                        TRANS("-cutoff")));          //
-    modTargetCutoffLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
-    modTargetCutoffLabel->setJustificationType (Justification::centredLeft);
-    modTargetCutoffLabel->setEditable (false, false, false);
-    modTargetCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
-    modTargetCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-	
     
     
     // Filter Order; switch from VCA->filter to filter->VCA
@@ -316,9 +191,7 @@ oversampleSwitchSlider(nullptr),
     
     
     
-    // OSCILLATOR SECTION
-    oscillatorSection = std::unique_ptr<OscillatorSection>(new OscillatorSection(owner));
-    addAndMakeVisible(oscillatorSection.get());
+    
     
     
     
@@ -357,7 +230,7 @@ oversampleSwitchSlider(nullptr),
 
     // set resize limits for this plug-in
 	
-    setResizeLimits (840, 720, 840, 720);
+    setResizeLimits (840, TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT, 840, TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT);
 	
 
     // set our component's initial size to be the last one that was stored in the filter's settings
@@ -380,42 +253,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
 {
     g.fillAll (Colour (0xff0e0e0e));
     
-    {
-        int x = 305, y = 64, width = 1, height = 398;
-        Colour fillColour = Colour (0xffcfcfcf);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
     
-    {
-        int x = 401, y = 64, width = 1, height = 398;
-        Colour fillColour = Colour (0xffcfcfcf);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-    
-    {
-        int x = 617, y = 64, width = 1, height = 398;
-        Colour fillColour = Colour (0xffcfcfcf);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-    
-    
-    {
-        int x = 713, y = 64, width = 1, height = 398;
-        Colour fillColour = Colour (0xffcfcfcf);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
     
     {
         int x = proportionOfWidth (0.5000f) - (proportionOfWidth (0.9500f) / 2), y = 49, width = proportionOfWidth (0.9500f), height = 1;
@@ -430,7 +268,7 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
     
     
     
-     
+    /*
     
     {
         int x = 538, y = 168, width = 14, height = 8;
@@ -597,35 +435,34 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
             drawable24->drawWithin (g, Rectangle<float> (x, y, width, height),
                                     RectanglePlacement::centred, 1.000f);
     }
-	
+	*/
 }
 
 void MonosynthPluginAudioProcessorEditor::resized()
 {
     Rectangle<int> area(getLocalBounds());
-    int stripWidth = 72;
-    int moduleMarginX = 16;
-    
     // TITLE
     
     int titleHeight = 48;
     titleLabel->setBounds (area.removeFromTop(titleHeight));
     titleLabel->setJustificationType(Justification::centred);
     
-    Rectangle<int> parameterArea (area.removeFromTop(600));
+    Rectangle<int> parameterArea (area.removeFromTop(PARAMETER_AREA_HEIGHT));
     
     
     // OSCILLATOR SECTION
-    oscillatorSection->setBounds(parameterArea.removeFromLeft((stripWidth * 4) + moduleMarginX));
+    oscillatorSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 4) + MODULE_MARGIN));
     
 	
     // FILTER
-    filterSection->setBounds (parameterArea.removeFromLeft(stripWidth + moduleMarginX));
+    filterSection->setBounds (parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
 	
 	
     //ENVELOPES
-    envelopeSection->setBounds(parameterArea.removeFromLeft((stripWidth * 2) + moduleMarginX));
-    envelopeSection->setAlwaysOnTop(true);
+    envelopeSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 2) + MODULE_MARGIN));
+    
+    //LFO
+    lfoSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
     
     
     // MAIN
@@ -650,36 +487,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     
    
-
-    lfoLabel->setBounds             (628, 64, 80, 24);
-
-    lfoRateLabel->setBounds         (634, 88, 64, 24);
-    lfoRateSlider->setBounds        (634, 104, 64, 64);
-	lfoSyncedFreqSlider->setBounds	(634, 104, 64, 64);
-
-    lfoModeLabel->setBounds         (634, 168, 64, 24);
-    lfoModeSlider->setBounds        (634, 178, 64, 64);
-
-    lfoIntensityLabel->setBounds    (634, 247, 64, 24);
-    lfoIntensitySlider->setBounds   (634, 263, 64, 64);
-	lfoSyncSlider->setBounds		(634, 408, 64, 64);
-
-    modTargetLabel->setBounds       (634, 328, 64, 24);
-    modTargetSlider->setBounds      (612, 352, 64, 54);
-
-    modTargetOffLabel->setBounds  (650, 352, 64, 24);
-    modTargetCutoffLabel->setBounds (650, 368, 64, 24);
-    modTargetPitchLabel->setBounds  (650, 384, 64, 24);
-
-
-   
-    
-    
-    
-   
-    
-    Rectangle<int> r(getLocalBounds().reduced(8));
-    midiKeyboard.setBounds(r.removeFromBottom(100));
+    Rectangle<int> keyArea (getLocalBounds());
+    midiKeyboard.setBounds(area.removeFromBottom(KEYBOARD_HEIGHT).reduced(8));
     
     //sequencer->setBounds(r.removeFromBottom(midiKeyboard.getHeight() + 40));
     
@@ -694,62 +503,67 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 {
     updateTimecodeDisplay (getProcessor().lastPosInfo);
 
-    
-    /*
-	if (filterSelectSlider->getValue() == 1)
-	{
-		filterDriveSlider->setAlpha(0.2);
-		filterDriveLabel->setAlpha(0.2);
-		filterDriveSlider->setEnabled(false);
-	}
-	else
-	{
-		filterDriveSlider->setAlpha(1.0);
-		filterDriveSlider->setEnabled(true);
-		filterDriveLabel->setAlpha(1.0);
-	}
-     */
-
-	if (getProcessor().lfoSynced()) // free rate LFO
-	{
-		lfoRateSlider->setVisible(false);
-		lfoRateSlider->setEnabled(false);
-
-		lfoSyncedFreqSlider->setVisible(true);
-		lfoSyncedFreqSlider->setEnabled(true);
-	}
-	else
-	{
-		lfoRateSlider->setVisible(true);
-		lfoRateSlider->setEnabled(true);
-
-		lfoSyncedFreqSlider->setVisible(false);
-		lfoSyncedFreqSlider->setEnabled(false);
-	}
-	
-	/*
-	if (getProcessor().noteIsBeingPlayed())
-	{
-		filterSelectSlider->setAlpha(0.2);
-		filterSelectSlider->setEnabled(false);
-	}		
-	else
-	{
-		filterSelectSlider->setAlpha(1.0);
-		filterSelectSlider->setEnabled(true);
-	}
-		*/
 	
     if (getProcessor().saturationOn())
     {
         saturationSlider->setAlpha(1.0f);
         saturationSlider->setEnabled(true);
+        
+        
+        Rectangle<int> area(getLocalBounds());
+        // TITLE
+        
+        int titleHeight = 48;
+        titleLabel->setBounds (area.removeFromTop(titleHeight));
+        titleLabel->setJustificationType(Justification::centred);
+        
+        Rectangle<int> parameterArea (area.removeFromTop(PARAMETER_AREA_HEIGHT));
+        
+        
+        // OSCILLATOR SECTION
+        oscillatorSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 4) + MODULE_MARGIN));
+        
+        //ENVELOPES
+        envelopeSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 2) + MODULE_MARGIN));
+        
+        // FILTER
+        filterSection->setBounds (parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
+        
+        //LFO
+        lfoSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
     }
     else
     {
         saturationSlider->setAlpha(0.6f);
         saturationSlider->setEnabled(false);
+        
+        
+        
+        Rectangle<int> area(getLocalBounds());
+        // TITLE
+        
+        int titleHeight = 48;
+        titleLabel->setBounds (area.removeFromTop(titleHeight));
+        titleLabel->setJustificationType(Justification::centred);
+        
+        Rectangle<int> parameterArea (area.removeFromTop(PARAMETER_AREA_HEIGHT));
+        
+        
+        // OSCILLATOR SECTION
+        oscillatorSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 4) + MODULE_MARGIN));
+        
+        
+        // FILTER
+        filterSection->setBounds (parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
+        
+        
+        //ENVELOPES
+        envelopeSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 2) + MODULE_MARGIN));
+        
+        //LFO
+        lfoSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
     }
+    
 }
 
 

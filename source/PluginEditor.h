@@ -28,11 +28,12 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-#include "ParameterSlider.h"
 #include "Sequencer.h"
 #include "OscillatorSection.h"
 #include "FilterSection.h"
 #include "EnvelopeSection.h"
+#include "LFOSection.h"
+
 
 
 //==============================================================================
@@ -83,45 +84,19 @@ private:
     std::unique_ptr<OscillatorSection> oscillatorSection;
     std::unique_ptr<FilterSection> filterSection;
     std::unique_ptr<EnvelopeSection> envelopeSection;
+    std::unique_ptr<LFOSection> lfoSection;
 
    ScopedPointer<Label>  
         mainLabel,
         titleLabel,
-    
-    
         volumeLabel,
     
-        lfoLabel,
-    
-        lfoRateLabel,
-        lfoModeLabel,
-        lfoIntensityLabel,
-        modTargetLabel,
-        modTargetCutoffLabel,
-        modTargetPitchLabel,
-        modTargetOffLabel,
-    
-    saturationLabel
+        saturationLabel
 
-            ;
+   ;
     
    std::unique_ptr<ParameterSlider>
-	   volumeSlider,
-
-
-        modTargetSlider,
-
-        lfoRateSlider,
-        lfoModeSlider,
-        lfoIntensitySlider,
-		lfoSyncSlider,
-        lfoSyncedFreqSlider,
-    
-    
-    
-    
-       
-    
+        volumeSlider,
         filterOrderSlider,
     
         saturationSlider,
@@ -130,64 +105,27 @@ private:
 
         oversampleSwitchSlider,
         softClipSwitchSlider
-        ;
+    ;
 
     
     std::unique_ptr<Drawable>
+        drawable10,
+        drawable11,
+        drawable12,
+        drawable13,
+        drawable14,
+        drawable15,
+        drawable16,
+        drawable17,
+        drawable18,
+        drawable19,
+        drawable20,
+        drawable21,
+        drawable22,
+        drawable23,
+        drawable24
+    ;
     
-    
-    
-    
-    drawable10,
-    drawable11,
-    drawable12,
-    drawable13,
-    drawable14,
-    drawable15,
-    drawable16,
-    drawable17,
-    drawable18,
-    drawable19,
-    drawable20,
-    drawable21,
-    drawable22,
-    drawable23,
-    drawable24;
-    
-    /*
-    ScopedPointer<Drawable> drawable25;
-    ScopedPointer<Drawable> drawable1;
-    ScopedPointer<Drawable> drawable2;
-    ScopedPointer<Drawable> drawable3;
-    
-    ScopedPointer<Drawable> drawable26;
-    ScopedPointer<Drawable> drawable4;
-    ScopedPointer<Drawable> drawable5;
-    ScopedPointer<Drawable> drawable6;
-    
-    ScopedPointer<Drawable> drawable27;
-    ScopedPointer<Drawable> drawable7;
-    ScopedPointer<Drawable> drawable8;
-    ScopedPointer<Drawable> drawable9;
-    
-    
-    
-    ScopedPointer<Drawable> drawable10;
-    ScopedPointer<Drawable> drawable11;
-    ScopedPointer<Drawable> drawable12;
-    ScopedPointer<Drawable> drawable13;
-    ScopedPointer<Drawable> drawable14;
-    ScopedPointer<Drawable> drawable15;
-    ScopedPointer<Drawable> drawable16;
-    ScopedPointer<Drawable> drawable17;
-    ScopedPointer<Drawable> drawable18;
-    ScopedPointer<Drawable> drawable19;
-    ScopedPointer<Drawable> drawable20;
-    ScopedPointer<Drawable> drawable21;
-    ScopedPointer<Drawable> drawable22;
-    ScopedPointer<Drawable> drawable23;
-    ScopedPointer<Drawable> drawable24;
-    */
     
     
     String font;

@@ -141,6 +141,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     decRelCurveSlider3->setTooltip (TRANS("set decay and release curves from exponential to linear"));
     
     setSize(300,300); //Gets reset by plugineditor
+    
 
 }
 
@@ -150,7 +151,16 @@ EnvelopeSection::~EnvelopeSection()
 
 void EnvelopeSection::paint (Graphics& g)
 {
+    int marginY = 8;
     
+    {
+        int x = getWidth() - 1, y = 8, width = 1, height = getHeight() - marginY;
+        Colour fillColour = Colour (0xffcfcfcf);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRect (x, y, width, height);
+    }
 }
 
 void EnvelopeSection::resized()
@@ -166,16 +176,14 @@ void EnvelopeSection::resized()
     
     int labelHeight = 24;
     int envelopeWidth = 72;
-    int envelopeHeight = 120;
+    int envelopeHeight = 108;
     int envMargin = 0;
-    int sliderHeight = 16;
-    int sliderWidth = 24;
+    int sliderWidth = 20;
     int sliderMargin = 4;
-    int tweakHeight = 36;
     int rotarySize = 48;
     
     {
-        Rectangle<int> envArea (area.removeFromTop(envelopeHeight));
+        Rectangle<int> envArea (area.removeFromTop(envelopeHeight).reduced(16, 0));
         
         envAmpLabel->setBounds(envArea.removeFromTop(labelHeight));
         envAmpLabel->setJustificationType(Justification::centredBottom);
@@ -194,9 +202,9 @@ void EnvelopeSection::resized()
     }
     
     {
-        Rectangle<int> envArea (area.removeFromTop(envelopeHeight));
+        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
         
-        envFilterLabel->setBounds(envArea.removeFromTop(labelHeight));
+        envFilterLabel->setBounds(envArea.removeFromTop(labelHeight * 2));
         envFilterLabel->setJustificationType(Justification::centredBottom);
         
         attackSlider2->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
@@ -212,9 +220,9 @@ void EnvelopeSection::resized()
         
     }
     {
-        Rectangle<int> envArea (area.removeFromTop(envelopeHeight));
+        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
         
-        envPitchLabel->setBounds(envArea.removeFromTop(labelHeight));
+        envPitchLabel->setBounds(envArea.removeFromTop(labelHeight * 2));
         envPitchLabel->setJustificationType(Justification::centredBottom);
         
         attackSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));

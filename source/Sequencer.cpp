@@ -21,7 +21,6 @@
 //[/Headers]
 
 #include "Sequencer.h"
-#include "ParameterSlider.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...

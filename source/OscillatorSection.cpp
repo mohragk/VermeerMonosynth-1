@@ -296,7 +296,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
 
     
     // set our component's initial size
-    setSize (305, 420);
+    setSize (305, 620);
     
     
     
@@ -310,8 +310,11 @@ void OscillatorSection::paint (Graphics& g)
 {
     //g.fillAll (Colours::crimson);
     
+    
+    int marginY = 8;
+    
     {
-        int x = 305, y = 64, width = 1, height = 398;
+        int x = getWidth() - 1, y = marginY, width = 1, height = getHeight() - marginY;
         Colour fillColour = Colour (0xffcfcfcf);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -319,33 +322,6 @@ void OscillatorSection::paint (Graphics& g)
         g.fillRect (x, y, width, height);
     }
     
-    {
-        int x = 401, y = 64, width = 1, height = 398;
-        Colour fillColour = Colour (0xffcfcfcf);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-    
-    {
-        int x = 617, y = 64, width = 1, height = 398;
-        Colour fillColour = Colour (0xffcfcfcf);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-    
-    
-    {
-        int x = 713, y = 64, width = 1, height = 398;
-        Colour fillColour = Colour (0xffcfcfcf);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
     
     
     
@@ -512,9 +488,9 @@ void OscillatorSection::resized()
         
         osc1WaveformLabel->setBounds (oscArea.removeFromTop(labelHeight));
         osc1WaveformLabel->setJustificationType(Justification::centredBottom);
-        osc1WaveformSlider->setBounds (oscArea.removeFromTop(vertSliderHeight));
+        osc1WaveformSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
         
-        osc1TuneLabel->setBounds (oscArea.removeFromTop(labelHeight * 2));
+        osc1TuneLabel->setBounds (oscArea.removeFromTop(labelHeight));
         osc1TuneLabel->setJustificationType(Justification::centredBottom);
         osc1TuneSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
         
@@ -541,9 +517,9 @@ void OscillatorSection::resized()
         
         osc2WaveformLabel->setBounds (oscArea.removeFromTop(labelHeight));
         osc2WaveformLabel->setJustificationType(Justification::centredBottom);
-        osc2WaveformSlider->setBounds (oscArea.removeFromTop(vertSliderHeight));
+        osc2WaveformSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
         
-        osc2TuneLabel->setBounds (oscArea.removeFromTop(labelHeight * 2));
+        osc2TuneLabel->setBounds (oscArea.removeFromTop(labelHeight));
         osc2TuneLabel->setJustificationType(Justification::centredBottom);
         osc2TuneSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
         
@@ -568,9 +544,9 @@ void OscillatorSection::resized()
         
         osc3WaveformLabel->setBounds (oscArea.removeFromTop(labelHeight));
         osc3WaveformLabel->setJustificationType(Justification::centredBottom);
-        osc3WaveformSlider->setBounds (oscArea.removeFromTop(vertSliderHeight));
+        osc3WaveformSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
         
-        osc3TuneLabel->setBounds (oscArea.removeFromTop(labelHeight * 2));
+        osc3TuneLabel->setBounds (oscArea.removeFromTop(labelHeight));
         osc3TuneLabel->setJustificationType(Justification::centredBottom);
         osc3TuneSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
         

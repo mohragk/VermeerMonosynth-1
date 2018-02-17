@@ -125,7 +125,16 @@ FilterSection::~FilterSection()
 
 void FilterSection::paint (Graphics& g)
 {
-   
+    int marginY = 8;
+    
+    {
+        int x = getWidth() - 1, y = 8, width = 1, height = getHeight() - marginY;
+        Colour fillColour = Colour (0xffcfcfcf);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRect (x, y, width, height);
+    }
 }
 
 void FilterSection::resized()
@@ -169,7 +178,7 @@ void FilterSection::resized()
         
         int selectHeight = 48;
         Rectangle<int> selectArea (stripArea.removeFromTop(selectHeight));
-        selectArea.translate(12,0);
+        selectArea.translate(12,8);
         filterSelectSlider->setBounds (selectArea.removeFromLeft(14));
         
         filterSelectSlider->setAlwaysOnTop(true);
