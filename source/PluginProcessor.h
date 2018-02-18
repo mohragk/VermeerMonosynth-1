@@ -228,7 +228,6 @@ public:
     
 private:
 
-    Sequencer* sequencer;
     
 	class SmoothParam {
 	public:
@@ -290,6 +289,9 @@ private:
 
     template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
+    
+    template <typename FloatType>
+    void applySequencer(AudioBuffer<FloatType>& buffer);
     
 
 	double getWaveshaped(double sample, double overdrive, int mode)

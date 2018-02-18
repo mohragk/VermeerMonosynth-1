@@ -432,13 +432,6 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
     
     lastNotePlayed = midiNoteNumber;
     
-    
-    if (getActiveEditor() != nullptr)
-    {
-        Sequencer* seq = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( getActiveEditor() )->sequencerSection.get();
-        std::cout << seq->getStepData(0).pitch << std::endl;
-    }
-    
 }
 
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
@@ -549,6 +542,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
    
+    
   
     
     // GET SYNTHDATA
@@ -611,6 +605,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     if (*softClipSwitchParam == 1)
         softClipBuffer(osBuffer);
 
+    
+    // SEQUENCER
+    applySequencer(osBuffer);
+    
 
     //DOWNSAMPLING
 	oversampling->processSamplesDown(block);
@@ -824,7 +822,36 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
     }
 }
 
-
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer)
+{
+    int numSamples = buffer.getNumSamples();
+    
+    
+    while (--numSamples >= 0)
+    {
+        //if ( lastPosInfo.isPlaying )
+        {
+            if (lastPosInfo.ppqPositionOfLastBarStart == lastPosInfo.ppqPosition)
+            {
+                if (getActiveEditor() != nullptr)
+                {
+                    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+                    Sequencer::Step step = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( getActiveEditor() )->sequencerSection.get()->getStepData(0);
+                    int note = step.pitch + 60;
+                    
+                    FloatType pitchInHz = MidiMessage::getMidiNoteInHertz (note);
+                    synthVoice->setStepPitch(0, pitchInHz);
+                    
+                    
+                }
+            }
+            
+        }
+    }
+    
+    
+};
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 {
