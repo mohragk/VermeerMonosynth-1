@@ -28,12 +28,12 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-#include "Sequencer.h"
 #include "OscillatorSection.h"
 #include "FilterSection.h"
 #include "EnvelopeSection.h"
 #include "LFOSection.h"
 #include "MasterSection.h"
+#include "Sequencer.h"
 
 
 
@@ -56,7 +56,6 @@ public:
     void timerCallback() override;
     void buttonClicked (Button* buttonThatWasClicked) override;
     
-    Sequencer* getSequencer() { return sequencerSection.get();};
 
 	// Binary resources:
 	
@@ -69,6 +68,12 @@ public:
 	static const char* decayCurveExponential_symbol_svg;
 	static const int decayCurveExponential_symbol_svgSize;
 
+    std::unique_ptr<OscillatorSection> oscillatorSection;
+    std::unique_ptr<FilterSection> filterSection;
+    std::unique_ptr<EnvelopeSection> envelopeSection;
+    std::unique_ptr<LFOSection> lfoSection;
+    std::unique_ptr<MasterSection> masterSection;
+    std::unique_ptr<Sequencer> sequencerSection;
     
     
 private:
@@ -87,12 +92,7 @@ private:
 	Label timecodeDisplayLabel;
 	
    
-    std::unique_ptr<OscillatorSection> oscillatorSection;
-    std::unique_ptr<FilterSection> filterSection;
-    std::unique_ptr<EnvelopeSection> envelopeSection;
-    std::unique_ptr<LFOSection> lfoSection;
-    std::unique_ptr<MasterSection> masterSection;
-    std::unique_ptr<Sequencer> sequencerSection;
+    
 
     std::unique_ptr<Label>
         titleLabel
@@ -121,7 +121,7 @@ private:
         drawable24
     ;
     
-    std::unique_ptr<ToggleButton> hqOversamplingButton, toggleSequencerSection;
+    std::unique_ptr<ToggleButton> hqOversamplingButton;
     
     std::unique_ptr<ComponentAnimator> animator;
    

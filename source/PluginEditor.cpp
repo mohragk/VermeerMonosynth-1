@@ -32,6 +32,7 @@
 #define MODULE_MARGIN 24
 #define PARAMETER_AREA_HEIGHT 460
 #define KEYBOARD_HEIGHT 140
+#define SEQUENCER_HEIGHT 84
 
 //==============================================================================
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
@@ -76,6 +77,10 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     addAndMakeVisible(masterSection.get());
     
     
+    //SEQUENCER SECTION
+    sequencerSection = std::unique_ptr<Sequencer> (new Sequencer);
+    addAndMakeVisible(sequencerSection.get());
+    
     //
     // TITLE
     //
@@ -93,11 +98,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     addAndMakeVisible (hqOversamplingButton.get());
     hqOversamplingButton->addListener (this);
     
-    toggleSequencerSection = std::unique_ptr<ToggleButton> (new ToggleButton(""));
-    addAndMakeVisible(toggleSequencerSection.get());
-    toggleSequencerSection->addListener (this);
-    
-    
+
     
     // Keyboard
     addAndMakeVisible(midiKeyboard);
@@ -105,11 +106,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     midiKeyboard.setLowestVisibleKey(36);
     midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
     
-    //SEQUENCER
     
-    sequencerSection = std::unique_ptr<Sequencer> (owner.sequencer.get());
-    addAndMakeVisible(sequencerSection.get());
-    sequencerSection->setVisible(false);
     
     
     
@@ -144,7 +141,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     // set resize limits for this plug-in
     int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
-    int height= TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT;
+    int height= TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
     setResizeLimits (width,
                      height,
                      width,
@@ -392,11 +389,10 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     // MASTER SECTION
     masterSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN * 2));
-    Rectangle<int> seqBtnArea (masterSection.get()->getBounds() .removeFromRight(24));
-    toggleSequencerSection->setBounds(seqBtnArea.removeFromBottom(24)); // Should be in MasterSection but whatevs
     
-    //SEQUENCER SECTION
-    //sequencerSection->setBounds(area.removeFromBottom(midiKeyboard.getHeight()));
+    
+    
+    
     
     
     
@@ -405,6 +401,9 @@ void MonosynthPluginAudioProcessorEditor::resized()
     midiKeyboard.setAlwaysOnTop(true);
     midiKeyboard.setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, Colour (0xffc8e6ff));
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
+    
+    // SEQUENCER SECTION
+    sequencerSection->setBounds(area.removeFromBottom(84).reduced(8));
     
     
     getProcessor().lastUIWidth = getWidth();
@@ -431,32 +430,6 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
         getProcessor().toggleHQOversampling(state);
     }
     
-    if (buttonThatWasClicked == toggleSequencerSection.get())
-    {
-        
-        if(toggleSequencerSection.get()->getToggleState())
-        {
-            int w = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
-            int h = TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT + 80;
-            setSize (w, h);
-            
-            Rectangle<int> fin ( getLocalBounds().removeFromBottom(KEYBOARD_HEIGHT + 80) );
-            sequencerSection->setBounds(fin);
-            sequencerSection->setVisible(true);
-            sequencerSection->setAlpha(0.0f);
-            animator.get()->fadeIn( sequencerSection.get(), 500 );
-            
-        }
-        else
-        {
-            int w = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
-            int h = TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT;
-            setSize (w, h);
-            sequencerSection->setVisible(false);
-        }
-        
-    }
-
     
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]

@@ -236,13 +236,7 @@ ampEnvelope(nullptr)
     // Softclip switch
     addParameter(softClipSwitchParam = new AudioParameterInt("softClipSwitchParam", "Softclip ON/OFF", 0, 1, 0));
     
-    //SEQUENCER
-    
-    for (int i = 0; i < 8; i++)
-    {
-        addParameter(stepPitchParam[i] = new AudioParameterFloat("stepPitchParam" + std::to_string(i), "Step" + std::to_string(i) + " Pitch", NormalisableRange<float>(-12.0f, 12.0f, 0.0f), 0.0f));
-    }
-    sequencer = std::unique_ptr<Sequencer>(new Sequencer);
+  
     
     
     initialiseSynth();
@@ -271,6 +265,9 @@ ampEnvelope(nullptr)
 
     for (int i = 0; i < 6; i++)
         smoothing[i] = std::unique_ptr<SmoothParam>(new SmoothParam);
+    
+    
+    
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
@@ -360,6 +357,10 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
         
     }
     
+    
+    
+    
+    
 }
 
 void MonosynthPluginAudioProcessor::releaseResources()
@@ -430,6 +431,13 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
     ampEnvelope->gate(true);
     
     lastNotePlayed = midiNoteNumber;
+    
+    
+    if (getActiveEditor() != nullptr)
+    {
+        Sequencer* seq = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( getActiveEditor() )->sequencerSection.get();
+        std::cout << seq->getStepData(0).pitch << std::endl;
+    }
     
 }
 
@@ -541,11 +549,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
    
-    // GET SEQUENCER MIDI BUFFER
-    
-    MidiBuffer mBuf = sequencer->getThisMidiBuffer();
-    
-    midiMessages.swapWith(mBuf);
+  
     
     // GET SYNTHDATA
     synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBlock.getNumSamples() ) );

@@ -225,12 +225,10 @@ public:
     AudioParameterInt* softClipSwitchParam;
     
     AudioParameterFloat* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
-    std::unique_ptr<Sequencer> sequencer;
     
 private:
 
-
-    //==============================================================================
+    Sequencer* sequencer;
     
 	class SmoothParam {
 	public:

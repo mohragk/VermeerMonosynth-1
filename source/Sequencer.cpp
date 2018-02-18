@@ -19,17 +19,11 @@
 
 
 #include "Sequencer.h"
-#include "MonoSynth.h"
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
-//[/MiscUserDefs]
 
-//==============================================================================
-Sequencer::Sequencer ()  :
-            midiChannel (1),
-            startTime (Time::getMillisecondCounterHiRes() * 0.001)
+Sequencer::Sequencer ()
+
 {
-    
 
     globalNoteLengthSlider = std::unique_ptr<Slider> (new Slider("Global Note Length"));
     addAndMakeVisible (globalNoteLengthSlider.get());
@@ -47,7 +41,6 @@ Sequencer::Sequencer ()  :
         pitchSlider[i]->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
         pitchSlider[i]->addListener (this);
     }
-    
     
     setSize (890, 80);
 }
@@ -76,10 +69,8 @@ void Sequencer::resized()
     int rotarySize = 60;
     int vertSliderSize = 18;
     int marginX = 8;
-    int marginY = 8;
     
     Rectangle<int> strip ( area.removeFromTop(84).reduced(24, 0) );
-    
     
     {
         Rectangle<int> block (strip.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
@@ -87,21 +78,12 @@ void Sequencer::resized()
         {
             pitchSlider[i]->setBounds(block.removeFromLeft(vertSliderSize));
         }
-        
     }
     
     {
         Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
-        
         globalNoteLengthSlider->setBounds(block.removeFromLeft(rotarySize));
-        
-        
     }
-    
-    
-    
-    
-    
 }
 
 void Sequencer::parentSizeChanged()
@@ -126,29 +108,57 @@ void Sequencer::sliderValueChanged (Slider* sliderThatWasMoved)
         }
     }
     
-    processSteps();
 }
 
 
 void Sequencer::updateSteps()
 {
     for (int s = 0; s < numSteps; s++)
-        setStepData(s, pitchSlider[s]->getValue(), globalNoteLength, 0.0);
+    {
+        double normalised = (pitchSlider[s]->getValue() + 12) / 24;
+        setStepData(s, pitchSlider[s]->getValue(), globalNoteLength, normalised);
+    }
     
 }
 
-void Sequencer::processSteps()
+/*
+void Sequencer::processSteps(MidiBuffer& midiBuffer, size_t numSamples, double sampleRate)
 {
-    for (int s = 0; s < numSteps; s++)
-    {
-        int middleNote = 60;
-        int newNote = middleNote + step[0].pitch;
-        MidiMessage message = MidiMessage::noteOn (midiChannel, newNote, (uint8) 100);
-        message.setTimeStamp (Time::getMillisecondCounterHiRes() * 0.001 - startTime);
-        
-        midiBuffer.addEvent(message, 0);
-    }
+   
 }
+*/
+
+/*
+void Sequencer::addStepToMidiSequence(Step s)
+{
+    int middleNote = 60;
+    int newNote = middleNote + s.pitch;
+    double noteLength = s.noteLength;
+    
+    MidiMessage messageOn = MidiMessage::noteOn (midiChannel, newNote, (uint8) 100);
+    messageOn.setTimeStamp ( ( Time::getMillisecondCounterHiRes() * 0.001 - startTime ));
+    
+    midiSequence.addEvent(messageOn);
+    
+    MidiMessage messageOff (MidiMessage::noteOff (messageOn.getChannel(), messageOn.getNoteNumber()));
+    messageOff.setTimeStamp (messageOn.getTimeStamp() + noteLength);
+    
+    midiSequence.addEvent(messageOff);
+}
+*/
+
+/*
+double Sequencer::getMilliSecondsPerNote(AudioPlayHead::CurrentPositionInfo pInfo, double division )
+{
+    const double beats_per_minute = pInfo.bpm;
+    const double seconds_per_beat = 6000.0 / beats_per_minute;
+    const double seconds_per_note = seconds_per_beat * (pInfo.timeSigDenominator / division);
+    
+    // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
+    
+    return seconds_per_note;
+}
+*/
 
 
 //==============================================================================

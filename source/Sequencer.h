@@ -23,7 +23,6 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -48,7 +47,11 @@ public:
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
     void parentSizeChanged() override;
-    void getMidiBuffer();
+    
+    //void getMidiBuffer();
+    
+    //void processSteps(MidiBuffer& midiBuffer, size_t numSamples, double sampleRate);
+    
     
     enum steps
     {
@@ -74,16 +77,27 @@ public:
     } step[numSteps];
 
     
+    Step getStepData(int s) { return step[s]; };
     
-    MidiBuffer getThisMidiBuffer() { return midiBuffer; };
     
+    void setPulse(double val)
+    {
+        if (val >= 1.0)
+            pulse = true;
+        else
+            pulse = false;
+    }
     
 
 private:
     
     // members
+    AudioPlayHead::CurrentPositionInfo posInfo;
     
-    MidiBuffer midiBuffer;
+    
+    MidiMessageSequence midiSequence;
+    
+    bool pulse = false;
     
     enum style
     {
@@ -98,17 +112,14 @@ private:
     
     
     
-    int bpm;
     
     double globalNoteLength = 1.0;
     
-    int midiChannel;
     
-    double startTime;
 
     //methods
     
-    void setStepData(int s, double p, double nl, double nv )
+    void setStepData( int s, double p, double nl, double nv )
     {
         step[s].pitch = p;
         step[s].noteLength = nl;
@@ -116,15 +127,19 @@ private:
         
     };
     
-    void updateClock();
     
     void updateSteps();
     
-    void processSteps();
+    
+    
+    //void addStepToMidiSequence(Step s);
+    
+    //double getMilliSecondsPerNote(AudioPlayHead::CurrentPositionInfo pInfo, double division );
+    
+
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sequencer)
 };
 
-//[EndFile] You can add extra defines here...
-//[/EndFile]
+
