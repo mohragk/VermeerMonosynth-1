@@ -26,6 +26,7 @@
 
 
 
+
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -50,12 +51,47 @@ public:
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
     void parentSizeChanged() override;
+    
+    enum steps
+    {
+        STEP1 = 0,
+        STEP2,
+        STEP3,
+        STEP4,
+        STEP5,
+        STEP6,
+        STEP7,
+        STEP8,
+        numSteps
+        
+    };
+    
 
+    struct Step
+    {
+        //int stepId;
+        double pitch;
+        double noteLength;
+        double normalValue;
+    } step[numSteps];
 
+    
+    Step getStepData(Step s) { return s;};
+    
+    void setStepData(Step s, double p, double nl, double nv )
+    {
+        s.pitch = p;
+        s.noteLength = nl;
+        s.normalValue = nv;
+    };
+    
+    
 
 private:
-    MonosynthPluginAudioProcessor& processor;
     
+    // members
+    MonosynthPluginAudioProcessor& processor;
+    //AudioPlayHead* playHead;
     
     enum style
     {
@@ -64,18 +100,24 @@ private:
         LINEARVERTICAL
     };
     
+    std::unique_ptr<AudioParameterFloat> pitchParam[numSteps];
 
-    std::unique_ptr<Slider> Pitch1Slider,
-                            Pitch2Slider,
-                            Pitch3Slider,
-                            Pitch4Slider,
-                            Pitch5Slider,
-                            Pitch6Slider,
-                            Pitch7Slider,
-                            Pitch8Slider;
+    std::unique_ptr<Slider> pitchSlider[numSteps];
+    
+    ScopedPointer<Slider> regPitchSlider[numSteps];
+    
     
     ScopedPointer<Slider> syncToTempoSwitchSlider;
+    
+    
+    int bpm;
+    
 
+    //methods
+    void updateClock();
+    
+    
+    void processSteps();
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sequencer)

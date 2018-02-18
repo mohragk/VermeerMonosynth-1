@@ -222,14 +222,7 @@ public:
     AudioParameterInt* oversampleSwitchParam;
     AudioParameterInt* softClipSwitchParam;
     
-    AudioParameterInt* sequencerPitch1Param;
-    AudioParameterInt* sequencerPitch2Param;
-    AudioParameterInt* sequencerPitch3Param;
-    AudioParameterInt* sequencerPitch4Param;
-    AudioParameterInt* sequencerPitch5Param;
-    AudioParameterInt* sequencerPitch6Param;
-    AudioParameterInt* sequencerPitch7Param;
-    AudioParameterInt* sequencerPitch8Param;
+    AudioParameterFloat* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
     
     
 private:

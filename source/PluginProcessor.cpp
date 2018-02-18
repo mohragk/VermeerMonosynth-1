@@ -114,14 +114,7 @@ oversampleSwitchParam(nullptr),
 
 softClipSwitchParam(nullptr),
 
-sequencerPitch1Param(nullptr),
-sequencerPitch2Param(nullptr),
-sequencerPitch3Param(nullptr),
-sequencerPitch4Param(nullptr),
-sequencerPitch5Param(nullptr),
-sequencerPitch6Param(nullptr),
-sequencerPitch7Param(nullptr),
-sequencerPitch8Param(nullptr),
+
 
 filterEnvelope(nullptr),
 
@@ -244,15 +237,12 @@ ampEnvelope(nullptr)
     addParameter(softClipSwitchParam = new AudioParameterInt("softClipSwitchParam", "Softclip ON/OFF", 0, 1, 0));
     
     //SEQUENCER
-    addParameter(sequencerPitch1Param = new AudioParameterInt("sequencerPitch1Param", "Seq. Pitch 1", -24, 24, 0));
-    addParameter(sequencerPitch2Param = new AudioParameterInt("sequencerPitch2Param", "Seq. Pitch 2", -24, 24, 0));
-    addParameter(sequencerPitch3Param = new AudioParameterInt("sequencerPitch3Param", "Seq. Pitch 3", -24, 24, 0));
-    addParameter(sequencerPitch4Param = new AudioParameterInt("sequencerPitch4Param", "Seq. Pitch 4", -24, 24, 0));
     
-    addParameter(sequencerPitch5Param = new AudioParameterInt("sequencerPitch5Param", "Seq. Pitch 5", -24, 24, 0));
-    addParameter(sequencerPitch6Param = new AudioParameterInt("sequencerPitch6Param", "Seq. Pitch 6", -24, 24, 0));
-    addParameter(sequencerPitch7Param = new AudioParameterInt("sequencerPitch7Param", "Seq. Pitch 7", -24, 24, 0));
-    addParameter(sequencerPitch8Param = new AudioParameterInt("sequencerPitch8Param", "Seq. Pitch 8", -24, 24, 0));
+    for (int i = 0; i < 8; i++)
+    {
+        addParameter(stepPitchParam[i] = new AudioParameterFloat("stepPitchParam" + std::to_string(i), "Step" + std::to_string(i) + " Pitch", NormalisableRange<float>(-12.0f, 12.0f, 0.0f), 0.0f));
+    }
+    
     
     initialiseSynth();
     
@@ -928,7 +918,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 
         synthVoice->setPitchEnvelopeAmount(*pitchModParam);
 
-        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam + *sequencerPitch1Param); //TEST
+        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam ); //TEST
         synthVoice->setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
         synthVoice->setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
 
