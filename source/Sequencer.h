@@ -76,7 +76,6 @@ public:
     } step[numSteps];
 
     
-    Step getStepData(Step s) { return s;};
     
     
     
@@ -95,15 +94,10 @@ private:
         LINEARVERTICAL
     };
     
-    std::unique_ptr<AudioParameterFloat> pitchParam[numSteps];
-
-    //std::unique_ptr<Slider> pitchSlider[numSteps];
     
-    std::unique_ptr<Slider> regPitchSlider[numSteps];
+    std::unique_ptr<Slider> pitchSlider[numSteps];
     std::unique_ptr<Slider> globalNoteLengthSlider;
     
-    
-    ScopedPointer<Slider> syncToTempoSwitchSlider;
     
     
     int bpm;

@@ -133,8 +133,9 @@ public:
 
 	bool lfoSynced();
     
-   
-  
+    void setStepPitch(int s, float pitch) { stepPitch[s] = pitch; };
+    void setStepNoteLength(int s, float nl) { stepNoteLength[s] = nl; };
+      
     
     // Our parameters
     AudioParameterFloat* gainParam;
@@ -308,6 +309,7 @@ private:
     void resetSamplerates(double sr);
     void setOversampleQuality(int q);
     
+   
     
     std::unique_ptr<dsp::Oversampling<float>> oversamplingFloat;
 	std::unique_ptr<dsp::Oversampling<double>> oversamplingDouble;
@@ -376,6 +378,9 @@ private:
 	std::unique_ptr<SmoothParam> smoothing[6];
     
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
+    
+    
+    float stepPitch[8], stepNoteLength[8];
     
     static BusesProperties getBusesProperties();
    

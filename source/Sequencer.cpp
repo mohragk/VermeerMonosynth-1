@@ -34,21 +34,6 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p)
 {
     typedef ParameterSlider::style knobStyle;
     
-    
-
-    addAndMakeVisible (syncToTempoSwitchSlider = new Slider ("Sync to Tempo Slider"));
-    syncToTempoSwitchSlider->setRange (0, 10, 0);
-    syncToTempoSwitchSlider->setSliderStyle (Slider::LinearHorizontal);
-    syncToTempoSwitchSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    syncToTempoSwitchSlider->addListener (this);
-
-    syncToTempoSwitchSlider->setBounds (8, 8, 48, 24);
-
-
-    //[UserPreSize]
-    //[/UserPreSize]
-
-    
 
     globalNoteLengthSlider = std::unique_ptr<Slider> (new Slider("Global Note Length"));
     addAndMakeVisible (globalNoteLengthSlider.get());
@@ -59,12 +44,12 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p)
     
     for (int i = 0; i < numSteps; i++)
     {
-        regPitchSlider[i] = std::unique_ptr<Slider> ( new Slider ("Seq Pitch Slider" + std::to_string(i) ) );
-        addAndMakeVisible (regPitchSlider[i].get());
-        regPitchSlider[i]->setRange (-12, 12, 1);
-        regPitchSlider[i]->setSliderStyle (Slider::LinearVertical);
-        regPitchSlider[i]->setTextBoxStyle (Slider::TextBoxBelow, false, 18, 18);
-        regPitchSlider[i]->addListener (this);
+        pitchSlider[i] = std::unique_ptr<Slider> ( new Slider ("Seq Pitch Slider" + std::to_string(i) ) );
+        addAndMakeVisible (pitchSlider[i].get());
+        pitchSlider[i]->setRange (-12, 12, 1);
+        pitchSlider[i]->setSliderStyle (Slider::LinearVertical);
+        pitchSlider[i]->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        pitchSlider[i]->addListener (this);
     }
 
     setSize (890, 80);
@@ -72,14 +57,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p)
 
 Sequencer::~Sequencer()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
-    syncToTempoSwitchSlider = nullptr;
-
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
+ 
 }
 
 //==============================================================================
@@ -103,17 +81,14 @@ void Sequencer::resized()
     int marginX = 8;
     int marginY = 8;
     
-    Rectangle<int> strip (area.removeFromTop(rotarySize + marginY * 2));
-    
-    syncToTempoSwitchSlider->setBounds(strip.removeFromLeft(rotarySize));
-    
+    Rectangle<int> strip ( area.removeFromTop(84).reduced(24, 0) );
     
     
     {
         Rectangle<int> block (strip.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
         for (int i =0; i < numSteps; i++)
         {
-            regPitchSlider[i]->setBounds(block.removeFromLeft(vertSliderSize));
+            pitchSlider[i]->setBounds(block.removeFromLeft(vertSliderSize));
         }
         
     }
@@ -132,12 +107,13 @@ void Sequencer::resized()
     
 }
 
+void Sequencer::parentSizeChanged()
+{
+    
+}
+
 void Sequencer::sliderValueChanged (Slider* sliderThatWasMoved)
 {
-    if(sliderThatWasMoved == syncToTempoSwitchSlider)
-    {
-        
-    }
     
     if(sliderThatWasMoved == globalNoteLengthSlider.get())
     {
@@ -147,33 +123,31 @@ void Sequencer::sliderValueChanged (Slider* sliderThatWasMoved)
     
     for(int i = 0 ; i < numSteps; i++)
     {
-        if(sliderThatWasMoved == regPitchSlider[i].get())
+        if(sliderThatWasMoved == pitchSlider[i].get())
         {
             updateSteps();
-            
-            std::cout << "Step " << i << " pitch: " << regPitchSlider[i]->getValue() << " | notelength: " << globalNoteLength << std::endl;
             
         }
     }
     
+    processSteps();
 }
 
-void Sequencer::parentSizeChanged()
-{
-    //[UserCode_parentSizeChanged] -- Add your code here...
-    //[/UserCode_parentSizeChanged]
-}
 
 void Sequencer::updateSteps()
 {
     for (int s = 0; s < numSteps; s++)
-        setStepData(s, regPitchSlider[s]->getValue(), globalNoteLength, 0.0);
+        setStepData(s, pitchSlider[s]->getValue(), globalNoteLength, 0.0);
     
 }
 
 void Sequencer::processSteps()
 {
-    
+    for (int s = 0; s < numSteps; s++)
+    {
+        processor.setStepPitch(s, step[s].pitch);
+        processor.setStepNoteLength(s, step[s].noteLength);
+    }
 }
 
 

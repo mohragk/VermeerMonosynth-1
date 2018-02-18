@@ -918,7 +918,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 
         synthVoice->setPitchEnvelopeAmount(*pitchModParam);
 
-        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam ); //TEST
+        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam  + stepPitch[0]); //TEST
         synthVoice->setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
         synthVoice->setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
 
