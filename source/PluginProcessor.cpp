@@ -540,9 +540,13 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     
+    
+    
+    // GET SYNTHDATA
     synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBlock.getNumSamples() ) );
     
-    
+    // TEST TEST TEST !!!
+    applySequencer(osBuffer);
 
 	
     // getting our filter envelope values
@@ -1048,6 +1052,32 @@ double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::CurrentPos
     return 1.0 / seconds_per_note;
 }
 
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer)
+{
+    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+    MonosynthSound* synthSound = dynamic_cast<MonosynthSound*>(synth.getSound(0)); /*sound*/
+    
+    double bpm = lastPosInfo.bpm;
+    
+    const double seconds_per_beat = 60.0 / bpm;
+    const double seconds_per_note = seconds_per_beat * (lastPosInfo.timeSigDenominator / 16); //TODO Make parameter
+    
+    int numSamples = buffer.getNumSamples();
+    
+    
+    
+         // Retrigger Note at new bar
+        if ( lastPosInfo.isPlaying )
+        {
+            if (lastPosInfo.ppqPositionOfLastBarStart == lastPosInfo.ppqPosition)
+                synthVoice->startNote(12, 1.0, synthSound, 0);
+        }
+   
+    
+    
+    
+}
 
 bool MonosynthPluginAudioProcessor::saturationOn()
 {
