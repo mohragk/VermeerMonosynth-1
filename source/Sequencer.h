@@ -78,13 +78,7 @@ public:
     
     Step getStepData(Step s) { return s;};
     
-    void setStepData(int s, double p, double nl, double nv )
-    {
-        step[s].pitch = p;
-        step[s].noteLength = nl;
-        step[s].normalValue = nv;
-        
-    };
+    
     
     
 
@@ -103,9 +97,10 @@ private:
     
     std::unique_ptr<AudioParameterFloat> pitchParam[numSteps];
 
-    std::unique_ptr<Slider> pitchSlider[numSteps];
+    //std::unique_ptr<Slider> pitchSlider[numSteps];
     
-    ScopedPointer<Slider> regPitchSlider[numSteps];
+    std::unique_ptr<Slider> regPitchSlider[numSteps];
+    std::unique_ptr<Slider> globalNoteLengthSlider;
     
     
     ScopedPointer<Slider> syncToTempoSwitchSlider;
@@ -113,10 +108,21 @@ private:
     
     int bpm;
     
+    double globalNoteLength = 1.0;
 
     //methods
+    
+    void setStepData(int s, double p, double nl, double nv )
+    {
+        step[s].pitch = p;
+        step[s].noteLength = nl;
+        step[s].normalValue = nv;
+        
+    };
+    
     void updateClock();
     
+    void updateSteps();
     
     void processSteps();
 

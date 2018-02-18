@@ -50,19 +50,20 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p)
 
     
 
+    globalNoteLengthSlider = std::unique_ptr<Slider> (new Slider("Global Note Length"));
+    addAndMakeVisible (globalNoteLengthSlider.get());
+    globalNoteLengthSlider->setRange (0, 1, 0);
+    globalNoteLengthSlider->setSliderStyle (Slider::RotaryVerticalDrag);
+    globalNoteLengthSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+    globalNoteLengthSlider->addListener (this);
     
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < numSteps; i++)
     {
-        pitchSlider[i] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.stepPitchParam[i], knobStyle(ROTARY))); // TODO, make unique
-        addAndMakeVisible (pitchSlider[i].get());
-        
-        
-        
-        
-        addAndMakeVisible (regPitchSlider[i] = new Slider ("regPitchSlider" + std::to_string(i) ) );
-        regPitchSlider[i]->setRange (0, 1, 0);
+        regPitchSlider[i] = std::unique_ptr<Slider> ( new Slider ("Seq Pitch Slider" + std::to_string(i) ) );
+        addAndMakeVisible (regPitchSlider[i].get());
+        regPitchSlider[i]->setRange (-12, 12, 1);
         regPitchSlider[i]->setSliderStyle (Slider::LinearVertical);
-        regPitchSlider[i]->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        regPitchSlider[i]->setTextBoxStyle (Slider::TextBoxBelow, false, 18, 18);
         regPitchSlider[i]->addListener (this);
     }
 
@@ -106,23 +107,26 @@ void Sequencer::resized()
     
     syncToTempoSwitchSlider->setBounds(strip.removeFromLeft(rotarySize));
     
-    {
-        Rectangle<int> block (strip.removeFromLeft((rotarySize * 8) + marginX * 2) );
-        for (int i =0; i < numSteps; i++)
-        {
-            pitchSlider[i]->setBounds(block.removeFromLeft(rotarySize));
-        }
-        
-    }
+    
     
     {
-        Rectangle<int> block (strip.removeFromLeft((vertSliderSize * 8) + marginX * 2) );
+        Rectangle<int> block (strip.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
         for (int i =0; i < numSteps; i++)
         {
             regPitchSlider[i]->setBounds(block.removeFromLeft(vertSliderSize));
         }
         
     }
+    
+    {
+        Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
+        
+        globalNoteLengthSlider->setBounds(block.removeFromLeft(rotarySize));
+        
+        
+    }
+    
+    
     
     
     
@@ -135,12 +139,20 @@ void Sequencer::sliderValueChanged (Slider* sliderThatWasMoved)
         
     }
     
-    for(int i =0 ; i < numSteps; i++)
+    if(sliderThatWasMoved == globalNoteLengthSlider.get())
     {
-        if(sliderThatWasMoved == regPitchSlider[i])
+        globalNoteLength = globalNoteLengthSlider->getValue();
+        updateSteps();
+    }
+    
+    for(int i = 0 ; i < numSteps; i++)
+    {
+        if(sliderThatWasMoved == regPitchSlider[i].get())
         {
-            setStepData(i, regPitchSlider[i]->getValue(), 0.0, 0.0);
-            std::cout << "Step"<< i <<" pitch: "<<  step[i].pitch << std::endl;
+            updateSteps();
+            
+            std::cout << "Step " << i << " pitch: " << regPitchSlider[i]->getValue() << " | notelength: " << globalNoteLength << std::endl;
+            
         }
     }
     
@@ -152,7 +164,12 @@ void Sequencer::parentSizeChanged()
     //[/UserCode_parentSizeChanged]
 }
 
-
+void Sequencer::updateSteps()
+{
+    for (int s = 0; s < numSteps; s++)
+        setStepData(s, regPitchSlider[s]->getValue(), globalNoteLength, 0.0);
+    
+}
 
 void Sequencer::processSteps()
 {
