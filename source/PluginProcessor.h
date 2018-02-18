@@ -35,6 +35,8 @@
 #include "MoogLadders/DiodeLadderModel.h"
 #include "MoogLadders/ThreeFiveModel.h"
 
+#include "Sequencer.h"
+
 #include "lfo.h"
 
 
@@ -133,8 +135,7 @@ public:
 
 	bool lfoSynced();
     
-    void setStepPitch(int s, float pitch) { stepPitch[s] = pitch; };
-    void setStepNoteLength(int s, float nl) { stepNoteLength[s] = nl; };
+    SynthesiserVoice* getSynthesiserVoice() { return synth.getVoice(0) ; };
       
     
     // Our parameters
@@ -224,7 +225,7 @@ public:
     AudioParameterInt* softClipSwitchParam;
     
     AudioParameterFloat* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
-    
+    std::unique_ptr<Sequencer> sequencer;
     
 private:
 
@@ -261,6 +262,8 @@ private:
 			return z;
 		}
 
+        
+        
 	private:
 		double a, b, z;
 		double coeff;
@@ -289,10 +292,6 @@ private:
 
     template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
-    
-    
-    template <typename FloatType>
-    void applySequencer (AudioBuffer<FloatType>& buffer);
     
 
 	double getWaveshaped(double sample, double overdrive, int mode)
@@ -385,7 +384,7 @@ private:
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     
     
-    float stepPitch[8], stepNoteLength[8];
+    
     
     static BusesProperties getBusesProperties();
    

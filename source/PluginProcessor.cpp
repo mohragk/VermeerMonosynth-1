@@ -242,6 +242,7 @@ ampEnvelope(nullptr)
     {
         addParameter(stepPitchParam[i] = new AudioParameterFloat("stepPitchParam" + std::to_string(i), "Step" + std::to_string(i) + " Pitch", NormalisableRange<float>(-12.0f, 12.0f, 0.0f), 0.0f));
     }
+    sequencer = std::unique_ptr<Sequencer>(new Sequencer);
     
     
     initialiseSynth();
@@ -539,14 +540,16 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
                                     );
     
     
+   
+    // GET SEQUENCER MIDI BUFFER
     
+    MidiBuffer mBuf = sequencer->getThisMidiBuffer();
     
+    midiMessages.swapWith(mBuf);
     
     // GET SYNTHDATA
     synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBlock.getNumSamples() ) );
     
-    // TEST TEST TEST !!!
-    applySequencer(osBuffer);
 
 	
     // getting our filter envelope values
@@ -922,7 +925,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 
         synthVoice->setPitchEnvelopeAmount(*pitchModParam);
 
-        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam  + stepPitch[0]); //TEST
+        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam ); //TEST
         synthVoice->setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
         synthVoice->setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
 
@@ -1052,32 +1055,7 @@ double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::CurrentPos
     return 1.0 / seconds_per_note;
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer)
-{
-    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
-    MonosynthSound* synthSound = dynamic_cast<MonosynthSound*>(synth.getSound(0)); /*sound*/
-    
-    double bpm = lastPosInfo.bpm;
-    
-    const double seconds_per_beat = 60.0 / bpm;
-    const double seconds_per_note = seconds_per_beat * (lastPosInfo.timeSigDenominator / 16); //TODO Make parameter
-    
-    int numSamples = buffer.getNumSamples();
-    
-    
-    
-         // Retrigger Note at new bar
-        if ( lastPosInfo.isPlaying )
-        {
-            if (lastPosInfo.ppqPositionOfLastBarStart == lastPosInfo.ppqPosition)
-                synthVoice->startNote(12, 1.0, synthSound, 0);
-        }
-   
-    
-    
-    
-}
+
 
 bool MonosynthPluginAudioProcessor::saturationOn()
 {

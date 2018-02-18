@@ -55,6 +55,8 @@ public:
     void resized() override;
     void timerCallback() override;
     void buttonClicked (Button* buttonThatWasClicked) override;
+    
+    Sequencer* getSequencer() { return sequencerSection.get();};
 
 	// Binary resources:
 	
@@ -67,7 +69,8 @@ public:
 	static const char* decayCurveExponential_symbol_svg;
 	static const int decayCurveExponential_symbol_svgSize;
 
-
+    
+    
 private:
 	
     enum style
@@ -83,12 +86,13 @@ private:
 
 	Label timecodeDisplayLabel;
 	
-    std::unique_ptr<Sequencer> sequencerSection;
+   
     std::unique_ptr<OscillatorSection> oscillatorSection;
     std::unique_ptr<FilterSection> filterSection;
     std::unique_ptr<EnvelopeSection> envelopeSection;
     std::unique_ptr<LFOSection> lfoSection;
     std::unique_ptr<MasterSection> masterSection;
+    std::unique_ptr<Sequencer> sequencerSection;
 
     std::unique_ptr<Label>
         titleLabel

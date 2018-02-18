@@ -17,22 +17,18 @@
   ==============================================================================
 */
 
-//[Headers] You can add your own extra header files here...
-//[/Headers]
 
 #include "Sequencer.h"
-
+#include "MonoSynth.h"
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
 
 //==============================================================================
-Sequencer::Sequencer (MonosynthPluginAudioProcessor& p)
-: processor(p)
-
-
+Sequencer::Sequencer ()  :
+            midiChannel (1),
+            startTime (Time::getMillisecondCounterHiRes() * 0.001)
 {
-    typedef ParameterSlider::style knobStyle;
     
 
     globalNoteLengthSlider = std::unique_ptr<Slider> (new Slider("Global Note Length"));
@@ -51,7 +47,8 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p)
         pitchSlider[i]->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
         pitchSlider[i]->addListener (this);
     }
-
+    
+    
     setSize (890, 80);
 }
 
@@ -126,7 +123,6 @@ void Sequencer::sliderValueChanged (Slider* sliderThatWasMoved)
         if(sliderThatWasMoved == pitchSlider[i].get())
         {
             updateSteps();
-            
         }
     }
     
@@ -145,8 +141,12 @@ void Sequencer::processSteps()
 {
     for (int s = 0; s < numSteps; s++)
     {
-        processor.setStepPitch(s, step[s].pitch);
-        processor.setStepNoteLength(s, step[s].noteLength);
+        int middleNote = 60;
+        int newNote = middleNote + step[0].pitch;
+        MidiMessage message = MidiMessage::noteOn (midiChannel, newNote, (uint8) 100);
+        message.setTimeStamp (Time::getMillisecondCounterHiRes() * 0.001 - startTime);
+        
+        midiBuffer.addEvent(message, 0);
     }
 }
 
@@ -220,5 +220,3 @@ END_JUCER_METADATA
 #endif
 
 
-//[EndFile] You can add extra defines here...
-//[/EndFile]

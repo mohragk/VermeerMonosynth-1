@@ -106,7 +106,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
     
     //SEQUENCER
-    sequencerSection = std::unique_ptr<Sequencer>(new Sequencer(owner));
+    
+    sequencerSection = std::unique_ptr<Sequencer> (owner.sequencer.get());
     addAndMakeVisible(sequencerSection.get());
     sequencerSection->setVisible(false);
     

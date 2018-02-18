@@ -21,9 +21,6 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "PluginProcessor.h"
-#include "ParameterSlider.h"
-
 
 
 
@@ -40,7 +37,7 @@ class Sequencer  : public Component,
 {
 public:
     //==============================================================================
-    Sequencer (MonosynthPluginAudioProcessor& p);
+    Sequencer ();
     ~Sequencer();
 
     //==============================================================================
@@ -51,6 +48,7 @@ public:
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
     void parentSizeChanged() override;
+    void getMidiBuffer();
     
     enum steps
     {
@@ -77,15 +75,15 @@ public:
 
     
     
-    
+    MidiBuffer getThisMidiBuffer() { return midiBuffer; };
     
     
 
 private:
     
     // members
-    MonosynthPluginAudioProcessor& processor;
-    //AudioPlayHead* playHead;
+    
+    MidiBuffer midiBuffer;
     
     enum style
     {
@@ -103,6 +101,10 @@ private:
     int bpm;
     
     double globalNoteLength = 1.0;
+    
+    int midiChannel;
+    
+    double startTime;
 
     //methods
     

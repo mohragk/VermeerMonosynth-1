@@ -23,8 +23,11 @@ DISCLAIMED.
 
 ==============================================================================
 */
+#pragma once
 
 #include "Oscillator.h"
+#include "lfo.h"
+#include "adsr/ADSR.h"
 
 /** A demo synth sound that's just a basic sine wave.. */
 class MonosynthSound : public SynthesiserSound
@@ -139,6 +142,11 @@ public:
     {
         return numOscillators;
     }
+    
+    
+    void setStepPitch(int s, float pitch) { stepPitch[s] = pitch; };
+    void setStepNoteLength(int s, float nl) { stepNoteLength[s] = nl; };
+    
     
     
     // Set pitch envelope parameters.
@@ -346,6 +354,8 @@ private:
     
     int initialNote = 0;
     int noteOffset;
+    
+    double stepPitch[8], stepNoteLength[8];
 
     double lfoValue, egValue;
     double modAmountPW[3];
