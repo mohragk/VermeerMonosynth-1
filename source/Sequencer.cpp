@@ -60,7 +60,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p)
         
         
         addAndMakeVisible (regPitchSlider[i] = new Slider ("regPitchSlider" + std::to_string(i) ) );
-        regPitchSlider[i]->setRange (0, 10, 0);
+        regPitchSlider[i]->setRange (0, 1, 0);
         regPitchSlider[i]->setSliderStyle (Slider::LinearVertical);
         regPitchSlider[i]->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
         regPitchSlider[i]->addListener (this);
@@ -139,7 +139,8 @@ void Sequencer::sliderValueChanged (Slider* sliderThatWasMoved)
     {
         if(sliderThatWasMoved == regPitchSlider[i])
         {
-            std::cout << "Slider " << regPitchSlider[i] << " moved!" << std::endl;
+            setStepData(i, regPitchSlider[i]->getValue(), 0.0, 0.0);
+            std::cout << "Step"<< i <<" pitch: "<<  step[i].pitch << std::endl;
         }
     }
     

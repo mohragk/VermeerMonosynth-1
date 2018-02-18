@@ -78,11 +78,12 @@ public:
     
     Step getStepData(Step s) { return s;};
     
-    void setStepData(Step s, double p, double nl, double nv )
+    void setStepData(int s, double p, double nl, double nv )
     {
-        s.pitch = p;
-        s.noteLength = nl;
-        s.normalValue = nv;
+        step[s].pitch = p;
+        step[s].noteLength = nl;
+        step[s].normalValue = nv;
+        
     };
     
     
