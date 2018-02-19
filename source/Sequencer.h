@@ -22,6 +22,9 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 
+#include "PluginProcessor.h"
+#include "ParameterSlider.h"
+
 
 //==============================================================================
 /**
@@ -31,12 +34,11 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Sequencer  : public Component,
-                   public Slider::Listener
+class Sequencer  : public Component
 {
 public:
     //==============================================================================
-    Sequencer ();
+    Sequencer (MonosynthPluginAudioProcessor& p);
     ~Sequencer();
 
     //==============================================================================
@@ -45,7 +47,7 @@ public:
 
     void paint (Graphics& g) override;
     void resized() override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    
     void parentSizeChanged() override;
     
     //void getMidiBuffer();
@@ -80,24 +82,13 @@ public:
     Step getStepData(int s) { return step[s]; };
     
     
-    void setPulse(double val)
-    {
-        if (val >= 1.0)
-            pulse = true;
-        else
-            pulse = false;
-    }
+    
     
 
 private:
     
     // members
-    AudioPlayHead::CurrentPositionInfo posInfo;
-    
-    
-    MidiMessageSequence midiSequence;
-    
-    bool pulse = false;
+    MonosynthPluginAudioProcessor& processor;
     
     enum style
     {
@@ -107,8 +98,8 @@ private:
     };
     
     
-    std::unique_ptr<Slider> pitchSlider[numSteps];
-    std::unique_ptr<Slider> globalNoteLengthSlider;
+    std::unique_ptr<ParameterSlider> pitchSlider[numSteps];
+    //std::unique_ptr<Slider> globalNoteLengthSlider;
     
     
     

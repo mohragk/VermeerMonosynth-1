@@ -78,7 +78,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     //SEQUENCER SECTION
-    sequencerSection = std::unique_ptr<Sequencer> (new Sequencer);
+    sequencerSection = std::unique_ptr<Sequencer> (new Sequencer(owner));
     addAndMakeVisible(sequencerSection.get());
     
     //

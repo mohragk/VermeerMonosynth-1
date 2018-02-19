@@ -35,7 +35,7 @@
 #include "MoogLadders/DiodeLadderModel.h"
 #include "MoogLadders/ThreeFiveModel.h"
 
-#include "Sequencer.h"
+
 
 #include "lfo.h"
 
@@ -226,7 +226,7 @@ public:
     AudioParameterInt* oversampleSwitchParam;
     AudioParameterInt* softClipSwitchParam;
     
-    AudioParameterFloat* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
+    AudioParameterInt* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
     
 private:
 

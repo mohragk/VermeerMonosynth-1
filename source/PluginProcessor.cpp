@@ -236,7 +236,11 @@ ampEnvelope(nullptr)
     // Softclip switch
     addParameter(softClipSwitchParam = new AudioParameterInt("softClipSwitchParam", "Softclip ON/OFF", 0, 1, 0));
     
-  
+    // SEQUENCER PARAMS
+    for (int i = 0; i < 8; i++)
+    {
+        addParameter(stepPitchParam[i] = new AudioParameterInt("stepPitchParam" + std::to_string(i), "Seq. Pitch " + std::to_string(i), -12, 12, 0 ));
+    }
     
     
     initialiseSynth();
@@ -267,6 +271,7 @@ ampEnvelope(nullptr)
         smoothing[i] = std::unique_ptr<SmoothParam>(new SmoothParam);
     
     
+
     
 }
 
@@ -822,39 +827,76 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
     }
 }
 
+
+
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer)
 {
     int numSamples = buffer.getNumSamples();
+    
+    AudioPlayHead::CurrentPositionInfo pos;
+    
     
     
     
     
     while (--numSamples >= 0)
     {
-        if ( lastPosInfo.isPlaying )
+        if (AudioPlayHead* ph = getPlayHead())
         {
-            if (lastPosInfo.ppqPositionOfLastBarStart == lastPosInfo.ppqPosition)
+            
+            AudioPlayHead::CurrentPositionInfo newTime;
+            
+            if (ph->getCurrentPosition (newTime))
             {
-                if (getActiveEditor() != nullptr)
+                pos = newTime;  // Successfully got the current time from the host..
+                
+            }
+        }
+        
+        int quarterNotePos = pos.ppqPosition;
+        int numerator    = pos.timeSigNumerator;
+        int denominator  = pos.timeSigDenominator;
+        
+        const int quarterNotesPerBar = (numerator * 4 / denominator);
+        const double beats  = (fmod (quarterNotePos, quarterNotesPerBar) / quarterNotesPerBar) * numerator;
+        
+        const int currentBar    = ((int) quarterNotePos) / quarterNotesPerBar + 1;
+        const int currentBeat   = ((int) beats) + 1;
+        const int ticks  = ((int) (fmod (beats, 1.0) * 960.0 + 0.5));
+        
+        int stepCounter = 0;
+        
+        if ( pos.isPlaying )
+        {
+            
+            int quarter = quarterNotesPerBar * 4;
+          
+            
+            //if (pos.ppqPositionOfLastBarStart == pos.ppqPosition)
+            if (quarterNotePos % quarter  == 0)
+            {
+                MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+                
+                if( stepCounter > 7)
+                    stepCounter = 0;
+               
+                
+                int note = *stepPitchParam[stepCounter] + 60;
+                
+                FloatType pitchInHz = MidiMessage::getMidiNoteInHertz (note);
+                synthVoice->setStepPitch(0, pitchInHz);
+                
+                ampEnvelope->gate(true);
+                filterEnvelope->gate(true);
+                
+                if(!isTimerRunning())
                 {
-                    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
-                    Sequencer::Step step = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( getActiveEditor() )->sequencerSection.get()->getStepData(0);
-                    int note = step.pitch + 60;
-                    
-                    FloatType pitchInHz = MidiMessage::getMidiNoteInHertz (note);
-                    synthVoice->setStepPitch(0, pitchInHz);
-                    
-                    ampEnvelope->gate(true);
-                    
-                    if(!isTimerRunning())
-                    {
-                        double millis = step.noteLength * 1000.0;
-                        startTimer(millis);
-                    }
-                    
-                    
+                    double millis = 500.0;
+                    startTimer(millis);
                 }
+                
+                stepCounter++;
             }
             
         }
@@ -867,6 +909,7 @@ void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 {
     if (AudioPlayHead* ph = getPlayHead())
     {
+       
         AudioPlayHead::CurrentPositionInfo newTime;
         
         if (ph->getCurrentPosition (newTime))
@@ -945,9 +988,9 @@ void MonosynthPluginAudioProcessor::timerCallback()
     if(ampEnvelope->getState() != ADSR::envState::env_idle)
     {
         ampEnvelope->gate(false);
+        filterEnvelope->gate(false);
         stopTimer();
     }
-    
 }
 
 template <typename FloatType>

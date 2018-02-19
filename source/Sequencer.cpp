@@ -21,25 +21,22 @@
 #include "Sequencer.h"
 
 
-Sequencer::Sequencer ()
+Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
 
 {
+    typedef ParameterSlider::style knobStyle;
 
-    globalNoteLengthSlider = std::unique_ptr<Slider> (new Slider("Global Note Length"));
-    addAndMakeVisible (globalNoteLengthSlider.get());
-    globalNoteLengthSlider->setRange (0, 1, 0);
-    globalNoteLengthSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    globalNoteLengthSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-    globalNoteLengthSlider->addListener (this);
+    //globalNoteLengthSlider = std::unique_ptr<ParameterSlider> (new ParameterSlider(processor.));
+   // addAndMakeVisible (globalNoteLengthSlider.get());
+   // globalNoteLengthSlider->setRange (0, 1, 0);
+    //globalNoteLengthSlider->setSliderStyle (Slider::RotaryVerticalDrag);
+    //globalNoteLengthSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+   // globalNoteLengthSlider->addListener (this);
     
     for (int i = 0; i < numSteps; i++)
     {
-        pitchSlider[i] = std::unique_ptr<Slider> ( new Slider ("Seq Pitch Slider" + std::to_string(i) ) );
+        pitchSlider[i] = std::unique_ptr<ParameterSlider> ( new ParameterSlider (*processor.stepPitchParam[i], knobStyle(LINEARVERTICAL) ) );
         addAndMakeVisible (pitchSlider[i].get());
-        pitchSlider[i]->setRange (-12, 12, 1);
-        pitchSlider[i]->setSliderStyle (Slider::LinearVertical);
-        pitchSlider[i]->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-        pitchSlider[i]->addListener (this);
     }
     
     setSize (890, 80);
@@ -82,7 +79,7 @@ void Sequencer::resized()
     
     {
         Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
-        globalNoteLengthSlider->setBounds(block.removeFromLeft(rotarySize));
+        //globalNoteLengthSlider->setBounds(block.removeFromLeft(rotarySize));
     }
 }
 
@@ -91,24 +88,7 @@ void Sequencer::parentSizeChanged()
     
 }
 
-void Sequencer::sliderValueChanged (Slider* sliderThatWasMoved)
-{
-    
-    if(sliderThatWasMoved == globalNoteLengthSlider.get())
-    {
-        globalNoteLength = globalNoteLengthSlider->getValue();
-        updateSteps();
-    }
-    
-    for(int i = 0 ; i < numSteps; i++)
-    {
-        if(sliderThatWasMoved == pitchSlider[i].get())
-        {
-            updateSteps();
-        }
-    }
-    
-}
+
 
 
 void Sequencer::updateSteps()
