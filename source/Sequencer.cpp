@@ -36,6 +36,9 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
         addAndMakeVisible (pitchSlider[i].get());
     }
     
+	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerStepDivisionParam, knobStyle(ROTARY)));
+	addAndMakeVisible(stepDivision.get());
+
     setSize (890, SEQUENCER_HEIGHT);
 }
 
@@ -75,8 +78,9 @@ void Sequencer::resized()
     }
     
     {
-        Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
+        Rectangle<int> block (strip.removeFromLeft((rotarySize * 2) + marginX * 2) );
         globalNoteLengthSlider->setBounds(block.removeFromLeft(rotarySize));
+		stepDivision->setBounds(block.removeFromLeft(rotarySize));
     }
 }
 

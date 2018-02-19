@@ -242,7 +242,7 @@ ampEnvelope(nullptr)
         addParameter(stepPitchParam[i] = new AudioParameterInt("stepPitchParam" + std::to_string(i), "Seq. Pitch " + std::to_string(i), -12, 12, 0 ));
     }
 	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.1f, 1.0f, 0.5f));
-    
+	addParameter(sequencerStepDivisionParam = new AudioParameterInt("sequencerStepDivisionParam", "Seq. Rate", 1, 6, 2));
     initialiseSynth();
     
     keyboardState.addListener(this);
@@ -868,9 +868,10 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
         const int ticks  = ((int) (fmod (beats, 1.0) * 960.0 + 0.5));
          */
         
-        double pulseHz = getLFOSyncedFreq(pos, 8);
-        pulseClock->setFrequency(pulseHz);
+		int seqDivision = roundFloatToInt(  powf(2, *sequencerStepDivisionParam) );
+        double pulseHz  = getLFOSyncedFreq(pos, seqDivision);
 
+        pulseClock->setFrequency(pulseHz);
 		pulseClock->setPulseLength(*stepNoteLengthParam);
         
         
