@@ -27,7 +27,10 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+
 #include "adsr/ADSR.h"
+#include "PulseClock.h"
+#include "lfo.h"
 
 #include "MoogLadders/ImprovedModel.h"
 #include "MoogLadders/SEMModel.h"
@@ -36,8 +39,6 @@
 #include "MoogLadders/ThreeFiveModel.h"
 
 
-
-#include "lfo.h"
 
 
 
@@ -384,7 +385,7 @@ private:
 	std::unique_ptr<SmoothParam> smoothing[6];
     
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
-    
+    std::unique_ptr<PulseClock> pulseClock;
     
     
     

@@ -271,7 +271,7 @@ ampEnvelope(nullptr)
         smoothing[i] = std::unique_ptr<SmoothParam>(new SmoothParam);
     
     
-
+    pulseClock = std::unique_ptr<PulseClock> (new PulseClock);
     
 }
 
@@ -500,6 +500,8 @@ void MonosynthPluginAudioProcessor::resetSamplerates(double sr)
     for (int i = 0; i < 6; i++)
         smoothing[i]->init(newsr, 2.0);
     
+    
+    pulseClock->setSampleRate(newsr);
     
 }
 
@@ -836,8 +838,7 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
     
     AudioPlayHead::CurrentPositionInfo pos;
     
-    
-    
+    int stepCounter = 0;
     
     
     while (--numSamples >= 0)
@@ -854,6 +855,7 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
             }
         }
         
+        /*
         int quarterNotePos = pos.ppqPosition;
         int numerator    = pos.timeSigNumerator;
         int denominator  = pos.timeSigDenominator;
@@ -864,22 +866,32 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
         const int currentBar    = ((int) quarterNotePos) / quarterNotesPerBar + 1;
         const int currentBeat   = ((int) beats) + 1;
         const int ticks  = ((int) (fmod (beats, 1.0) * 960.0 + 0.5));
+         */
         
-        int stepCounter = 0;
+        double pulseHz = getLFOSyncedFreq(pos, 8);
+        pulseClock->setFrequency(pulseHz);
+        
         
         if ( pos.isPlaying )
         {
             
-            int quarter = quarterNotesPerBar * 4;
+            if(pulseClock->nextSample() == 1.0)
+            {
+                ampEnvelope->gate(true);
+                filterEnvelope->gate(true);
+            }
+            else
+            {
+                ampEnvelope->gate(false);
+                filterEnvelope->gate(false);
+            }
           
             
-            //if (pos.ppqPositionOfLastBarStart == pos.ppqPosition)
-            if (quarterNotePos % quarter  == 0)
+            if (pulseClock->isPulseHigh())
             {
                 MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
                 
-                if( stepCounter > 7)
-                    stepCounter = 0;
+                
                
                 
                 int note = *stepPitchParam[stepCounter] + 60;
@@ -887,17 +899,24 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
                 FloatType pitchInHz = MidiMessage::getMidiNoteInHertz (note);
                 synthVoice->setStepPitch(0, pitchInHz);
                 
-                ampEnvelope->gate(true);
-                filterEnvelope->gate(true);
-                
+               
+                /*
                 if(!isTimerRunning())
                 {
                     double millis = 500.0;
                     startTimer(millis);
                 }
-                
+                */
                 stepCounter++;
+                
+                if( stepCounter >= 8)
+                    stepCounter = 0;
             }
+            
+            
+            
+            if (pos.ppqPositionOfLastBarStart == pos.ppqPosition)
+                pulseClock->resetModulo();
             
         }
     }
@@ -985,12 +1004,7 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 void MonosynthPluginAudioProcessor::timerCallback()
 {
-    if(ampEnvelope->getState() != ADSR::envState::env_idle)
-    {
-        ampEnvelope->gate(false);
-        filterEnvelope->gate(false);
-        stopTimer();
-    }
+    int x =0;
 }
 
 template <typename FloatType>
