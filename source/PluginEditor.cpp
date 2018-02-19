@@ -403,7 +403,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     
     // SEQUENCER SECTION
-    sequencerSection->setBounds(area.removeFromBottom(84).reduced(8));
+    sequencerSection->setBounds(area.removeFromBottom(96));
     
     
     getProcessor().lastUIWidth = getWidth();

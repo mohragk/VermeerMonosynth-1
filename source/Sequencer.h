@@ -28,7 +28,7 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Sequencer  : public Component
+class Sequencer  : public Component, private Timer
 {
 public:
     //==============================================================================
@@ -43,6 +43,7 @@ public:
     void resized() override;
     
     void parentSizeChanged() override;
+	void timerCallback() override;
     
     //void getMidiBuffer();
     
@@ -96,7 +97,7 @@ private:
     std::unique_ptr<ParameterSlider> globalNoteLengthSlider;
 	std::unique_ptr<ParameterSlider> stepDivision;
     
-    
+	std::unique_ptr<Label> stepDivisionLabel;
     
     double globalNoteLength = 1.0;
     

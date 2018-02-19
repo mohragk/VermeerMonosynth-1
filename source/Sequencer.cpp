@@ -15,7 +15,7 @@
 
 #include "Sequencer.h"
 
-#define SEQUENCER_HEIGHT 84
+#define SEQUENCER_HEIGHT 96
 
 
 Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
@@ -39,7 +39,17 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
 	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerStepDivisionParam, knobStyle(ROTARY)));
 	addAndMakeVisible(stepDivision.get());
 
+	stepDivisionLabel = std::unique_ptr<Label>(new Label("StepDiv Label", TRANS("Div")));
+	addAndMakeVisible(stepDivisionLabel.get());
+	stepDivisionLabel->setFont(Font("Futura", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
+	stepDivisionLabel->setJustificationType(Justification::centredTop);
+	stepDivisionLabel->setEditable(false, false, false);
+	stepDivisionLabel->setColour(TextEditor::textColourId, Colours::black);
+	stepDivisionLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+
     setSize (890, SEQUENCER_HEIGHT);
+
+	startTimerHz(60);
 }
 
 Sequencer::~Sequencer()
@@ -65,7 +75,7 @@ void Sequencer::resized()
     
     int rotarySize = 60;
     int vertSliderSize = 18;
-    int marginX = 8;
+    int marginX = 12;
     
     Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT).reduced(24, 0) );
     
@@ -74,6 +84,8 @@ void Sequencer::resized()
         for (int i =0; i < numSteps; i++)
         {
             pitchSlider[i]->setBounds(block.removeFromLeft(vertSliderSize));
+			pitchSlider[i]->setTextBoxStyle(Slider::TextBoxBelow, true, vertSliderSize, 10);
+			pitchSlider[i]->setColour(Slider::textBoxOutlineColourId, Colour(0xff323e44));
         }
     }
     
@@ -81,6 +93,10 @@ void Sequencer::resized()
         Rectangle<int> block (strip.removeFromLeft((rotarySize * 2) + marginX * 2) );
         globalNoteLengthSlider->setBounds(block.removeFromLeft(rotarySize));
 		stepDivision->setBounds(block.removeFromLeft(rotarySize));
+		
+		stepDivisionLabel->setBounds(block.removeFromLeft(18));
+		
+		
     }
 }
 
@@ -89,7 +105,12 @@ void Sequencer::parentSizeChanged()
     
 }
 
-
+void Sequencer::timerCallback()
+{
+	int divVal = processor.sequencerStepDivisionVal;
+	String s = std::to_string(divVal);
+	stepDivisionLabel->setText(s, dontSendNotification);
+}
 
 
 void Sequencer::updateSteps()

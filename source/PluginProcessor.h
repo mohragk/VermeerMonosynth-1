@@ -232,6 +232,7 @@ public:
     AudioParameterInt* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
 	AudioParameterFloat* stepNoteLengthParam;
 	AudioParameterInt* sequencerStepDivisionParam;
+	int sequencerStepDivisionVal;
     
 private:
 
