@@ -230,6 +230,7 @@ public:
     AudioParameterInt* softClipSwitchParam;
     
     AudioParameterInt* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
+	AudioParameterFloat* stepNoteLengthParam;
     
 private:
 

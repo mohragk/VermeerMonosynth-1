@@ -241,7 +241,7 @@ ampEnvelope(nullptr)
     {
         addParameter(stepPitchParam[i] = new AudioParameterInt("stepPitchParam" + std::to_string(i), "Seq. Pitch " + std::to_string(i), -12, 12, 0 ));
     }
-    
+	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.1f, 1.0f, 0.5f));
     
     initialiseSynth();
     
@@ -870,6 +870,8 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
         
         double pulseHz = getLFOSyncedFreq(pos, 8);
         pulseClock->setFrequency(pulseHz);
+
+		pulseClock->setPulseLength(*stepNoteLengthParam);
         
         
         if ( pos.isPlaying )
@@ -897,9 +899,9 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
             {
                 
                 
-				int middleNote = 60;
+				int middleNote = lastNotePlayed;
 				int newNote = middleNote + *stepPitchParam[stepCounter];
-				int noteLength = 0.25 * sampleRate;
+				int noteLength = *stepNoteLengthParam * sampleRate;
 				int midiChannel = curMidiChannel;
 				
 

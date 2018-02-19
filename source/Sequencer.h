@@ -93,7 +93,7 @@ private:
     
     
     std::unique_ptr<ParameterSlider> pitchSlider[numSteps];
-    //std::unique_ptr<Slider> globalNoteLengthSlider;
+    std::unique_ptr<Slider> globalNoteLengthSlider;
     
     
     

@@ -23,8 +23,8 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
 {
     typedef ParameterSlider::style knobStyle;
 
-    //globalNoteLengthSlider = std::unique_ptr<ParameterSlider> (new ParameterSlider(processor.));
-   // addAndMakeVisible (globalNoteLengthSlider.get());
+    globalNoteLengthSlider = std::unique_ptr<ParameterSlider> (new ParameterSlider(*processor.stepNoteLengthParam, knobStyle(ROTARY)));
+    addAndMakeVisible (globalNoteLengthSlider.get());
    // globalNoteLengthSlider->setRange (0, 1, 0);
     //globalNoteLengthSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     //globalNoteLengthSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
@@ -76,7 +76,7 @@ void Sequencer::resized()
     
     {
         Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
-        //globalNoteLengthSlider->setBounds(block.removeFromLeft(rotarySize));
+        globalNoteLengthSlider->setBounds(block.removeFromLeft(rotarySize));
     }
 }
 
