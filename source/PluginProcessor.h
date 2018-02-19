@@ -386,7 +386,7 @@ private:
     
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     std::unique_ptr<PulseClock> pulseClock;
-    
+    int stepCounter = 0;
     
     
     static BusesProperties getBusesProperties();

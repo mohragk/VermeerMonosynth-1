@@ -838,8 +838,6 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
     
     AudioPlayHead::CurrentPositionInfo pos;
     
-    int stepCounter = 0;
-    
     
     while (--numSamples >= 0)
     {
@@ -877,13 +875,19 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
             
             if(pulseClock->nextSample() == 1.0)
             {
-                ampEnvelope->gate(true);
-                filterEnvelope->gate(true);
+                if(!ampEnvelope->getGate())
+                    ampEnvelope->gate(true);
+                
+                if(!filterEnvelope->getGate())
+                    filterEnvelope->gate(true);
             }
             else
             {
-                ampEnvelope->gate(false);
-                filterEnvelope->gate(false);
+                if (ampEnvelope->getGate())
+                    ampEnvelope->gate(false);
+                
+                if(filterEnvelope->getGate())
+                    filterEnvelope->gate(false);
             }
           
             
@@ -916,7 +920,10 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
             
             
             if (pos.ppqPositionOfLastBarStart == pos.ppqPosition)
+            {
                 pulseClock->resetModulo();
+                stepCounter = 0;
+            }
             
         }
     }
