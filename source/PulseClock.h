@@ -50,6 +50,9 @@ public:
     {
         isHigh = false;
         double value = 0.0;
+
+		if (modulo == 0.0)
+			isHigh = true;
         
         moduloInc = getModuloIncrement(frequency.get(), sampleRate);
         
@@ -68,8 +71,7 @@ public:
         
         while (modulo >= 1.0)
         {
-            modulo -= 1.0;
-            isHigh = true;
+            modulo = 0.0;
         }
         
         

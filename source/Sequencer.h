@@ -1,12 +1,6 @@
 /*
   ==============================================================================
 
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
   Created with Projucer version: 5.2.1
 
   ------------------------------------------------------------------------------

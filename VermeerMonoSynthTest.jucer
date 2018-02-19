@@ -80,6 +80,28 @@
           file="Resources/MonoSynthIconLarge.png"/>
     <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"
           file="Resources/MonoSynthIconSmall.png"/>
+    <GROUP id="{2228E79D-0248-DE30-0778-4EACA13EF67E}" name="GUI">
+      <FILE id="SDib0U" name="OscillatorSection.cpp" compile="1" resource="0"
+            file="source/OscillatorSection.cpp"/>
+      <FILE id="x0XULL" name="OscillatorSection.h" compile="0" resource="0"
+            file="source/OscillatorSection.h"/>
+      <FILE id="PjAReP" name="FilterSection.cpp" compile="1" resource="0"
+            file="source/FilterSection.cpp"/>
+      <FILE id="Jc3nge" name="FilterSection.h" compile="0" resource="0" file="source/FilterSection.h"/>
+      <FILE id="UKg7OS" name="EnvelopeSection.cpp" compile="1" resource="0"
+            file="source/EnvelopeSection.cpp"/>
+      <FILE id="GT5m5N" name="EnvelopeSection.h" compile="0" resource="0"
+            file="source/EnvelopeSection.h"/>
+      <FILE id="GWDlCX" name="LFOSection.cpp" compile="1" resource="0" file="source/LFOSection.cpp"/>
+      <FILE id="bS13ig" name="LFOSection.h" compile="0" resource="0" file="source/LFOSection.h"/>
+      <FILE id="GsSnhP" name="MasterSection.cpp" compile="1" resource="0"
+            file="source/MasterSection.cpp"/>
+      <FILE id="ch1fWv" name="MasterSection.h" compile="0" resource="0" file="source/MasterSection.h"/>
+      <FILE id="DKiKDX" name="Sequencer.cpp" compile="1" resource="0" file="source/Sequencer.cpp"/>
+      <FILE id="OvmAYW" name="Sequencer.h" compile="0" resource="0" file="source/Sequencer.h"/>
+      <FILE id="ib4Mjy" name="ParameterSlider.h" compile="0" resource="0"
+            file="source/ParameterSlider.h"/>
+    </GROUP>
     <GROUP id="{902056B3-1486-08AF-7310-B5F8845202B7}" name="MoogLadders">
       <FILE id="Bf6nQH" name="DiodeLadderModel.h" compile="0" resource="0"
             file="source/MoogLadders/DiodeLadderModel.h"/>
@@ -96,8 +118,6 @@
       <FILE id="Sk6Jz4" name="ADSR.cpp" compile="1" resource="0" file="Source/adsr/ADSR.cpp"/>
       <FILE id="NQi4xi" name="ADSR.h" compile="0" resource="0" file="Source/adsr/ADSR.h"/>
     </GROUP>
-    <FILE id="ib4Mjy" name="ParameterSlider.h" compile="0" resource="0"
-          file="source/ParameterSlider.h"/>
     <FILE id="Iif5nfHL" name="PluginEditor.h" compile="0" resource="0"
           file="Source/PluginEditor.h"/>
     <FILE id="RCFlkTAef" name="PluginEditor.cpp" compile="1" resource="0"
@@ -109,24 +129,7 @@
     <FILE id="upR4CX" name="MonoSynth.h" compile="0" resource="0" file="source/MonoSynth.h"/>
     <FILE id="BU8U7s" name="Oscillator.h" compile="0" resource="0" file="source/Oscillator.h"/>
     <FILE id="yf17tA" name="lfo.h" compile="0" resource="0" file="source/lfo.h"/>
-    <FILE id="SDib0U" name="OscillatorSection.cpp" compile="1" resource="0"
-          file="source/OscillatorSection.cpp"/>
-    <FILE id="x0XULL" name="OscillatorSection.h" compile="0" resource="0"
-          file="source/OscillatorSection.h"/>
-    <FILE id="PjAReP" name="FilterSection.cpp" compile="1" resource="0"
-          file="source/FilterSection.cpp"/>
-    <FILE id="Jc3nge" name="FilterSection.h" compile="0" resource="0" file="source/FilterSection.h"/>
-    <FILE id="UKg7OS" name="EnvelopeSection.cpp" compile="1" resource="0"
-          file="source/EnvelopeSection.cpp"/>
-    <FILE id="GT5m5N" name="EnvelopeSection.h" compile="0" resource="0"
-          file="source/EnvelopeSection.h"/>
-    <FILE id="GWDlCX" name="LFOSection.cpp" compile="1" resource="0" file="source/LFOSection.cpp"/>
-    <FILE id="bS13ig" name="LFOSection.h" compile="0" resource="0" file="source/LFOSection.h"/>
-    <FILE id="GsSnhP" name="MasterSection.cpp" compile="1" resource="0"
-          file="source/MasterSection.cpp"/>
-    <FILE id="ch1fWv" name="MasterSection.h" compile="0" resource="0" file="source/MasterSection.h"/>
-    <FILE id="DKiKDX" name="Sequencer.cpp" compile="1" resource="0" file="source/Sequencer.cpp"/>
-    <FILE id="OvmAYW" name="Sequencer.h" compile="0" resource="0" file="source/Sequencer.h"/>
+    <FILE id="EHurt1" name="PulseClock.h" compile="0" resource="0" file="source/PulseClock.h"/>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
   <MODULES>

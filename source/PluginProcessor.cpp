@@ -550,6 +550,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
    
     
+	// SEQUENCER
+	applySequencer(osBuffer);
   
     
     // GET SYNTHDATA
@@ -613,8 +615,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         softClipBuffer(osBuffer);
 
     
-    // SEQUENCER
-    applySequencer(osBuffer);
+    
     
 
     //DOWNSAMPLING

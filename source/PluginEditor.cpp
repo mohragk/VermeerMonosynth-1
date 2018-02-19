@@ -32,7 +32,7 @@
 #define MODULE_MARGIN 24
 #define PARAMETER_AREA_HEIGHT 460
 #define KEYBOARD_HEIGHT 140
-#define SEQUENCER_HEIGHT 84
+
 
 //==============================================================================
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
@@ -141,7 +141,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     // set resize limits for this plug-in
     int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
-    int height= TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
+    int height= TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT + 84;
     setResizeLimits (width,
                      height,
                      width,
