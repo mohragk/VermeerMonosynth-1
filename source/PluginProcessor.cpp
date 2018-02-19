@@ -904,22 +904,63 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
             if (pulseClock->isPulseHigh())
             {
                 
-                
-				int middleNote = lastNotePlayed;
-				int newNote = middleNote + *stepPitchParam[stepCounter];
-				int noteLength = *stepNoteLengthParam * sampleRate;
+				int newNote = lastNotePlayed + *stepPitchParam[stepCounter];
+				int noteLengthInSamples = *stepNoteLengthParam * sampleRate;
 				int midiChannel = curMidiChannel;
 				
 
 				MidiMessage messageOn = MidiMessage::noteOn(midiChannel, newNote, (uint8)100);
-				messageOn.setTimeStamp((Time::getMillisecondCounterHiRes() * 0.001 ));
+				//messageOn.setTimeStamp((Time::getMillisecondCounterHiRes() * 0.001 ));
 
 				midiBuffer.addEvent(messageOn, curSample);
 
-				MidiMessage messageOff(MidiMessage::noteOff(messageOn.getChannel(), messageOn.getNoteNumber()));
-				messageOff.setTimeStamp(messageOn.getTimeStamp() + noteLength);
+				//
+				// handle noteOff commands
+				//
+				int offSamplePos = curSample + noteLengthInSamples; //SET FOR LATER
+				int bufferSize = buffer.getNumSamples();
 
-				midiBuffer.addEvent(messageOff, curSample + noteLength);
+				// check if noteOff needs to be in future buffer,
+				// else just send noteOff command
+				if (offSamplePos > bufferSize)
+					noteOffPositions.emplace_back(offSamplePos);
+				else
+				{
+					if (offSamplePos == curSample)
+					{
+						MidiMessage messageOff = MidiMessage::noteOff(midiChannel, 60);
+						midiBuffer.addEvent(messageOff, offSamplePos);
+					}
+						
+				}
+
+
+				//check our list if any offSamplePos is in range of this buffer
+				// else if offSamplePos equals current sample position -> add midi event
+				auto checkList = [bufferSize, curSample, midiChannel, &midiBuffer](int& n){
+					if (n > bufferSize) {
+						n -= bufferSize;
+					}
+					else if (n == curSample) {
+						MidiMessage messageOff = MidiMessage::noteOff(midiChannel, 60);
+						midiBuffer.addEvent(messageOff, n);
+					}
+
+				};
+
+				std::for_each(noteOffPositions.begin(), noteOffPositions.end(), checkList);
+
+				noteOffPositions.erase(
+					std::remove_if(
+						noteOffPositions.begin(),
+						noteOffPositions.end(),
+						[curSample](int& offSamplePos) -> bool {
+							if (offSamplePos == curSample)
+								return true;
+						}
+					),
+					noteOffPositions.end()
+				);
                
                 
                // int note = *stepPitchParam[stepCounter] + 60;
@@ -960,6 +1001,8 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
 		curSample++;
     }
     
+
+	
     
 };
 

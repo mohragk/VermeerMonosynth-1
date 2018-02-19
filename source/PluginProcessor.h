@@ -233,7 +233,8 @@ public:
 	AudioParameterFloat* stepNoteLengthParam;
 	AudioParameterInt* sequencerStepDivisionParam;
 	int sequencerStepDivisionVal;
-    
+
+	std::vector<int> noteOffPositions;
 private:
 
     
