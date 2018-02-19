@@ -260,7 +260,7 @@ private:
 
 				//Apply Pitch Envelope and PitchBend Amount, deviated from current pitch
                 
-                sequencerOn = true;
+                sequencerOn = false;
                 
                 FloatType newFreq = 0.0;
                 

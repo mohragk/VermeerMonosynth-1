@@ -436,7 +436,7 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
     ampEnvelope->gate(true);
     
     lastNotePlayed = midiNoteNumber;
-    
+	curMidiChannel = midiChannel;
 }
 
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
@@ -551,7 +551,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
    
     
 	// SEQUENCER
-	applySequencer(osBuffer);
+	applySequencer(osBuffer, midiMessages);
   
     
     // GET SYNTHDATA
@@ -833,12 +833,13 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
 
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer, MidiBuffer& midiBuffer)
 {
     int numSamples = buffer.getNumSamples();
     
     AudioPlayHead::CurrentPositionInfo pos;
     
+	int curSample = 0;
     
     while (--numSamples >= 0)
     {
@@ -890,19 +891,34 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
                 if(filterEnvelope->getGate())
                     filterEnvelope->gate(false);
             }
-          
+            
             
             if (pulseClock->isPulseHigh())
             {
-                MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
                 
                 
+				int middleNote = 60;
+				int newNote = middleNote + *stepPitchParam[stepCounter];
+				int noteLength = 0.25 * sampleRate;
+				int midiChannel = curMidiChannel;
+				
+
+				MidiMessage messageOn = MidiMessage::noteOn(midiChannel, newNote, (uint8)100);
+				messageOn.setTimeStamp((Time::getMillisecondCounterHiRes() * 0.001 ));
+
+				midiBuffer.addEvent(messageOn, curSample);
+
+				MidiMessage messageOff(MidiMessage::noteOff(messageOn.getChannel(), messageOn.getNoteNumber()));
+				messageOff.setTimeStamp(messageOn.getTimeStamp() + noteLength);
+
+				midiBuffer.addEvent(messageOff, curSample + noteLength);
                
                 
-                int note = *stepPitchParam[stepCounter] + 60;
-                
-                FloatType pitchInHz = MidiMessage::getMidiNoteInHertz (note);
-                synthVoice->setStepPitch(0, pitchInHz);
+               // int note = *stepPitchParam[stepCounter] + 60;
+               
+			   // MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+               // FloatType pitchInHz = MidiMessage::getMidiNoteInHertz (note);
+               // synthVoice->setStepPitch(0, pitchInHz);
                 
                
                 /*
@@ -927,6 +943,8 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
             }
             
         }
+
+		curSample++;
     }
     
     

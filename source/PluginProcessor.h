@@ -138,6 +138,8 @@ public:
 
 	bool lfoSynced();
     
+
+	//@Cleanup: unused?
     SynthesiserVoice* getSynthesiserVoice() { return synth.getVoice(0) ; };
       
     
@@ -294,7 +296,7 @@ private:
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
     
     template <typename FloatType>
-    void applySequencer(AudioBuffer<FloatType>& buffer);
+    void applySequencer(AudioBuffer<FloatType>& buffer, MidiBuffer& midiBuffer);
     
 
 	double getWaveshaped(double sample, double overdrive, int mode)
@@ -377,6 +379,7 @@ private:
 	
     
     int lastNotePlayed;
+	int curMidiChannel;
     
     double masterGain = 0.0, masterGainPrev = 0.0;
     
@@ -387,7 +390,7 @@ private:
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     std::unique_ptr<PulseClock> pulseClock;
     int stepCounter = 0;
-    
+	
     
     static BusesProperties getBusesProperties();
    
