@@ -370,8 +370,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     Rectangle<int> area(getLocalBounds());
     // TITLE
     
-    int titleHeight = 48;
-    titleLabel->setBounds (area.removeFromTop(titleHeight));
+    
+    titleLabel->setBounds (area.removeFromTop(TITLE_HEIGHT));
     titleLabel->setJustificationType(Justification::centred);
     //oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36); // TODO
     
@@ -380,7 +380,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     hqOversamplingButton->setButtonText("");
 
 	Rectangle<int> debugArea(titleLabel->getBounds());
-	debugLabel->setBounds(debugArea.removeFromLeft(200).reduced(8));
+	debugLabel->setBounds(debugArea.removeFromLeft(200));
     
     
     //
@@ -430,7 +430,9 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 {
     updateTimecodeDisplay (getProcessor().lastPosInfo);
 
-	debugLabel->setText(getProcessor().debugInfo, dontSendNotification);
+	String debugString = getProcessor().debugInfo;
+
+	debugLabel->setText(debugString, dontSendNotification);
 }
 
 

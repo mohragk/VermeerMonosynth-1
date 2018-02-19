@@ -527,7 +527,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     updateParameters(buffer);
     
-    
+	
     // Now pass any incoming midi messages to our keyboard state object, and let it
     // add messages to the buffer if the user is clicking on the on-screen keys
     keyboardState.processNextMidiBuffer (midiMessages, 0, numSamples, true);
@@ -549,9 +549,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
    
-    
 	// SEQUENCER
 	applySequencer(osBuffer, midiMessages);
+	
   
     
     // GET SYNTHDATA
@@ -840,6 +840,8 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
     AudioPlayHead::CurrentPositionInfo pos;
     
 	int curSample = 0;
+
+	int midiChannel = curMidiChannel;
     
     while (--numSamples >= 0)
     {
@@ -871,12 +873,12 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
 		
 		int seqDivision = roundFloatToInt(  powf(2, *sequencerStepDivisionParam) );
 		sequencerStepDivisionVal = seqDivision; //Use in GUI
-        double pulseHz  = getLFOSyncedFreq(pos, seqDivision);
+        double pulseRateHz  = getLFOSyncedFreq(pos, seqDivision);
 		
 
 		//double pulseHz = pos.bpm / (120 / *sequencerStepDivisionParam);
 
-        pulseClock->setFrequency(pulseHz);
+        pulseClock->setFrequency(pulseRateHz);
 		pulseClock->setPulseLength(*stepNoteLengthParam);
         
         
@@ -909,7 +911,9 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
 				int midiChannel = curMidiChannel;
 				
 
-				MidiMessage messageOn = MidiMessage::noteOn(midiChannel, newNote, (uint8)100);
+				
+
+				MidiMessage messageOn = MidiMessage::noteOn(midiChannel, newNote, (uint8) 100);
 				//messageOn.setTimeStamp((Time::getMillisecondCounterHiRes() * 0.001 ));
 
 				midiBuffer.addEvent(messageOn, curSample);
@@ -922,45 +926,19 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
 
 				// check if noteOff needs to be in future buffer,
 				// else just send noteOff command
-				if (offSamplePos > bufferSize)
+				if (offSamplePos != curSample)
 					noteOffPositions.emplace_back(offSamplePos);
 				else
 				{
-					if (offSamplePos == curSample)
+					for (int i = 0; i < 127; i++)
 					{
-						MidiMessage messageOff = MidiMessage::noteOff(midiChannel, 60);
+						MidiMessage messageOff = MidiMessage::noteOff(curMidiChannel, i);
 						midiBuffer.addEvent(messageOff, offSamplePos);
 					}
-						
 				}
 
 
-				//check our list if any offSamplePos is in range of this buffer
-				// else if offSamplePos equals current sample position -> add midi event
-				auto checkList = [bufferSize, curSample, midiChannel, &midiBuffer](int& n){
-					if (n > bufferSize) {
-						n -= bufferSize;
-					}
-					else if (n == curSample) {
-						MidiMessage messageOff = MidiMessage::noteOff(midiChannel, 60);
-						midiBuffer.addEvent(messageOff, n);
-					}
-
-				};
-
-				std::for_each(noteOffPositions.begin(), noteOffPositions.end(), checkList);
-
-				noteOffPositions.erase(
-					std::remove_if(
-						noteOffPositions.begin(),
-						noteOffPositions.end(),
-						[curSample](int& offSamplePos) -> bool {
-							if (offSamplePos == curSample)
-								return true;
-						}
-					),
-					noteOffPositions.end()
-				);
+				
                
                 
                // int note = *stepPitchParam[stepCounter] + 60;
@@ -997,6 +975,40 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
 			pulseClock->resetModulo();
 			stepCounter = 0;
 		}
+
+
+
+		//check our list if any offSamplePos is in range of this buffer
+		// else if offSamplePos equals current sample position -> add midi event
+
+		int bufferSize = buffer.getNumSamples();
+		auto checkList = [bufferSize, curSample, midiChannel, &midiBuffer](int& n) {
+			if (n > bufferSize) {
+				n -= bufferSize;
+			}
+			else if (n == curSample) {
+				for (int i = 0; i < 127; i++)
+				{
+					MidiMessage messageOff = MidiMessage::noteOff(midiChannel, i);
+					midiBuffer.addEvent(messageOff, n);
+				}
+			}
+
+		};
+
+		std::for_each(noteOffPositions.begin(), noteOffPositions.end(), checkList);
+
+		noteOffPositions.erase(
+			std::remove_if(
+				noteOffPositions.begin(),
+				noteOffPositions.end(),
+				[curSample](int& n) -> bool {
+			if (n == curSample)
+				return true;
+		}
+			),
+			noteOffPositions.end()
+			);
 
 		curSample++;
     }
