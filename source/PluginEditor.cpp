@@ -92,6 +92,18 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     titleLabel->setColour (Label::textColourId, Colours::white);
     titleLabel->setColour (TextEditor::textColourId, Colours::black);
     titleLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+
+	//debug
+	debugLabel = std::unique_ptr<Label>(new Label("debugLabel", TRANS("debugInfo")));
+	addAndMakeVisible(debugLabel.get());
+	debugLabel->setFont(Font(font, 18.00f, Font::plain).withExtraKerningFactor(0.150f));
+	debugLabel->setJustificationType(Justification::centredLeft);
+	debugLabel->setEditable(false, false, false);
+	debugLabel->setColour(Label::textColourId, Colours::white);
+	debugLabel->setColour(TextEditor::textColourId, Colours::black);
+	debugLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+
     
     //Oversample button
     hqOversamplingButton = std::unique_ptr<ToggleButton> ( new ToggleButton ("HQ OVersampling On/Off"));
@@ -366,6 +378,9 @@ void MonosynthPluginAudioProcessorEditor::resized()
     Rectangle<int> buttonArea (titleLabel->getBounds());
     hqOversamplingButton->setBounds(buttonArea.removeFromRight(48));
     hqOversamplingButton->setButtonText("");
+
+	Rectangle<int> debugArea(titleLabel->getBounds());
+	debugLabel->setBounds(debugArea.removeFromLeft(200).reduced(8));
     
     
     //
@@ -415,6 +430,7 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 {
     updateTimecodeDisplay (getProcessor().lastPosInfo);
 
+	debugLabel->setText(getProcessor().debugInfo, dontSendNotification);
 }
 
 

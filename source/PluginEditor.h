@@ -92,6 +92,7 @@ private:
 	Label timecodeDisplayLabel;
 	
    
+	std::unique_ptr<Label> debugLabel;
     
 
     std::unique_ptr<Label>

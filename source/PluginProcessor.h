@@ -235,8 +235,10 @@ public:
 	int sequencerStepDivisionVal;
 
 	std::vector<int> noteOffPositions;
-private:
 
+	String debugInfo;
+private:
+	
     
 	class SmoothParam {
 	public:
