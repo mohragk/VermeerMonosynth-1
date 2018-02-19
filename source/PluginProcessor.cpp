@@ -828,9 +828,11 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
     int numSamples = buffer.getNumSamples();
     
     
+    
+    
     while (--numSamples >= 0)
     {
-        //if ( lastPosInfo.isPlaying )
+        if ( lastPosInfo.isPlaying )
         {
             if (lastPosInfo.ppqPositionOfLastBarStart == lastPosInfo.ppqPosition)
             {
@@ -842,6 +844,14 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
                     
                     FloatType pitchInHz = MidiMessage::getMidiNoteInHertz (note);
                     synthVoice->setStepPitch(0, pitchInHz);
+                    
+                    ampEnvelope->gate(true);
+                    
+                    if(!isTimerRunning())
+                    {
+                        double millis = step.noteLength * 1000.0;
+                        startTimer(millis);
+                    }
                     
                     
                 }
@@ -930,6 +940,15 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new MonosynthPluginAudioProcessor();
 }
 
+void MonosynthPluginAudioProcessor::timerCallback()
+{
+    if(ampEnvelope->getState() != ADSR::envState::env_idle)
+    {
+        ampEnvelope->gate(false);
+        stopTimer();
+    }
+    
+}
 
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buffer)

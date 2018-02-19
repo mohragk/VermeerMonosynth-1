@@ -259,8 +259,15 @@ private:
 				FloatType pitchEnvAmt = pitchEnvelope->process();
 
 				//Apply Pitch Envelope and PitchBend Amount, deviated from current pitch
-				FloatType newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
                 
+                sequencerOn = true;
+                
+                FloatType newFreq = 0.0;
+                
+                if(sequencerOn)
+                    newFreq = stepPitch[0] + (pitchEnvAmt * pitchModAmount);
+                else
+                    newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
 				FloatType osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreq);
@@ -373,6 +380,7 @@ private:
     double pitchModAmount;
     
     bool hardSync = false;
+    bool sequencerOn = false;
     
     Random rand;
     

@@ -47,7 +47,8 @@
     As the name suggest, this class does the actual audio processing.
 */
 class MonosynthPluginAudioProcessor  : public AudioProcessor,
-                                        private MidiKeyboardStateListener
+                                        private MidiKeyboardStateListener,
+                                        private Timer
 {
 public:
     //==============================================================================
@@ -59,6 +60,7 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
     void reset() override;
+    void timerCallback() override;
 
     //==============================================================================
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
