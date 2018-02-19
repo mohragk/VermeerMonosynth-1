@@ -951,6 +951,11 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
             }
             
         }
+		else 
+		{
+			pulseClock->resetModulo();
+			stepCounter = 0;
+		}
 
 		curSample++;
     }
