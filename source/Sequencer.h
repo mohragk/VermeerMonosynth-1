@@ -18,6 +18,7 @@
 
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
+#include "SequencerState.h"
 
 
 //==============================================================================
@@ -32,7 +33,7 @@ class Sequencer  : public Component, private Timer
 {
 public:
     //==============================================================================
-    Sequencer (MonosynthPluginAudioProcessor& p);
+    Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st);
     ~Sequencer();
 
     //==============================================================================
@@ -84,6 +85,7 @@ private:
     
     // members
     MonosynthPluginAudioProcessor& processor;
+	SequencerState& state;
     
     enum style
     {

@@ -18,7 +18,7 @@
 #define SEQUENCER_HEIGHT 96
 
 
-Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
+Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st) : processor(p), state(st)
 
 {
     typedef ParameterSlider::style knobStyle;

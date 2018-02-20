@@ -34,6 +34,7 @@
 #include "LFOSection.h"
 #include "MasterSection.h"
 #include "Sequencer.h"
+#include "SequencerState.h"
 
 
 

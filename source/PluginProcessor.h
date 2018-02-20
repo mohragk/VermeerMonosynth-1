@@ -31,6 +31,7 @@
 #include "adsr/ADSR.h"
 #include "PulseClock.h"
 #include "lfo.h"
+#include "SequencerState.h"
 
 #include "MoogLadders/ImprovedModel.h"
 #include "MoogLadders/SEMModel.h"
@@ -119,6 +120,7 @@ public:
     // this is kept up to date with the midi messages that arrive, and the UI component
     // registers with it so it can represent the incoming messages
     MidiKeyboardState keyboardState;
+	SequencerState sequencerSate;
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
