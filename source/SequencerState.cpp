@@ -109,7 +109,7 @@ void SequencerState::processMidiEvent(const MidiMessage& message)
 }
 
 
-void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples)
+void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool inject)
 {
 	MidiBuffer::Iterator i(buffer);
 	MidiMessage message;
@@ -122,19 +122,23 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
 		processMidiEvent(message);
 
 
-	// search for first and last event in internalBuffer
-	MidiBuffer::Iterator i2(internalBuffer);
-	const int firstEventTime = internalBuffer.getFirstEventTime();
-	const int lastEventTime  = internalBuffer.getLastEventTime();
-	const double scaleFactor = numSamples / (double)(lastEventTime + 1 - firstEventTime);
-
-	// 
-	while (i2.getNextEvent(message, time))
+	if (inject)
 	{
-		const int pos = jlimit(0, numSamples - 1, roundToInt((time - firstEventTime) * scaleFactor));
-		buffer.addEvent(message, startSample - pos);
-	}
+		// search for first and last event in internalBuffer
+		MidiBuffer::Iterator i2(internalBuffer);
+		const int firstEventTime = internalBuffer.getFirstEventTime();
+		const int lastEventTime = internalBuffer.getLastEventTime();
+		const double scaleFactor = numSamples / (double)(lastEventTime + 1 - firstEventTime);
 
+		// 
+		while (i2.getNextEvent(message, time))
+		{
+			const int pos = jlimit(0, numSamples - 1, roundToInt((time - firstEventTime) * scaleFactor));
+			buffer.addEvent(message, startSample + pos);
+		}
+
+		
+	}
 	internalBuffer.clear();
 }
 

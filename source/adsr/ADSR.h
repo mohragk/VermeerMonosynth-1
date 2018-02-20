@@ -47,7 +47,7 @@ public:
     void setState(envState newState);
     void reset(void);
     void resetToAttack(void);
-    bool getGate(){ return gateOn;};
+    bool isGateOn(){ return gateOn;};
 
     
 protected:

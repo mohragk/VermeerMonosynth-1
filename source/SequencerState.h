@@ -42,9 +42,12 @@ public:
 
 	//METHODS
 	void addNote(const int midiChannel, const int midiNumber, float vel, float noteLength);
+	void allNotesOff(const int midiChannel);
 
-	void processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples);
+	void processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool inject);
 
+	void addListener(SequencerStateListener* const listener);
+	void removeListener(SequencerStateListener* const listener);
 
 private:
 
@@ -64,13 +67,9 @@ private:
 
 	void noteOnInternal(const int midiChannel, const int midiNoteNumber, float velocity);
 	void noteOffInternal(const int midiChannel, const int midiNoteNumber, float velocity);
-	void allNotesOff(const int midiChannel);
+	
 
 	void processMidiEvent(const MidiMessage& message);
-
-	void addListener(SequencerStateListener* const listener);
-	void removeListener(SequencerStateListener* const listener);
-
 
 };
 

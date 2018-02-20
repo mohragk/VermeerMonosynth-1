@@ -12,7 +12,7 @@
 class PulseClock
 {
 public:
-    PulseClock() : sampleRate(44100.0), modulo(0.0), moduloInc(0.0), pulseLength(0.5), isHigh(false)
+    PulseClock() : sampleRate(44100.0), modulo(0.0), moduloInc(0.0), pulseLength(0.5), sample(0.0), isHigh(false)
     {
         
     }
@@ -48,36 +48,43 @@ public:
     
     double nextSample()
     {
-        isHigh = false;
-        double value = 0.0;
+        return sample;
+    }
+
+
+	void update()
+	{
+		isHigh = false;
+		double value = 0.0;
 
 		if (modulo == 0.0)
 			isHigh = true;
-        
-        moduloInc = getModuloIncrement(frequency.get(), sampleRate);
-        
-       
-        if (modulo <= pulseLength) {
-            value = 1.0;
-        } else {
-            value = 0.0;
-        }
-        
-        
-        
-        
-        
-        modulo += moduloInc;
-        
-        while (modulo >= 1.0)
-        {
-            modulo = 0.0;
-        }
-        
-        
-        
-        return value;
-    }
+
+		moduloInc = getModuloIncrement(frequency.get(), sampleRate);
+
+
+		if (modulo <= pulseLength) {
+			value = 1.0;
+		}
+		else {
+			value = 0.0;
+		}
+
+
+
+
+
+		modulo += moduloInc;
+
+		while (modulo >= 1.0)
+		{
+			modulo = 0.0;
+		}
+
+
+
+		sample = value;
+	}
     
 private:
     
@@ -90,10 +97,11 @@ private:
     }
     
     
-    double sampleRate, modulo, moduloInc, pulseLength;
+    double sampleRate, modulo, moduloInc, pulseLength, sample;
     Atomic<double> frequency;
     
     bool isHigh;
+	
 };
 
 #endif /* PULSE_CLOCK_H */

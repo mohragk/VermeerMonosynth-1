@@ -246,6 +246,7 @@ ampEnvelope(nullptr)
     initialiseSynth();
     
     keyboardState.addListener(this);
+	sequencerState.addListener(this);
     
     filterEnvelope = std::unique_ptr<ADSR>( new ADSR );
     ampEnvelope    = std::unique_ptr<ADSR>( new ADSR );
@@ -278,7 +279,7 @@ ampEnvelope(nullptr)
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
 {
     keyboardState.removeListener(this);
-    
+	sequencerState.removeListener(this);
     synth.clearSounds();
     synth.clearVoices();
     
@@ -342,7 +343,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     resetSamplerates(newSampleRate);
     
     keyboardState.reset();
-    
+	sequencerState.reset();
+
     for(int channel = 0; channel < 2; channel++)
     {
         
@@ -373,6 +375,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     keyboardState.reset();
+	sequencerState.reset();
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -450,6 +453,25 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
     
 }
 
+
+void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
+{
+	contourVelocity = velocity;
+
+	lfo.setPhase(0.0);
+
+	if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
+		filterEnvelope->gate(true);
+
+	ampEnvelope->gate(true);
+}
+
+void MonosynthPluginAudioProcessor::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
+{
+	ampEnvelope->gate(false);
+	filterEnvelope->gate(false);
+}
+
 void MonosynthPluginAudioProcessor::resetSamplerates(double sr)
 {
     double newsr = sr;
@@ -470,6 +492,9 @@ void MonosynthPluginAudioProcessor::resetSamplerates(double sr)
     }
     
     sampleRate = newsr;
+
+
+	sequencerState.setSampleRate(newsr);
     
     for(int channel = 0; channel < 2; channel++)
     {
@@ -523,15 +548,16 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
   
    
     
-    const int numSamples = buffer.getNumSamples();
-    
-    updateParameters(buffer);
     
 	
-    // Now pass any incoming midi messages to our keyboard state object, and let it
-    // add messages to the buffer if the user is clicking on the on-screen keys
-    keyboardState.processNextMidiBuffer (midiMessages, 0, numSamples, true);
+
+
+	
     
+
+
+	
+
 
     // OVERSAMPLING
     dsp::AudioBlock<FloatType> block (buffer);
@@ -548,9 +574,19 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
                                     );
     
     
-   
+	const int numSamples = osBuffer.getNumSamples();
+
+	updateParameters(osBuffer);
+
+	//keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
+
+
 	// SEQUENCER
-	applySequencer(osBuffer, midiMessages);
+	applySequencer(osBuffer);
+	sequencerState.processBuffer(midiMessages, 0, numSamples, true);
+	// Now pass any incoming midi messages to our keyboard state object, and let it
+	// add messages to the buffer if the user is clicking on the on-screen keys
+	
 	
   
     
@@ -832,19 +868,16 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
 
 
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer, MidiBuffer& midiBuffer)
+template <typename FloatType>  
+void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer)
 {
     int numSamples = buffer.getNumSamples();
-    
     AudioPlayHead::CurrentPositionInfo pos;
-    
-	int curSample = 0;
-
-	int midiChannel = curMidiChannel;
     
     while (--numSamples >= 0)
     {
+
+		// succesfully get current posInfo
         if (AudioPlayHead* ph = getPlayHead())
         {
             
@@ -856,167 +889,73 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
                 
             }
         }
-        
-        /*
-        int quarterNotePos = pos.ppqPosition;
-        int numerator    = pos.timeSigNumerator;
-        int denominator  = pos.timeSigDenominator;
-        
-        const int quarterNotesPerBar = (numerator * 4 / denominator);
-        const double beats  = (fmod (quarterNotePos, quarterNotesPerBar) / quarterNotesPerBar) * numerator;
-        
-        const int currentBar    = ((int) quarterNotePos) / quarterNotesPerBar + 1;
-        const int currentBeat   = ((int) beats) + 1;
-        const int ticks  = ((int) (fmod (beats, 1.0) * 960.0 + 0.5));
-         */
-        
+
 		
 		int seqDivision = roundFloatToInt(  powf(2, *sequencerStepDivisionParam) );
 		sequencerStepDivisionVal = seqDivision; //Use in GUI
         double pulseRateHz  = getLFOSyncedFreq(pos, seqDivision);
-		
-
-		//double pulseHz = pos.bpm / (120 / *sequencerStepDivisionParam);
 
         pulseClock->setFrequency(pulseRateHz);
 		pulseClock->setPulseLength(*stepNoteLengthParam);
-        
+		
         
         if ( pos.isPlaying )
         {
-            
-            if(pulseClock->nextSample() == 1.0)
+			pulseClock->update();
+
+
+			if (pulseClock->nextSample() >= 1.0)
+			{
+				if (!ampEnvelope->isGateOn())
+					ampEnvelope->gate(true);
+
+				if (!filterEnvelope->isGateOn())
+					filterEnvelope->gate(true);
+			}
+			else
+			{
+				if(ampEnvelope->isGateOn())
+					ampEnvelope->gate(false);
+
+				if (filterEnvelope->isGateOn())
+					filterEnvelope->gate(false);
+			}
+				
+			
+			if (pulseClock->isPulseHigh())
             {
-                if(!ampEnvelope->getGate())
-                    ampEnvelope->gate(true);
-                
-                if(!filterEnvelope->getGate())
-                    filterEnvelope->gate(true);
-            }
-            else
-            {
-                if (ampEnvelope->getGate())
-                    ampEnvelope->gate(false);
-                
-                if(filterEnvelope->getGate())
-                    filterEnvelope->gate(false);
-            }
-            
-            
-            if (pulseClock->isPulseHigh())
-            {
-                
 				int newNote = lastNotePlayed + *stepPitchParam[stepCounter];
-				int noteLengthInSamples = *stepNoteLengthParam * sampleRate;
+				float noteLength = *stepNoteLengthParam;
 				int midiChannel = curMidiChannel;
-				
-
-				
-
-				MidiMessage messageOn = MidiMessage::noteOn(midiChannel, newNote, (uint8) 100);
-				//messageOn.setTimeStamp((Time::getMillisecondCounterHiRes() * 0.001 ));
-
-				midiBuffer.addEvent(messageOn, curSample);
-
-				//
-				// handle noteOff commands
-				//
-				int offSamplePos = curSample + noteLengthInSamples; //SET FOR LATER
-				int bufferSize = buffer.getNumSamples();
-
-				// check if noteOff needs to be in future buffer,
-				// else just send noteOff command
-				if (offSamplePos != curSample)
-					noteOffPositions.emplace_back(offSamplePos);
-				else
-				{
-					for (int i = 0; i < 127; i++)
-					{
-						MidiMessage messageOff = MidiMessage::noteOff(curMidiChannel, i);
-						midiBuffer.addEvent(messageOff, offSamplePos);
-					}
-				}
 
 
-				
-               
-                
-               // int note = *stepPitchParam[stepCounter] + 60;
-               
-			   // MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
-               // FloatType pitchInHz = MidiMessage::getMidiNoteInHertz (note);
-               // synthVoice->setStepPitch(0, pitchInHz);
-                
-               
-                /*
-                if(!isTimerRunning())
-                {
-                    double millis = 500.0;
-                    startTimer(millis);
-                }
-                */
+				sequencerState.addNote(midiChannel, newNote, 1.0, noteLength);
+
+
+
                 stepCounter++;
                 
                 if( stepCounter >= 8)
                     stepCounter = 0;
             }
             
-            
-            
+			//reset eveybar, might alter that
             if (pos.ppqPositionOfLastBarStart == pos.ppqPosition)
             {
                 pulseClock->resetModulo();
                 stepCounter = 0;
             }
-            
         }
 		else 
 		{
 			pulseClock->resetModulo();
 			stepCounter = 0;
 		}
-
-
-
-		//check our list if any offSamplePos is in range of this buffer
-		// else if offSamplePos equals current sample position -> add midi event
-
-		int bufferSize = buffer.getNumSamples();
-		auto checkList = [bufferSize, curSample, midiChannel, &midiBuffer](int& n) {
-			if (n > bufferSize) {
-				n -= bufferSize;
-			}
-			else if (n == curSample) {
-				for (int i = 0; i < 127; i++)
-				{
-					MidiMessage messageOff = MidiMessage::noteOff(midiChannel, i);
-					midiBuffer.addEvent(messageOff, n);
-				}
-			}
-
-		};
-
-		std::for_each(noteOffPositions.begin(), noteOffPositions.end(), checkList);
-
-		noteOffPositions.erase(
-			std::remove_if(
-				noteOffPositions.begin(),
-				noteOffPositions.end(),
-				[curSample](int& n) -> bool {
-			if (n == curSample)
-				return true;
-		}
-			),
-			noteOffPositions.end()
-			);
-
-		curSample++;
     }
-    
-
-	
-    
 };
+
+
+
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 {
