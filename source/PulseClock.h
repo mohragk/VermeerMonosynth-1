@@ -12,7 +12,7 @@
 class PulseClock
 {
 public:
-    PulseClock() : sampleRate(44100.0), modulo(0.0), moduloInc(0.0), pulseLength(0.5), sample(0.0), isHigh(false)
+    PulseClock() : sampleRate(44100.0), sample(0.0),moduloInc(0.0), modulo(0.0),  pulseLength(0.5), isHigh(false)
     {
         
     }
@@ -33,12 +33,12 @@ public:
     
     void setPulseLength(double len)
     {
-        pulseLength = len;
+        pulseLength.set(len);
     }
     
     void resetModulo()
     {
-        modulo = 0.0;
+        modulo.set(0.0);
     }
     
     bool isPulseHigh()
@@ -57,13 +57,13 @@ public:
 		isHigh = false;
 		double value = 0.0;
 
-		if (modulo == 0.0)
+		if (modulo.get() == 0.0)
 			isHigh = true;
 
 		moduloInc = getModuloIncrement(frequency.get(), sampleRate);
 
 
-		if (modulo <= pulseLength) {
+		if (modulo.get() <= pulseLength.get()) {
 			value = 1.0;
 		}
 		else {
@@ -74,11 +74,11 @@ public:
 
 
 
-		modulo += moduloInc;
+		modulo.set( modulo.get() + moduloInc );
 
-		while (modulo >= 1.0)
+		while (modulo.get() >= 1.0)
 		{
-			modulo = 0.0;
+			modulo.set(0.0);
 		}
 
 
@@ -97,8 +97,8 @@ private:
     }
     
     
-    double sampleRate, modulo, moduloInc, pulseLength, sample;
-    Atomic<double> frequency;
+    double sampleRate, sample, moduloInc;
+    Atomic<double> modulo, pulseLength, frequency;
     
     bool isHigh;
 	

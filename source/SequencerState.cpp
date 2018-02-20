@@ -12,7 +12,7 @@
 
 
 
-SequencerState::SequencerState()
+SequencerState::SequencerState() : startTime ((int)Time::getMillisecondCounter())
 {
     
 }
@@ -27,19 +27,19 @@ void SequencerState::reset()
 }
 
 
-void SequencerState::addNote(const int midiChannel, const int midiNoteNumber, float velocity, float noteLength)
+void SequencerState::addNote(const int midiChannel, const int midiNoteNumber, float velocity, int noteLengthSamples)
 {
     jassert( midiChannel >= 0 && midiChannel <= 16 );
     jassert( isPositiveAndBelow(midiNoteNumber, 128 ) );
     
-    const ScopedLock s1 (lock); // dunno
     
     if ( isPositiveAndBelow ( midiNoteNumber, 128 ) )
     {
-        const int curTime = (int) Time::getMillisecondCounter();
+       
+        const int curTime = (int) Time::getMillisecondCounterHiRes() - startTime;
         internalBuffer.addEvent(MidiMessage::noteOn (midiChannel, midiNoteNumber, velocity), curTime);
         
-        const int futureTime =  (int) Time::getMillisecondCounter() + noteLength * (int)sampleRate;
+        const int futureTime =  (int) Time::getMillisecondCounterHiRes() + noteLengthSamples - startTime;
         internalBuffer.addEvent(MidiMessage::noteOff(midiChannel, midiNoteNumber, velocity), futureTime);
     }
     
@@ -69,7 +69,6 @@ void SequencerState::noteOffInternal (const int midiChannel, const int midiNoteN
 
 void SequencerState::allNotesOff(const int midiChannel)
 {
-	const ScopedLock s1(lock); //dunno
 
 
 	if (midiChannel <= 0)
@@ -115,7 +114,6 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
 	MidiMessage message;
 	int time;
 
-	const ScopedLock s1(lock);
 
 	// add messages to internalBuffer
 	while (i.getNextEvent(message, time))
@@ -146,14 +144,12 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
 
 void SequencerState::addListener(SequencerStateListener* const listener)
 {
-	const ScopedLock s1(lock);
 
 	listeners.addIfNotAlreadyThere(listener);
 }
 
 void SequencerState::removeListener(SequencerStateListener* const listener)
 {
-	const ScopedLock s1(lock);
 
 	listeners.removeFirstMatchingValue(listener);
 }

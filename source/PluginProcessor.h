@@ -50,7 +50,7 @@
 */
 class MonosynthPluginAudioProcessor  : public AudioProcessor,
                                         private MidiKeyboardStateListener,
-										private SequencerStateListener,
+										//private SequencerStateListener,
                                         private Timer
 {
 public:
@@ -126,8 +126,8 @@ public:
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
 
-	void handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
-	void handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
+	//void handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
+	//void handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
 
     // this keeps a copy of the last set of time info that was acquired during an audio
     // callback - the UI component will read this and display it.
@@ -402,7 +402,8 @@ private:
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     std::unique_ptr<PulseClock> pulseClock;
     int stepCounter = 0;
-	
+    bool isAnyKeyDown = false;
+    bool useSequencer = true;
     
     static BusesProperties getBusesProperties();
    
