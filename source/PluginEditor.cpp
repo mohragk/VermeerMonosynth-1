@@ -419,7 +419,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     masterSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN * 2));
     
     Rectangle<int> seqButtonArea (masterSection->getBounds());
-    expandSequencerButton->setBounds(seqButtonArea.removeFromBottom(24));
+    seqButtonArea.translate(masterSection->getWidth() - 24, 0);
+    expandSequencerButton->setBounds(seqButtonArea.removeFromBottom(48));
     expandSequencerButton->setButtonText("");
     
     
