@@ -29,7 +29,7 @@ void SequencerState::reset()
 
 void SequencerState::addNote(const int midiChannel, const int midiNoteNumber, float velocity, int noteLengthSamples)
 {
-    jassert( midiChannel >= 0 && midiChannel <= 16 );
+    jassert( midiChannel > 0 && midiChannel <= 16 );
     jassert( isPositiveAndBelow(midiNoteNumber, 128 ) );
     
     
@@ -73,7 +73,7 @@ void SequencerState::allNotesOff(const int midiChannel)
 
 	if (midiChannel <= 0)
 	{
-		for (int channel = 1; channel < 16; channel++)
+		for (int channel = 1; channel <= 16; channel++)
 			allNotesOff(channel);
 	}
 	else
