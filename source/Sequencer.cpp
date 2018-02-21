@@ -81,7 +81,7 @@ void Sequencer::resized()
     int vertSliderSize = 36;
     int marginX = 12;
     
-    Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT).reduced(24, 0) );
+    Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT).reduced(24, 8) );
     
     {
         Rectangle<int> block (strip.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
