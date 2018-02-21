@@ -39,16 +39,21 @@ public:
 
     void valueChanged() override
     {
-        if (isMouseButtonDown())
-            param.setValueNotifyingHost ((float) Slider::getValue());
+		if (isMouseButtonDown())
+		{
+			param.setValueNotifyingHost((float)Slider::getValue());
+		}
         else
-            param.setValue ((float) Slider::getValue());
+		{
+			param.setValue((float)Slider::getValue());
+		}
+          
     }
 
     void timerCallback() override       { updateSliderPos(); }
 
-    void startedDragging() override     { param.beginChangeGesture();  }
-    void stoppedDragging() override     { param.endChangeGesture();   }
+    void startedDragging() override     { param.beginChangeGesture(); setColour(thumbColourId, lightThumb); }
+    void stoppedDragging() override     { param.endChangeGesture();   setColour(thumbColourId, darkThumb);	}
 
 	
 
@@ -66,8 +71,11 @@ public:
         
     }
 
-    AudioProcessorParameter& param;
+	
 
+    AudioProcessorParameter& param;
+	Colour lightThumb = Colour(0xffdee5fc);
+	Colour darkThumb = Colour(0xff3e7db3);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
 };
