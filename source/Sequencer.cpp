@@ -115,31 +115,9 @@ void Sequencer::parentSizeChanged()
 
 void Sequencer::timerCallback()
 {
-    
+	updateStepKnobColour();
     updateGlobalNoteLengthLabel();
-    updateStepDivisionLabel();
-
-	
-
-	if (processor.isSequencerPlaying())
-	{
-		int currentStep = processor.getCurrentStep() - 1; //I DUNNO WHY!
-
-		for (int step = 0; step < numSteps; step++)
-		{
-			if(step == currentStep)
-				pitchSlider[currentStep].get()->setColour(Slider::thumbColourId, Colour(0xffdee5fc));
-			else
-				pitchSlider[step].get()->setColour(Slider::thumbColourId, Colour(0xff3e7db3));
-		}
-		
-	}
-	else
-	{
-		for (int step = 0; step < numSteps; step++)
-			pitchSlider[step].get()->setColour(Slider::thumbColourId, Colour(0xff3e7db3));
-	}
-
+	updateStepDivisionLabel();
 }
 
 
@@ -147,7 +125,7 @@ void Sequencer::timerCallback()
 void Sequencer::updateGlobalNoteLengthLabel()
 {
     int val = processor.globalNoteLengthVal * 100;
-    String s = std::to_string(val) + " %";
+    String s = std::to_string(val) + "%";
     globalNoteLengthLabel->setText(s, dontSendNotification);
 }
 
@@ -156,6 +134,29 @@ void Sequencer::updateStepDivisionLabel()
     int val = processor.sequencerStepDivisionVal;
     String s = "1/" + std::to_string(val) + "th";
     stepDivisionLabel->setText(s, dontSendNotification);
+}
+
+
+void Sequencer::updateStepKnobColour()
+{
+	if (processor.isSequencerPlaying())
+	{
+		int currentStep = processor.getCurrentStep() - 1; //I DUNNO WHY!
+
+		for (int step = 0; step < numSteps; step++)
+		{
+			if (step == currentStep)
+				pitchSlider[currentStep].get()->setColour(Slider::thumbColourId, Colour(0xffdee5fc));
+			else
+				pitchSlider[step].get()->setColour(Slider::thumbColourId, Colour(0xff3e7db3));
+		}
+
+	}
+	else
+	{
+		for (int step = 0; step < numSteps; step++)
+			pitchSlider[step].get()->setColour(Slider::thumbColourId, Colour(0xff3e7db3));
+	}
 }
 //==============================================================================
 

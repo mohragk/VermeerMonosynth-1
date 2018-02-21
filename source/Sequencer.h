@@ -93,6 +93,7 @@ private:
     
     void updateStepDivisionLabel();
     void updateGlobalNoteLengthLabel();
+	void updateStepKnobColour();
     
     std::unique_ptr<ParameterSlider> pitchSlider[numSteps];
     std::unique_ptr<ParameterSlider> globalNoteLengthSlider;
