@@ -12,7 +12,7 @@
 
 
 
-SequencerState::SequencerState() : startTime ((int)Time::getMillisecondCounterHiRes())
+SequencerState::SequencerState() : startTime ((int)Time::getMillisecondCounter())
 {
     
 }
@@ -36,10 +36,10 @@ void SequencerState::addNote(const int midiChannel, const int midiNoteNumber, fl
     if ( isPositiveAndBelow ( midiNoteNumber, 128 ) )
     {
        
-        const int curTime = (int) Time::getMillisecondCounterHiRes() - startTime;
+        const int curTime = (int) Time::getMillisecondCounter() - startTime;
         internalBuffer.addEvent(MidiMessage::noteOn (midiChannel, midiNoteNumber, velocity), curTime);
         
-        const int futureTime =  (int) Time::getMillisecondCounterHiRes() + noteLengthSamples - startTime;
+        const int futureTime =  (int) Time::getMillisecondCounter() + noteLengthSamples - startTime;
         internalBuffer.addEvent(MidiMessage::noteOff(midiChannel, midiNoteNumber, velocity), futureTime);
     }
     
