@@ -91,12 +91,14 @@ private:
         LINEARVERTICAL
     };
     
+    void updateStepDivisionLabel();
+    void updateGlobalNoteLengthLabel();
     
     std::unique_ptr<ParameterSlider> pitchSlider[numSteps];
     std::unique_ptr<ParameterSlider> globalNoteLengthSlider;
 	std::unique_ptr<ParameterSlider> stepDivision;
     
-	std::unique_ptr<Label> stepDivisionLabel;
+	std::unique_ptr<Label> stepDivisionLabel, globalNoteLengthLabel;
 
 
 

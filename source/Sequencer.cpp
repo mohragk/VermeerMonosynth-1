@@ -26,6 +26,14 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
     addAndMakeVisible (globalNoteLengthSlider.get());
  
     
+    globalNoteLengthLabel = std::unique_ptr<Label>(new Label("StepDiv Label", TRANS("Div")));
+    addAndMakeVisible(globalNoteLengthLabel.get());
+    globalNoteLengthLabel->setFont(Font("", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
+    globalNoteLengthLabel->setJustificationType(Justification::centredTop);
+    globalNoteLengthLabel->setEditable(false, false, false);
+    globalNoteLengthLabel->setColour(TextEditor::textColourId, Colours::black);
+    globalNoteLengthLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    
     for (int i = 0; i < numSteps; i++)
     {
         pitchSlider[i] = std::unique_ptr<ParameterSlider> ( new ParameterSlider (*processor.stepPitchParam[i], knobStyle(LINEARVERTICAL) ) );
@@ -37,7 +45,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
 
 	stepDivisionLabel = std::unique_ptr<Label>(new Label("StepDiv Label", TRANS("Div")));
 	addAndMakeVisible(stepDivisionLabel.get());
-	stepDivisionLabel->setFont(Font("Futura", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
+	stepDivisionLabel->setFont(Font("", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
 	stepDivisionLabel->setJustificationType(Justification::centredTop);
 	stepDivisionLabel->setEditable(false, false, false);
 	stepDivisionLabel->setColour(TextEditor::textColourId, Colours::black);
@@ -70,7 +78,7 @@ void Sequencer::resized()
     Rectangle<int> area (getLocalBounds());
     
     int rotarySize = 60;
-    int vertSliderSize = 18;
+    int vertSliderSize = 36;
     int marginX = 12;
     
     Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT).reduced(24, 0) );
@@ -80,19 +88,23 @@ void Sequencer::resized()
         for (int i =0; i < numSteps; i++)
         {
             pitchSlider[i]->setBounds(block.removeFromLeft(vertSliderSize));
-			pitchSlider[i]->setTextBoxStyle(Slider::TextBoxBelow, true, vertSliderSize, 10);
+			pitchSlider[i]->setTextBoxStyle(Slider::TextBoxBelow, true, vertSliderSize, 18);
 			pitchSlider[i]->setColour(Slider::textBoxOutlineColourId, Colour(0xff323e44));
         }
     }
     
     {
-        Rectangle<int> block (strip.removeFromLeft((rotarySize * 2) + marginX * 2) );
-        globalNoteLengthSlider->setBounds(block.removeFromLeft(rotarySize));
-		stepDivision->setBounds(block.removeFromLeft(rotarySize));
-		
-		stepDivisionLabel->setBounds(block.removeFromLeft(18));
-		
-		
+        Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
+        globalNoteLengthSlider->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
+        
+        globalNoteLengthLabel->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.25 ) );
+    }
+    
+    {
+        Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
+        stepDivision->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
+        
+        stepDivisionLabel->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.25)  );
     }
 }
 
@@ -103,13 +115,27 @@ void Sequencer::parentSizeChanged()
 
 void Sequencer::timerCallback()
 {
-	int divVal = processor.sequencerStepDivisionVal;
-	String s = std::to_string(divVal);
-	stepDivisionLabel->setText(s, dontSendNotification);
+    
+    updateGlobalNoteLengthLabel();
+    updateStepDivisionLabel();
+
 }
 
 
 
+void Sequencer::updateGlobalNoteLengthLabel()
+{
+    int val = processor.globalNoteLengthVal * 100;
+    String s = std::to_string(val) + " %";
+    globalNoteLengthLabel->setText(s, dontSendNotification);
+}
+
+void Sequencer::updateStepDivisionLabel()
+{
+    int val = processor.sequencerStepDivisionVal;
+    String s = "1/" + std::to_string(val) + "th";
+    stepDivisionLabel->setText(s, dontSendNotification);
+}
 //==============================================================================
 
 

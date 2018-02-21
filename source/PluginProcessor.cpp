@@ -895,6 +895,8 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
 		int seqDivision = int(  powf(2, *sequencerStepDivisionParam) );
 		sequencerStepDivisionVal = seqDivision; //Use in GUI
         double pulseRateHz  = getLFOSyncedFreq(pos, seqDivision);
+        
+        globalNoteLengthVal = *stepNoteLengthParam;
 
         pulseClock->setFrequency(pulseRateHz);
 		pulseClock->setPulseLength(*stepNoteLengthParam);

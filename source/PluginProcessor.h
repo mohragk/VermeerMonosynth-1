@@ -239,7 +239,9 @@ public:
     AudioParameterInt* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
 	AudioParameterFloat* stepNoteLengthParam;
 	AudioParameterInt* sequencerStepDivisionParam;
-	int sequencerStepDivisionVal;
+	
+    int sequencerStepDivisionVal;
+    float globalNoteLengthVal;
 
 	std::vector<int> noteOffPositions;
 
