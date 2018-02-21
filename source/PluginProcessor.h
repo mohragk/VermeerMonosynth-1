@@ -113,6 +113,8 @@ public:
 
     void toggleHQOversampling(bool q);
     void toggleSequencer(bool on);
+	int getCurrentStep();
+	bool isSequencerPlaying();
     
     //==============================================================================
     // These properties are public so that our editor component can access them
@@ -405,8 +407,10 @@ private:
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     std::unique_ptr<PulseClock> pulseClock;
     int stepCounter = 0;
+	int currentStep = 0;
     bool isAnyKeyDown = false;
     bool useSequencer = false;
+	bool sequencerPlaying = false;
     
     static BusesProperties getBusesProperties();
    

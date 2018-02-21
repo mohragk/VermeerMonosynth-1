@@ -876,9 +876,11 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
     int numSamples = buffer.getNumSamples();
     AudioPlayHead::CurrentPositionInfo pos;
 	int curTimeSamples = 0;
+	
 
     while (--numSamples >= 0)
     {
+		sequencerPlaying = false;
 
 		// succesfully get current posInfo
         if (AudioPlayHead* ph = getPlayHead())
@@ -907,7 +909,8 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
         if ( isAnyKeyDown )
         {
 			pulseClock->update();
-
+			sequencerPlaying = true;
+			currentStep = stepCounter;
 
 			if (pulseClock->nextSample() >= 1.0)
 			{
@@ -1233,5 +1236,13 @@ bool MonosynthPluginAudioProcessor::lfoSynced()
     
 }
 
+int MonosynthPluginAudioProcessor::getCurrentStep()
+{
+	return currentStep;
 
+}
+bool MonosynthPluginAudioProcessor::isSequencerPlaying()
+{
+	return sequencerPlaying;
+}
 

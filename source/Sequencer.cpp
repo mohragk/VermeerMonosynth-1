@@ -119,6 +119,27 @@ void Sequencer::timerCallback()
     updateGlobalNoteLengthLabel();
     updateStepDivisionLabel();
 
+	
+
+	if (processor.isSequencerPlaying())
+	{
+		int currentStep = processor.getCurrentStep() - 1; //I DUNNO WHY!
+
+		for (int step = 0; step < numSteps; step++)
+		{
+			if(step == currentStep)
+				pitchSlider[currentStep].get()->setColour(Slider::thumbColourId, Colour(0xffdee5fc));
+			else
+				pitchSlider[step].get()->setColour(Slider::thumbColourId, Colour(0xff3e7db3));
+		}
+		
+	}
+	else
+	{
+		for (int step = 0; step < numSteps; step++)
+			pitchSlider[step].get()->setColour(Slider::thumbColourId, Colour(0xff3e7db3));
+	}
+
 }
 
 
