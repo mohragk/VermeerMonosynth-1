@@ -466,7 +466,7 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
     if (useSequencer)
     {
         isAnyKeyDown = false;
-        sequencerState.allNotesOff(midiChannel);
+        //sequencerState.allNotesOff(midiChannel);
 
     }
     else
@@ -503,7 +503,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     
 
 
-	sequencerState.setSampleRate(newsr);
+	
     
     for(int channel = 0; channel < 2; channel++)
     {
@@ -875,6 +875,8 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
 {
     int numSamples = buffer.getNumSamples();
     AudioPlayHead::CurrentPositionInfo pos;
+	int curTimeSamples = 0;
+
     while (--numSamples >= 0)
     {
 
@@ -928,10 +930,10 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
 			if (pulseClock->isPulseHigh())
             {
 				int newNote = lastNotePlayed + *stepPitchParam[stepCounter];
-                int noteLength =  4;
+                int noteLength =  56;
                 
-                if (noteLength > numSamples)
-                    noteLength = numSamples;
+                if (noteLength > numSamples - 1)
+                    noteLength = numSamples - 1;
                 
                 if(noteLength <= 0)
                     noteLength = 1;
@@ -940,7 +942,7 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
 				int midiChannel = curMidiChannel;
 
 
-				sequencerState.addNote(midiChannel, newNote, 1.0, noteLength);
+				sequencerState.addNote(midiChannel, newNote, 1.0, noteLength, curTimeSamples);
 
 
 
@@ -967,6 +969,8 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
             if (filterEnvelope->isGateOn())
                 filterEnvelope->gate(false);
 		}
+
+		curTimeSamples++;
     }
 };
 

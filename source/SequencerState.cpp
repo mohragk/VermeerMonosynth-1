@@ -12,7 +12,7 @@
 
 
 
-SequencerState::SequencerState() : startTime ((int)Time::getMillisecondCounter())
+SequencerState::SequencerState()
 {
     
 }
@@ -27,7 +27,7 @@ void SequencerState::reset()
 }
 
 
-void SequencerState::addNote(const int midiChannel, const int midiNoteNumber, float velocity, int noteLengthSamples)
+void SequencerState::addNote(const int midiChannel, const int midiNoteNumber, const float velocity,const int noteLengthSamples, const int curTimeSamples)
 {
     jassert( midiChannel > 0 && midiChannel <= 16 );
     jassert( isPositiveAndBelow(midiNoteNumber, 128 ) );
@@ -36,10 +36,10 @@ void SequencerState::addNote(const int midiChannel, const int midiNoteNumber, fl
     if ( isPositiveAndBelow ( midiNoteNumber, 128 ) )
     {
        
-        const int curTime = (int) Time::getMillisecondCounter() - startTime;
-        internalBuffer.addEvent(MidiMessage::noteOn (midiChannel, midiNoteNumber, velocity), curTime);
         
-        const int futureTime =  (int) Time::getMillisecondCounter() + noteLengthSamples - startTime;
+        internalBuffer.addEvent(MidiMessage::noteOn (midiChannel, midiNoteNumber, velocity), curTimeSamples);
+        
+        const int futureTime = curTimeSamples + noteLengthSamples;
         internalBuffer.addEvent(MidiMessage::noteOff(midiChannel, midiNoteNumber, velocity), futureTime);
     }
     
@@ -67,20 +67,20 @@ void SequencerState::noteOffInternal (const int midiChannel, const int midiNoteN
     
 }
 
-void SequencerState::allNotesOff(const int midiChannel)
+void SequencerState::allNotesOff(const int midiChannel, const int curTime)
 {
-
+	
 
 	if (midiChannel <= 0)
 	{
 		for (int channel = 1; channel <= 16; channel++)
-			allNotesOff(channel);
+			allNotesOff(channel, curTime);
 	}
 	else
 	{
 		for (int note = 0; note < 128; ++note)
 		{
-			int now = (int) Time::getMillisecondCounter();
+			int now = curTime;
 			internalBuffer.addEvent(MidiMessage::noteOff(midiChannel, note, 0.0f), now);
 		}
 	}
@@ -131,8 +131,8 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
 		// 
 		while (i2.getNextEvent(message, time))
 		{
-			const int pos = jlimit(0, numSamples - 1, roundToInt((time - firstEventTime) * scaleFactor));
-			buffer.addEvent(message, startSample + pos);
+			//const int pos = jlimit(0, numSamples - 1, roundToInt((time - firstEventTime) * scaleFactor));
+			buffer.addEvent(message, startSample + time);
 		}
 
 		

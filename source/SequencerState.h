@@ -38,11 +38,11 @@ public:
 	~SequencerState();
 
 	void reset();
-	void setSampleRate(float sr) noexcept { sampleRate = sr; };
+//	void setSampleRate(float sr) noexcept { sampleRate = sr; };
 
 	//METHODS
-	void addNote(const int midiChannel, const int midiNumber, float vel, int noteLengthSamples);
-	void allNotesOff(const int midiChannel);
+	void addNote(const int midiChannel, const int midiNoteNumber, const float velocity, const int noteLengthSamples, const int curTimeSamples);
+	void allNotesOff(const int midiChannel, const int curTime);
 
 	void processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool inject);
 
@@ -56,13 +56,10 @@ private:
 
 	//CriticalSection lock;
     
-    int startTime;
-
 	MidiBuffer internalBuffer;
 	Array<SequencerStateListener*> listeners;
 
-	double sampleRate;
-	int previousSampleNumber;
+
 
 
 	//METHODS
