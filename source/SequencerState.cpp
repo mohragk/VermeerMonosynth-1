@@ -73,7 +73,7 @@ void SequencerState::allNotesOff(const int midiChannel)
 
 	if (midiChannel <= 0)
 	{
-		for (int channel = 1; channel < 128; channel++)
+		for (int channel = 1; channel < 16; channel++)
 			allNotesOff(channel);
 	}
 	else
