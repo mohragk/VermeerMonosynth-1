@@ -544,19 +544,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         prevHqOversampling = hqOversampling;
     }
     
-  
-   
-    
-    
-	
-
-
-	
-    
-
-
-	
-
 
     // OVERSAMPLING
     dsp::AudioBlock<FloatType> block (buffer);

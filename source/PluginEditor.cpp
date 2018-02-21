@@ -51,6 +51,10 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
 	typedef ParameterSlider::style knobStyle;
     
+    // set resize limits for this plug-in
+    int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
+    int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT;
+    
     
     // OSCILLATOR SECTION
     oscillatorSection = std::unique_ptr<OscillatorSection>(new OscillatorSection(owner));
@@ -80,6 +84,11 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     //SEQUENCER SECTION
     sequencerSection = std::unique_ptr<Sequencer> (new Sequencer(owner));
     addAndMakeVisible(sequencerSection.get());
+    sequencerSection->setVisible(false);
+    Rectangle<int> seqBounds (0,0 , width, height);
+    seqBounds.translate(0, SEQUENCER_HEIGHT + height);
+    sequencerSection->setBounds(seqBounds);
+    
     
     //
     // TITLE
@@ -156,23 +165,22 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     animator = std::unique_ptr<ComponentAnimator> (new ComponentAnimator);
     
 
-    // set resize limits for this plug-in
-    int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
-    int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
+   
+	
+
+   
+
+    // start a timer which will keep our timecode display updated
+    startTimerHz (60);
+   
     setResizeLimits (width,
                      height,
                      width,
                      height);
-	
-
-    // set our component's initial size to be the last one that was stored in the filter's settings
-    setSize (owner.lastUIWidth,
-             owner.lastUIHeight);
-
-    // start a timer which will keep our timecode display updated
-    startTimerHz (60);
+    setSize (owner.lastUIWidth, owner.lastUIHeight);
     
     
+   
 }
 
 MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
@@ -425,7 +433,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     
     // SEQUENCER SECTION
-    sequencerSection->setBounds(area.removeFromBottom(SEQUENCER_HEIGHT));
+    //sequencerSection->setBounds(area.removeFromBottom(SEQUENCER_HEIGHT));
     
     
     getProcessor().lastUIWidth = getWidth();
@@ -440,6 +448,7 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 	String debugString = getProcessor().debugInfo;
 
 	debugLabel->setText(debugString, dontSendNotification);
+
 }
 
 
@@ -458,6 +467,37 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
     
     if(buttonThatWasClicked == expandSequencerButton.get())
     {
+        bool state = expandSequencerButton.get()->getToggleState();
+        
+        
+        if (state)
+        {
+            int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
+            int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
+            setSize (width, height);
+            
+            
+            sequencerSection.get()->setVisible(true);
+            Rectangle<int> finalBounds (getLocalBounds().removeFromBottom(SEQUENCER_HEIGHT + KEYBOARD_HEIGHT));
+            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 1.0f, 500, false, 0.0f, 0.0f);
+            
+        }
+        else
+        {
+            int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
+            int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT;
+            setSize (width, height);
+            
+            sequencerSection.get()->setVisible(false);
+            Rectangle<int> finalBounds (sequencerSection.get()->getBounds());
+            finalBounds.translate(0, SEQUENCER_HEIGHT + KEYBOARD_HEIGHT);
+            
+            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 0.0f, 500, false, 0.0f, 0.0f);
+            
+            
+        }
+        
+        
         
     }
     
