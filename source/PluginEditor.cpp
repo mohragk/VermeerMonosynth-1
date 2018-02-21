@@ -468,10 +468,12 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
     if(buttonThatWasClicked == expandSequencerButton.get())
     {
         bool state = expandSequencerButton.get()->getToggleState();
-        
+        getProcessor().toggleSequencer(state);
         
         if (state)
         {
+            
+            
             int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
             int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
             setSize (width, height);
@@ -479,8 +481,7 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
             
             sequencerSection.get()->setVisible(true);
             Rectangle<int> finalBounds (getLocalBounds().removeFromBottom(SEQUENCER_HEIGHT + KEYBOARD_HEIGHT));
-            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 1.0f, 500, false, 0.0f, 0.0f);
-            
+            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 1.0f, 600, false, 0.0f, 0.0f);
         }
         else
         {
@@ -492,8 +493,7 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
             Rectangle<int> finalBounds (sequencerSection.get()->getBounds());
             finalBounds.translate(0, SEQUENCER_HEIGHT + KEYBOARD_HEIGHT);
             
-            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 0.0f, 500, false, 0.0f, 0.0f);
-            
+            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 0.0f, 50, false, 0.0f, 0.0f);
             
         }
         

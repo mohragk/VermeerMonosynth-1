@@ -112,6 +112,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     void toggleHQOversampling(bool q);
+    void toggleSequencer(bool on);
     
     //==============================================================================
     // These properties are public so that our editor component can access them
@@ -403,7 +404,7 @@ private:
     std::unique_ptr<PulseClock> pulseClock;
     int stepCounter = 0;
     bool isAnyKeyDown = false;
-    bool useSequencer = true;
+    bool useSequencer = false;
     
     static BusesProperties getBusesProperties();
    

@@ -307,6 +307,17 @@ void MonosynthPluginAudioProcessor::toggleHQOversampling(bool q)
     }
 }
 
+
+void MonosynthPluginAudioProcessor::toggleSequencer(bool on)
+{
+    
+    
+    useSequencer = on;
+    
+    
+    
+}
+
 //==============================================================================
 bool MonosynthPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
@@ -564,12 +575,17 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
 	updateParameters(osBuffer);
 
-	keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
+    
+    keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
 
 
 	// SEQUENCER
-	applySequencer(osBuffer);
-	sequencerState.processBuffer(midiMessages, 0, numSamples, true);
+    
+    if (useSequencer)
+    {
+        applySequencer(osBuffer);
+        sequencerState.processBuffer(midiMessages, 0, numSamples, true);
+    }
 	// Now pass any incoming midi messages to our keyboard state object, and let it
 	// add messages to the buffer if the user is clicking on the on-screen keys
 	
@@ -914,6 +930,9 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
                 
                 if (noteLength > numSamples)
                     noteLength = numSamples;
+                
+                if(noteLength <= 0)
+                    noteLength = 1;
                 
                 
 				int midiChannel = curMidiChannel;
