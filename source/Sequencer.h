@@ -11,14 +11,16 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef SEQUENCER_H
+#define SEQUENCER_H
+
+#define SEQUENCER_HEIGHT 120
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
-#include "SequencerState.h"
 
 
 //==============================================================================
@@ -33,7 +35,7 @@ class Sequencer  : public Component, private Timer
 {
 public:
     //==============================================================================
-    Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st);
+    Sequencer (MonosynthPluginAudioProcessor& p);
     ~Sequencer();
 
     //==============================================================================
@@ -45,10 +47,6 @@ public:
     
     void parentSizeChanged() override;
 	void timerCallback() override;
-    
-    //void getMidiBuffer();
-    
-    //void processSteps(MidiBuffer& midiBuffer, size_t numSamples, double sampleRate);
     
     
     enum steps
@@ -85,7 +83,6 @@ private:
     
     // members
     MonosynthPluginAudioProcessor& processor;
-	SequencerState& state;
     
     enum style
     {
@@ -100,34 +97,11 @@ private:
 	std::unique_ptr<ParameterSlider> stepDivision;
     
 	std::unique_ptr<Label> stepDivisionLabel;
-    
-    double globalNoteLength = 1.0;
-    
-    
 
-    //methods
-    
-    void setStepData( int s, double p, double nl, double nv )
-    {
-        step[s].pitch = p;
-        step[s].noteLength = nl;
-        step[s].normalValue = nv;
-        
-    };
-    
-    
-    void updateSteps();
-    
-    
-    
-    //void addStepToMidiSequence(Step s);
-    
-    //double getMilliSecondsPerNote(AudioPlayHead::CurrentPositionInfo pInfo, double division );
-    
 
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sequencer)
 };
 
-
+#endif // SEQUENCER_H

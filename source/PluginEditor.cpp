@@ -30,7 +30,7 @@
 #define TITLE_HEIGHT 48
 #define STRIP_WIDTH 72
 #define MODULE_MARGIN 24
-#define PARAMETER_AREA_HEIGHT 460
+#define MODULE_HEIGHT 460
 #define KEYBOARD_HEIGHT 140
 
 
@@ -78,7 +78,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     //SEQUENCER SECTION
-    sequencerSection = std::unique_ptr<Sequencer> (new Sequencer(owner, owner.sequencerState));
+    sequencerSection = std::unique_ptr<Sequencer> (new Sequencer(owner));
     addAndMakeVisible(sequencerSection.get());
     
     //
@@ -111,6 +111,11 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     hqOversamplingButton->addListener (this);
     
 
+    
+    //Sequencer expansion Button
+    expandSequencerButton = std::unique_ptr<ToggleButton> (new ToggleButton("Expand Sequencer"));
+    addAndMakeVisible (expandSequencerButton.get());
+    expandSequencerButton->addListener(this);
     
     // Keyboard
     addAndMakeVisible(midiKeyboard);
@@ -153,7 +158,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     // set resize limits for this plug-in
     int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
-    int height= TITLE_HEIGHT + PARAMETER_AREA_HEIGHT + KEYBOARD_HEIGHT + 84;
+    int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
     setResizeLimits (width,
                      height,
                      width,
@@ -386,7 +391,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     //
     // MODULES
     //
-    Rectangle<int> parameterArea (area.removeFromTop(PARAMETER_AREA_HEIGHT).reduced(MODULE_MARGIN,0));
+    Rectangle<int> parameterArea (area.removeFromTop(MODULE_HEIGHT).reduced(MODULE_MARGIN,0));
     
     // OSCILLATOR SECTION
     oscillatorSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 4) + MODULE_MARGIN));
@@ -405,7 +410,9 @@ void MonosynthPluginAudioProcessorEditor::resized()
     // MASTER SECTION
     masterSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN * 2));
     
-    
+    Rectangle<int> seqButtonArea (masterSection->getBounds());
+    expandSequencerButton->setBounds(seqButtonArea.removeFromBottom(24));
+    expandSequencerButton->setButtonText("");
     
     
     
@@ -418,7 +425,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     
     // SEQUENCER SECTION
-    sequencerSection->setBounds(area.removeFromBottom(96));
+    sequencerSection->setBounds(area.removeFromBottom(SEQUENCER_HEIGHT));
     
     
     getProcessor().lastUIWidth = getWidth();
@@ -448,6 +455,11 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
         getProcessor().toggleHQOversampling(state);
     }
     
+    
+    if(buttonThatWasClicked == expandSequencerButton.get())
+    {
+        
+    }
     
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]

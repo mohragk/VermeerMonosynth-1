@@ -34,7 +34,6 @@
 #include "LFOSection.h"
 #include "MasterSection.h"
 #include "Sequencer.h"
-#include "SequencerState.h"
 
 
 
@@ -123,7 +122,7 @@ private:
         drawable24
     ;
     
-    std::unique_ptr<ToggleButton> hqOversamplingButton;
+    std::unique_ptr<ToggleButton> hqOversamplingButton, expandSequencerButton;
     
     std::unique_ptr<ComponentAnimator> animator;
    

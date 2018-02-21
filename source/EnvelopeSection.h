@@ -8,7 +8,8 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef ENVELOPE_SECTION_H
+#define ENVELOPE_SECTION_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
@@ -84,3 +85,5 @@ private:
     String font;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopeSection)
 };
+
+#endif // LFO_SECTION_H

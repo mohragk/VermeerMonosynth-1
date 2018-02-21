@@ -8,7 +8,9 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef OSCILLATOR_SECTION_H
+#define OSCILLATOR_SECTION_H
+
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
@@ -126,3 +128,5 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OscillatorSection)
 };
+
+#endif // OSCILLATOR_SECTION_H

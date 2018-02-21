@@ -8,7 +8,8 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef LFO_SECTION_H
+#define LFO_SECTION_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
@@ -78,3 +79,5 @@ private:
     String font;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOSection)
 };
+
+#endif // LFO_SECTION_H

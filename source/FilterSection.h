@@ -8,7 +8,8 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef FILTER_SECTION_H
+#define FILTER_SECTION_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
@@ -63,3 +64,5 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterSection)
 };
+
+#endif // FILTER_SECTION_H

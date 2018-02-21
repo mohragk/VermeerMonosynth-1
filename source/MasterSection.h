@@ -8,7 +8,8 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef MASTER_SECTION_H
+#define MASTER_SECTION_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
@@ -64,3 +65,5 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MasterSection)
 };
+
+#endif // MASTER_SECTION_H

@@ -15,20 +15,16 @@
 
 #include "Sequencer.h"
 
-#define SEQUENCER_HEIGHT 96
 
 
-Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st) : processor(p), state(st)
+Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
 
 {
     typedef ParameterSlider::style knobStyle;
 
     globalNoteLengthSlider = std::unique_ptr<ParameterSlider> (new ParameterSlider(*processor.stepNoteLengthParam, knobStyle(ROTARY)));
     addAndMakeVisible (globalNoteLengthSlider.get());
-   // globalNoteLengthSlider->setRange (0, 1, 0);
-    //globalNoteLengthSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    //globalNoteLengthSlider->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-   // globalNoteLengthSlider->addListener (this);
+ 
     
     for (int i = 0; i < numSteps; i++)
     {
@@ -112,55 +108,6 @@ void Sequencer::timerCallback()
 	stepDivisionLabel->setText(s, dontSendNotification);
 }
 
-
-void Sequencer::updateSteps()
-{
-    for (int s = 0; s < numSteps; s++)
-    {
-        double normalised = (pitchSlider[s]->getValue() + 12) / 24;
-        setStepData(s, pitchSlider[s]->getValue(), globalNoteLength, normalised);
-    }
-    
-}
-
-/*
-void Sequencer::processSteps(MidiBuffer& midiBuffer, size_t numSamples, double sampleRate)
-{
-   
-}
-*/
-
-/*
-void Sequencer::addStepToMidiSequence(Step s)
-{
-    int middleNote = 60;
-    int newNote = middleNote + s.pitch;
-    double noteLength = s.noteLength;
-    
-    MidiMessage messageOn = MidiMessage::noteOn (midiChannel, newNote, (uint8) 100);
-    messageOn.setTimeStamp ( ( Time::getMillisecondCounterHiRes() * 0.001 - startTime ));
-    
-    midiSequence.addEvent(messageOn);
-    
-    MidiMessage messageOff (MidiMessage::noteOff (messageOn.getChannel(), messageOn.getNoteNumber()));
-    messageOff.setTimeStamp (messageOn.getTimeStamp() + noteLength);
-    
-    midiSequence.addEvent(messageOff);
-}
-*/
-
-/*
-double Sequencer::getMilliSecondsPerNote(AudioPlayHead::CurrentPositionInfo pInfo, double division )
-{
-    const double beats_per_minute = pInfo.bpm;
-    const double seconds_per_beat = 6000.0 / beats_per_minute;
-    const double seconds_per_note = seconds_per_beat * (pInfo.timeSigDenominator / division);
-    
-    // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
-    
-    return seconds_per_note;
-}
-*/
 
 
 //==============================================================================
