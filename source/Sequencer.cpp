@@ -40,11 +40,13 @@ public:
         LINEARVERTICAL
     };
     
+    Colour lightThumb = Colour(0xffdee5fc);
+    Colour darkThumb = Colour(0xff3e7db3);
+    
 private:
     String sliderName;
     
-    Colour lightThumb = Colour(0xffdee5fc);
-    Colour darkThumb = Colour(0xff3e7db3);
+    
     
 };
 
@@ -91,7 +93,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
     state.addListener(this);
 
 	startTimer(displayTimer, 1000 / 60);
-    startTimer(hiFreqTimer, 4);
+    startTimer(hiFreqTimer, 1);
 }
 
 Sequencer::~Sequencer()
@@ -104,13 +106,13 @@ void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midi
     lastNotePlayed = midiNoteNumber;
     currentMidiChannel = midiChannel;
     
+    isPlaying = true;
+    
     int bpm = 120;
     
     bpm = processor.lastPosInfo.bpm;
     int division = pow(2, stepDivision.get()->getValue());
     int pulseTime = (60000 / bpm) / division; // 4 = every beat
-    
-    //pulseTime =  100;
     startPulseClock(pulseTime);
     
     
@@ -121,17 +123,12 @@ void Sequencer::handleSequencerNoteOff(SequencerState*, int midiChannel, int mid
 {
     stopPulseClock();
     state.allNotesOff(currentMidiChannel);
+    
+    isPlaying = false;
 }
 
 
-void Sequencer::processSteps()
-{
-   if (isTimerRunning(PULSECLOCK_TIMER))
-   {
-       
-   }
-   
-}
+
 
 //==============================================================================
 void Sequencer::paint (Graphics& g)
@@ -189,7 +186,7 @@ void Sequencer::timerCallback(int timerID)
     
     if (timerID == displayTimer)
     {
-        updateStepKnobColour();
+        
         //updateGlobalNoteLengthLabel();
        // updateStepDivisionLabel();
         
@@ -198,7 +195,21 @@ void Sequencer::timerCallback(int timerID)
     
     else if (timerID == hiFreqTimer)
     {
-        processSteps();
+        int currentTime = Time::getMillisecondCounter();
+        
+        for (int i = 0; i < numSteps; i++)
+        {
+            if (step[i].timeStamp + step[i].noteLengthMillis == currentTime)
+            {
+                int note = step[i].noteNumber;
+                state.noteOff(currentMidiChannel, note, 1.0f);
+                step[i].isReleased = true;
+                
+                
+                //trigger Listener
+                processor.handleSequencerNoteOff(&state, currentMidiChannel, note, 1.0f);
+            }
+        }
     }
     
     else if (timerID == PULSECLOCK_TIMER)
@@ -216,66 +227,46 @@ void Sequencer::timerCallback(int timerID)
         int curStep = releaseTimerStep1 - 1;
         stepNoteOff(curStep);
     }
-    else if (timerID == releaseTimerStep6)
-    {
-        int curStep = releaseTimerStep6 - 1;
-        stepNoteOff(curStep);
-    }
-    else if (timerID == releaseTimerStep6)
-    {
-        int curStep = releaseTimerStep6 - 1;
-        stepNoteOff(curStep);
-    }
-    else if (timerID == releaseTimerStep6)
-    {
-        int curStep = releaseTimerStep6 - 1;
-        stepNoteOff(curStep);
-    }
-    else if (timerID == releaseTimerStep6)
-    {
-        int curStep = releaseTimerStep6 - 1;
-        stepNoteOff(curStep);
-    }
-    else if (timerID == releaseTimerStep6)
-    {
-        int curStep = releaseTimerStep6 - 1;
-        stepNoteOff(curStep);
-    }
-    else if (timerID == releaseTimerStep7)
-    {
-        int curStep = releaseTimerStep7 - 1;
-        stepNoteOff(curStep);
-    }
-    else if (timerID == releaseTimerStep8)
-    {
-        int curStep = releaseTimerStep8 - 1;
-        stepNoteOff(curStep);
-    }
+    
 	
 }
 
 void Sequencer::stepNoteOff(int currentStep)
 {
+    /*
     if(releaseTimerCounter[currentStep] == 1)
     {
         state.allNotesOff(currentMidiChannel);
         stopTimer(currentStep + 1);
         releaseTimerCounter[currentStep] = 0;
+        processor.handleSequencerNoteOff(&state, currentMidiChannel, 60, 1.0f);
     }
     else
         releaseTimerCounter[currentStep]++;
+     
+     */
 }
 
 void Sequencer::playStep (int currentStep)
 {
     int newNote = lastNotePlayed + pitchSlider[currentStep].get()->getValue();
+    int releaseTime = globalNoteLengthSlider.get()->getValue();
+    
+    //fill struct
+    step[currentStep].stepNumber = currentStep;
+    step[currentStep].noteNumber = newNote;
+    step[currentStep].noteLengthMillis = releaseTime;
+    step[currentStep].timeStamp = Time::getMillisecondCounter();
+    step[currentStep].isReleased = false;
+    
+    //send noteOn message
     state.noteOn(currentMidiChannel, newNote, 1.0f);
     
-    int curReleaseTimer = currentStep + 1;
-    int releaseTime = globalNoteLengthSlider.get()->getValue();
-    startTimer(curReleaseTimer,  releaseTime );
-    
+    //trigger Listener
     processor.handleSequencerNoteOn(&state, currentMidiChannel, newNote, 1.0f);
+    
+    //update thumb colour
+    updateStepKnobColour(currentStep);
 }
 
 void Sequencer::startPulseClock(int timeMillis)
@@ -290,10 +281,7 @@ void Sequencer::stopPulseClock()
 }
 
 
-void Sequencer::startReleaseTimer(int step, int timeMillis)
-{
-    startTimer(step, timeMillis);
-}
+
 
 void Sequencer::updateGlobalNoteLengthLabel()
 {
@@ -310,26 +298,18 @@ void Sequencer::updateStepDivisionLabel()
 }
 
 
-void Sequencer::updateStepKnobColour()
+void Sequencer::updateStepKnobColour(int curStep)
 {
-	if (processor.isSequencerPlaying())
-	{
-		int currentStep = processor.getCurrentStep() - 1; //I DUNNO WHY!
+    for (int step = 0; step < numSteps; step++)
+    {
+        if (step == stepCount)
+            pitchSlider[step].get()->setColour(Slider::thumbColourId, lightThumb);
+        else
+            pitchSlider[step].get()->setColour(Slider::thumbColourId, darkThumb);
+    }
+    
+    
 
-		for (int step = 0; step < numSteps; step++)
-		{
-			if (step == currentStep)
-				pitchSlider[currentStep].get()->setColour(Slider::thumbColourId, Colour(0xffdee5fc));
-			else
-				pitchSlider[step].get()->setColour(Slider::thumbColourId, Colour(0xff3e7db3));
-		}
-
-	}
-	else
-	{
-		for (int step = 0; step < numSteps; step++)
-			pitchSlider[step].get()->setColour(Slider::thumbColourId, Colour(0xff3e7db3));
-	}
 }
 //==============================================================================
 

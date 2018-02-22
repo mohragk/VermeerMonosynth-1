@@ -476,7 +476,6 @@ void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int m
         
         ampEnvelope->gate(true);
     
-    std::cout << "we hit it" << std::endl;
     
     lfo.setPhase(0.0);
     
@@ -488,6 +487,8 @@ void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int m
 
 void MonosynthPluginAudioProcessor::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
+ 
+    std::cout << midiNoteNumber << " -- released" << std::endl;
     
     //if (lastNotePlayed == midiNoteNumber)
     {

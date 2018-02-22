@@ -54,7 +54,6 @@ public:
     void handleSequencerNoteOn (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleSequencerNoteOff (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
-    void processSteps();
     
     enum steps
     {
@@ -88,16 +87,16 @@ public:
 
     struct Step
     {
-        //int stepId;
-        double pitch;
-        double noteLength;
-        double normalValue;
+        int    stepNumber;
+        int    noteNumber;
+        int    timeStamp;
+        int    noteLengthMillis;
+        bool   isReleased;
     } step[numSteps];
 
     
     Step getStepData(int s) { return step[s]; };
     
-    int releaseTimerCounter[numSteps] = {0,0,0,0,0,0,0,0};
     
     
 
@@ -123,24 +122,26 @@ private:
         LINEARVERTICAL
     };
     
+    Colour lightThumb = Colour(0xffdee5fc);
+    Colour darkThumb = Colour(0xff3e7db3);
+    
     int lastNotePlayed;
     int currentMidiChannel;
     int stepCount = 0;
     
-    bool shouldRun;
+    bool isPlaying = false;
     bool isActive;
     
     // methods
     void updateStepDivisionLabel();
     void updateGlobalNoteLengthLabel();
-	void updateStepKnobColour();
+	void updateStepKnobColour(int step);
     
     void playStep(int currentStep);
     
     void startPulseClock(int timeMillis);
     void stopPulseClock();
     
-    void startReleaseTimer(int step, int timeMillis);
     
     
     void stepNoteOff(int step);
