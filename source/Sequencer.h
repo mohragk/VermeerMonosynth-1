@@ -19,6 +19,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
+#include "SequencerState.h"
 
 
 //==============================================================================
@@ -33,11 +34,11 @@
 
 
 
-class Sequencer  : public Component, private MultiTimer
+class Sequencer  : public Component, public SequencerStateListener, private MultiTimer
 {
 public:
     //==============================================================================
-    Sequencer (MonosynthPluginAudioProcessor& p);
+    Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s);
     ~Sequencer();
     
     //==============================================================================
@@ -50,6 +51,9 @@ public:
     void parentSizeChanged() override;
     void timerCallback(int timerID) override;
     
+    void handleSequencerNoteOn (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    /** @internal */
+    void handleSequencerNoteOff (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
     enum steps
     {
@@ -100,6 +104,14 @@ private:
     class StepSlider;
     // members
     MonosynthPluginAudioProcessor& processor;
+    SequencerState& state;
+
+    
+    std::unique_ptr<StepSlider> pitchSlider[numSteps];
+    std::unique_ptr<StepSlider> globalNoteLengthSlider;
+    std::unique_ptr<StepSlider> stepDivision;
+    
+    std::unique_ptr<Label> stepDivisionLabel, globalNoteLengthLabel;
     
     enum style
     {
@@ -109,17 +121,14 @@ private:
     };
     
     double pulseClockHz;
+    int lastNotePlayed;
     
     // methods
     void updateStepDivisionLabel();
     void updateGlobalNoteLengthLabel();
 	void updateStepKnobColour();
     
-    std::unique_ptr<StepSlider> pitchSlider[numSteps];
-    std::unique_ptr<StepSlider> globalNoteLengthSlider;
-	std::unique_ptr<StepSlider> stepDivision;
     
-	std::unique_ptr<Label> stepDivisionLabel, globalNoteLengthLabel;
 
 
 

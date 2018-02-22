@@ -48,7 +48,7 @@ private:
     
 };
 
-Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
+Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : processor(p), state(s)
 
 {
     typedef StepSlider::style knobStyle;
@@ -85,15 +85,30 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
 	//stepDivisionLabel->setColour(TextEditor::textColourId, Colours::black);
 	//stepDivisionLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
+    
     setSize (890, SEQUENCER_HEIGHT);
+    
+    state.addListener(this);
 
 	startTimer(displayTimer, 1000 / 60);
 }
 
 Sequencer::~Sequencer()
 {
- 
+    state.removeListener(this);
 }
+
+void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
+{
+    lastNotePlayed = midiNoteNumber;
+}
+
+
+void Sequencer::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
+{
+    
+}
+
 
 //==============================================================================
 void Sequencer::paint (Graphics& g)
