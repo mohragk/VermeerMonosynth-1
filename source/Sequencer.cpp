@@ -112,13 +112,15 @@ void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midi
     
     //pulseTime =  100;
     startPulseClock(pulseTime);
+    
+    
 }
 
 
 void Sequencer::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     stopPulseClock();
-    //state.allNotesOff(currentMidiChannel);
+    state.allNotesOff(currentMidiChannel);
 }
 
 
@@ -209,16 +211,71 @@ void Sequencer::timerCallback(int timerID)
             stepCount = 0;
         
     }
+    else if (timerID == releaseTimerStep1)
+    {
+        int curStep = releaseTimerStep1 - 1;
+        stepNoteOff(curStep);
+    }
+    else if (timerID == releaseTimerStep6)
+    {
+        int curStep = releaseTimerStep6 - 1;
+        stepNoteOff(curStep);
+    }
+    else if (timerID == releaseTimerStep6)
+    {
+        int curStep = releaseTimerStep6 - 1;
+        stepNoteOff(curStep);
+    }
+    else if (timerID == releaseTimerStep6)
+    {
+        int curStep = releaseTimerStep6 - 1;
+        stepNoteOff(curStep);
+    }
+    else if (timerID == releaseTimerStep6)
+    {
+        int curStep = releaseTimerStep6 - 1;
+        stepNoteOff(curStep);
+    }
+    else if (timerID == releaseTimerStep6)
+    {
+        int curStep = releaseTimerStep6 - 1;
+        stepNoteOff(curStep);
+    }
+    else if (timerID == releaseTimerStep7)
+    {
+        int curStep = releaseTimerStep7 - 1;
+        stepNoteOff(curStep);
+    }
+    else if (timerID == releaseTimerStep8)
+    {
+        int curStep = releaseTimerStep8 - 1;
+        stepNoteOff(curStep);
+    }
 	
+}
+
+void Sequencer::stepNoteOff(int currentStep)
+{
+    if(releaseTimerCounter[currentStep] == 1)
+    {
+        state.allNotesOff(currentMidiChannel);
+        stopTimer(currentStep + 1);
+        releaseTimerCounter[currentStep] = 0;
+    }
+    else
+        releaseTimerCounter[currentStep]++;
 }
 
 void Sequencer::playStep (int currentStep)
 {
     int newNote = lastNotePlayed + pitchSlider[currentStep].get()->getValue();
-    
-    std::cout << newNote << std::endl;
-    
     state.noteOn(currentMidiChannel, newNote, 1.0f);
+    
+    int curReleaseTimer = currentStep + 1;
+    int releaseTime = globalNoteLengthSlider.get()->getValue();
+    startTimer(curReleaseTimer,  releaseTime );
+    
+    processor.handleSequencerNoteOn(&state, currentMidiChannel, newNote, 1.0f);
 }
 
 void Sequencer::startPulseClock(int timeMillis)

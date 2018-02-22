@@ -97,7 +97,7 @@ public:
     
     Step getStepData(int s) { return step[s]; };
     
-    
+    int releaseTimerCounter[numSteps] = {0,0,0,0,0,0,0,0};
     
     
 
@@ -143,7 +143,7 @@ private:
     void startReleaseTimer(int step, int timeMillis);
     
     
-    
+    void stepNoteOff(int step);
     
 
 

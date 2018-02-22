@@ -471,12 +471,12 @@ void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int m
 {
     
         contourVelocity = velocity;
-        if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
+        //if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
             filterEnvelope->gate(true);
         
         ampEnvelope->gate(true);
     
-    
+    std::cout << "we hit it" << std::endl;
     
     lfo.setPhase(0.0);
     
@@ -489,7 +489,7 @@ void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int m
 void MonosynthPluginAudioProcessor::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
-    if (lastNotePlayed == midiNoteNumber)
+    //if (lastNotePlayed == midiNoteNumber)
     {
         ampEnvelope->gate(false);
         filterEnvelope->gate(false);
