@@ -195,7 +195,7 @@ void Sequencer::timerCallback(int timerID)
         {
             int range = 4;
             
-            if (step[i].isReleased == false)
+            if (!step[i].isReleased)
             {
                 if (step[i].timeStamp + step[i].noteLengthMillis > currentTime - range && step[i].timeStamp + step[i].noteLengthMillis < currentTime + range )
                 {
@@ -203,6 +203,7 @@ void Sequencer::timerCallback(int timerID)
                     state.noteOff(currentMidiChannel, note, 1.0f);
                     step[i].isReleased = true;
                     
+                    std::cout << "Step: " << step[i].stepNumber << " is Released at: " << currentTime << std::endl;
                     
                     //trigger Listener
                     processor.handleSequencerNoteOff(&state, currentMidiChannel, note, 1.0f);
