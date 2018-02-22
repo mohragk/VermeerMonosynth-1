@@ -122,7 +122,7 @@ void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midi
 void Sequencer::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     stopPulseClock();
-    state.allNotesOff(currentMidiChannel);
+    //state.allNotesOff(currentMidiChannel);
     
     isPlaying = false;
 }

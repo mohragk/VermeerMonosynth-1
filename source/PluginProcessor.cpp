@@ -440,11 +440,11 @@ void MonosynthPluginAudioProcessor::reset()
 void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
-        contourVelocity = velocity;
-        if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
-            filterEnvelope->gate(true);
-        
-        ampEnvelope->gate(true);
+    contourVelocity = velocity;
+    if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
+        filterEnvelope->gate(true);
+    
+    ampEnvelope->gate(true);
    
     
     lfo.setPhase(0.0);
@@ -488,14 +488,9 @@ void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int m
 void MonosynthPluginAudioProcessor::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
  
-    
-    //if (lastNotePlayed == midiNoteNumber)
-    {
-        ampEnvelope->gate(false);
-        filterEnvelope->gate(false);
-    }
-  
-    
+    ampEnvelope->gate(false);
+    filterEnvelope->gate(false);
+   
 }
 
 
@@ -606,7 +601,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     }
     else
     {
-        //applySequencer(osBuffer);
         sequencerState.processBuffer(midiMessages, 0, numSamples, true);
     }
 	// Now pass any incoming midi messages to our keyboard state object, and let it
