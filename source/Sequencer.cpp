@@ -103,33 +103,26 @@ void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midi
 {
     lastNotePlayed = midiNoteNumber;
     
-    shouldRun = true;
+    int bpm = 120;
+    
+    bpm = processor.lastPosInfo.bpm;
+    int pulseTime = (60000 / bpm) / 4; // 4 = every beat
+    
+    //pulseTime =  100;
+    startPulseClock(pulseTime);
 }
 
 
 void Sequencer::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    shouldRun = false;
+    stopPulseClock();
 }
 
 
 void Sequencer::processSteps()
 {
-    int bpm = 120;
-    
-    
-    
-    if (shouldRun)
-    {
-        int pulseTime = (60000 / bpm) / 4; // 4 = every beat
-        
-        std::cout << pulseTime << std::endl;
-        //startPulseClock(pulseTime);
-    }
-    else
-    {
-        //stopPulseClock();
-    }
+   
+   
 }
 
 //==============================================================================
@@ -192,23 +185,28 @@ void Sequencer::timerCallback(int timerID)
        // updateStepDivisionLabel();
     }
     
-    if (timerID == hiFreqTimer)
+    else if (timerID == hiFreqTimer)
     {
         processSteps();
+    }
+    
+    else if (timerID == PULSECLOCK_TIMER)
+    {
+        std::cout << "this is a pulse!" << std::endl;
     }
 	
 }
 
 
-void Sequencer::startPulseClock(int time)
+void Sequencer::startPulseClock(int timeMillis)
 {
-    startTimer(pulseClock, time);
+    startTimer(PULSECLOCK_TIMER, timeMillis);
 }
 
 
 void Sequencer::stopPulseClock()
 {
-    stopTimer(pulseClock);
+    stopTimer(PULSECLOCK_TIMER);
 }
 
 

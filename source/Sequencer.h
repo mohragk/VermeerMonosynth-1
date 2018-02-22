@@ -72,7 +72,7 @@ public:
     
     enum timers
     {
-        pulseClock = 0,
+        PULSECLOCK_TIMER = 0,
         releaseTimerStep1,
         releaseTimerStep2,
         releaseTimerStep3,
