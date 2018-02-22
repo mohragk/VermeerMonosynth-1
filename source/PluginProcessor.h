@@ -50,7 +50,7 @@
 */
 class MonosynthPluginAudioProcessor  : public AudioProcessor,
                                         private MidiKeyboardStateListener,
-										//private SequencerStateListener,
+										private SequencerStateListener,
                                         private Timer
 {
 public:
@@ -129,8 +129,8 @@ public:
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
 
-	//void handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
-	//void handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
+	void handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
+	void handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
 
     // this keeps a copy of the last set of time info that was acquired during an audio
     // callback - the UI component will read this and display it.

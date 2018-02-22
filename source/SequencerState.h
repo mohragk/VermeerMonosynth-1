@@ -43,6 +43,7 @@ public:
 	//METHODS
 	void addNote(const int midiChannel, const int midiNoteNumber, const float velocity, const int noteLengthSamples, const int curTimeSamples);
     
+    
     void noteOn(const int midiChannel, const int midiNoteNumber, const float velocity);
     void noteOff(const int midiChannel, const int midiNoteNumber, const float velocity);
 	void allNotesOff(const int midiChannel);

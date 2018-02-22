@@ -102,11 +102,13 @@ Sequencer::~Sequencer()
 void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     lastNotePlayed = midiNoteNumber;
+    currentMidiChannel = midiChannel;
     
     int bpm = 120;
     
     bpm = processor.lastPosInfo.bpm;
-    int pulseTime = (60000 / bpm) / 4; // 4 = every beat
+    int division = pow(2, stepDivision.get()->getValue());
+    int pulseTime = (60000 / bpm) / division; // 4 = every beat
     
     //pulseTime =  100;
     startPulseClock(pulseTime);
@@ -116,12 +118,16 @@ void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midi
 void Sequencer::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     stopPulseClock();
+    //state.allNotesOff(currentMidiChannel);
 }
 
 
 void Sequencer::processSteps()
 {
-   
+   if (isTimerRunning(PULSECLOCK_TIMER))
+   {
+       
+   }
    
 }
 
@@ -178,11 +184,14 @@ void Sequencer::parentSizeChanged()
 
 void Sequencer::timerCallback(int timerID)
 {
+    
     if (timerID == displayTimer)
     {
         updateStepKnobColour();
         //updateGlobalNoteLengthLabel();
        // updateStepDivisionLabel();
+        
+    
     }
     
     else if (timerID == hiFreqTimer)
@@ -192,11 +201,25 @@ void Sequencer::timerCallback(int timerID)
     
     else if (timerID == PULSECLOCK_TIMER)
     {
-        std::cout << "this is a pulse!" << std::endl;
+        playStep(stepCount);
+        
+        stepCount++;
+        
+        if (stepCount >= numSteps)
+            stepCount = 0;
+        
     }
 	
 }
 
+void Sequencer::playStep (int currentStep)
+{
+    int newNote = lastNotePlayed + pitchSlider[currentStep].get()->getValue();
+    
+    std::cout << newNote << std::endl;
+    
+    state.noteOn(currentMidiChannel, newNote, 1.0f);
+}
 
 void Sequencer::startPulseClock(int timeMillis)
 {

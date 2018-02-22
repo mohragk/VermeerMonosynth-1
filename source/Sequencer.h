@@ -106,6 +106,7 @@ private:
     class StepSlider;
     // members
     MonosynthPluginAudioProcessor& processor;
+    //MidiKeyBoardState& keyState;
     SequencerState& state;
 
     
@@ -123,6 +124,7 @@ private:
     };
     
     int lastNotePlayed;
+    int currentMidiChannel;
     int stepCount = 0;
     
     bool shouldRun;
@@ -132,6 +134,8 @@ private:
     void updateStepDivisionLabel();
     void updateGlobalNoteLengthLabel();
 	void updateStepKnobColour();
+    
+    void playStep(int currentStep);
     
     void startPulseClock(int timeMillis);
     void stopPulseClock();
