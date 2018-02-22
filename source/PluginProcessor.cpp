@@ -442,6 +442,7 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
     if (useSequencer)
     {
         isAnyKeyDown = true;
+        stepCounter = 0;
 
     }
     else
@@ -458,7 +459,7 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
     
     lastNotePlayed = midiNoteNumber;
 	curMidiChannel = midiChannel;
-    isAnyKeyDown = true;
+    //isAnyKeyDown = true;
 }
 
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
@@ -466,6 +467,8 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
     if (useSequencer)
     {
         isAnyKeyDown = false;
+        stepCounter = 0;
+
         //sequencerState.allNotesOff(midiChannel);
 
     }
@@ -876,11 +879,18 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
     int numSamples = buffer.getNumSamples();
     AudioPlayHead::CurrentPositionInfo pos;
 	int curTimeSamples = 0;
+    int defaultBpm = 120;
+    double pulseRateHz;
 	
 
     while (--numSamples >= 0)
     {
 		sequencerPlaying = false;
+        
+        
+        int seqDivision = int(  powf(2, *sequencerStepDivisionParam) );
+        sequencerStepDivisionVal = seqDivision; //Use in GUI
+        
 
 		// succesfully get current posInfo
         if (AudioPlayHead* ph = getPlayHead())
@@ -893,13 +903,18 @@ void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffe
                 pos = newTime;  // Successfully got the current time from the host..
                 
             }
+            
+            pulseRateHz  = getLFOSyncedFreq(pos, seqDivision);
+        }
+        else
+        {
+            const double seconds_per_beat = 60.0 / (double) defaultBpm;
+            const double seconds_per_note = seconds_per_beat * (4 / seqDivision);
+            
+            pulseRateHz = 1.0 / seconds_per_note;
         }
 
 		
-		int seqDivision = int(  powf(2, *sequencerStepDivisionParam) );
-		sequencerStepDivisionVal = seqDivision; //Use in GUI
-        double pulseRateHz  = getLFOSyncedFreq(pos, seqDivision);
-        
         globalNoteLengthVal = *stepNoteLengthParam;
 
         pulseClock->setFrequency(pulseRateHz);
