@@ -183,32 +183,33 @@ void Sequencer::parentSizeChanged()
 
 void Sequencer::timerCallback(int timerID)
 {
+ 
     
-    if (timerID == displayTimer)
+    if (timerID == hiFreqTimer)
     {
+        int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) );
         
-        //updateGlobalNoteLengthLabel();
-       // updateStepDivisionLabel();
-        
-    
-    }
-    
-    else if (timerID == hiFreqTimer)
-    {
-        int currentTime = Time::getMillisecondCounter();
+        //std::cout << currentTime << std::endl;
         
         for (int i = 0; i < numSteps; i++)
         {
-            if (step[i].timeStamp + step[i].noteLengthMillis == currentTime)
+            int range = 4;
+            
+            if (step[i].isReleased == false)
             {
-                int note = step[i].noteNumber;
-                state.noteOff(currentMidiChannel, note, 1.0f);
-                step[i].isReleased = true;
+                if (step[i].timeStamp + step[i].noteLengthMillis > currentTime - range && step[i].timeStamp + step[i].noteLengthMillis < currentTime + range )
+                {
+                    int note = step[i].noteNumber;
+                    state.noteOff(currentMidiChannel, note, 1.0f);
+                    step[i].isReleased = true;
+                    
+                    
+                    //trigger Listener
+                    processor.handleSequencerNoteOff(&state, currentMidiChannel, note, 1.0f);
+                }
                 
-                
-                //trigger Listener
-                processor.handleSequencerNoteOff(&state, currentMidiChannel, note, 1.0f);
             }
+            
         }
     }
     
@@ -256,7 +257,7 @@ void Sequencer::playStep (int currentStep)
     step[currentStep].stepNumber = currentStep;
     step[currentStep].noteNumber = newNote;
     step[currentStep].noteLengthMillis = releaseTime;
-    step[currentStep].timeStamp = Time::getMillisecondCounter();
+    step[currentStep].timeStamp = static_cast<int> ( std::round( Time::getMillisecondCounterHiRes() ) );
     step[currentStep].isReleased = false;
     
     //send noteOn message

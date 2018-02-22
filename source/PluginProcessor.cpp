@@ -488,7 +488,6 @@ void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int m
 void MonosynthPluginAudioProcessor::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
  
-    std::cout << midiNoteNumber << " -- released" << std::endl;
     
     //if (lastNotePlayed == midiNoteNumber)
     {

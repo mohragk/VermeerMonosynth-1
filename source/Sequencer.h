@@ -87,11 +87,11 @@ public:
 
     struct Step
     {
-        int    stepNumber;
-        int    noteNumber;
-        int    timeStamp;
-        int    noteLengthMillis;
-        bool   isReleased;
+        int    stepNumber = 0;
+        int    noteNumber = 60;
+        int    timeStamp = 0;
+        int    noteLengthMillis = 10;
+        bool   isReleased = false;
     } step[numSteps];
 
     
