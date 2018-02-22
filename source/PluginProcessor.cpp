@@ -584,6 +584,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
 	// SEQUENCER
     
+    useSequencer = false; //TEST
     if (useSequencer)
     {
         applySequencer(osBuffer);

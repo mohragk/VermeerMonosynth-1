@@ -42,7 +42,10 @@ public:
 
 	//METHODS
 	void addNote(const int midiChannel, const int midiNoteNumber, const float velocity, const int noteLengthSamples, const int curTimeSamples);
-	void allNotesOff(const int midiChannel, const int curTime);
+    
+    void noteOn(const int midiChannel, const int midiNoteNumber, const float velocity);
+    void noteOff(const int midiChannel, const int midiNoteNumber, const float velocity);
+	void allNotesOff(const int midiChannel);
 
 	void processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool inject);
 
@@ -54,12 +57,13 @@ private:
 
 	//MEMBERS
 
-	//CriticalSection lock;
+	CriticalSection lock;
     
 	MidiBuffer internalBuffer;
 	Array<SequencerStateListener*> listeners;
 
 
+    int startTime;
 
 
 	//METHODS
@@ -70,6 +74,7 @@ private:
 
 	void processMidiEvent(const MidiMessage& message);
 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SequencerState)
 };
 
 

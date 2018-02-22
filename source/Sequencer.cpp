@@ -15,45 +15,79 @@
 
 #include "Sequencer.h"
 
+class Sequencer::StepSlider : public Slider
+{
+public:
+    StepSlider(String n, int type) : Slider(n), sliderName(n)
+    {
+        if (type == ROTARY) { setSliderStyle(Slider::RotaryVerticalDrag); }
+        else if (type == LINEARHORIZONTAL) {setSliderStyle(Slider::LinearHorizontal);}
+        else { setSliderStyle(Slider::LinearVertical); }
+        
+        setTextBoxStyle(Slider::TextBoxBelow, true, 36, 18);
 
+        setColour(thumbColourId, darkThumb);
+    };
+    ~StepSlider() {};
+    
+    void startedDragging() override     { setColour(thumbColourId, lightThumb); }
+    void stoppedDragging() override     { setColour(thumbColourId, darkThumb);  }
+    
+    enum style
+    {
+        ROTARY = 0,
+        LINEARHORIZONTAL,
+        LINEARVERTICAL
+    };
+    
+private:
+    String sliderName;
+    
+    Colour lightThumb = Colour(0xffdee5fc);
+    Colour darkThumb = Colour(0xff3e7db3);
+    
+};
 
 Sequencer::Sequencer (MonosynthPluginAudioProcessor& p) : processor(p)
 
 {
-    typedef ParameterSlider::style knobStyle;
+    typedef StepSlider::style knobStyle;
 
-    globalNoteLengthSlider = std::unique_ptr<ParameterSlider> (new ParameterSlider(*processor.stepNoteLengthParam, knobStyle(ROTARY)));
+    globalNoteLengthSlider = std::unique_ptr<StepSlider> (new StepSlider("globalNoteLength", knobStyle(ROTARY)));
     addAndMakeVisible (globalNoteLengthSlider.get());
+    globalNoteLengthSlider.get()->setRange(10, 1000, 1);
  
     
-    globalNoteLengthLabel = std::unique_ptr<Label>(new Label("StepDiv Label", TRANS("Div")));
-    addAndMakeVisible(globalNoteLengthLabel.get());
-    globalNoteLengthLabel->setFont(Font("", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
-    globalNoteLengthLabel->setJustificationType(Justification::centredTop);
-    globalNoteLengthLabel->setEditable(false, false, false);
-    globalNoteLengthLabel->setColour(TextEditor::textColourId, Colours::black);
-    globalNoteLengthLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    //globalNoteLengthLabel = std::unique_ptr<Label>(new Label("StepDiv Label", TRANS("Div")));
+    //addAndMakeVisible(globalNoteLengthLabel.get());
+   // globalNoteLengthLabel->setFont(Font("", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
+   // globalNoteLengthLabel->setJustificationType(Justification::centredTop);
+   // globalNoteLengthLabel->setEditable(false, false, false);
+   // globalNoteLengthLabel->setColour(TextEditor::textColourId, Colours::black);
+   // globalNoteLengthLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
     
     for (int i = 0; i < numSteps; i++)
     {
-        pitchSlider[i] = std::unique_ptr<ParameterSlider> ( new ParameterSlider (*processor.stepPitchParam[i], knobStyle(LINEARVERTICAL) ) );
+        pitchSlider[i] = std::unique_ptr<StepSlider> ( new StepSlider ("pitchSlider" + std::to_string(i), knobStyle(LINEARVERTICAL) ) );
         addAndMakeVisible (pitchSlider[i].get());
+        pitchSlider[i].get()->setRange(-12, 12, 1);
     }
     
-	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sequencerStepDivisionParam, knobStyle(ROTARY)));
+	stepDivision = std::unique_ptr<StepSlider>(new StepSlider("stepDivision", knobStyle(ROTARY)));
 	addAndMakeVisible(stepDivision.get());
+    stepDivision.get()->setRange(1, 6, 1);
 
-	stepDivisionLabel = std::unique_ptr<Label>(new Label("StepDiv Label", TRANS("Div")));
-	addAndMakeVisible(stepDivisionLabel.get());
-	stepDivisionLabel->setFont(Font("", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
-	stepDivisionLabel->setJustificationType(Justification::centredTop);
-	stepDivisionLabel->setEditable(false, false, false);
-	stepDivisionLabel->setColour(TextEditor::textColourId, Colours::black);
-	stepDivisionLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+	//stepDivisionLabel = std::unique_ptr<Label>(new Label("StepDiv Label", TRANS("Div")));
+	//addAndMakeVisible(stepDivisionLabel.get());
+	//stepDivisionLabel->setFont(Font("", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
+	//stepDivisionLabel->setJustificationType(Justification::centredTop);
+	//stepDivisionLabel->setEditable(false, false, false);
+	//stepDivisionLabel->setColour(TextEditor::textColourId, Colours::black);
+	//stepDivisionLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     setSize (890, SEQUENCER_HEIGHT);
 
-	startTimerHz(60);
+	startTimer(displayTimer, 1000 / 60);
 }
 
 Sequencer::~Sequencer()
@@ -88,7 +122,6 @@ void Sequencer::resized()
         for (int i =0; i < numSteps; i++)
         {
             pitchSlider[i]->setBounds(block.removeFromLeft(vertSliderSize));
-			pitchSlider[i]->setTextBoxStyle(Slider::TextBoxBelow, true, vertSliderSize, 18);
 			pitchSlider[i]->setColour(Slider::textBoxOutlineColourId, Colour(0xff323e44));
         }
     }
@@ -97,14 +130,14 @@ void Sequencer::resized()
         Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
         globalNoteLengthSlider->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
         
-        globalNoteLengthLabel->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.25 ) );
+        //globalNoteLengthLabel->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.25 ) );
     }
     
     {
         Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
         stepDivision->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
         
-        stepDivisionLabel->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.25)  );
+        //stepDivisionLabel->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.25)  );
     }
 }
 
@@ -113,11 +146,15 @@ void Sequencer::parentSizeChanged()
     
 }
 
-void Sequencer::timerCallback()
+void Sequencer::timerCallback(int timerID)
 {
-	updateStepKnobColour();
-    updateGlobalNoteLengthLabel();
-	updateStepDivisionLabel();
+    if (timerID == displayTimer)
+    {
+        updateStepKnobColour();
+        //updateGlobalNoteLengthLabel();
+       // updateStepDivisionLabel();
+    }
+	
 }
 
 

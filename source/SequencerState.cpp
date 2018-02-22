@@ -12,7 +12,7 @@
 
 
 
-SequencerState::SequencerState()
+SequencerState::SequencerState() : startTime(Time::getMillisecondCounter())
 {
     
 }
@@ -46,6 +46,36 @@ void SequencerState::addNote(const int midiChannel, const int midiNoteNumber, co
 }
 
 
+void SequencerState::noteOn(const int midiChannel, const int midiNoteNumber, const float velocity)
+{
+    jassert( midiChannel > 0 && midiChannel <= 16 );
+    jassert( isPositiveAndBelow(midiNoteNumber, 128 ) );
+    
+    if ( isPositiveAndBelow ( midiNoteNumber, 128 ) )
+    {
+        
+        int time = Time::getMillisecondCounter() - startTime;
+        internalBuffer.addEvent(MidiMessage::noteOn (midiChannel, midiNoteNumber, velocity), time);
+        
+    }
+}
+
+
+void SequencerState::noteOff(const int midiChannel, const int midiNoteNumber, const float velocity)
+{
+    jassert( midiChannel > 0 && midiChannel <= 16 );
+    jassert( isPositiveAndBelow(midiNoteNumber, 128 ) );
+    
+    if ( isPositiveAndBelow ( midiNoteNumber, 128 ) )
+    {
+        
+        int time = Time::getMillisecondCounter() - startTime;
+        internalBuffer.addEvent(MidiMessage::noteOff (midiChannel, midiNoteNumber, velocity), time);
+        
+    }
+}
+
+
 void SequencerState::noteOnInternal( const int midiChannel, const int midiNoteNumber, float velocity)
 {
     if ( isPositiveAndBelow( midiNoteNumber, 128 ) )
@@ -67,20 +97,20 @@ void SequencerState::noteOffInternal (const int midiChannel, const int midiNoteN
     
 }
 
-void SequencerState::allNotesOff(const int midiChannel, const int curTime)
+void SequencerState::allNotesOff(const int midiChannel)
 {
-	
+    ScopedLock s1 (lock);
 
 	if (midiChannel <= 0)
 	{
 		for (int channel = 1; channel <= 16; channel++)
-			allNotesOff(channel, curTime);
+			allNotesOff(channel);
 	}
 	else
 	{
 		for (int note = 0; note < 128; ++note)
 		{
-			int now = curTime;
+            int now = Time::getMillisecondCounter() - startTime;
 			internalBuffer.addEvent(MidiMessage::noteOff(midiChannel, note, 0.0f), now);
 		}
 	}
@@ -115,6 +145,8 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
 	int time;
 
 
+    ScopedLock s1 (lock);
+    
 	// add messages to internalBuffer
 	while (i.getNextEvent(message, time))
 		processMidiEvent(message);
@@ -131,8 +163,8 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
 		// 
 		while (i2.getNextEvent(message, time))
 		{
-			//const int pos = jlimit(0, numSamples - 1, roundToInt((time - firstEventTime) * scaleFactor));
-			buffer.addEvent(message, startSample + time);
+			const int pos = jlimit(0, numSamples - 1, roundToInt((time - firstEventTime) * scaleFactor));
+			buffer.addEvent(message, startSample + pos);
 		}
 
 		

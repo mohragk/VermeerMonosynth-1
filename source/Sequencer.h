@@ -16,11 +16,9 @@
 
 #define SEQUENCER_HEIGHT 120
 
-//[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
-#include "ParameterSlider.h"
 
 
 //==============================================================================
@@ -31,22 +29,26 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Sequencer  : public Component, private Timer
+
+
+
+
+class Sequencer  : public Component, private MultiTimer
 {
 public:
     //==============================================================================
     Sequencer (MonosynthPluginAudioProcessor& p);
     ~Sequencer();
-
+    
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     //[/UserMethods]
-
+    
     void paint (Graphics& g) override;
     void resized() override;
     
     void parentSizeChanged() override;
-	void timerCallback() override;
+    void timerCallback(int timerID) override;
     
     
     enum steps
@@ -63,6 +65,20 @@ public:
         
     };
     
+    enum timers
+    {
+        pulseClock = 0,
+        releaseTimerStep1,
+        releaseTimerStep2,
+        releaseTimerStep3,
+        releaseTimerStep4,
+        releaseTimerStep5,
+        releaseTimerStep6,
+        releaseTimerStep7,
+        releaseTimerStep8,
+        displayTimer,
+        numTimers
+    };
 
     struct Step
     {
@@ -81,6 +97,7 @@ public:
 
 private:
     
+    class StepSlider;
     // members
     MonosynthPluginAudioProcessor& processor;
     
@@ -91,13 +108,16 @@ private:
         LINEARVERTICAL
     };
     
+    double pulseClockHz;
+    
+    // methods
     void updateStepDivisionLabel();
     void updateGlobalNoteLengthLabel();
 	void updateStepKnobColour();
     
-    std::unique_ptr<ParameterSlider> pitchSlider[numSteps];
-    std::unique_ptr<ParameterSlider> globalNoteLengthSlider;
-	std::unique_ptr<ParameterSlider> stepDivision;
+    std::unique_ptr<StepSlider> pitchSlider[numSteps];
+    std::unique_ptr<StepSlider> globalNoteLengthSlider;
+	std::unique_ptr<StepSlider> stepDivision;
     
 	std::unique_ptr<Label> stepDivisionLabel, globalNoteLengthLabel;
 
