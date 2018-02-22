@@ -52,8 +52,9 @@ public:
     void timerCallback(int timerID) override;
     
     void handleSequencerNoteOn (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
-    /** @internal */
     void handleSequencerNoteOff (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    
+    void processSteps();
     
     enum steps
     {
@@ -81,6 +82,7 @@ public:
         releaseTimerStep7,
         releaseTimerStep8,
         displayTimer,
+        hiFreqTimer,
         numTimers
     };
 
@@ -120,13 +122,23 @@ private:
         LINEARVERTICAL
     };
     
-    double pulseClockHz;
     int lastNotePlayed;
+    int stepCount = 0;
+    
+    bool shouldRun;
+    bool isActive;
     
     // methods
     void updateStepDivisionLabel();
     void updateGlobalNoteLengthLabel();
 	void updateStepKnobColour();
+    
+    void startPulseClock(int timeMillis);
+    void stopPulseClock();
+    
+    void startReleaseTimer(int step, int timeMillis);
+    
+    
     
     
 

@@ -91,6 +91,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
     state.addListener(this);
 
 	startTimer(displayTimer, 1000 / 60);
+    startTimer(hiFreqTimer, 4);
 }
 
 Sequencer::~Sequencer()
@@ -101,14 +102,35 @@ Sequencer::~Sequencer()
 void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     lastNotePlayed = midiNoteNumber;
+    
+    shouldRun = true;
 }
 
 
 void Sequencer::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    
+    shouldRun = false;
 }
 
+
+void Sequencer::processSteps()
+{
+    int bpm = 120;
+    
+    
+    
+    if (shouldRun)
+    {
+        int pulseTime = (60000 / bpm) / 4; // 4 = every beat
+        
+        std::cout << pulseTime << std::endl;
+        //startPulseClock(pulseTime);
+    }
+    else
+    {
+        //stopPulseClock();
+    }
+}
 
 //==============================================================================
 void Sequencer::paint (Graphics& g)
@@ -169,10 +191,31 @@ void Sequencer::timerCallback(int timerID)
         //updateGlobalNoteLengthLabel();
        // updateStepDivisionLabel();
     }
+    
+    if (timerID == hiFreqTimer)
+    {
+        processSteps();
+    }
 	
 }
 
 
+void Sequencer::startPulseClock(int time)
+{
+    startTimer(pulseClock, time);
+}
+
+
+void Sequencer::stopPulseClock()
+{
+    stopTimer(pulseClock);
+}
+
+
+void Sequencer::startReleaseTimer(int step, int timeMillis)
+{
+    startTimer(step, timeMillis);
+}
 
 void Sequencer::updateGlobalNoteLengthLabel()
 {

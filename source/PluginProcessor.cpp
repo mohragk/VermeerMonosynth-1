@@ -584,10 +584,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
 	// SEQUENCER
     
-    useSequencer = false; //TEST
+   // useSequencer = false; //TEST
     if (useSequencer)
     {
-        applySequencer(osBuffer);
+        //applySequencer(osBuffer);
         sequencerState.processBuffer(midiMessages, 0, numSamples, true);
     }
 	// Now pass any incoming midi messages to our keyboard state object, and let it
