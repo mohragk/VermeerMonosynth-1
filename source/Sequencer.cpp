@@ -266,7 +266,7 @@ void Sequencer::playStep (int currentStep)
     
     int newNote = lastNotePlayed + *processor.stepPitchParam[currentStep];
     int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
-    int releaseTime = std::round( ( *processor.stepNoteLengthParam / 100 ) * pulseInterval );
+    int releaseTime = std::round(  *processor.stepNoteLengthParam  * pulseInterval / 100);
     
     
     //fill struct
