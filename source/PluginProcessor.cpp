@@ -1081,6 +1081,9 @@ void MonosynthPluginAudioProcessor::setStateInformation (const void* data, int s
             lastUIWidth  = jmax (xmlState->getIntAttribute ("uiWidth", lastUIWidth), 400);
             lastUIHeight = jmax (xmlState->getIntAttribute ("uiHeight", lastUIHeight), 200);
             
+            lastSequencerChoice  = xmlState->getBoolAttribute("sequencerOn");
+            lastOversampleChoice = xmlState->getBoolAttribute("oversampleOn");
+            
             // Now reload our parameters..
             for (int i = 0; i < getNumParameters(); ++i)
                 if (AudioProcessorParameterWithID* p = dynamic_cast<AudioProcessorParameterWithID*> (getParameters().getUnchecked(i)))
