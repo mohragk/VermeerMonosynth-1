@@ -242,8 +242,13 @@ ampEnvelope(nullptr)
     {
         addParameter(stepPitchParam[i] = new AudioParameterInt("stepPitchParam" + std::to_string(i), "Seq. Pitch " + std::to_string(i), -12, 12, 0 ));
     }
-	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.1f, 1.0f, 0.5f));
-	addParameter(sequencerStepDivisionParam = new AudioParameterInt("sequencerStepDivisionParam", "Seq. Rate", 1, 6, 2));
+    
+    auto linToPow = [](int start, int end, int linVal) { return std::pow(2, linVal);  };
+    auto powToLin = [](int start, int end, int powVal) { return std::log2( powVal ); };
+    
+	addParameter(stepNoteLengthParam = new AudioParameterInt("stepNoteLengthParam", "Seq. Note Length" , 10, 100, 50));
+	addParameter(stepDivisionParam   = new AudioParameterInt("stepDivisionParam", "Seq. Rate", 1, 6, 3));
+    
     
     
     
@@ -896,120 +901,7 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
 template <typename FloatType>  
 void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer)
 {
-    int numSamples = buffer.getNumSamples();
-    AudioPlayHead::CurrentPositionInfo pos;
-	int curTimeSamples = 0;
-    int defaultBpm = 120;
-    double pulseRateHz;
-	
-
-    while (--numSamples >= 0)
-    {
-		sequencerPlaying = false;
-        
-        
-        int seqDivision = int(  powf(2, *sequencerStepDivisionParam) );
-        sequencerStepDivisionVal = seqDivision; //Use in GUI
-        
-
-		// succesfully get current posInfo
-        if (AudioPlayHead* ph = getPlayHead())
-        {
-            
-            AudioPlayHead::CurrentPositionInfo newTime;
-            
-            if (ph->getCurrentPosition (newTime))
-            {
-                pos = newTime;  // Successfully got the current time from the host..
-                
-            }
-            
-            pulseRateHz  = getLFOSyncedFreq(pos, seqDivision);
-        }
-        else
-        {
-            const double seconds_per_beat = 60.0 / (double) defaultBpm;
-            const double seconds_per_note = seconds_per_beat * (4 / seqDivision);
-            
-            pulseRateHz = 1.0 / seconds_per_note;
-        }
-
-		
-        globalNoteLengthVal = *stepNoteLengthParam;
-
-        pulseClock->setFrequency(pulseRateHz);
-		pulseClock->setPulseLength(*stepNoteLengthParam);
-		
-        
-        if ( isAnyKeyDown )
-        {
-			pulseClock->update();
-			sequencerPlaying = true;
-			currentStep = stepCounter;
-
-			if (pulseClock->nextSample() >= 1.0)
-			{
-				if (!ampEnvelope->isGateOn())
-					ampEnvelope->gate(true);
-
-				if (!filterEnvelope->isGateOn())
-					filterEnvelope->gate(true);
-			}
-			else
-			{
-				if(ampEnvelope->isGateOn())
-					ampEnvelope->gate(false);
-
-				if (filterEnvelope->isGateOn())
-					filterEnvelope->gate(false);
-			}
-				
-			
-			if (pulseClock->isPulseHigh())
-            {
-				int newNote = lastNotePlayed + *stepPitchParam[stepCounter];
-                int noteLength =  56;
-                
-                if (noteLength > numSamples - 1)
-                    noteLength = numSamples - 1;
-                
-                if(noteLength <= 0)
-                    noteLength = 1;
-                
-                
-				int midiChannel = curMidiChannel;
-
-
-				sequencerState.addNote(midiChannel, newNote, 1.0, noteLength, curTimeSamples);
-
-
-
-                stepCounter++;
-                
-                if( stepCounter > 8)
-                {
-                    stepCounter = 0;
-                    pulseClock->resetModulo();  //prob unnecessary
-                }
-                
-            }
-            
-			
-        }
-		else 
-		{
-			pulseClock->resetModulo();
-			stepCounter = 0;
-            
-            if(ampEnvelope->isGateOn())
-                ampEnvelope->gate(false);
-            
-            if (filterEnvelope->isGateOn())
-                filterEnvelope->gate(false);
-		}
-
-		curTimeSamples++;
-    }
+    
 };
 
 

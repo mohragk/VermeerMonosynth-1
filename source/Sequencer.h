@@ -19,6 +19,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "PluginProcessor.h"
+#include "ParameterSlider.h"
 #include "SequencerState.h"
 
 
@@ -106,9 +107,9 @@ private:
     CriticalSection lock;
 
     
-    std::unique_ptr<StepSlider> pitchSlider[numSteps];
-    std::unique_ptr<StepSlider> globalNoteLengthSlider;
-    std::unique_ptr<StepSlider> stepDivision;
+    std::unique_ptr<ParameterSlider> pitchSlider[numSteps];
+    std::unique_ptr<ParameterSlider> globalNoteLengthSlider;
+    std::unique_ptr<ParameterSlider> stepDivision;
     
     std::unique_ptr<Label> stepDivisionLabel, globalNoteLengthLabel;
     

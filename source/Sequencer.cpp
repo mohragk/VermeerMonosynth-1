@@ -18,7 +18,7 @@
 class Sequencer::StepSlider : public Slider, private Timer
 {
 public:
-    StepSlider(String n, int type, int& pInt) : Slider(n), sliderName(n), paramInt(pInt)
+    StepSlider(int type, AudioProcessorParameter& p) : Slider(p.getName(256)), paramInt(p)
     {
         if (type == ROTARY) { setSliderStyle(Slider::RotaryVerticalDrag); }
         else if (type == LINEARHORIZONTAL) {setSliderStyle(Slider::LinearHorizontal);}
@@ -29,13 +29,29 @@ public:
         setColour(thumbColourId, darkThumb);
         
         startTimerHz(60);
+        updateSliderPos();
+        setRange(0,1,0);
     };
     ~StepSlider() {};
     
-    void startedDragging() override     { paramInt = getValue(); setColour(thumbColourId, lightThumb); }
-    void stoppedDragging() override     { paramInt = getValue(); setColour(thumbColourId, darkThumb);  }
+    void startedDragging() override     { paramInt.beginChangeGesture(); setColour(thumbColourId, lightThumb); }
+    void stoppedDragging() override     { paramInt.endChangeGesture();   setColour(thumbColourId, darkThumb);  }
     
     void timerCallback () override { updateSliderPos(); };
+    
+    void valueChanged() override
+    {
+        if (isMouseButtonDown())
+        {
+            paramInt.setValueNotifyingHost(Slider::getValue());
+        }
+        else
+        {
+            paramInt.setValue(Slider::getValue());
+        }
+        
+    }
+    
     enum style
     {
         ROTARY = 0,
@@ -47,14 +63,14 @@ public:
     Colour darkThumb = Colour(0xff3e7db3);
     
 private:
-    String sliderName;
+   // String sliderName;
     
-    int&   paramInt;
+    AudioProcessorParameter&   paramInt;
    // float paramFloat;
     
     void updateSliderPos()
     {
-        const int newValue = paramInt;
+        const int newValue = paramInt.getValue();
         
         if (newValue != Slider::getValue() && ! isMouseButtonDown())
         {
@@ -69,21 +85,22 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
 {
     typedef StepSlider::style knobStyle;
 
-    globalNoteLengthSlider = std::unique_ptr<StepSlider> (new StepSlider("globalNoteLength", knobStyle(ROTARY), processor.lastSeqNoteLength));
+    globalNoteLengthSlider = std::unique_ptr<ParameterSlider> (new ParameterSlider( *processor.stepNoteLengthParam, knobStyle(ROTARY) ));
     addAndMakeVisible (globalNoteLengthSlider.get());
-    globalNoteLengthSlider.get()->setRange(10, 100, 1);
+    globalNoteLengthSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
  
     
     for (int i = 0; i < numSteps; i++)
     {
-        pitchSlider[i] = std::unique_ptr<StepSlider> ( new StepSlider ("pitchSlider" + std::to_string(i), knobStyle(LINEARVERTICAL), processor.lastSeqPitchValue[i] ) );
+        pitchSlider[i] = std::unique_ptr<ParameterSlider> ( new ParameterSlider (  *processor.stepPitchParam[i], knobStyle(LINEARVERTICAL) ) );
         addAndMakeVisible (pitchSlider[i].get());
-        pitchSlider[i].get()->setRange(-12, 12, 1);
+        pitchSlider[i]->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
+
     }
     
-	stepDivision = std::unique_ptr<StepSlider>(new StepSlider("stepDivision", knobStyle(ROTARY), processor.lastSeqDivision));
+	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(  *processor.stepDivisionParam, knobStyle(ROTARY)));
 	addAndMakeVisible(stepDivision.get());
-    stepDivision.get()->setRange(1, 6, 1);
+    stepDivision->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
 
     
     setSize (890, SEQUENCER_HEIGHT);
@@ -247,9 +264,9 @@ void Sequencer::playStep (int currentStep)
 {
    // ScopedLock s1 (lock);
     
-    int newNote = lastNotePlayed + pitchSlider[currentStep].get()->getValue();
+    int newNote = lastNotePlayed + *processor.stepPitchParam[currentStep];
     int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
-    int releaseTime = std::round( ( globalNoteLengthSlider.get()->getValue() / 100 ) * pulseInterval );
+    int releaseTime = std::round( ( *processor.stepNoteLengthParam / 100 ) * pulseInterval );
     
     
     //fill struct
@@ -273,7 +290,9 @@ void Sequencer::startPulseClock()
     
     bpm = processor.lastPosInfo.bpm;
     
-    int division = pow(2, stepDivision.get()->getValue());
+    
+    
+    int division = (int) std::round( powf(2, *processor.stepDivisionParam ));
     int pulseTime = getPulseInterval(processor.lastPosInfo, division);
     
     startTimer(PULSECLOCK_TIMER, pulseTime);
