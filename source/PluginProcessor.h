@@ -140,6 +140,9 @@ public:
     // filter's other parameters, and the UI component will update them when it gets
     // resized.
     int lastUIWidth, lastUIHeight;
+    int lastSeqPitchValue[8];
+    int lastSeqNoteLength;
+    int lastSeqDivision;
     
     bool lastOversampleChoice;
     bool lastSequencerChoice;

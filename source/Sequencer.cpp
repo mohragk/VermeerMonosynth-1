@@ -15,10 +15,10 @@
 
 #include "Sequencer.h"
 
-class Sequencer::StepSlider : public Slider
+class Sequencer::StepSlider : public Slider, private Timer
 {
 public:
-    StepSlider(String n, int type) : Slider(n), sliderName(n)
+    StepSlider(String n, int type, int& pInt) : Slider(n), sliderName(n), paramInt(pInt)
     {
         if (type == ROTARY) { setSliderStyle(Slider::RotaryVerticalDrag); }
         else if (type == LINEARHORIZONTAL) {setSliderStyle(Slider::LinearHorizontal);}
@@ -27,12 +27,15 @@ public:
         setTextBoxStyle(Slider::TextBoxBelow, true, 36, 18);
 
         setColour(thumbColourId, darkThumb);
+        
+        startTimerHz(60);
     };
     ~StepSlider() {};
     
-    void startedDragging() override     { setColour(thumbColourId, lightThumb); }
-    void stoppedDragging() override     { setColour(thumbColourId, darkThumb);  }
+    void startedDragging() override     { paramInt = getValue(); setColour(thumbColourId, lightThumb); }
+    void stoppedDragging() override     { paramInt = getValue(); setColour(thumbColourId, darkThumb);  }
     
+    void timerCallback () override { updateSliderPos(); };
     enum style
     {
         ROTARY = 0,
@@ -46,7 +49,18 @@ public:
 private:
     String sliderName;
     
+    int&   paramInt;
+   // float paramFloat;
     
+    void updateSliderPos()
+    {
+        const int newValue = paramInt;
+        
+        if (newValue != Slider::getValue() && ! isMouseButtonDown())
+        {
+            Slider::setValue (newValue);
+        }
+    }
     
 };
 
@@ -55,19 +69,19 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
 {
     typedef StepSlider::style knobStyle;
 
-    globalNoteLengthSlider = std::unique_ptr<StepSlider> (new StepSlider("globalNoteLength", knobStyle(ROTARY)));
+    globalNoteLengthSlider = std::unique_ptr<StepSlider> (new StepSlider("globalNoteLength", knobStyle(ROTARY), processor.lastSeqNoteLength));
     addAndMakeVisible (globalNoteLengthSlider.get());
     globalNoteLengthSlider.get()->setRange(10, 100, 1);
  
     
     for (int i = 0; i < numSteps; i++)
     {
-        pitchSlider[i] = std::unique_ptr<StepSlider> ( new StepSlider ("pitchSlider" + std::to_string(i), knobStyle(LINEARVERTICAL) ) );
+        pitchSlider[i] = std::unique_ptr<StepSlider> ( new StepSlider ("pitchSlider" + std::to_string(i), knobStyle(LINEARVERTICAL), processor.lastSeqPitchValue[i] ) );
         addAndMakeVisible (pitchSlider[i].get());
         pitchSlider[i].get()->setRange(-12, 12, 1);
     }
     
-	stepDivision = std::unique_ptr<StepSlider>(new StepSlider("stepDivision", knobStyle(ROTARY)));
+	stepDivision = std::unique_ptr<StepSlider>(new StepSlider("stepDivision", knobStyle(ROTARY), processor.lastSeqDivision));
 	addAndMakeVisible(stepDivision.get());
     stepDivision.get()->setRange(1, 6, 1);
 
@@ -183,7 +197,6 @@ void Sequencer::timerCallback(int timerID)
     {
         int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) );
         
-        //std::cout << currentTime << std::endl;
         
         for (int i = 0; i < numSteps; i++)
         {
@@ -256,12 +269,8 @@ void Sequencer::startPulseClock()
     
     bpm = processor.lastPosInfo.bpm;
     
-    
-    
     int division = pow(2, stepDivision.get()->getValue());
     int pulseTime = getPulseInterval(processor.lastPosInfo, division);
-    
-    std::cout << "div: " << division << " || ms: " << pulseTime << std::endl;
     
     startTimer(PULSECLOCK_TIMER, pulseTime);
 }
@@ -276,8 +285,7 @@ void Sequencer::stopPulseClock()
 int Sequencer::getPulseInterval(AudioPlayHead::CurrentPositionInfo posInfo, int division)
 {
     int BPM = 120;
-    
-   
+
     BPM = posInfo.bpm;
     const int denominator = posInfo.timeSigDenominator;
     const int msPerBeat = 60000 / BPM;
