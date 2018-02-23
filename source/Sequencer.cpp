@@ -98,11 +98,18 @@ void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNu
         lastNotePlayed = midiNoteNumber;
         currentMidiChannel = midiChannel;
         
+        stepCount = 0;
+        playStep(stepCount);
+        
         int bpm = 120;
         
         bpm = processor.lastPosInfo.bpm;
         int division = pow(2, stepDivision.get()->getValue());
         int pulseTime = (60000 / bpm) / division; // 4 = every beat
+        
+        std::cout << "Key pressed at: " << Time::getMillisecondCounter() << std::endl;
+        
+        
         startPulseClock(pulseTime);
         
         isPlaying = true;
@@ -118,7 +125,7 @@ void Sequencer::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteN
     if(isActive)
     {
         stopPulseClock();
-        stepCount = 0;
+       
         isPlaying = false;
     }
     
@@ -200,7 +207,7 @@ void Sequencer::timerCallback(int timerID)
                     
                     
                     //trigger Listener
-                    processor.handleSequencerNoteOff(&state, currentMidiChannel, note, 1.0f);
+                    processor.handleNoteOff(nullptr, currentMidiChannel, note, 1.0f);
                 }
                 
             }
@@ -218,11 +225,17 @@ void Sequencer::timerCallback(int timerID)
             stepCount = 0;
         
     }
+    else if (timerID == displayTimer)
+    {
+        updateStepKnobColour(stepCount);
+    }
 }
 
 
 void Sequencer::playStep (int currentStep)
 {
+    std::cout << "Step played at: " << Time::getMillisecondCounter() << std::endl;
+    
     int newNote = lastNotePlayed + pitchSlider[currentStep].get()->getValue();
     int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
     int releaseTime = std::round( ( globalNoteLengthSlider.get()->getValue() / 100 ) * pulseInterval );
@@ -238,10 +251,10 @@ void Sequencer::playStep (int currentStep)
     state.noteOn(currentMidiChannel, newNote, 1.0f);
     
     //trigger Listener
-    processor.handleSequencerNoteOn(&state, currentMidiChannel, newNote, 1.0f);
+    processor.handleNoteOn(nullptr, currentMidiChannel, newNote, 1.0f);
     
     //update thumb colour
-    updateStepKnobColour(currentStep);
+    
 }
 
 void Sequencer::startPulseClock(int intervalMillis)

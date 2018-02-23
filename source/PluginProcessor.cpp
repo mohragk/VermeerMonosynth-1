@@ -250,7 +250,7 @@ ampEnvelope(nullptr)
     initialiseSynth();
     
     keyboardState.addListener(this);
-	sequencerState.addListener(this);
+	//sequencerState.addListener(this);
     
     filterEnvelope = std::unique_ptr<ADSR>( new ADSR );
     ampEnvelope    = std::unique_ptr<ADSR>( new ADSR );
@@ -443,7 +443,7 @@ void MonosynthPluginAudioProcessor::reset()
 
 void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    if(!lastSequencerChoice)
+    //if(!lastSequencerChoice)
     {
         if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
             filterEnvelope->gate(true);
@@ -458,13 +458,13 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
     
     lastNotePlayed = midiNoteNumber;
 	curMidiChannel = midiChannel;
-    //isAnyKeyDown = true;
+
 }
 
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
-    if (lastNotePlayed == midiNoteNumber && !lastSequencerChoice)
+    //if (lastNotePlayed == midiNoteNumber && !lastSequencerChoice)
     {
         ampEnvelope->gate(false);
         filterEnvelope->gate(false);
@@ -473,7 +473,7 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
     
 }
 
-
+/*
 void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
@@ -500,7 +500,7 @@ void MonosynthPluginAudioProcessor::handleSequencerNoteOff(SequencerState*, int 
    
 }
 
-
+*/
 void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
 {
     double newsr = sr;
@@ -599,14 +599,15 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
 
 
-	
+   
     
     keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
-    
     
     // SEQUENCER
     if(lastSequencerChoice)
         sequencerState.processBuffer(midiMessages, 0, numSamples, true);
+    
+    
     
 	// Now pass any incoming midi messages to our keyboard state object, and let it
 	// add messages to the buffer if the user is clicking on the on-screen keys
