@@ -84,19 +84,30 @@ Sequencer::~Sequencer()
     processor.keyboardState.removeListener(this);
 }
 
+
+void Sequencer::makeActive(bool on)
+{
+    isActive = on;
+}
+
+
 void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    lastNotePlayed = midiNoteNumber;
-    currentMidiChannel = midiChannel;
+    if (isActive)
+    {
+        lastNotePlayed = midiNoteNumber;
+        currentMidiChannel = midiChannel;
+        
+        int bpm = 120;
+        
+        bpm = processor.lastPosInfo.bpm;
+        int division = pow(2, stepDivision.get()->getValue());
+        int pulseTime = (60000 / bpm) / division; // 4 = every beat
+        startPulseClock(pulseTime);
+        
+        isPlaying = true;
+    }
     
-    int bpm = 120;
-    
-    bpm = processor.lastPosInfo.bpm;
-    int division = pow(2, stepDivision.get()->getValue());
-    int pulseTime = (60000 / bpm) / division; // 4 = every beat
-    startPulseClock(pulseTime);
-    
-    isPlaying = true;
     
     
 }
@@ -104,9 +115,13 @@ void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNu
 
 void Sequencer::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    stopPulseClock();
-    stepCount = 0;
-    isPlaying = false;
+    if(isActive)
+    {
+        stopPulseClock();
+        stepCount = 0;
+        isPlaying = false;
+    }
+    
 }
 
 

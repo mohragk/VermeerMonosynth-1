@@ -232,6 +232,7 @@ ampEnvelope(nullptr)
     
     // Oversampling HQ switch
     addParameter(oversampleSwitchParam = new AudioParameterInt("oversampleSwitchParam", "HQ ON/OFF", 0, 1, 0));
+    addParameter(useHQOversamplingParam = new AudioParameterBool("useHQOversamplingParam", "Use HQ Oversampling", false ));
     
     // Softclip switch
     addParameter(softClipSwitchParam = new AudioParameterInt("softClipSwitchParam", "Softclip ON/OFF", 0, 1, 0));
@@ -243,6 +244,9 @@ ampEnvelope(nullptr)
     }
 	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.1f, 1.0f, 0.5f));
 	addParameter(sequencerStepDivisionParam = new AudioParameterInt("sequencerStepDivisionParam", "Seq. Rate", 1, 6, 2));
+    
+    
+    
     initialiseSynth();
     
     keyboardState.addListener(this);
@@ -439,7 +443,7 @@ void MonosynthPluginAudioProcessor::reset()
 
 void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    if(!useSequencer)
+    if(!lastSequencerChoice)
     {
         if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
             filterEnvelope->gate(true);
@@ -460,7 +464,7 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
-    if (lastNotePlayed == midiNoteNumber && !useSequencer)
+    if (lastNotePlayed == midiNoteNumber && !lastSequencerChoice)
     {
         ampEnvelope->gate(false);
         filterEnvelope->gate(false);
@@ -595,12 +599,13 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
 
 
-	// SEQUENCER
+	
     
-   // useSequencer = false; //TEST
+    keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
     
-        keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
     
+    // SEQUENCER
+    if(lastSequencerChoice)
         sequencerState.processBuffer(midiMessages, 0, numSamples, true);
     
 	// Now pass any incoming midi messages to our keyboard state object, and let it

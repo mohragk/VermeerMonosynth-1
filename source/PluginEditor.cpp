@@ -449,6 +449,13 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 	String debugString = getProcessor().debugInfo;
 
 	debugLabel->setText(debugString, dontSendNotification);
+    
+    
+    bool osState = getProcessor().lastOversampleChoice;
+    hqOversamplingButton.get()->setToggleState(osState, dontSendNotification);
+    
+    bool seqState = getProcessor().lastSequencerChoice;
+    expandSequencerButton.get()->setToggleState(seqState, dontSendNotification);
 
 }
 
@@ -472,6 +479,7 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
         bool state = expandSequencerButton.get()->getToggleState();
         getProcessor().toggleSequencer(state);
         getProcessor().lastSequencerChoice = state;
+        sequencerSection.get()->makeActive(state);
         
         if (state)
         {

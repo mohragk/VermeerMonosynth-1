@@ -244,6 +244,10 @@ public:
     AudioParameterInt* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
 	AudioParameterFloat* stepNoteLengthParam;
 	AudioParameterInt* sequencerStepDivisionParam;
+    
+    
+    AudioParameterBool* useSequencerParam;
+    AudioParameterBool* useHQOversamplingParam;
 	
     int sequencerStepDivisionVal;
     float globalNoteLengthVal;

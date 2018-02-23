@@ -54,6 +54,9 @@ public:
     void handleNoteOn (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
+    void makeActive(bool on);
+    bool isActivated(){ return isActive;};
+    
     
     enum steps
     {
@@ -122,7 +125,7 @@ private:
     int stepCount = 0;
     
     bool isPlaying = false;
-    bool isActive;
+    bool isActive = false;
     
     // methods
     void updateStepDivisionLabel();
