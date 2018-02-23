@@ -141,6 +141,9 @@ public:
     // resized.
     int lastUIWidth, lastUIHeight;
     
+    bool lastOversampleChoice;
+    bool lastSequencerChoice;
+    
 	bool noteIsBeingPlayed();
     
     bool saturationOn();

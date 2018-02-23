@@ -57,16 +57,8 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
 
     globalNoteLengthSlider = std::unique_ptr<StepSlider> (new StepSlider("globalNoteLength", knobStyle(ROTARY)));
     addAndMakeVisible (globalNoteLengthSlider.get());
-    globalNoteLengthSlider.get()->setRange(10, 1000, 1);
+    globalNoteLengthSlider.get()->setRange(10, 100, 1);
  
-    
-    //globalNoteLengthLabel = std::unique_ptr<Label>(new Label("StepDiv Label", TRANS("Div")));
-    //addAndMakeVisible(globalNoteLengthLabel.get());
-   // globalNoteLengthLabel->setFont(Font("", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
-   // globalNoteLengthLabel->setJustificationType(Justification::centredTop);
-   // globalNoteLengthLabel->setEditable(false, false, false);
-   // globalNoteLengthLabel->setColour(TextEditor::textColourId, Colours::black);
-   // globalNoteLengthLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
     
     for (int i = 0; i < numSteps; i++)
     {
@@ -79,34 +71,23 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
 	addAndMakeVisible(stepDivision.get());
     stepDivision.get()->setRange(1, 6, 1);
 
-	//stepDivisionLabel = std::unique_ptr<Label>(new Label("StepDiv Label", TRANS("Div")));
-	//addAndMakeVisible(stepDivisionLabel.get());
-	//stepDivisionLabel->setFont(Font("", 12.00f, Font::plain).withExtraKerningFactor(0.108f));
-	//stepDivisionLabel->setJustificationType(Justification::centredTop);
-	//stepDivisionLabel->setEditable(false, false, false);
-	//stepDivisionLabel->setColour(TextEditor::textColourId, Colours::black);
-	//stepDivisionLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
-
     
     setSize (890, SEQUENCER_HEIGHT);
     
-    state.addListener(this);
-
+    processor.keyboardState.addListener(this);
 	startTimer(displayTimer, 1000 / 60);
     startTimer(hiFreqTimer, 1);
 }
 
 Sequencer::~Sequencer()
 {
-    state.removeListener(this);
+    processor.keyboardState.removeListener(this);
 }
 
-void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
+void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     lastNotePlayed = midiNoteNumber;
     currentMidiChannel = midiChannel;
-    
-    isPlaying = true;
     
     int bpm = 120;
     
@@ -115,15 +96,16 @@ void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midi
     int pulseTime = (60000 / bpm) / division; // 4 = every beat
     startPulseClock(pulseTime);
     
+    isPlaying = true;
+    
     
 }
 
 
-void Sequencer::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
+void Sequencer::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     stopPulseClock();
-    //state.allNotesOff(currentMidiChannel);
-    
+    stepCount = 0;
     isPlaying = false;
 }
 
@@ -172,7 +154,6 @@ void Sequencer::resized()
         Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
         stepDivision->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
         
-        //stepDivisionLabel->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.25)  );
     }
 }
 
@@ -183,8 +164,7 @@ void Sequencer::parentSizeChanged()
 
 void Sequencer::timerCallback(int timerID)
 {
- 
-    
+
     if (timerID == hiFreqTimer)
     {
         int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) );
@@ -203,7 +183,6 @@ void Sequencer::timerCallback(int timerID)
                     state.noteOff(currentMidiChannel, note, 1.0f);
                     step[i].isReleased = true;
                     
-                    std::cout << "Step: " << step[i].stepNumber << " is Released at: " << currentTime << std::endl;
                     
                     //trigger Listener
                     processor.handleSequencerNoteOff(&state, currentMidiChannel, note, 1.0f);
@@ -224,35 +203,14 @@ void Sequencer::timerCallback(int timerID)
             stepCount = 0;
         
     }
-    else if (timerID == releaseTimerStep1)
-    {
-        int curStep = releaseTimerStep1 - 1;
-        stepNoteOff(curStep);
-    }
-    
-	
 }
 
-void Sequencer::stepNoteOff(int currentStep)
-{
-    /*
-    if(releaseTimerCounter[currentStep] == 1)
-    {
-        state.allNotesOff(currentMidiChannel);
-        stopTimer(currentStep + 1);
-        releaseTimerCounter[currentStep] = 0;
-        processor.handleSequencerNoteOff(&state, currentMidiChannel, 60, 1.0f);
-    }
-    else
-        releaseTimerCounter[currentStep]++;
-     
-     */
-}
 
 void Sequencer::playStep (int currentStep)
 {
     int newNote = lastNotePlayed + pitchSlider[currentStep].get()->getValue();
-    int releaseTime = globalNoteLengthSlider.get()->getValue();
+    int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
+    int releaseTime = std::round( ( globalNoteLengthSlider.get()->getValue() / 100 ) * pulseInterval );
     
     //fill struct
     step[currentStep].stepNumber = currentStep;
@@ -271,9 +229,9 @@ void Sequencer::playStep (int currentStep)
     updateStepKnobColour(currentStep);
 }
 
-void Sequencer::startPulseClock(int timeMillis)
+void Sequencer::startPulseClock(int intervalMillis)
 {
-    startTimer(PULSECLOCK_TIMER, timeMillis);
+    startTimer(PULSECLOCK_TIMER, intervalMillis);
 }
 
 

@@ -463,6 +463,7 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
         
         bool state =  hqOversamplingButton.get()->getToggleState();
         getProcessor().toggleHQOversampling(state);
+        getProcessor().lastOversampleChoice = state;
     }
     
     
@@ -470,6 +471,7 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
     {
         bool state = expandSequencerButton.get()->getToggleState();
         getProcessor().toggleSequencer(state);
+        getProcessor().lastSequencerChoice = state;
         
         if (state)
         {

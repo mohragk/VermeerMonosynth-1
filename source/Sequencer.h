@@ -34,7 +34,7 @@
 
 
 
-class Sequencer  : public Component, public SequencerStateListener, private MultiTimer
+class Sequencer  : public Component, public MidiKeyboardStateListener, private MultiTimer
 {
 public:
     //==============================================================================
@@ -51,8 +51,8 @@ public:
     void parentSizeChanged() override;
     void timerCallback(int timerID) override;
     
-    void handleSequencerNoteOn (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
-    void handleSequencerNoteOff (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    void handleNoteOn (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    void handleNoteOff (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
     
     enum steps
@@ -72,14 +72,6 @@ public:
     enum timers
     {
         PULSECLOCK_TIMER = 0,
-        releaseTimerStep1,
-        releaseTimerStep2,
-        releaseTimerStep3,
-        releaseTimerStep4,
-        releaseTimerStep5,
-        releaseTimerStep6,
-        releaseTimerStep7,
-        releaseTimerStep8,
         displayTimer,
         hiFreqTimer,
         numTimers
@@ -139,15 +131,9 @@ private:
     
     void playStep(int currentStep);
     
-    void startPulseClock(int timeMillis);
+    void startPulseClock(int intervalMillis);
     void stopPulseClock();
     
-    
-    
-    void stepNoteOff(int step);
-    
-
-
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sequencer)

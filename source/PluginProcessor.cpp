@@ -439,15 +439,18 @@ void MonosynthPluginAudioProcessor::reset()
 
 void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    
+    if(!useSequencer)
+    {
+        if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
+            filterEnvelope->gate(true);
+        
+        ampEnvelope->gate(true);
+        
+        
+        lfo.setPhase(0.0);
+    }
     contourVelocity = velocity;
-    if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
-        filterEnvelope->gate(true);
     
-    ampEnvelope->gate(true);
-   
-    
-    lfo.setPhase(0.0);
     
     lastNotePlayed = midiNoteNumber;
 	curMidiChannel = midiChannel;
@@ -457,7 +460,7 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
-    if (lastNotePlayed == midiNoteNumber)
+    if (lastNotePlayed == midiNoteNumber && !useSequencer)
     {
         ampEnvelope->gate(false);
         filterEnvelope->gate(false);
@@ -470,18 +473,18 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
 void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
-        contourVelocity = velocity;
-        //if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
-            filterEnvelope->gate(true);
-        
-        ampEnvelope->gate(true);
+    contourVelocity = velocity;
+    //if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
+        filterEnvelope->gate(true);
+    
+    ampEnvelope->gate(true);
     
     
-    lfo.setPhase(0.0);
+    //lfo.setPhase(0.0);
     
     lastNotePlayed = midiNoteNumber;
     curMidiChannel = midiChannel;
-    //isAnyKeyDown = true;
+    
 }
 
 
@@ -595,14 +598,11 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 	// SEQUENCER
     
    // useSequencer = false; //TEST
-    if (!useSequencer)
-    {
+    
         keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
-    }
-    else
-    {
+    
         sequencerState.processBuffer(midiMessages, 0, numSamples, true);
-    }
+    
 	// Now pass any incoming midi messages to our keyboard state object, and let it
 	// add messages to the buffer if the user is clicking on the on-screen keys
 	
@@ -1045,6 +1045,9 @@ void MonosynthPluginAudioProcessor::getStateInformation (MemoryBlock& destData)
     // add some attributes to it..
     xml.setAttribute ("uiWidth", lastUIWidth);
     xml.setAttribute ("uiHeight", lastUIHeight);
+    
+    xml.setAttribute ("sequencerOn", lastSequencerChoice);
+    xml.setAttribute ("oversampleOn", lastOversampleChoice); 
     
     // Store the values of all our parameters, using their param ID as the XML attribute
     for (int i = 0; i < getNumParameters(); ++i)
