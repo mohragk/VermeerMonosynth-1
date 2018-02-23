@@ -193,6 +193,8 @@ void Sequencer::timerCallback(int timerID)
             {
                 if (step[i].timeStamp + step[i].noteLengthMillis > currentTime - range && step[i].timeStamp + step[i].noteLengthMillis < currentTime + range )
                 {
+                    ScopedLock s1 (lock);
+                    
                     int note = step[i].noteNumber;
                     state.noteOff(currentMidiChannel, note, 1.0f);
                     step[i].isReleased = true;
@@ -226,7 +228,7 @@ void Sequencer::timerCallback(int timerID)
 
 void Sequencer::playStep (int currentStep)
 {
-    //ScopedLock s1 (lock);
+    ScopedLock s1 (lock);
     
     int newNote = lastNotePlayed + pitchSlider[currentStep].get()->getValue();
     int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);

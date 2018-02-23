@@ -317,7 +317,7 @@ void MonosynthPluginAudioProcessor::toggleSequencer(bool on)
     
     
     useSequencer = on;
-    
+    lastSequencerChoice = on;
     
     
 }

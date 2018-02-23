@@ -134,5 +134,7 @@ private:
         return static_cast<MonosynthPluginAudioProcessor&> (processor);
     }
 
+    void updateStates();
+    void showSequencer(bool shouldShow);
     void updateTimecodeDisplay (AudioPlayHead::CurrentPositionInfo);
 };

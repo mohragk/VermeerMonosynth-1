@@ -51,9 +51,10 @@ void SequencerState::noteOn(const int midiChannel, const int midiNoteNumber, con
     jassert( midiChannel > 0 && midiChannel <= 16 );
     jassert( isPositiveAndBelow(midiNoteNumber, 128 ) );
     
+    ScopedLock s1 (lock);
+    
     if ( isPositiveAndBelow ( midiNoteNumber, 128 ) )
     {
-        
         int time = Time::getMillisecondCounter() - startTime;
         internalBuffer.addEvent(MidiMessage::noteOn (midiChannel, midiNoteNumber, velocity), time);
         
@@ -65,6 +66,8 @@ void SequencerState::noteOff(const int midiChannel, const int midiNoteNumber, co
 {
     jassert( midiChannel > 0 && midiChannel <= 16 );
     jassert( isPositiveAndBelow(midiNoteNumber, 128 ) );
+    
+    ScopedLock s1 (lock);
     
     if ( isPositiveAndBelow ( midiNoteNumber, 128 ) )
     {

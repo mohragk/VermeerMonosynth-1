@@ -439,6 +439,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     getProcessor().lastUIWidth = getWidth();
     getProcessor().lastUIHeight = getHeight();
+    
+    startTimerHz(60);
 }
 
 //==============================================================================
@@ -451,12 +453,8 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 	debugLabel->setText(debugString, dontSendNotification);
     
     
-    bool osState = getProcessor().lastOversampleChoice;
-    hqOversamplingButton.get()->setToggleState(osState, dontSendNotification);
+    updateStates();
     
-    bool seqState = getProcessor().lastSequencerChoice;
-    expandSequencerButton.get()->setToggleState(seqState, dontSendNotification);
-
 }
 
 
@@ -478,37 +476,7 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
     {
         bool state = expandSequencerButton.get()->getToggleState();
         getProcessor().toggleSequencer(state);
-        getProcessor().lastSequencerChoice = state;
-        sequencerSection.get()->makeActive(state);
-        
-        if (state)
-        {
-            
-            
-            int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
-            int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
-            setSize (width, height);
-            
-            
-            sequencerSection.get()->setVisible(true);
-            Rectangle<int> finalBounds (getLocalBounds().removeFromBottom(SEQUENCER_HEIGHT + KEYBOARD_HEIGHT));
-            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 1.0f, 600, false, 0.0f, 0.0f);
-        }
-        else
-        {
-            int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
-            int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT;
-            setSize (width, height);
-            
-            sequencerSection.get()->setVisible(false);
-            Rectangle<int> finalBounds (sequencerSection.get()->getBounds());
-            finalBounds.translate(0, SEQUENCER_HEIGHT + KEYBOARD_HEIGHT);
-            
-            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 0.0f, 50, false, 0.0f, 0.0f);
-            
-        }
-        
-        
+        //showSequencer(state);
         
     }
     
@@ -517,7 +485,59 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
 }
 
 
+void MonosynthPluginAudioProcessorEditor::updateStates()
+{
+    //sequencer
+    bool seqState =  getProcessor().lastSequencerChoice;
+    expandSequencerButton.get()->setToggleState(seqState, dontSendNotification);
+    showSequencer(seqState);
+    
+    //oversampling
+    bool osState = getProcessor().lastOversampleChoice;
+    hqOversamplingButton.get()->setToggleState(osState, dontSendNotification);
+    
+}
 
+void MonosynthPluginAudioProcessorEditor::showSequencer(bool shouldShow)
+{
+    
+   
+    if (shouldShow)
+    {
+        if(sequencerSection.get()->isActivated())
+            return;
+        
+        int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
+        int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
+        setSize (width, height);
+        
+        
+        sequencerSection.get()->setVisible(true);
+        Rectangle<int> finalBounds (getLocalBounds().removeFromBottom(SEQUENCER_HEIGHT + KEYBOARD_HEIGHT));
+        
+        if(sequencerSection.get()->isActivated() == false)
+            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 1.0f, 600, false, 0.0f, 0.0f);
+    }
+    else
+    {
+        if( ! sequencerSection.get()->isActivated() )
+            return;
+        
+        int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
+        int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT;
+        setSize (width, height);
+        
+        sequencerSection.get()->setVisible(false);
+        Rectangle<int> finalBounds (sequencerSection.get()->getBounds());
+        finalBounds.translate(0, SEQUENCER_HEIGHT + KEYBOARD_HEIGHT);
+        
+        if(sequencerSection.get()->isActivated() == true)
+            animator.get()->animateComponent(sequencerSection.get(), finalBounds, 0.0f, 50, false, 0.0f, 0.0f);
+        
+    }
+    
+     sequencerSection.get()->makeActive(shouldShow);
+}
 
 
 //==============================================================================
