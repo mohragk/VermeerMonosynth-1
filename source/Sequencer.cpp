@@ -99,18 +99,10 @@ void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNu
         currentMidiChannel = midiChannel;
         
         stepCount = 0;
+        
+        startPulseClock();
+        
         playStep(stepCount);
-        
-        int bpm = 120;
-        
-        bpm = processor.lastPosInfo.bpm;
-        int division = pow(2, stepDivision.get()->getValue());
-        int pulseTime = (60000 / bpm) / division; // 4 = every beat
-        
-        std::cout << "Key pressed at: " << Time::getMillisecondCounter() << std::endl;
-        
-        
-        startPulseClock(pulseTime);
         
         isPlaying = true;
     }
@@ -234,11 +226,12 @@ void Sequencer::timerCallback(int timerID)
 
 void Sequencer::playStep (int currentStep)
 {
-    std::cout << "Step played at: " << Time::getMillisecondCounter() << std::endl;
+    //ScopedLock s1 (lock);
     
     int newNote = lastNotePlayed + pitchSlider[currentStep].get()->getValue();
     int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
     int releaseTime = std::round( ( globalNoteLengthSlider.get()->getValue() / 100 ) * pulseInterval );
+    
     
     //fill struct
     step[currentStep].stepNumber = currentStep;
@@ -247,19 +240,28 @@ void Sequencer::playStep (int currentStep)
     step[currentStep].timeStamp = static_cast<int> ( std::round( Time::getMillisecondCounterHiRes() ) );
     step[currentStep].isReleased = false;
     
+    
     //send noteOn message
     state.noteOn(currentMidiChannel, newNote, 1.0f);
     
     //trigger Listener
     processor.handleNoteOn(nullptr, currentMidiChannel, newNote, 1.0f);
-    
-    //update thumb colour
-    
 }
 
-void Sequencer::startPulseClock(int intervalMillis)
+void Sequencer::startPulseClock()
 {
-    startTimer(PULSECLOCK_TIMER, intervalMillis);
+    int bpm = 120;
+    
+    bpm = processor.lastPosInfo.bpm;
+    
+    
+    
+    int division = pow(2, stepDivision.get()->getValue());
+    int pulseTime = getPulseInterval(processor.lastPosInfo, division);
+    
+    std::cout << "div: " << division << " || ms: " << pulseTime << std::endl;
+    
+    startTimer(PULSECLOCK_TIMER, pulseTime);
 }
 
 
@@ -269,6 +271,19 @@ void Sequencer::stopPulseClock()
 }
 
 
+int Sequencer::getPulseInterval(AudioPlayHead::CurrentPositionInfo posInfo, int division)
+{
+    int BPM = 120;
+    
+   
+    BPM = posInfo.bpm;
+    const int denominator = posInfo.timeSigDenominator;
+    const int msPerBeat = 60000 / BPM;
+    const int msPerNote = msPerBeat * denominator / division;
+    
+    return msPerNote;
+    
+}
 
 
 void Sequencer::updateGlobalNoteLengthLabel()

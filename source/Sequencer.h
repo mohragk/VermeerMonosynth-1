@@ -98,10 +98,12 @@ public:
 private:
     
     class StepSlider;
+    
     // members
     MonosynthPluginAudioProcessor& processor;
-    //MidiKeyBoardState& keyState;
     SequencerState& state;
+    
+    CriticalSection lock;
 
     
     std::unique_ptr<StepSlider> pitchSlider[numSteps];
@@ -134,8 +136,11 @@ private:
     
     void playStep(int currentStep);
     
-    void startPulseClock(int intervalMillis);
+    void startPulseClock();
     void stopPulseClock();
+    
+    int getPulseInterval( AudioPlayHead::CurrentPositionInfo posInfo, int division );
+    
     
 
     //==============================================================================
