@@ -491,6 +491,7 @@ void MonosynthPluginAudioProcessorEditor::updateStates()
     bool seqState =  getProcessor().lastSequencerChoice;
     expandSequencerButton.get()->setToggleState(seqState, dontSendNotification);
     showSequencer(seqState);
+    sequencerSection.get()->makeActive(seqState);
     
     //oversampling
     bool osState = getProcessor().lastOversampleChoice;
@@ -536,7 +537,7 @@ void MonosynthPluginAudioProcessorEditor::showSequencer(bool shouldShow)
         
     }
     
-     sequencerSection.get()->makeActive(shouldShow);
+     //sequencerSection.get()->makeActive(shouldShow);
 }
 
 
