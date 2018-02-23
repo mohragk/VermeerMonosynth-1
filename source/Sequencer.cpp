@@ -91,6 +91,8 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
     processor.keyboardState.addListener(this);
 	startTimer(displayTimer, 1000 / 60);
     startTimer(hiFreqTimer, 1);
+    
+    
 }
 
 Sequencer::~Sequencer()
@@ -183,6 +185,8 @@ void Sequencer::resized()
         stepDivision->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
         
     }
+    
+    //isActive = processor.lastSequencerChoice;
 }
 
 void Sequencer::parentSizeChanged()
@@ -206,7 +210,7 @@ void Sequencer::timerCallback(int timerID)
             {
                 if (step[i].timeStamp + step[i].noteLengthMillis > currentTime - range && step[i].timeStamp + step[i].noteLengthMillis < currentTime + range )
                 {
-                    ScopedLock s1 (lock);
+                   // ScopedLock s1 (lock);
                     
                     int note = step[i].noteNumber;
                     state.noteOff(currentMidiChannel, note, 1.0f);
@@ -241,7 +245,7 @@ void Sequencer::timerCallback(int timerID)
 
 void Sequencer::playStep (int currentStep)
 {
-    ScopedLock s1 (lock);
+   // ScopedLock s1 (lock);
     
     int newNote = lastNotePlayed + pitchSlider[currentStep].get()->getValue();
     int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
