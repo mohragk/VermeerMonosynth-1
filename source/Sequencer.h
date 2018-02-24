@@ -88,6 +88,7 @@ public:
         int    timeStamp = 0;
         int    noteLengthMillis = 10;
         bool   isReleased = false;
+        bool   isActive = false;
     } step[numSteps];
 
     
@@ -133,7 +134,7 @@ private:
     // methods
     void updateStepDivisionLabel();
     void updateGlobalNoteLengthLabel();
-	void updateStepKnobColour(int step);
+	void updateStepKnobColour(int curStep);
     
     void playStep(int currentStep);
     

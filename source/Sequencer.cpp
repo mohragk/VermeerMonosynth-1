@@ -131,7 +131,7 @@ void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNu
         lastNotePlayed = midiNoteNumber;
         currentMidiChannel = midiChannel;
         
-        stepCount = 0;
+        
         
         startPulseClock();
         
@@ -150,7 +150,7 @@ void Sequencer::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteN
     if(isActive)
     {
         stopPulseClock();
-       
+        stepCount = 0;
         isPlaying = false;
     }
     
@@ -232,6 +232,7 @@ void Sequencer::timerCallback(int timerID)
                     int note = step[i].noteNumber;
                     state.noteOff(currentMidiChannel, note, 1.0f);
                     step[i].isReleased = true;
+                    step[i].isActive = false;
                     
                     
                     //trigger Listener
@@ -247,10 +248,7 @@ void Sequencer::timerCallback(int timerID)
     {
         playStep(stepCount);
         
-        stepCount++;
-        
-        if (stepCount >= numSteps)
-            stepCount = 0;
+       
         
     }
     else if (timerID == displayTimer)
@@ -262,12 +260,14 @@ void Sequencer::timerCallback(int timerID)
 
 void Sequencer::playStep (int currentStep)
 {
-   // ScopedLock s1 (lock);
+    //ScopedLock s1 (lock);
     
     int newNote = lastNotePlayed + *processor.stepPitchParam[currentStep];
     int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
     int releaseTime = std::round(  *processor.stepNoteLengthParam  * pulseInterval / 100);
     
+    
+   
     
     //fill struct
     step[currentStep].stepNumber = currentStep;
@@ -275,6 +275,7 @@ void Sequencer::playStep (int currentStep)
     step[currentStep].noteLengthMillis = releaseTime;
     step[currentStep].timeStamp = static_cast<int> ( std::round( Time::getMillisecondCounterHiRes() ) );
     step[currentStep].isReleased = false;
+    step[currentStep].isActive = true;
     
     
     //send noteOn message
@@ -282,6 +283,14 @@ void Sequencer::playStep (int currentStep)
     
     //trigger Listener
     processor.handleNoteOn(nullptr, currentMidiChannel, newNote, 1.0f);
+    
+   
+    
+    
+    stepCount++;
+    
+    if (stepCount >= numSteps)
+        stepCount = 0;
 }
 
 void Sequencer::startPulseClock()
@@ -336,12 +345,13 @@ void Sequencer::updateStepDivisionLabel()
 
 void Sequencer::updateStepKnobColour(int curStep)
 {
-    for (int step = 0; step < numSteps; step++)
+    for (int i = 0; i < numSteps; i++)
     {
-        if (step == stepCount)
-            pitchSlider[step].get()->setColour(Slider::thumbColourId, lightThumb);
+        
+        if (step[i].isActive == true)
+            pitchSlider[i].get()->setColour(Slider::thumbColourId, lightThumb);
         else
-            pitchSlider[step].get()->setColour(Slider::thumbColourId, darkThumb);
+            pitchSlider[i].get()->setColour(Slider::thumbColourId, darkThumb);
     }
     
     
