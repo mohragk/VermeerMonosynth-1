@@ -150,10 +150,12 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
 
     ScopedLock s1 (lock);
     
-	// add messages to internalBuffer
-	while (i.getNextEvent(message, time))
-		processMidiEvent(message);
+	// add messages to internalBuffer, seems unnecessary..
+	//while (i.getNextEvent(message, time))
+	//	processMidiEvent(message);
 
+    //i don't want any previous notes dammit
+    buffer.clear();
 
 	if (inject)
 	{
@@ -168,6 +170,8 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
 		{
 			const int pos = jlimit(0, numSamples - 1, roundToInt((time - firstEventTime) * scaleFactor));
 			buffer.addEvent(message, startSample + pos);
+            
+            
 		}
 
 		

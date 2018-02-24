@@ -475,7 +475,6 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
         filterEnvelope->gate(false);
     }
    
-    
 }
 
 /*
@@ -612,7 +611,17 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     if(lastSequencerChoice)
         sequencerState.processBuffer(midiMessages, 0, numSamples, true);
     
-    
+    {
+        MidiBuffer::Iterator i2(midiMessages);
+        MidiMessage message;
+        int time;
+        
+      
+        while (i2.getNextEvent(message, time))
+        {
+            std::cout << message.getDescription() << std::endl;
+        }
+    }
     
 	// Now pass any incoming midi messages to our keyboard state object, and let it
 	// add messages to the buffer if the user is clicking on the on-screen keys
