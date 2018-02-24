@@ -48,7 +48,7 @@ public:
     void noteOff(const int midiChannel, const int midiNoteNumber, const float velocity);
 	void allNotesOff(const int midiChannel);
 
-	void processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool inject);
+	void processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool insertPreviousNotes);
 
 	void addListener(SequencerStateListener* const listener);
 	void removeListener(SequencerStateListener* const listener);

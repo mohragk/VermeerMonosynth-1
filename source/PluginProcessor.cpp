@@ -609,7 +609,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     // SEQUENCER
     if(lastSequencerChoice)
-        sequencerState.processBuffer(midiMessages, 0, numSamples, true);
+        sequencerState.processBuffer(midiMessages, 0, numSamples, false);
     
     {
         MidiBuffer::Iterator i2(midiMessages);

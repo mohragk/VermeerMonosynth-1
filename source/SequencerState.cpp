@@ -141,7 +141,7 @@ void SequencerState::processMidiEvent(const MidiMessage& message)
 }
 
 
-void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool inject)
+void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool insertPreviousNotes)
 {
 	MidiBuffer::Iterator i(buffer);
 	MidiMessage message;
@@ -151,13 +151,22 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
     ScopedLock s1 (lock);
     
 	// add messages to internalBuffer, seems unnecessary..
-	//while (i.getNextEvent(message, time))
-	//	processMidiEvent(message);
+	if(insertPreviousNotes)
+    {
+        while (i.getNextEvent(message, time))
+            processMidiEvent(message);
 
-    //i don't want any previous notes dammit
-    buffer.clear();
+    }
+    else
+    {
+        //i don't want any previous notes dammit
+        buffer.clear();
+    }
+    
+    
+    
 
-	if (inject)
+	
 	{
 		// search for first and last event in internalBuffer
 		MidiBuffer::Iterator i2(internalBuffer);
