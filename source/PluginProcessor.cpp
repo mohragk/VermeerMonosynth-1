@@ -604,23 +604,30 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
 
    
-    
+    // KEYBOARD
     keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
+    
+    
+    
     
     // SEQUENCER
     if(lastSequencerChoice)
+    {
+       if( hasEditor() )
+       {
+           if (getActiveEditor() != NULL)
+           {
+               MonosynthPluginAudioProcessorEditor* editor = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( getActiveEditor() ) ;
+               if (editor->sequencerSection.get() != NULL)
+                   editor->sequencerSection.get()->processSequencer(osBuffer.getNumSamples());
+               
+           }
+           
+       }
+        
+    
         sequencerState.processBuffer(midiMessages, 0, numSamples, false);
     
-    {
-        MidiBuffer::Iterator i2(midiMessages);
-        MidiMessage message;
-        int time;
-        
-      
-        while (i2.getNextEvent(message, time))
-        {
-            std::cout << message.getDescription() << std::endl;
-        }
     }
     
 	// Now pass any incoming midi messages to our keyboard state object, and let it
@@ -904,14 +911,6 @@ void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buf
         i++;
     }
 }
-
-
-
-template <typename FloatType>  
-void MonosynthPluginAudioProcessor::applySequencer(AudioBuffer<FloatType>& buffer)
-{
-    
-};
 
 
 

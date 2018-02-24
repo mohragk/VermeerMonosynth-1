@@ -11,10 +11,13 @@
   ==============================================================================
 */
 
+
+
+
 #ifndef SEQUENCER_H
 #define SEQUENCER_H
-
 #define SEQUENCER_HEIGHT 120
+
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
@@ -51,6 +54,10 @@ public:
     
     void parentSizeChanged() override;
     void timerCallback(int timerID) override;
+    
+    
+    void processSequencer(int bufferSize);
+    
     
     void handleNoteOn (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;

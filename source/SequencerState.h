@@ -12,6 +12,7 @@
 #define SEQUENCER_STATE_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "PulseClock.h"
 
 class SequencerState;
 
@@ -37,6 +38,8 @@ public:
 
 	~SequencerState();
 
+   
+    
 	void reset();
 //	void setSampleRate(float sr) noexcept { sampleRate = sr; };
 
@@ -49,9 +52,15 @@ public:
 	void allNotesOff(const int midiChannel);
 
 	void processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool insertPreviousNotes);
-
+    
+    
 	void addListener(SequencerStateListener* const listener);
 	void removeListener(SequencerStateListener* const listener);
+    
+    
+    
+    
+    
 
 private:
 

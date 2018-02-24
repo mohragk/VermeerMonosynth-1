@@ -126,11 +126,11 @@ public:
     MidiKeyboardState keyboardState;
 	SequencerState sequencerState;
     
+    //Sequencer sequencer;
+    
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
 
-	//void handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
-	//void handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
 
     // this keeps a copy of the last set of time info that was acquired during an audio
     // callback - the UI component will read this and display it.
@@ -322,8 +322,7 @@ private:
     template <typename FloatType>
     void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
     
-	template <typename FloatType>
-	void applySequencer(AudioBuffer<FloatType>& buffer);
+	
     
 
 	double getWaveshaped(double sample, double overdrive, int mode)

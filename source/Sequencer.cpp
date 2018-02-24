@@ -107,7 +107,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
     
     processor.keyboardState.addListener(this);
 	startTimer(displayTimer, 1000 / 60);
-    startTimer(hiFreqTimer, 1);
+    //startTimer(hiFreqTimer, 1);
     
     
 }
@@ -203,17 +203,57 @@ void Sequencer::parentSizeChanged()
     
 }
 
+
+void Sequencer::processSequencer(int bufferSize)
+{
+
+    int numSamples = bufferSize;
+    
+    while (--numSamples >= 0)
+    {
+        
+        
+        //CHECK IF NOTES SHOULD BE RELEASED
+        for (int i = 0; i < numSteps; i++)
+        {
+            int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) );
+            int range = 4;
+            
+            if (!step[i].isReleased)
+            {
+                if (step[i].timeStamp + step[i].noteLengthMillis > currentTime - range && step[i].timeStamp + step[i].noteLengthMillis < currentTime + range )
+                {
+                    
+                    
+                    int note = step[i].noteNumber;
+                    state.noteOff(currentMidiChannel, note, 1.0f);
+                    step[i].isReleased = true;
+                    step[i].isActive = false;
+                    
+                    
+                    //trigger Listener
+                    processor.handleNoteOff(nullptr, currentMidiChannel, note, 1.0f);
+                }
+                
+            }
+            
+        }
+    }
+    
+}
+
+
 void Sequencer::timerCallback(int timerID)
 {
 
     if (timerID == hiFreqTimer)
     {
-        int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) );
+        
         
         
         for (int i = 0; i < numSteps; i++)
         {
-            
+            int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) );
             int range = 4;
             
             if (!step[i].isReleased)
@@ -289,9 +329,13 @@ void Sequencer::startPulseClock()
     
     
     int division = (int) std::round( powf(2, *processor.stepDivisionParam ));
-    int pulseTime = getPulseInterval(processor.lastPosInfo, division);
+    int pulseTimeMs = getPulseInterval(processor.lastPosInfo, division);
+    double pulseTimeHz = 1.0 / (pulseTimeMs / 1000);
     
-    startTimer(PULSECLOCK_TIMER, pulseTime);
+    double pulseLength =   *processor.stepNoteLengthParam / 100; //SHOULD MAKE PARAM FLOAT
+    
+    startTimer(PULSECLOCK_TIMER, pulseTimeMs);
+    //state.setClock(pulseTimeHz, pulseLength);
 }
 
 

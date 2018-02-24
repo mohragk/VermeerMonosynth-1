@@ -14,7 +14,6 @@
 
 SequencerState::SequencerState() : startTime(Time::getMillisecondCounter())
 {
-    
 }
 
 SequencerState::~SequencerState()
@@ -25,6 +24,7 @@ void SequencerState::reset()
 {
     internalBuffer.clear();
 }
+
 
 
 void SequencerState::addNote(const int midiChannel, const int midiNoteNumber, const float velocity,const int noteLengthSamples, const int curTimeSamples)
@@ -139,6 +139,7 @@ void SequencerState::processMidiEvent(const MidiMessage& message)
 		}
 	}
 }
+
 
 
 void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool insertPreviousNotes)
