@@ -267,8 +267,6 @@ void Sequencer::playStep (int currentStep)
     int releaseTime = std::round(  *processor.stepNoteLengthParam  * pulseInterval / 100);
     
     
-   
-    
     //fill struct
     step[currentStep].stepNumber = currentStep;
     step[currentStep].noteNumber = newNote;
@@ -283,9 +281,6 @@ void Sequencer::playStep (int currentStep)
     
     //trigger Listener
     processor.handleNoteOn(nullptr, currentMidiChannel, newNote, 1.0f);
-    
-   
-    
     
     stepCount++;
     
