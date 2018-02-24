@@ -96,7 +96,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
         addAndMakeVisible (pitchSlider[i].get());
     }
     
-	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(  *processor.stepDivisionParam, knobStyle(ROTARY)));
+	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(  *processor.stepDivisionFloatParam, knobStyle(ROTARY)));
 	addAndMakeVisible(stepDivision.get());
     
     
@@ -284,7 +284,7 @@ void Sequencer::playStep (int currentStep)
 void Sequencer::startPulseClock()
 {
     
-    int division = (int) std::round( powf(2, *processor.stepDivisionParam ));
+    int division = (int) std::round( (double)*processor.stepDivisionFloatParam );
     double pulseTimeHz = getPulseInHz(processor.lastPosInfo, division);
 
     

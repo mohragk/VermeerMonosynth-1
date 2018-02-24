@@ -244,9 +244,10 @@ public:
     AudioParameterInt* oversampleSwitchParam;
     AudioParameterInt* softClipSwitchParam;
     
-    AudioParameterInt* stepPitchParam[8]; //TODO MAKE GLOBAL VALUE
+    AudioParameterInt* stepPitchParam[8];
 	AudioParameterFloat* stepNoteLengthParam;
 	AudioParameterInt* stepDivisionParam;
+    AudioParameterFloat* stepDivisionFloatParam;
     
     
     AudioParameterBool* useSequencerParam;

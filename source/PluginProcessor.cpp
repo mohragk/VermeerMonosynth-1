@@ -244,13 +244,24 @@ ampEnvelope(nullptr)
         addParameter(stepPitchParam[i] = new AudioParameterInt("stepPitchParam" + std::to_string(i), "Seq. Pitch " + std::to_string(i), -12, 12, 0 ));
     }
     
-    auto linToPow = [](int start, int end, int linVal) { return std::pow(2, linVal);  };
-    auto powToLin = [](int start, int end, int powVal) { return std::log2( powVal ); };
+    auto linToPow = [](float start, float end, float linVal) {
+        double remapped = (6.0 - 1.0) * (linVal - 0.0) / (1.0 - 0.0) + 1.0 ; // remap
+        int newValue = std::round(remapped);
+        return std::pow(2, newValue);
+        
+    };
+    auto powToLin = [](float start, float end, float powVal) {
+        int newValue = std::round( powVal );
+        double invLog = std::log2( newValue );
+        return (1.0 - 0.0) * (invLog - 1.0) / (6.0 - 1.0) + 0.0; //remap
+        
+        
+    };
     
 	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.1f, 1.0f, 0.5f));
 	addParameter(stepDivisionParam   = new AudioParameterInt("stepDivisionParam", "Seq. Rate", 1, 6, 3));
     
-    
+    addParameter(stepDivisionFloatParam   = new AudioParameterFloat("stepDivisionFloatParam", "Seq. Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin) , 16.0));
     
     
     initialiseSynth();
@@ -467,9 +478,9 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
-    //if (lastNotePlayed == midiNoteNumber && !lastSequencerChoice)
+    if (lastNotePlayed == midiNoteNumber)
+        ampEnvelope->gate(false);
     
-    ampEnvelope->gate(false);
     filterEnvelope->gate(false);
     
 }

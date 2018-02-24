@@ -133,8 +133,8 @@ private:
     Colour lightThumb = Colour(0xffdee5fc);
     Colour darkThumb = Colour(0xff3e7db3);
     
-    int lastNotePlayed;
-    int currentMidiChannel;
+    int lastNotePlayed = 60;
+    int currentMidiChannel = 1;
     int stepCount = 0;
     
     bool isPlaying = false;
