@@ -106,6 +106,7 @@ public:
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         
         pitchEnvelope->gate(true);
+        
     }
     
     void stopNote (float /*velocity*/, bool allowTailOff) override

@@ -180,9 +180,7 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
 		{
 			const int pos = jlimit(0, numSamples - 1, roundToInt((time - firstEventTime) * scaleFactor));
 			buffer.addEvent(message, startSample + pos);
-            
-            
-		}
+        }
 
 		
 	}

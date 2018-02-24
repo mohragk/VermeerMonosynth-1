@@ -80,7 +80,7 @@ private:
     
 };
 
-Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : processor(p), state(s)
+Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : processor(p), state(s), startTime(Time::getMillisecondCounter())
 
 {
     typedef StepSlider::style knobStyle;
@@ -132,9 +132,9 @@ void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNu
         lastNotePlayed = midiNoteNumber;
         currentMidiChannel = midiChannel;
         
-       
+        //playStep(stepCount);
         startPulseClock();
-        playStep(stepCount);
+        
         
         isPlaying = true;
     }
@@ -211,12 +211,18 @@ void Sequencer::processSequencer(int bufferSize)
     
     while (--numSamples >= 0)
     {
+        pulseClock.update();
         
+        if(pulseClock.isPulseHigh() && isPlaying)
+        {
+            playStep(stepCount);
+            
+        }
         
         //CHECK IF NOTES SHOULD BE RELEASED
         for (int i = 0; i < numSteps; i++)
         {
-            int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) );
+            int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) - startTime);
             int range = 4;
             
             if (!step[i].isReleased)
@@ -249,32 +255,6 @@ void Sequencer::timerCallback(int timerID)
     if (timerID == hiFreqTimer)
     {
         
-        
-        
-        for (int i = 0; i < numSteps; i++)
-        {
-            int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) );
-            int range = 4;
-            
-            if (!step[i].isReleased)
-            {
-                if (step[i].timeStamp + step[i].noteLengthMillis > currentTime - range && step[i].timeStamp + step[i].noteLengthMillis < currentTime + range )
-                {
-                    
-                    
-                    int note = step[i].noteNumber;
-                    state.noteOff(currentMidiChannel, note, 1.0f);
-                    step[i].isReleased = true;
-                    step[i].isActive = false;
-                    
-                    
-                    //trigger Listener
-                    processor.handleNoteOff(nullptr, currentMidiChannel, note, 1.0f);
-                }
-                
-            }
-            
-        }
     }
     
     else if (timerID == PULSECLOCK_TIMER)
@@ -295,7 +275,7 @@ void Sequencer::playStep (int currentStep)
 {
     
     int newNote = lastNotePlayed + *processor.stepPitchParam[currentStep];
-    int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
+    int pulseInterval = 1000 / pulseClock.getFrequency();
     int releaseTime = std::round(  *processor.stepNoteLengthParam  * pulseInterval / 100);
     
     
@@ -303,13 +283,15 @@ void Sequencer::playStep (int currentStep)
     step[currentStep].stepNumber = currentStep;
     step[currentStep].noteNumber = newNote;
     step[currentStep].noteLengthMillis = releaseTime;
-    step[currentStep].timeStamp = static_cast<int> ( std::round( Time::getMillisecondCounterHiRes() ) );
+    step[currentStep].timeStamp = static_cast<int> ( std::round( Time::getMillisecondCounterHiRes() ) - startTime);
     step[currentStep].isReleased = false;
     step[currentStep].isActive = true;
     
     
     //send noteOn message
     state.noteOn(currentMidiChannel, newNote, 1.0f);
+    
+   
     
     //trigger Listener
     processor.handleNoteOn(nullptr, currentMidiChannel, newNote, 1.0f);
@@ -322,20 +304,18 @@ void Sequencer::playStep (int currentStep)
 
 void Sequencer::startPulseClock()
 {
-    int bpm = 120;
-    
-    bpm = processor.lastPosInfo.bpm;
-    
-    
     
     int division = (int) std::round( powf(2, *processor.stepDivisionParam ));
-    int pulseTimeMs = getPulseInterval(processor.lastPosInfo, division);
-    double pulseTimeHz = 1.0 / (pulseTimeMs / 1000);
+    double pulseTimeHz = getPulseInHz(processor.lastPosInfo, division);
     
     double pulseLength =   *processor.stepNoteLengthParam / 100; //SHOULD MAKE PARAM FLOAT
     
-    startTimer(PULSECLOCK_TIMER, pulseTimeMs);
-    //state.setClock(pulseTimeHz, pulseLength);
+    //startTimer(PULSECLOCK_TIMER, pulseTimeMs);
+    
+    pulseClock.setSampleRate(processor.getSampleRate());
+    pulseClock.setFrequency(pulseTimeHz);
+    //pulseClock.setPulseLength(pulseLength);
+    pulseClock.resetModulo();
 }
 
 
@@ -345,8 +325,9 @@ void Sequencer::stopPulseClock()
 }
 
 
-int Sequencer::getPulseInterval(AudioPlayHead::CurrentPositionInfo posInfo, int division)
+double Sequencer::getPulseInHz(AudioPlayHead::CurrentPositionInfo posInfo, int division)
 {
+    /*
     int BPM = 120;
 
     BPM = posInfo.bpm;
@@ -355,6 +336,17 @@ int Sequencer::getPulseInterval(AudioPlayHead::CurrentPositionInfo posInfo, int 
     const int msPerNote = msPerBeat * denominator / division;
     
     return msPerNote;
+    */
+    
+    double beats_per_minute = 120;
+                beats_per_minute = posInfo.bpm;
+    
+    const double seconds_per_beat = 60.0 / beats_per_minute;
+    const double seconds_per_note = seconds_per_beat * posInfo.timeSigDenominator / division;
+    
+    // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
+    
+    return 1.0 / seconds_per_note;
     
 }
 

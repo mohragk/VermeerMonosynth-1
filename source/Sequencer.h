@@ -112,6 +112,8 @@ private:
     MonosynthPluginAudioProcessor& processor;
     SequencerState& state;
     
+    PulseClock pulseClock;
+    
     CriticalSection lock;
 
     
@@ -148,8 +150,8 @@ private:
     void startPulseClock();
     void stopPulseClock();
     
-    int getPulseInterval( AudioPlayHead::CurrentPositionInfo posInfo, int division );
-    
+    double getPulseInHz( AudioPlayHead::CurrentPositionInfo posInfo, int division );
+    int startTime;
     
 
     //==============================================================================

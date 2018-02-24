@@ -449,32 +449,28 @@ void MonosynthPluginAudioProcessor::reset()
 void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     //if(!lastSequencerChoice)
-    {
-        if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
-            filterEnvelope->gate(true);
-        
-        ampEnvelope->gate(true);
-        
-        
-        lfo.setPhase(0.0);
-    }
+    
+       // if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
+    filterEnvelope->gate(true);
+    ampEnvelope->gate(true);
+    
+    lfo.setPhase(0.0);
+    
     contourVelocity = velocity;
     
     
     lastNotePlayed = midiNoteNumber;
 	curMidiChannel = midiChannel;
-
 }
 
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
     //if (lastNotePlayed == midiNoteNumber && !lastSequencerChoice)
-    {
-        ampEnvelope->gate(false);
-        filterEnvelope->gate(false);
-    }
-   
+    
+    ampEnvelope->gate(false);
+    filterEnvelope->gate(false);
+    
 }
 
 /*
@@ -573,11 +569,15 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& oversampling)
 {
     
+    
+    
     if (prevHqOversampling != hqOversampling)
     {
         resetSamplerates( getSampleRate() );
         prevHqOversampling = hqOversampling;
     }
+    
+    
     
 
     // OVERSAMPLING

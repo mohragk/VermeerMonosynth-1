@@ -30,6 +30,7 @@ public:
         frequency.set(f);
     }
     
+    double getFrequency() { return frequency.get(); };
     
     void setPulseLength(double len)
     {
