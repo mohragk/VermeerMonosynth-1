@@ -128,20 +128,16 @@ void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNu
 {
     if (isActive)
     {
+        stepCount = 0;
         lastNotePlayed = midiNoteNumber;
         currentMidiChannel = midiChannel;
         
-        
-        
+       
         startPulseClock();
-        
         playStep(stepCount);
         
         isPlaying = true;
     }
-    
-    
-    
 }
 
 
@@ -150,10 +146,8 @@ void Sequencer::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteN
     if(isActive)
     {
         stopPulseClock();
-        stepCount = 0;
         isPlaying = false;
     }
-    
 }
 
 
@@ -202,8 +196,6 @@ void Sequencer::resized()
         stepDivision->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
         
     }
-    
-    //isActive = processor.lastSequencerChoice;
 }
 
 void Sequencer::parentSizeChanged()
@@ -221,13 +213,14 @@ void Sequencer::timerCallback(int timerID)
         
         for (int i = 0; i < numSteps; i++)
         {
+            ScopedLock s1 (lock);
             int range = 4;
             
             if (!step[i].isReleased)
             {
                 if (step[i].timeStamp + step[i].noteLengthMillis > currentTime - range && step[i].timeStamp + step[i].noteLengthMillis < currentTime + range )
                 {
-                   // ScopedLock s1 (lock);
+                    
                     
                     int note = step[i].noteNumber;
                     state.noteOff(currentMidiChannel, note, 1.0f);
@@ -260,7 +253,7 @@ void Sequencer::timerCallback(int timerID)
 
 void Sequencer::playStep (int currentStep)
 {
-    //ScopedLock s1 (lock);
+    ScopedLock s1 (lock);
     
     int newNote = lastNotePlayed + *processor.stepPitchParam[currentStep];
     int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
