@@ -213,7 +213,7 @@ void Sequencer::timerCallback(int timerID)
         
         for (int i = 0; i < numSteps; i++)
         {
-            ScopedLock s1 (lock);
+            
             int range = 4;
             
             if (!step[i].isReleased)
@@ -253,7 +253,6 @@ void Sequencer::timerCallback(int timerID)
 
 void Sequencer::playStep (int currentStep)
 {
-    ScopedLock s1 (lock);
     
     int newNote = lastNotePlayed + *processor.stepPitchParam[currentStep];
     int pulseInterval = getTimerInterval(PULSECLOCK_TIMER);
