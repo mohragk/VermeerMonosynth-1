@@ -38,7 +38,7 @@
 
 
 
-class Sequencer  : public Component, public MidiKeyboardStateListener, private MultiTimer
+class Sequencer  : public Component, public MidiKeyboardStateListener, private Timer
 {
 public:
     //==============================================================================
@@ -53,7 +53,7 @@ public:
     void resized() override;
     
     void parentSizeChanged() override;
-    void timerCallback(int timerID) override;
+    void timerCallback() override;
     
     
     void processSequencer(int bufferSize);

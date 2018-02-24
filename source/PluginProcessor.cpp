@@ -137,6 +137,7 @@ ampEnvelope(nullptr)
 	auto logToLinLambda = [](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
 
 
+    
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,	linToLogLambda, logToLinLambda) ;
 
     addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float>(MIN_INFINITY_DB, 6.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
@@ -246,7 +247,7 @@ ampEnvelope(nullptr)
     auto linToPow = [](int start, int end, int linVal) { return std::pow(2, linVal);  };
     auto powToLin = [](int start, int end, int powVal) { return std::log2( powVal ); };
     
-	addParameter(stepNoteLengthParam = new AudioParameterInt("stepNoteLengthParam", "Seq. Note Length" , 10, 100, 50));
+	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.1f, 1.0f, 0.5f));
 	addParameter(stepDivisionParam   = new AudioParameterInt("stepDivisionParam", "Seq. Rate", 1, 6, 3));
     
     
@@ -504,7 +505,7 @@ void MonosynthPluginAudioProcessor::handleSequencerNoteOff(SequencerState*, int 
 void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
 {
     double newsr = sr;
-    
+    synth.setCurrentPlaybackSampleRate (newsr);
     
     
     if(hqOversampling)
@@ -533,7 +534,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     }
     
     lfo.setSampleRate(newsr);
-    synth.setCurrentPlaybackSampleRate (newsr);
+    
     
     
     cutoff.reset(newsr, cutoffRampTimeDefault);
@@ -580,24 +581,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
 
-    // OVERSAMPLING
-    dsp::AudioBlock<FloatType> block (buffer);
-    dsp::AudioBlock<FloatType> osBlock;
     
-    osBlock = oversampling->processSamplesUp(block);
 
-	FloatType* const arr[] = { osBlock.getChannelPointer(0), osBlock.getChannelPointer(1) };
-    
-	AudioBuffer<FloatType> osBuffer(
-									arr,
-                                    2,
-                                    static_cast<int> ( osBlock.getNumSamples() )
-                                    );
-    
-    
-	const int numSamples = osBuffer.getNumSamples();
-
-	updateParameters(osBuffer);
+	updateParameters(buffer);
 
     
     
@@ -605,7 +591,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
    
     // KEYBOARD
-    keyboardState.processNextMidiBuffer(midiMessages, 0, numSamples, true);
+    keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     
     
     
@@ -619,14 +605,14 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
            {
                MonosynthPluginAudioProcessorEditor* editor = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( getActiveEditor() ) ;
                if (editor->sequencerSection.get() != NULL)
-                   editor->sequencerSection.get()->processSequencer(osBuffer.getNumSamples());
+                   editor->sequencerSection.get()->processSequencer(buffer.getNumSamples());
                
            }
            
        }
         
     
-        sequencerState.processBuffer(midiMessages, 0, numSamples, false);
+        sequencerState.processBuffer(midiMessages, 0, buffer.getNumSamples(), false);
     
     }
     
@@ -637,13 +623,33 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
   
     
     // GET SYNTHDATA
-    synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBlock.getNumSamples() ) );
+    synth.renderNextBlock (buffer, midiMessages, 0, static_cast<int> ( buffer.getNumSamples() ) );
     
 
 	
     // getting our filter envelope values
-    applyFilterEnvelope(osBuffer);
+    applyFilterEnvelope(buffer);
     
+    
+    
+    
+
+    // OVERSAMPLING
+    dsp::AudioBlock<FloatType> block (buffer);
+    dsp::AudioBlock<FloatType> osBlock;
+    
+    osBlock = oversampling->processSamplesUp(block);
+    
+    FloatType* const arr[] = { osBlock.getChannelPointer(0), osBlock.getChannelPointer(1) };
+    
+    AudioBuffer<FloatType> osBuffer(
+                                    arr,
+                                    2,
+                                    static_cast<int> ( osBlock.getNumSamples() )
+                                    );
+    
+    
+    const int numSamples = osBuffer.getNumSamples();
 
 
     if (*filterOrderParam == 0)
@@ -825,7 +831,11 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         for (int channel = 0; channel < 2; channel++)
         {
                 //filter[channel]->SetSampleRate(sampleRate * oversamp->getOversamplingFactor());
-            filter[channel]->SetResonance(resonance.getNextValue());
+            auto snapToLocalVal= [](double val) -> double { if (val < 0.0) val = 0.0; else if (val > 1.0) val = 1.0; return val;  };
+
+            FloatType newReso =  snapToLocalVal(resonance.getNextValue());
+
+            filter[channel]->SetResonance(newReso);
             filter[channel]->SetDrive(drive.getNextValue());
         }
 

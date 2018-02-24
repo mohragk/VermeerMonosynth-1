@@ -87,27 +87,23 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
 
     globalNoteLengthSlider = std::unique_ptr<ParameterSlider> (new ParameterSlider( *processor.stepNoteLengthParam, knobStyle(ROTARY) ));
     addAndMakeVisible (globalNoteLengthSlider.get());
-    globalNoteLengthSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
- 
+   
+
     
     for (int i = 0; i < numSteps; i++)
     {
         pitchSlider[i] = std::unique_ptr<ParameterSlider> ( new ParameterSlider (  *processor.stepPitchParam[i], knobStyle(LINEARVERTICAL) ) );
         addAndMakeVisible (pitchSlider[i].get());
-        pitchSlider[i]->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
-
     }
     
 	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(  *processor.stepDivisionParam, knobStyle(ROTARY)));
 	addAndMakeVisible(stepDivision.get());
-    stepDivision->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
-
+    
     
     setSize (890, SEQUENCER_HEIGHT);
     
     processor.keyboardState.addListener(this);
-	startTimer(displayTimer, 1000 / 60);
-    //startTimer(hiFreqTimer, 1);
+	startTimerHz(60);
     
     
 }
@@ -132,9 +128,7 @@ void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNu
         lastNotePlayed = midiNoteNumber;
         currentMidiChannel = midiChannel;
         
-        //playStep(stepCount);
         startPulseClock();
-        
         
         isPlaying = true;
     }
@@ -145,7 +139,6 @@ void Sequencer::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteN
 {
     if(isActive)
     {
-        stopPulseClock();
         isPlaying = false;
     }
 }
@@ -181,20 +174,24 @@ void Sequencer::resized()
         {
             pitchSlider[i]->setBounds(block.removeFromLeft(vertSliderSize));
 			pitchSlider[i]->setColour(Slider::textBoxOutlineColourId, Colour(0xff323e44));
+            pitchSlider[i]->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 14);
+            pitchSlider[i]->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
+
         }
     }
     
     {
         Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
         globalNoteLengthSlider->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
-        
-        //globalNoteLengthLabel->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.25 ) );
+        globalNoteLengthSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 14);
+        globalNoteLengthSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     }
     
     {
         Rectangle<int> block (strip.removeFromLeft((rotarySize) + marginX) );
         stepDivision->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
-        
+        stepDivision->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 14);
+        stepDivision->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     }
 }
 
@@ -211,26 +208,27 @@ void Sequencer::processSequencer(int bufferSize)
     
     while (--numSamples >= 0)
     {
-        pulseClock.update();
-        
-        if(pulseClock.isPulseHigh() && isPlaying)
+        if(isPlaying)
         {
-            playStep(stepCount);
+            pulseClock.update();
             
+            if(pulseClock.isPulseHigh())
+            {
+                playStep(stepCount);
+            }
         }
-        
+       
         //CHECK IF NOTES SHOULD BE RELEASED
         for (int i = 0; i < numSteps; i++)
         {
-            int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) - startTime);
-            int range = 4;
             
             if (!step[i].isReleased)
             {
+                int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) - startTime);
+                int range = 4;
+                
                 if (step[i].timeStamp + step[i].noteLengthMillis > currentTime - range && step[i].timeStamp + step[i].noteLengthMillis < currentTime + range )
                 {
-                    
-                    
                     int note = step[i].noteNumber;
                     state.noteOff(currentMidiChannel, note, 1.0f);
                     step[i].isReleased = true;
@@ -240,34 +238,15 @@ void Sequencer::processSequencer(int bufferSize)
                     //trigger Listener
                     processor.handleNoteOff(nullptr, currentMidiChannel, note, 1.0f);
                 }
-                
             }
-            
         }
     }
-    
 }
 
 
-void Sequencer::timerCallback(int timerID)
+void Sequencer::timerCallback()
 {
-
-    if (timerID == hiFreqTimer)
-    {
-        
-    }
-    
-    else if (timerID == PULSECLOCK_TIMER)
-    {
-        playStep(stepCount);
-        
-       
-        
-    }
-    else if (timerID == displayTimer)
-    {
-        updateStepKnobColour(stepCount);
-    }
+    updateStepKnobColour(stepCount);
 }
 
 
@@ -275,8 +254,8 @@ void Sequencer::playStep (int currentStep)
 {
     
     int newNote = lastNotePlayed + *processor.stepPitchParam[currentStep];
-    int pulseInterval = 1000 / pulseClock.getFrequency();
-    int releaseTime = std::round(  *processor.stepNoteLengthParam  * pulseInterval / 100);
+    int pulseInterval = (1 / pulseClock.getFrequency()) * 1000;
+    int releaseTime = std::round(  *processor.stepNoteLengthParam * pulseInterval );
     
     
     //fill struct
@@ -307,21 +286,11 @@ void Sequencer::startPulseClock()
     
     int division = (int) std::round( powf(2, *processor.stepDivisionParam ));
     double pulseTimeHz = getPulseInHz(processor.lastPosInfo, division);
-    
-    double pulseLength =   *processor.stepNoteLengthParam / 100; //SHOULD MAKE PARAM FLOAT
-    
-    //startTimer(PULSECLOCK_TIMER, pulseTimeMs);
+
     
     pulseClock.setSampleRate(processor.getSampleRate());
     pulseClock.setFrequency(pulseTimeHz);
-    //pulseClock.setPulseLength(pulseLength);
     pulseClock.resetModulo();
-}
-
-
-void Sequencer::stopPulseClock()
-{
-    stopTimer(PULSECLOCK_TIMER);
 }
 
 
@@ -370,7 +339,6 @@ void Sequencer::updateStepKnobColour(int curStep)
 {
     for (int i = 0; i < numSteps; i++)
     {
-        
         if (step[i].isActive == true)
             pitchSlider[i].get()->setColour(Slider::thumbColourId, lightThumb);
         else
