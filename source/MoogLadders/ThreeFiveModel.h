@@ -193,6 +193,12 @@ public:
 
         if (isnan(c))
             c = 1000.0;
+        
+        if (c > 20000.0)
+            c = 20000.0;
+        
+        if (c < 40.0)
+            c = 40.0;
 
         jassert(c > 0 && c <= (sampleRate * 0.5));
         

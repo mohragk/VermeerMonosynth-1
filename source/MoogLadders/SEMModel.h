@@ -150,11 +150,17 @@ class SEMModel : public LadderFilterBase
 
 			if (isnan(c))
 				c = 1000.0;
+            
+            if (c > 20000.0)
+                c = 20000.0;
+                
+            if (c < 40.0)
+                c = 40.0;
 
 			cutoff.set(c);
-      Update();
+            Update();
             
-      return true;
+            return true;
 		}
     
 		virtual void SetDrive (double d ) override

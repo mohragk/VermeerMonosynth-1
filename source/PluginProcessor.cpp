@@ -709,12 +709,22 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer)
 {
 	//filterEnvelope->setSampleRate(sampleRate);
+    
+    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*> ( synth.getVoice(0) );
+    
+    
+    synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *releaseParam3, *sustainParam3, *attackCurve2Param, *decayRelCurve2Param);
+    
+    synthVoice->setFilterEnvelopeSampleRate(sampleRate);
+    
+    /*
     filterEnvelope->setAttackRate(*attackParam3);
     filterEnvelope->setDecayRate(*decayParam3);
     filterEnvelope->setReleaseRate(*releaseParam3);
     filterEnvelope->setSustainLevel(*sustainParam3);
     filterEnvelope->setTargetRatioA(*attackCurve2Param);
     filterEnvelope->setTargetRatioDR(*decayRelCurve2Param);
+    */
     
     const int numSamples = buffer.getNumSamples();
     
@@ -753,7 +763,8 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
         const double contourRange = *filterContourParam;
-        currentCutoff = (filterEnvelope->process() * contourRange) + (lfoFilterRange * cutoffModulationAmt);
+        const double filterEnvelopeVal = synthVoice->getFilterEnvelopeValue();
+        currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
         cutoff.setValue				(*filterCutoffParam);
         cutoffFromEnvelope.setValue	(currentCutoff);

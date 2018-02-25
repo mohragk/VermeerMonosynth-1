@@ -67,6 +67,7 @@ public:
     {
         pitchEnvelope = std::unique_ptr<ADSR> ( new ADSR );
         ampEnvelope   = std::unique_ptr<ADSR> ( new ADSR );
+        filterEnvelope   = std::unique_ptr<ADSR> ( new ADSR );
         
 		for (int n = 0; n < numOscillators; n++)
         {
@@ -78,7 +79,6 @@ public:
     
     ~MonosynthVoice()
     {
-        pitchEnvelope = nullptr;
         
 		for (int n = 0; n < numOscillators; n++)
 			osc[n] = nullptr;
@@ -94,6 +94,12 @@ public:
     {
         pitchEnvelope.get()->setSampleRate(sr);
         ampEnvelope.get()->setSampleRate(sr);
+        
+    }
+    
+    void setFilterEnvelopeSampleRate(double sr)
+    {
+        filterEnvelope.get()->setSampleRate(sr);
     }
     
     void startNote (int midiNoteNumber, float velocity,
@@ -115,6 +121,7 @@ public:
         
         pitchEnvelope.get()->gate(true);
         ampEnvelope.get()->gate(true);
+        filterEnvelope.get()->gate(true);
         
     }
     
@@ -122,6 +129,7 @@ public:
     {
         pitchEnvelope.get()->gate(false);
         ampEnvelope.get()->gate(false);
+        filterEnvelope.get()->gate(false);
         clearCurrentNote();
     }
     
@@ -176,6 +184,16 @@ public:
         ampEnvelope.get()->setTargetRatioDR(decRelCurve);
     }
     
+    void filterAmpEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
+    {
+        filterEnvelope.get()->setAttackRate(attack);
+        filterEnvelope.get()->setDecayRate(decay);
+        filterEnvelope.get()->setSustainLevel(sustain);
+        filterEnvelope.get()->setReleaseRate(release);
+        filterEnvelope.get()->setTargetRatioA(attackCurve);
+        filterEnvelope.get()->setTargetRatioDR(decRelCurve);
+    }
+    
     // Pretty dumb name, but this influences the amount of pitch deviation generated from the envelope.
     void setPitchEnvelopeAmount (const float pitchMod )
     {
@@ -220,6 +238,10 @@ public:
     }
 
 
+    double getFilterEnvelopeValue()
+    {
+        return filterEnvelope.get()->process();
+    }
     
     void sendLFO(LFO& lfo)
     {
@@ -389,7 +411,11 @@ private:
     
     std::unique_ptr<ADSR> pitchEnvelope;
     std::unique_ptr<ADSR> ampEnvelope;
+    std::unique_ptr<ADSR> filterEnvelope;
+    
     std::unique_ptr<Oscillator> osc[3];
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthVoice)
 };
 
 
