@@ -57,7 +57,7 @@ public:
     void handleSequencerNoteOn (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleSequencerNoteOff (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
-    Step getStepData(int s) { return step[s]; };
+    int getStepCount() { return stepCount; };
     
     void makeActive(bool on)
     {
@@ -68,7 +68,7 @@ public:
     
     void processSequencer(int bufferSize);
     
-   void setStepData(int curStep, int note, int noteLen, int time, bool isRel, bool isAct)
+    void setStepData(int curStep, int note, int noteLen, int time, bool isRel, bool isAct)
     {
         step[curStep].stepNumber = curStep;
         step[curStep].noteNumber = note;
@@ -78,6 +78,7 @@ public:
         step[curStep].isActive = isAct;
     }
     
+    Step getStepData(int s) { return step[s]; };
     
     void setGlobalNoteLength (double noteLen)
     {
@@ -100,15 +101,12 @@ public:
     }
     
     
-    
     void setBPM (int bpm)
     {
         currentBPM = bpm;
     }
     
 private:
-    
-   
     
     SequencerState& seqState;
     

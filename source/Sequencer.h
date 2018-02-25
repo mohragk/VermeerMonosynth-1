@@ -23,8 +23,7 @@
 
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
-#include "SequencerState.h"
-//#include "SequencerProcessor.h"
+#include "SequencerProcessor.h"
 
 
 //==============================================================================
@@ -39,11 +38,11 @@
 
 
 
-class Sequencer  : public Component, public SequencerStateListener, private Timer
+class Sequencer  : public Component, private Timer
 {
 public:
     //==============================================================================
-    Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s);
+    Sequencer (MonosynthPluginAudioProcessor& p, SequencerProcessor& sp);
     ~Sequencer();
     
     //==============================================================================
@@ -56,12 +55,6 @@ public:
     void parentSizeChanged() override;
     void timerCallback() override;
     
-    
-    void processSequencer(int bufferSize);
-    
-    
-    void handleSequencerNoteOn (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
-    void handleSequencerNoteOff (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
     void makeActive(bool on);
     bool isActivated(){ return isActive;};
@@ -94,9 +87,9 @@ public:
     } step[numSteps];
 
     
-    Step getStepData(int s) { return step[s]; };
     
     
+    void fillStepData(int stepToFill, Step data );
     
 
 private:
@@ -105,9 +98,9 @@ private:
     
     // members
     MonosynthPluginAudioProcessor& processor;
-    SequencerState& state;
+    SequencerProcessor& sequencerProcessor;
     
-    PulseClock pulseClock;
+    
     
     CriticalSection lock;
 
@@ -128,25 +121,17 @@ private:
     Colour lightThumb = Colour(0xffdee5fc);
     Colour darkThumb = Colour(0xff3e7db3);
     
-    int lastNotePlayed = 60;
-    int currentMidiChannel = 1;
     int stepCount = 0;
     
-    bool isPlaying = false;
+   
     bool isActive = false;
     
     // methods
     void updateStepDivisionLabel();
     void updateGlobalNoteLengthLabel();
-	void updateStepKnobColour(int curStep);
+	void updateStepKnobColours();
     
-    void playStep(int currentStep);
-    
-    void startPulseClock();
-    void stopPulseClock();
-    
-    double getPulseInHz( AudioPlayHead::CurrentPositionInfo posInfo, int division );
-    int startTime;
+   
     
 
     //==============================================================================
