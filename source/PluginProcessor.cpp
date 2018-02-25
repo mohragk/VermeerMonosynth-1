@@ -596,21 +596,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // SEQUENCER
     if(*useSequencerParam)
     {
-        if( hasEditor() )
-        {
-            if (getActiveEditor() != NULL)
-            {
-                //const MessageManagerLock mmLock;
-                
-                MonosynthPluginAudioProcessorEditor* editor = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( getActiveEditor() ) ;
-                if (editor->sequencerSection.get() != NULL)
-                    editor->sequencerSection.get()->processSequencer(buffer.getNumSamples());
-                
-            }
-            
-        }
-        
-        
+        sequencerProcessor.get()->processSequencer(buffer.getNumSamples());
         sequencerState.processBuffer(midiMessages, 0, buffer.getNumSamples(), true);
         
     }
@@ -1047,6 +1033,22 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     
     for (int i = 0; i < numSamples; i++)
     {
+        
+        sequencerProcessor.get()->setPulseClockSampleRate(sampleRate);
+        
+        sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);
+        
+        
+        for (int i = 0; i < 8; i++ )
+        {
+            sequencerProcessor.get()->setStepPitch(i, *stepPitchParam[i]);
+        }
+        
+        sequencerProcessor.get()->setGlobalNoteLength(*stepNoteLengthParam);
+        
+        sequencerProcessor.get()->setBPM(lastPosInfo.bpm);
+        
+        
         // set various parameters
         synthVoice->setOscGains(
                     dbToGain(*osc1GainParam, MIN_INFINITY_DB),

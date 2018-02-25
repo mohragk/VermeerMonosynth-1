@@ -76,7 +76,6 @@ void SequencerProcessor::processSequencer(int bufferSize)
                     step[i].isReleased = true;
                     step[i].isActive = false;
                     
-                    
                     //trigger Listener
                     //processor.handleNoteOff(nullptr, currentMidiChannel, note, 1.0f);
                 }
@@ -105,7 +104,6 @@ void SequencerProcessor::playStep(int currentStep)
     seqState.noteOn(currentMidiChannel, newNote, 1.0f);
     
     
-    
     //trigger Listener
     //processor.handleNoteOn(nullptr, currentMidiChannel, newNote, 1.0f); //@TODO: make this work..
     
@@ -119,10 +117,10 @@ void SequencerProcessor::playStep(int currentStep)
 void SequencerProcessor::startPulseClock()
 {
     
-    int division = (int) std::round( (double)timeDivision );
+    int division = (int)timeDivision;
     double pulseTimeHz = getPulseInHz(currentBPM, division);
     
-    
+    std::cout << division << std::endl;
     //pulseClock.setSampleRate(processor.getSampleRate());
     pulseClock.setFrequency(pulseTimeHz);
     pulseClock.resetModulo();
