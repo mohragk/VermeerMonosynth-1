@@ -24,7 +24,7 @@
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
 #include "SequencerState.h"
-#include "SequencerProcessor.h"
+//#include "SequencerProcessor.h"
 
 
 //==============================================================================

@@ -24,15 +24,22 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef PLUGIN_PROCESSOR_H
+#define PLUGIN_PROCESSOR_H
+
+
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+
+
+
 #include "adsr/ADSR.h"
-#include "PulseClock.h"
+//#include "PulseClock.h"
 #include "lfo.h"
 #include "SequencerState.h"
-//#include "SequencerProcessor.h"
+
+
 
 #include "MoogLadders/ImprovedModel.h"
 #include "MoogLadders/SEMModel.h"
@@ -40,7 +47,7 @@
 #include "MoogLadders/DiodeLadderModel.h"
 #include "MoogLadders/ThreeFiveModel.h"
 
-
+#include "SequencerProcessor.h"
 
 
 
@@ -124,6 +131,7 @@ public:
     // registers with it so it can represent the incoming messages
     MidiKeyboardState keyboardState;
 	SequencerState sequencerState;
+    std::unique_ptr<SequencerProcessor> sequencerProcessor;
     
     //Sequencer sequencer;
     
@@ -415,7 +423,7 @@ private:
 	std::unique_ptr<SmoothParam> smoothing[6];
     
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
-    std::unique_ptr<PulseClock> pulseClock;
+    //std::unique_ptr<PulseClock> pulseClock;
     
     bool isAnyKeyDown = false;
     bool useSequencer = false;
@@ -425,3 +433,5 @@ private:
    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthPluginAudioProcessor)
 };
+
+#endif // PLUGIN_PROCESSOR_H

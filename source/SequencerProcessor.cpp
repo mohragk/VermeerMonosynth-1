@@ -10,7 +10,7 @@
 
 #include "SequencerProcessor.h"
 
-SequencerProcessor::SequencerProcessor ( MonosynthPluginAudioProcessor& p, SequencerState& st ) : processor(p), seqState(st), startTime(Time::getMillisecondCounter())
+SequencerProcessor::SequencerProcessor ( SequencerState& st ) : seqState(st), startTime(Time::getMillisecondCounter())
 {
     seqState.addListener(this);
 }
@@ -78,7 +78,7 @@ void SequencerProcessor::processSequencer(int bufferSize)
                     
                     
                     //trigger Listener
-                    processor.handleNoteOff(nullptr, currentMidiChannel, note, 1.0f);
+                    //processor.handleNoteOff(nullptr, currentMidiChannel, note, 1.0f);
                 }
             }
         }
@@ -87,9 +87,9 @@ void SequencerProcessor::processSequencer(int bufferSize)
 
 void SequencerProcessor::playStep(int currentStep)
 {
-    int newNote = lastNotePlayed + *processor.stepPitchParam[currentStep];
+    int newNote = lastNotePlayed + stepPitchValue[currentStep];
     int pulseInterval = (1 / pulseClock.getFrequency()) * 1000;
-    int releaseTime = std::round(  *processor.stepNoteLengthParam * pulseInterval );
+    int releaseTime = std::round(  noteLength * pulseInterval );
     
     
     //fill struct
@@ -107,7 +107,7 @@ void SequencerProcessor::playStep(int currentStep)
     
     
     //trigger Listener
-    processor.handleNoteOn(nullptr, currentMidiChannel, newNote, 1.0f);
+    //processor.handleNoteOn(nullptr, currentMidiChannel, newNote, 1.0f); //@TODO: make this work..
     
     stepCount++;
     
@@ -119,17 +119,17 @@ void SequencerProcessor::playStep(int currentStep)
 void SequencerProcessor::startPulseClock()
 {
     
-    int division = (int) std::round( (double)*processor.stepDivisionFloatParam );
-    double pulseTimeHz = getPulseInHz(processor.lastPosInfo, division);
+    int division = (int) std::round( (double)timeDivision );
+    double pulseTimeHz = getPulseInHz(currentBPM, division);
     
     
-    pulseClock.setSampleRate(processor.getSampleRate());
+    //pulseClock.setSampleRate(processor.getSampleRate());
     pulseClock.setFrequency(pulseTimeHz);
     pulseClock.resetModulo();
 }
 
 
-double SequencerProcessor::getPulseInHz(AudioPlayHead::CurrentPositionInfo posInfo, int division)
+double SequencerProcessor::getPulseInHz(int bpm, int division)
 {
     /*
      int BPM = 120;
@@ -143,10 +143,10 @@ double SequencerProcessor::getPulseInHz(AudioPlayHead::CurrentPositionInfo posIn
      */
     
     double beats_per_minute = 120;
-    beats_per_minute = posInfo.bpm;
+    beats_per_minute = bpm;
     
     const double seconds_per_beat = 60.0 / beats_per_minute;
-    const double seconds_per_note = seconds_per_beat * posInfo.timeSigDenominator / division;
+    const double seconds_per_note = seconds_per_beat * 4 / division;
     
     // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
     

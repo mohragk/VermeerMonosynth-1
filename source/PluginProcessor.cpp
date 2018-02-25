@@ -296,8 +296,8 @@ ampEnvelope(nullptr)
     for (int i = 0; i < 6; i++)
         smoothing[i] = std::unique_ptr<SmoothParam>(new SmoothParam);
     
-    
-    pulseClock = std::unique_ptr<PulseClock> (new PulseClock);
+    sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( sequencerState ) );
+    //pulseClock = std::unique_ptr<PulseClock> (new PulseClock);
     
 }
 
@@ -559,7 +559,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
         smoothing[i]->init(newsr, 2.0);
     
     
-    pulseClock->setSampleRate(newsr);
+    //pulseClock->setSampleRate(newsr);
     
     sampleRate = newsr;
 }

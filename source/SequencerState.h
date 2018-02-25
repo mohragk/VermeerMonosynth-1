@@ -12,7 +12,7 @@
 #define SEQUENCER_STATE_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "PulseClock.h"
+
 
 class SequencerState;
 

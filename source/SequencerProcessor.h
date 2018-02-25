@@ -11,14 +11,19 @@
 #ifndef SEQUENCER_PROCESSOR_H
 #define SEQUENCER_PROCESSOR_H
 
+#include "../JuceLibraryCode/JuceHeader.h"
 
 
-#include "PluginProcessor.h"
+#include "SequencerState.h"
+#include "PulseClock.h"
 
-class SequencerProcessor : public MidiKeyboardStateListener , private SequencerStateListener
+
+
+
+class SequencerProcessor :  public SequencerStateListener
 {
 public:
-    SequencerProcessor(MonosynthPluginAudioProcessor& p, SequencerState& st);
+    SequencerProcessor( SequencerState& st );
     
     
     ~SequencerProcessor();
@@ -47,6 +52,7 @@ public:
         bool   isActive = false;
     } step[numSteps];
     
+   
     
     void handleSequencerNoteOn (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleSequencerNoteOff (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
@@ -62,10 +68,47 @@ public:
     
     void processSequencer(int bufferSize);
     
+   void setStepData(int curStep, int note, int noteLen, int time, bool isRel, bool isAct)
+    {
+        step[curStep].stepNumber = curStep;
+        step[curStep].noteNumber = note;
+        step[curStep].noteLengthMillis = noteLen;
+        step[curStep].timeStamp = time;
+        step[curStep].isReleased = isRel;
+        step[curStep].isActive = isAct;
+    }
+    
+    
+    void setGlobalNoteLength (double noteLen)
+    {
+        noteLength = noteLen;
+    }
+    
+    void setStepPitch(int st, int pitch)
+    {
+        stepPitchValue[st] = pitch;
+    }
+    
+    void setTimeDivision (double division)
+    {
+        timeDivision = division;
+    }
+    
+    void setPulseClockSampleRate( double sr)
+    {
+        pulseClock.setSampleRate(sr);
+    }
+    
+    
+    
+    void setBPM (int bpm)
+    {
+        currentBPM = bpm;
+    }
     
 private:
     
-    MonosynthPluginAudioProcessor& processor;
+   
     
     SequencerState& seqState;
     
@@ -84,8 +127,13 @@ private:
     void startPulseClock();
     void stopPulseClock();
     
-    double getPulseInHz( AudioPlayHead::CurrentPositionInfo posInfo, int division );
+    double getPulseInHz( int bpm, int division );
     int startTime;
+    
+    int stepPitchValue[numSteps];
+    double noteLength;
+    double timeDivision;
+    int currentBPM;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SequencerProcessor)
     
