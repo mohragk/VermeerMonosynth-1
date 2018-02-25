@@ -509,10 +509,10 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
 void MonosynthPluginAudioProcessorEditor::updateStates()
 {
     //sequencer
-    bool seqState =  expandSequencerButton.get()->getToggleState();
+    bool seqState =  *getProcessor().useSequencerParam;
     //expandSequencerButton.get()->setToggleState(seqState, dontSendNotification);
     showSequencer(seqState);
-    //sequencerSection.get()->makeActive(seqState);
+    
     
     
 }
@@ -523,7 +523,8 @@ void MonosynthPluginAudioProcessorEditor::showSequencer(bool shouldShow)
    
     if (shouldShow)
     {
-        
+        if(sequencerSection.get()->isActivated() == true)
+            return;
         
         int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
         int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
@@ -538,7 +539,8 @@ void MonosynthPluginAudioProcessorEditor::showSequencer(bool shouldShow)
     }
     else
     {
-        
+        if(sequencerSection.get()->isActivated() == false)
+            return;
         
         int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
         int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT;
@@ -553,7 +555,7 @@ void MonosynthPluginAudioProcessorEditor::showSequencer(bool shouldShow)
         
     }
     
-     //sequencerSection.get()->makeActive(shouldShow);
+     sequencerSection.get()->makeActive(shouldShow);
 }
 
 

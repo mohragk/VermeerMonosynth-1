@@ -77,7 +77,7 @@ public:
     
     
 private:
-	
+    
     class ParamToggleButton;
     
     enum style
