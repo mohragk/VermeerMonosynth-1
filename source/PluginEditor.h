@@ -78,6 +78,8 @@ public:
     
 private:
 	
+    class ParamToggleButton;
+    
     enum style
 	{
 		ROTARY = 0,
@@ -122,7 +124,7 @@ private:
         drawable24
     ;
     
-    std::unique_ptr<ToggleButton> hqOversamplingButton, expandSequencerButton;
+    std::unique_ptr<ParamToggleButton> hqOversamplingButton, expandSequencerButton;
     
     std::unique_ptr<ComponentAnimator> animator;
    

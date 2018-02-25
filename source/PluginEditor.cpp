@@ -34,6 +34,44 @@
 #define KEYBOARD_HEIGHT 140
 
 
+class MonosynthPluginAudioProcessorEditor::ParamToggleButton : public ToggleButton, private Timer
+{
+public:
+    ParamToggleButton(AudioProcessorParameter& p ) : ToggleButton(p.getName(256)), param(p)
+    {
+        
+        updateToggleState();
+        startTimerHz(30);
+    };
+    
+    ~ParamToggleButton() {};
+    
+    void timerCallback() override { }; //updateToggleState(); };
+    
+    void clicked() override
+    {
+        int newState = ToggleButton::getToggleState();
+        
+        std::cout << newState << std::endl;
+        
+        if (newState != param.getValue())
+            param.setValue(newState);
+    };
+    
+private:
+    AudioProcessorParameter& param;
+    
+    void updateToggleState()
+    {
+        const int newState = param.getValue();
+        
+        if( newState != ToggleButton::getToggleState() )
+        {
+            ToggleButton::setToggleState ( newState, dontSendNotification );
+        }
+    }
+};
+
 //==============================================================================
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)
         :   AudioProcessorEditor (owner),
@@ -41,7 +79,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
             timecodeDisplayLabel (String()),
 	
             titleLabel(nullptr),
-            oversampleSwitchSlider(nullptr)
+            oversampleSwitchSlider(nullptr),
+            hqOversamplingButton(nullptr),
+            expandSequencerButton(nullptr)
       
 {
     // add all the sliders..
@@ -115,14 +155,14 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     
     //Oversample button
-    hqOversamplingButton = std::unique_ptr<ToggleButton> ( new ToggleButton ("HQ OVersampling On/Off"));
+    hqOversamplingButton = std::unique_ptr<ParamToggleButton> ( new ParamToggleButton (*owner.useHQOversamplingParam));
     addAndMakeVisible (hqOversamplingButton.get());
     hqOversamplingButton->addListener (this);
     
 
     
     //Sequencer expansion Button
-    expandSequencerButton = std::unique_ptr<ToggleButton> (new ToggleButton("Expand Sequencer"));
+    expandSequencerButton = std::unique_ptr<ParamToggleButton> (new ParamToggleButton(*owner.useSequencerParam));
     addAndMakeVisible (expandSequencerButton.get());
     expandSequencerButton->addListener(this);
     
@@ -165,10 +205,6 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     animator = std::unique_ptr<ComponentAnimator> (new ComponentAnimator);
     
 
-   
-	
-
-   
 
     // start a timer which will keep our timecode display updated
     startTimerHz (60);
@@ -440,7 +476,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     getProcessor().lastUIWidth = getWidth();
     getProcessor().lastUIHeight = getHeight();
     
-    startTimerHz(60);
+    
 }
 
 //==============================================================================
@@ -463,12 +499,9 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
     
-    if (buttonThatWasClicked == hqOversamplingButton.get())
+    if(buttonThatWasClicked == hqOversamplingButton.get())
     {
         
-        bool state =  hqOversamplingButton.get()->getToggleState();
-        getProcessor().toggleHQOversampling(state);
-        getProcessor().lastOversampleChoice = state;
     }
     
     
@@ -494,8 +527,8 @@ void MonosynthPluginAudioProcessorEditor::updateStates()
     sequencerSection.get()->makeActive(seqState);
     
     //oversampling
-    bool osState = getProcessor().lastOversampleChoice;
-    hqOversamplingButton.get()->setToggleState(osState, dontSendNotification);
+   // bool osState = getProcessor().lastOversampleChoice;
+   // hqOversamplingButton.get()->setToggleState(osState, dontSendNotification);
     
 }
 

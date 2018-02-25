@@ -114,7 +114,8 @@ oversampleSwitchParam(nullptr),
 
 softClipSwitchParam(nullptr),
 
-
+useSequencerParam(nullptr),
+useHQOversamplingParam(nullptr),
 
 filterEnvelope(nullptr),
 
@@ -233,12 +234,15 @@ ampEnvelope(nullptr)
     
     // Oversampling HQ switch
     addParameter(oversampleSwitchParam = new AudioParameterInt("oversampleSwitchParam", "HQ ON/OFF", 0, 1, 0));
-    addParameter(useHQOversamplingParam = new AudioParameterBool("useHQOversamplingParam", "Use HQ Oversampling", false ));
+    addParameter(useHQOversamplingParam = new AudioParameterInt("useHQOversamplingParam", "Use HQ Oversampling", 0, 1, 0 ));
     
     // Softclip switch
     addParameter(softClipSwitchParam = new AudioParameterInt("softClipSwitchParam", "Softclip ON/OFF", 0, 1, 0));
     
     // SEQUENCER PARAMS
+    
+    addParameter(useSequencerParam = new AudioParameterInt( "useSequencerParam", "Use Sequencer", 0, 1 ,0 ));
+    
     for (int i = 0; i < 8; i++)
     {
         addParameter(stepPitchParam[i] = new AudioParameterInt("stepPitchParam" + std::to_string(i), "Seq. Pitch " + std::to_string(i), -12, 12, 0 ));
@@ -314,19 +318,7 @@ void MonosynthPluginAudioProcessor::initialiseSynth()
 }
 
 
-void MonosynthPluginAudioProcessor::toggleHQOversampling(bool q)
-{
-    
-    
-    hqOversampling = q;
 
-    
-    if (prevHqOversampling != hqOversampling)
-    {
-        resetSamplerates( getSampleRate() );
-        prevHqOversampling = hqOversampling;
-    }
-}
 
 
 void MonosynthPluginAudioProcessor::toggleSequencer(bool on)
@@ -582,15 +574,12 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 {
     
     
-    
-    if (prevHqOversampling != hqOversampling)
+   
+    if (prevHqOversampling != *useHQOversamplingParam)
     {
         resetSamplerates( getSampleRate() );
-        prevHqOversampling = hqOversampling;
+        prevHqOversampling = *useHQOversamplingParam;
     }
-    
-    
-    
 
     
 
@@ -638,13 +627,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
 
 	
-    // getting our filter envelope values
-    applyFilterEnvelope(buffer);
     
     
-    
-    
-
     // OVERSAMPLING
     dsp::AudioBlock<FloatType> block (buffer);
     dsp::AudioBlock<FloatType> osBlock;
@@ -661,6 +645,13 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     const int numSamples = osBuffer.getNumSamples();
+    
+    
+    
+    // getting our filter envelope values
+    applyFilterEnvelope(osBuffer);
+    
+    
 
 
     if (*filterOrderParam == 0)
@@ -1215,11 +1206,7 @@ bool MonosynthPluginAudioProcessor::lfoSynced()
     
 }
 
-int MonosynthPluginAudioProcessor::getCurrentStep()
-{
-	return currentStep;
 
-}
 bool MonosynthPluginAudioProcessor::isSequencerPlaying()
 {
 	return sequencerPlaying;

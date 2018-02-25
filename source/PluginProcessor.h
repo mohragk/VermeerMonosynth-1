@@ -70,7 +70,7 @@ public:
     {
 
         jassert (! isUsingDoublePrecision());
-        if (hqOversampling)
+        if (*useHQOversamplingParam)
             process (buffer, midiMessages, oversamplingFloatHQ);
         else
             process (buffer, midiMessages, oversamplingFloat);
@@ -80,7 +80,7 @@ public:
     {
 
         jassert (! isUsingDoublePrecision());
-        if (hqOversampling)
+        if (*useHQOversamplingParam)
             process (buffer, midiMessages, oversamplingDoubleHQ);
         else
             process (buffer, midiMessages, oversamplingDouble);
@@ -111,9 +111,7 @@ public:
     void getStateInformation (MemoryBlock&) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    void toggleHQOversampling(bool q);
     void toggleSequencer(bool on);
-	int getCurrentStep();
 	bool isSequencerPlaying();
     
     //==============================================================================
@@ -250,8 +248,8 @@ public:
     AudioParameterFloat* stepDivisionFloatParam;
     
     
-    AudioParameterBool* useSequencerParam;
-    AudioParameterBool* useHQOversamplingParam;
+    AudioParameterInt* useSequencerParam;
+    AudioParameterInt* useHQOversamplingParam;
 	
     int sequencerStepDivisionVal;
     float globalNoteLengthVal;
@@ -298,6 +296,8 @@ private:
 		double a, b, z;
 		double coeff;
 	};
+    
+    
     
 	float linToLog(float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
 	float logToLin(float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
@@ -416,8 +416,7 @@ private:
     
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     std::unique_ptr<PulseClock> pulseClock;
-    int stepCounter = 0;
-	int currentStep = 0;
+    
     bool isAnyKeyDown = false;
     bool useSequencer = false;
 	bool sequencerPlaying = false;
