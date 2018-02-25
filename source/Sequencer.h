@@ -80,13 +80,7 @@ public:
         
     };
     
-    enum timers
-    {
-        PULSECLOCK_TIMER = 0,
-        displayTimer,
-        hiFreqTimer,
-        numTimers
-    };
+   
 
     struct Step
     {

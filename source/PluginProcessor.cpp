@@ -573,12 +573,12 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& oversampling)
 {
     
-    
+    bool hqOn = bool(*useHQOversamplingParam);
    
-    if (prevHqOversampling != *useHQOversamplingParam)
+    if (prevHqOversampling != hqOn)
     {
         resetSamplerates( getSampleRate() );
-        prevHqOversampling = *useHQOversamplingParam;
+        prevHqOversampling = hqOn;
     }
 
     
@@ -598,9 +598,11 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     {
         if( hasEditor() )
         {
-           // if (getActiveEditor() != NULL)
+            if (getActiveEditor() != NULL)
             {
-                MonosynthPluginAudioProcessorEditor* editor = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( createEditorIfNeeded() ) ;
+                //const MessageManagerLock mmLock;
+                
+                MonosynthPluginAudioProcessorEditor* editor = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( getActiveEditor() ) ;
                 if (editor->sequencerSection.get() != NULL)
                     editor->sequencerSection.get()->processSequencer(buffer.getNumSamples());
                 
