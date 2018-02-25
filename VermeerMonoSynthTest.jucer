@@ -69,6 +69,10 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="L5yrsA" name="SequencerProcessor.cpp" compile="1" resource="0"
+          file="source/SequencerProcessor.cpp"/>
+    <FILE id="epB0jA" name="SequencerProcessor.h" compile="0" resource="0"
+          file="source/SequencerProcessor.h"/>
     <FILE id="E5EF7i" name="SequencerState.cpp" compile="1" resource="0"
           file="source/SequencerState.cpp"/>
     <FILE id="fswhRw" name="SequencerState.h" compile="0" resource="0"

@@ -32,6 +32,7 @@
 #include "PulseClock.h"
 #include "lfo.h"
 #include "SequencerState.h"
+//#include "SequencerProcessor.h"
 
 #include "MoogLadders/ImprovedModel.h"
 #include "MoogLadders/SEMModel.h"

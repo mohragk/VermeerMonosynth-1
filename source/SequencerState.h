@@ -69,7 +69,6 @@ private:
 
 	CriticalSection lock;
     
-    PulseClock pulseClock;
     
 	MidiBuffer internalBuffer;
 	Array<SequencerStateListener*> listeners;
