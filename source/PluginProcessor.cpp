@@ -588,33 +588,33 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
 
-
    
     // KEYBOARD
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     
     
-    
-    
     // SEQUENCER
-    if(lastSequencerChoice)
+    if(*useSequencerParam)
     {
-       if( hasEditor() )
-       {
-           if (getActiveEditor() != NULL)
-           {
-               MonosynthPluginAudioProcessorEditor* editor = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( getActiveEditor() ) ;
-               if (editor->sequencerSection.get() != NULL)
-                   editor->sequencerSection.get()->processSequencer(buffer.getNumSamples());
-               
-           }
-           
-       }
+        if( hasEditor() )
+        {
+           // if (getActiveEditor() != NULL)
+            {
+                MonosynthPluginAudioProcessorEditor* editor = dynamic_cast<MonosynthPluginAudioProcessorEditor*> ( createEditorIfNeeded() ) ;
+                if (editor->sequencerSection.get() != NULL)
+                    editor->sequencerSection.get()->processSequencer(buffer.getNumSamples());
+                
+            }
+            
+        }
         
-    
-        sequencerState.processBuffer(midiMessages, 0, buffer.getNumSamples(), false);
-    
+        
+        sequencerState.processBuffer(midiMessages, 0, buffer.getNumSamples(), true);
+        
     }
+    
+    
+    
     
 	// Now pass any incoming midi messages to our keyboard state object, and let it
 	// add messages to the buffer if the user is clicking on the on-screen keys
@@ -948,7 +948,7 @@ void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 //==============================================================================
 AudioProcessorEditor* MonosynthPluginAudioProcessor::createEditor()
 {
-    return new MonosynthPluginAudioProcessorEditor (*this);
+    return new MonosynthPluginAudioProcessorEditor (*this) ;
 }
 
 //==============================================================================

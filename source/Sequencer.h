@@ -38,7 +38,7 @@
 
 
 
-class Sequencer  : public Component, public MidiKeyboardStateListener, private Timer
+class Sequencer  : public Component, public SequencerStateListener, private Timer
 {
 public:
     //==============================================================================
@@ -59,8 +59,8 @@ public:
     void processSequencer(int bufferSize);
     
     
-    void handleNoteOn (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
-    void handleNoteOff (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    void handleSequencerNoteOn (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    void handleSequencerNoteOff (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
     void makeActive(bool on);
     bool isActivated(){ return isActive;};

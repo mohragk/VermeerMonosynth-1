@@ -259,7 +259,6 @@ public:
 	String debugInfo;
 private:
 	
-    
 	class SmoothParam {
 	public:
 		SmoothParam()

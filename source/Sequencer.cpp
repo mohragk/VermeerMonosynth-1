@@ -102,7 +102,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
     
     setSize (890, SEQUENCER_HEIGHT);
     
-    processor.keyboardState.addListener(this);
+    processor.sequencerState.addListener(this);
 	startTimerHz(60);
     
     
@@ -110,7 +110,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& s) : pro
 
 Sequencer::~Sequencer()
 {
-    processor.keyboardState.removeListener(this);
+    processor.sequencerState.removeListener(this);
 }
 
 
@@ -120,9 +120,9 @@ void Sequencer::makeActive(bool on)
 }
 
 
-void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
+void Sequencer::handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    if (isActive)
+    //if (isActive)
     {
         stepCount = 0;
         lastNotePlayed = midiNoteNumber;
@@ -135,9 +135,9 @@ void Sequencer::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNu
 }
 
 
-void Sequencer::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
+void Sequencer::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    if(isActive)
+    //if(isActive)
     {
         isPlaying = false;
     }

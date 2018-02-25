@@ -499,19 +499,7 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
     
-    if(buttonThatWasClicked == hqOversamplingButton.get())
-    {
-        
-    }
     
-    
-    if(buttonThatWasClicked == expandSequencerButton.get())
-    {
-        bool state = expandSequencerButton.get()->getToggleState();
-        getProcessor().toggleSequencer(state);
-        //showSequencer(state);
-        
-    }
     
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -521,14 +509,11 @@ void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasCl
 void MonosynthPluginAudioProcessorEditor::updateStates()
 {
     //sequencer
-    bool seqState =  getProcessor().lastSequencerChoice;
-    expandSequencerButton.get()->setToggleState(seqState, dontSendNotification);
+    bool seqState =  expandSequencerButton.get()->getToggleState();
+    //expandSequencerButton.get()->setToggleState(seqState, dontSendNotification);
     showSequencer(seqState);
-    sequencerSection.get()->makeActive(seqState);
+    //sequencerSection.get()->makeActive(seqState);
     
-    //oversampling
-   // bool osState = getProcessor().lastOversampleChoice;
-   // hqOversamplingButton.get()->setToggleState(osState, dontSendNotification);
     
 }
 
@@ -538,8 +523,7 @@ void MonosynthPluginAudioProcessorEditor::showSequencer(bool shouldShow)
    
     if (shouldShow)
     {
-        if(sequencerSection.get()->isActivated())
-            return;
+        
         
         int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
         int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
@@ -554,8 +538,7 @@ void MonosynthPluginAudioProcessorEditor::showSequencer(bool shouldShow)
     }
     else
     {
-        if( ! sequencerSection.get()->isActivated() )
-            return;
+        
         
         int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
         int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT;
