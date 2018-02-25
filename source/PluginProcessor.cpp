@@ -482,6 +482,7 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
 void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
 {
     double newsr = sr;
+    
     synth.setCurrentPlaybackSampleRate (newsr);
     sequencerProcessor.get()->setPulseClockSampleRate(newsr);
     
@@ -489,8 +490,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     
     synthVoice->setEnvelopeSampleRate(newsr);
     
-    
-    if(hqOversampling)
+    if(*useHQOversamplingParam)
     {
         newsr *= oversamplingDoubleHQ->getOversamplingFactor();
         if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDoubleHQ->getLatencyInSamples())); }
@@ -504,7 +504,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     }
     
     
-
+   
 
 	
     
@@ -537,8 +537,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     for (int i = 0; i < 6; i++)
         smoothing[i]->init(newsr, 2.0);
     
-    
-    //pulseClock->setSampleRate(newsr);
+
     
     sampleRate = newsr;
 }
@@ -592,7 +591,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // GET SYNTHDATA
     synth.renderNextBlock (buffer, midiMessages, 0, static_cast<int> ( buffer.getNumSamples() ) );
     
-
+    // getting our filter envelope values
+    applyFilterEnvelope(buffer);
 	
     
     
@@ -615,8 +615,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     
-    // getting our filter envelope values
-    applyFilterEnvelope(osBuffer);
+    
     
     
 
@@ -712,19 +711,9 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*> ( synth.getVoice(0) );
     
-    
-    synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *releaseParam3, *sustainParam3, *attackCurve2Param, *decayRelCurve2Param);
-    
     synthVoice->setFilterEnvelopeSampleRate(sampleRate);
+    synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *sustainParam3, *releaseParam3, *attackCurve3Param, *decayRelCurve3Param);
     
-    /*
-    filterEnvelope->setAttackRate(*attackParam3);
-    filterEnvelope->setDecayRate(*decayParam3);
-    filterEnvelope->setReleaseRate(*releaseParam3);
-    filterEnvelope->setSustainLevel(*sustainParam3);
-    filterEnvelope->setTargetRatioA(*attackCurve2Param);
-    filterEnvelope->setTargetRatioDR(*decayRelCurve2Param);
-    */
     
     const int numSamples = buffer.getNumSamples();
     

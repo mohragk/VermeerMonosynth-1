@@ -194,6 +194,12 @@ public:
         filterEnvelope.get()->setTargetRatioDR(decRelCurve);
     }
     
+    
+    double getFilterEnvelopeValue()
+    {
+        return filterEnvelope.get()->process();
+    }
+    
     // Pretty dumb name, but this influences the amount of pitch deviation generated from the envelope.
     void setPitchEnvelopeAmount (const float pitchMod )
     {
@@ -238,10 +244,7 @@ public:
     }
 
 
-    double getFilterEnvelopeValue()
-    {
-        return filterEnvelope.get()->process();
-    }
+   
     
     void sendLFO(LFO& lfo)
     {
