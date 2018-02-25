@@ -137,6 +137,7 @@ public:
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    
 
 
     // this keeps a copy of the last set of time info that was acquired during an audio

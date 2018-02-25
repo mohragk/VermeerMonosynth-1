@@ -297,14 +297,12 @@ ampEnvelope(nullptr)
         smoothing[i] = std::unique_ptr<SmoothParam>(new SmoothParam);
     
     sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( sequencerState ) );
-    //pulseClock = std::unique_ptr<PulseClock> (new PulseClock);
     
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
 {
     keyboardState.removeListener(this);
-	//sequencerState.removeListener(this);
     synth.clearSounds();
     synth.clearVoices();
     
@@ -477,38 +475,19 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
     
 }
 
-/*
-void MonosynthPluginAudioProcessor::handleSequencerNoteOn(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
-{
-    
-    contourVelocity = velocity;
-    //if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
-        filterEnvelope->gate(true);
-    
-    ampEnvelope->gate(true);
-    
-    
-    //lfo.setPhase(0.0);
-    
-    lastNotePlayed = midiNoteNumber;
-    curMidiChannel = midiChannel;
-    
-}
 
 
-void MonosynthPluginAudioProcessor::handleSequencerNoteOff(SequencerState*, int midiChannel, int midiNoteNumber, float velocity)
-{
- 
-    ampEnvelope->gate(false);
-    filterEnvelope->gate(false);
-   
-}
 
-*/
+
 void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
 {
     double newsr = sr;
     synth.setCurrentPlaybackSampleRate (newsr);
+    sequencerProcessor.get()->setPulseClockSampleRate(newsr);
+    
+    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+    
+    synthVoice->setEnvelopeSampleRate(newsr);
     
     
     if(hqOversampling)
@@ -653,14 +632,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 			
         }
         
-        // applying VCA
-        applyAmpEnvelope(osBuffer);
+        
     }
     else
     {
-        // applying VCA
-        applyAmpEnvelope(osBuffer);
-        
         if(filterOn)
         {
             // applying filter
@@ -1034,7 +1009,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     for (int i = 0; i < numSamples; i++)
     {
         
-        sequencerProcessor.get()->setPulseClockSampleRate(sampleRate);
+       
         
         sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);
         
@@ -1058,7 +1033,8 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         
         synthVoice->setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
 
-        synthVoice->setPitchEnvelope(*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
+        synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
+        synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
 
         synthVoice->setPitchEnvelopeAmount(*pitchModParam);
 
@@ -1083,7 +1059,6 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         pulsewidthSmooth3.setValue(*pulsewidth3Param);
 
         synthVoice->sendLFO(lfo);
-        synthVoice->sendEnvelope(*ampEnvelope);
 
 
         if (i % stepSize == 0)

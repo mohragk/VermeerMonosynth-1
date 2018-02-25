@@ -120,7 +120,6 @@ void SequencerProcessor::startPulseClock()
     int division = (int)timeDivision;
     double pulseTimeHz = getPulseInHz(currentBPM, division);
     
-    std::cout << division << std::endl;
     //pulseClock.setSampleRate(processor.getSampleRate());
     pulseClock.setFrequency(pulseTimeHz);
     pulseClock.resetModulo();

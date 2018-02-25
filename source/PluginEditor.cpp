@@ -51,9 +51,7 @@ public:
     void clicked() override
     {
         int newState = ToggleButton::getToggleState();
-        
-        std::cout << newState << std::endl;
-        
+            
         if (newState != param.getValue())
             param.setValue(newState);
     };
