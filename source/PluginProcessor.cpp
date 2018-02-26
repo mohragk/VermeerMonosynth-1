@@ -483,12 +483,9 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
 {
     double newsr = sr;
     
-    synth.setCurrentPlaybackSampleRate (newsr);
-    sequencerProcessor.get()->setPulseClockSampleRate(newsr);
     
-    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
     
-    synthVoice->setEnvelopeSampleRate(newsr);
+    
     
     if(*useHQOversamplingParam)
     {
@@ -504,9 +501,12 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     }
     
     
-   
+    synth.setCurrentPlaybackSampleRate (newsr);
+    sequencerProcessor.get()->setPulseClockSampleRate(newsr);
+    
+    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
 
-	
+	synthVoice->setEnvelopeSampleRate(newsr);
     
     for(int channel = 0; channel < 2; channel++)
     {
@@ -559,43 +559,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         prevHqOversampling = hqOn;
     }
 
-    
-
-	updateParameters(buffer);
-
-    
-    
-
-   
-    // KEYBOARD
-    keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
-    
-    
-    // SEQUENCER
-    if(*useSequencerParam)
-    {
-        sequencerProcessor.get()->processSequencer(buffer.getNumSamples());
-        sequencerState.processBuffer(midiMessages, 0, buffer.getNumSamples(), true);
-        
-    }
-    
-    
-    
-    
-	// Now pass any incoming midi messages to our keyboard state object, and let it
-	// add messages to the buffer if the user is clicking on the on-screen keys
-	
-	
-  
-    
-    // GET SYNTHDATA
-    synth.renderNextBlock (buffer, midiMessages, 0, static_cast<int> ( buffer.getNumSamples() ) );
-    
-    // getting our filter envelope values
-    applyFilterEnvelope(buffer);
-	
-    
-    
     // OVERSAMPLING
     dsp::AudioBlock<FloatType> block (buffer);
     dsp::AudioBlock<FloatType> osBlock;
@@ -612,10 +575,47 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     const int numSamples = osBuffer.getNumSamples();
+
+	updateParameters(buffer);
+
+    
+    
+
+   
+    // KEYBOARD
+    keyboardState.processNextMidiBuffer(midiMessages, 0, osBuffer.getNumSamples(), true);
+    
+    
+    // SEQUENCER
+    if(*useSequencerParam)
+    {
+        sequencerProcessor.get()->processSequencer(osBuffer.getNumSamples());
+        sequencerState.processBuffer(midiMessages, 0, osBuffer.getNumSamples(), true);
+        
+    }
     
     
     
     
+	// Now pass any incoming midi messages to our keyboard state object, and let it
+	// add messages to the buffer if the user is clicking on the on-screen keys
+	
+	
+  
+    
+    // GET SYNTHDATA
+    synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBuffer.getNumSamples() ) );
+    
+    
+	
+    
+    
+   
+    
+    
+    
+    // getting our filter envelope values
+    applyFilterEnvelope(osBuffer);
     
     
 
