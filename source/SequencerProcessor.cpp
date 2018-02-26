@@ -109,7 +109,7 @@ void SequencerProcessor::playStep(int currentStep)
     
     stepCount++;
     
-    if (stepCount >= numSteps)
+    if (stepCount > maxSteps)
         stepCount = 0;
 }
 

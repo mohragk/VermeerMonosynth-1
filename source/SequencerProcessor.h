@@ -106,6 +106,11 @@ public:
         currentBPM = bpm;
     }
     
+    void setMaxSteps (int max)
+    {
+        maxSteps = max;
+    }
+    
 private:
     
     SequencerState& seqState;
@@ -115,6 +120,7 @@ private:
     int lastNotePlayed = 60;
     int currentMidiChannel = 1;
     int stepCount = 0;
+    int maxSteps = 8;
     
     bool isPlaying = false;
     bool isActive = false;

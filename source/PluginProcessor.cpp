@@ -263,7 +263,7 @@ useHQOversamplingParam(nullptr)
 	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.1f, 1.0f, 0.5f));
     addParameter(stepDivisionFloatParam   = new AudioParameterFloat("stepDivisionFloatParam", "Seq. Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin) , 16.0));
     
-    addParameter(maxStepsParam = new AudioParameterInt ("maxStepsParam", "Max. Steps", 1, 8, 8 ));
+    addParameter(maxStepsParam = new AudioParameterInt ("maxStepsParam", "Max. Steps", 0, 7, 7 ));
     
     initialiseSynth();
     
@@ -951,7 +951,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     {
         
        
-        
+        sequencerProcessor.get()->setMaxSteps(*maxStepsParam);
         sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);
         
         
