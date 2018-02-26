@@ -13,13 +13,11 @@ class PulseClock
 {
 public:
     PulseClock() : sampleRate(44100.0), sample(0.0),moduloInc(0.0), modulo(0.0),  pulseLength(0.5), isHigh(false)
-    {
-        
+    {    
     }
     
-    
-   
-    
+    ~PulseClock() {}
+
     void setSampleRate(const double sr)
     {
         sampleRate = sr;
@@ -63,32 +61,22 @@ public:
 
 		moduloInc = getModuloIncrement(frequency.get(), sampleRate);
 
-
-		if (modulo.get() <= pulseLength.get()) {
+		if (modulo.get() <= pulseLength.get()) 
 			value = 1.0;
-		}
-		else {
+		else 
 			value = 0.0;
-		}
-
-
-
-
+		
 
 		modulo.set( modulo.get() + moduloInc );
 
 		while (modulo.get() >= 1.0)
-		{
 			modulo.set(0.0);
-		}
-
-
+		
 
 		sample = value;
 	}
     
 private:
-    
     
     double getModuloIncrement(double freq, double sr)
     {
