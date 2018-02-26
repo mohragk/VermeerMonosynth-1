@@ -133,7 +133,7 @@ private:
     double timeDivision;
     int currentBPM;
     
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SequencerProcessor)
+    JUCE_LEAK_DETECTOR (SequencerProcessor)
     
 };
 

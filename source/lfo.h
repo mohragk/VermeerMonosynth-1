@@ -8,7 +8,8 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef LFO_H
+#define LFO_H
 
 class LFO
 {
@@ -112,4 +113,7 @@ class LFO
 
         Random r;
     
+		JUCE_LEAK_DETECTOR(LFO);
 };
+
+#endif // LFO_H

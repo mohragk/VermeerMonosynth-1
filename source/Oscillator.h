@@ -209,6 +209,7 @@ private:
     
     bool rephase;
     
+	JUCE_LEAK_DETECTOR(Oscillator);
 };
 
 #endif /* Oscillator_h */

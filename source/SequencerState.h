@@ -85,7 +85,7 @@ private:
 
 	void processMidiEvent(const MidiMessage& message);
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SequencerState)
+    JUCE_LEAK_DETECTOR (SequencerState)
 };
 
 

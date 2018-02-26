@@ -91,6 +91,7 @@ private:
     
     bool isHigh;
 	
+	JUCE_LEAK_DETECTOR(PulseClock)
 };
 
 #endif /* PULSE_CLOCK_H */

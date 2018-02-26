@@ -24,7 +24,8 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef PLUGIN_EDITOR_H
+#define PLUGIN_EDITOR_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
@@ -139,4 +140,7 @@ private:
     void updateStates();
     void showSequencer(bool shouldShow);
     void updateTimecodeDisplay (AudioPlayHead::CurrentPositionInfo);
+
 };
+
+#endif // PLUGIN_EDITOR_H

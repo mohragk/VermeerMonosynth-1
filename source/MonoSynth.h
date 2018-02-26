@@ -23,7 +23,8 @@ DISCLAIMED.
 
 ==============================================================================
 */
-#pragma once
+#ifndef MONOSYNTH_H
+#define MONOSYNTH_H
 
 #include "Oscillator.h"
 #include "lfo.h"
@@ -418,7 +419,7 @@ private:
     
     std::unique_ptr<Oscillator> osc[3];
     
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthVoice)
+    JUCE_LEAK_DETECTOR (MonosynthVoice)
 };
 
-
+#endif // MONOSYNTH_H
