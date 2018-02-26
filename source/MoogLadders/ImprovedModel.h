@@ -40,7 +40,7 @@ class ImprovedMoog : public LadderFilterBase
 {
 public:
     
-    ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0)
+    ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0), oldCutoff(1000.0)
     {
         drive = 1.0f;
 		SetCutoff(1000.0);
@@ -143,7 +143,13 @@ public:
 		jassert(c > 0 && c <= (sampleRate * 0.5));
 
         cutoff.set(c);
-        Update();
+
+		if (oldCutoff != c)
+		{
+			Update();
+		}
+
+		oldCutoff = c;
         
         return true;
     }
@@ -210,6 +216,7 @@ private:
     double sampleRate;
     double multiplier;
 
+	double oldCutoff;
 };
 
 #endif

@@ -28,7 +28,8 @@ class VAOnePole : public LadderFilterBase
                         Z1(0.0),
                         Feedback(0.0),
                         type(LPF1),
-                        sampleRate(44100.0)
+                        sampleRate(44100.0),
+						oldCutoff(1000.0)
         {
             Reset();
         }
@@ -157,7 +158,13 @@ class VAOnePole : public LadderFilterBase
                 c = 40.0;
             
 			cutoff.set(c);
-            Update();
+            
+			if (oldCutoff != c)
+			{
+				Update();
+			}
+
+			oldCutoff = c;
             return true;
 		}
     
@@ -183,6 +190,7 @@ class VAOnePole : public LadderFilterBase
     
         FilterType type;
         double sampleRate;
+		double oldCutoff;
 };
 
 

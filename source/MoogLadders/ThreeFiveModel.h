@@ -17,7 +17,7 @@
 class ThreeFiveModel : public LadderFilterBase
 {
 public:
-    ThreeFiveModel() : LadderFilterBase(), sampleRate(44100.0), type(LPF2), Alpha0(0.0)
+    ThreeFiveModel() : LadderFilterBase(), sampleRate(44100.0), type(LPF2), Alpha0(0.0), oldCutoff(1000.0)
     {
 		SetCutoff(1000.0);
         SetResonance( 0.0 );
@@ -203,7 +203,13 @@ public:
         jassert(c > 0 && c <= (sampleRate * 0.5));
         
         cutoff.set(c);
-        Update();
+
+		if (oldCutoff != c)
+		{
+			Update();
+		}
+
+		oldCutoff = c;
         
         return true;
     }
@@ -225,6 +231,7 @@ public:
     
     double Alpha0;
     
+	double oldCutoff;
     
 };
 

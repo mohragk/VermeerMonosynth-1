@@ -9,18 +9,18 @@ namespace BinaryData
 
 //================== OscNoiseWaveSymbol.svg ==================
 static const unsigned char temp_binary_data_0[] =
-"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-"<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n"
-"<svg version=\"1.1\" id=\"Laag_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n"
-"\t viewBox=\"0 0 24 24\" style=\"enable-background:new 0 0 24 24;\" xml:space=\"preserve\">\n"
-"<style type=\"text/css\">\n"
-"\t.st0{fill:#E6E6E6;}\n"
-"</style>\n"
-"<g id=\"XMLID_3_\">\n"
-"\t<polygon id=\"XMLID_4_\" class=\"st0\" points=\"12,18 11,13 10,12 8,17 6.4,12.7 5.5,14 3,14 3,12 4.5,12 7.6,7.3 8,12 9.7,6.4 \n"
-"\t\t12.7,11.7 13.2,13.2 16,8 17.4,13.6 18.5,12 21,12 21,14 19,14 16.6,18.4 15.2,13.4 \t\"/>\n"
-"</g>\n"
-"</svg>\n";
+"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n"
+"<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n"
+"<svg version=\"1.1\" id=\"Laag_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n"
+"\t viewBox=\"0 0 24 24\" style=\"enable-background:new 0 0 24 24;\" xml:space=\"preserve\">\r\n"
+"<style type=\"text/css\">\r\n"
+"\t.st0{fill:#E6E6E6;}\r\n"
+"</style>\r\n"
+"<g id=\"XMLID_3_\">\r\n"
+"\t<polygon id=\"XMLID_4_\" class=\"st0\" points=\"12,18 11,13 10,12 8,17 6.4,12.7 5.5,14 3,14 3,12 4.5,12 7.6,7.3 8,12 9.7,6.4 \r\n"
+"\t\t12.7,11.7 13.2,13.2 16,8 17.4,13.6 18.5,12 21,12 21,14 19,14 16.6,18.4 15.2,13.4 \t\"/>\r\n"
+"</g>\r\n"
+"</svg>\r\n";
 
 const char* OscNoiseWaveSymbol_svg = (const char*) temp_binary_data_0;
 
@@ -826,7 +826,7 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes) throw
 
     switch (hash)
     {
-        case 0x7554af71:  numBytes = 638; return OscNoiseWaveSymbol_svg;
+        case 0x7554af71:  numBytes = 650; return OscNoiseWaveSymbol_svg;
         case 0x58432e3b:  numBytes = 26892; return FuturaStdMedium_otf;
         case 0x0b304933:  numBytes = 29576; return MonoSynthIconLarge_png;
         case 0x7d3e5cff:  numBytes = 1273; return MonoSynthIconSmall_png;
