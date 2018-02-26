@@ -16,7 +16,7 @@
 
 #ifndef SEQUENCER_H
 #define SEQUENCER_H
-#define SEQUENCER_HEIGHT 120
+#define SEQUENCER_HEIGHT 132
 
 
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -108,6 +108,7 @@ private:
     std::unique_ptr<ParameterSlider> pitchSlider[numSteps];
     std::unique_ptr<ParameterSlider> globalNoteLengthSlider;
     std::unique_ptr<ParameterSlider> stepDivision;
+    std::unique_ptr<ParameterSlider> maxStepsSlider;
     
     std::unique_ptr<Label> stepDivisionLabel, globalNoteLengthLabel;
     

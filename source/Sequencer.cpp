@@ -88,8 +88,6 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerProcessor& sp) 
     globalNoteLengthSlider = std::unique_ptr<ParameterSlider> (new ParameterSlider( *processor.stepNoteLengthParam, knobStyle(ROTARY) ));
     addAndMakeVisible (globalNoteLengthSlider.get());
    
-
-    
     for (int i = 0; i < numSteps; i++)
     {
         pitchSlider[i] = std::unique_ptr<ParameterSlider> ( new ParameterSlider (  *processor.stepPitchParam[i], knobStyle(LINEARVERTICAL) ) );
@@ -99,6 +97,8 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerProcessor& sp) 
 	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(  *processor.stepDivisionFloatParam, knobStyle(ROTARY)));
 	addAndMakeVisible(stepDivision.get());
     
+    maxStepsSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider (*processor.maxStepsParam, knobStyle(LINEARHORIZONTAL)));
+    addAndMakeVisible(maxStepsSlider.get());
     
     setSize (890, SEQUENCER_HEIGHT);
     
@@ -144,7 +144,7 @@ void Sequencer::resized()
     int vertSliderSize = 36;
     int marginX = 12;
     
-    Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT).reduced(24, 8) );
+    Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT - 12).reduced(24, 8) );
     
     {
         Rectangle<int> block (strip.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
@@ -170,6 +170,13 @@ void Sequencer::resized()
         stepDivision->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75 ).reduced(6, 0) );
         stepDivision->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 14);
         stepDivision->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
+    }
+    
+    Rectangle<int> stripBottom ( area.removeFromTop(12).reduced(24, 0) );
+    
+    {
+        Rectangle<int> block (stripBottom.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
+        maxStepsSlider->setBounds(block.removeFromLeft(vertSliderSize * numSteps).reduced(12, 0));
     }
 }
 

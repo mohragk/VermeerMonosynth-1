@@ -254,6 +254,7 @@ public:
     AudioParameterInt* stepPitchParam[8];
 	AudioParameterFloat* stepNoteLengthParam;
     AudioParameterFloat* stepDivisionFloatParam;
+    AudioParameterInt* maxStepsParam;
     
     
     AudioParameterInt* useSequencerParam;
@@ -414,7 +415,6 @@ private:
 	std::unique_ptr<SmoothParam> smoothing[6];
     
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
-    //std::unique_ptr<PulseClock> pulseClock;
     
     bool useSequencer = false;
     
