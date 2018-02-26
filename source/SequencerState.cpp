@@ -165,9 +165,6 @@ void SequencerState::processBuffer(MidiBuffer& buffer, const int startSample, co
     }
     
     
-    
-
-	
 	{
 		// search for first and last event in internalBuffer
 		MidiBuffer::Iterator i2(internalBuffer);
