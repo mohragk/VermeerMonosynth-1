@@ -75,9 +75,6 @@ void SequencerProcessor::processSequencer(int bufferSize)
                     seqState.noteOff(currentMidiChannel, note, 1.0f);
                     step[i].isReleased = true;
                     step[i].isActive = false;
-                    
-                    //trigger Listener
-                    //processor.handleNoteOff(nullptr, currentMidiChannel, note, 1.0f);
                 }
             }
         }
@@ -104,9 +101,6 @@ void SequencerProcessor::playStep(int currentStep)
     seqState.noteOn(currentMidiChannel, newNote, 1.0f);
     
     
-    //trigger Listener
-    //processor.handleNoteOn(nullptr, currentMidiChannel, newNote, 1.0f); //@TODO: make this work..
-    
     stepCount++;
     
     if (stepCount > maxSteps)
@@ -120,7 +114,6 @@ void SequencerProcessor::startPulseClock()
     int division = (int)timeDivision;
     double pulseTimeHz = getPulseInHz(currentBPM, division);
     
-    //pulseClock.setSampleRate(processor.getSampleRate());
     pulseClock.setFrequency(pulseTimeHz);
     pulseClock.resetModulo();
 }
@@ -128,17 +121,6 @@ void SequencerProcessor::startPulseClock()
 
 double SequencerProcessor::getPulseInHz(int bpm, int division)
 {
-    /*
-     int BPM = 120;
-     
-     BPM = posInfo.bpm;
-     const int denominator = posInfo.timeSigDenominator;
-     const int msPerBeat = 60000 / BPM;
-     const int msPerNote = msPerBeat * denominator / division;
-     
-     return msPerNote;
-     */
-    
     double beats_per_minute = 120;
     beats_per_minute = bpm;
     
@@ -148,5 +130,4 @@ double SequencerProcessor::getPulseInHz(int bpm, int division)
     // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
     
     return 1.0 / seconds_per_note;
-    
 }

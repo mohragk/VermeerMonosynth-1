@@ -16,7 +16,7 @@
 
 #ifndef SEQUENCER_H
 #define SEQUENCER_H
-#define SEQUENCER_HEIGHT 132
+#define SEQUENCER_HEIGHT 140
 
 
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -131,6 +131,7 @@ private:
     void updateStepDivisionLabel();
     void updateGlobalNoteLengthLabel();
 	void updateStepKnobColours();
+    void updateStepSliderAlpha();
     
    
     

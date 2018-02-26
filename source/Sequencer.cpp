@@ -142,9 +142,10 @@ void Sequencer::resized()
     
     int rotarySize = 60;
     int vertSliderSize = 36;
+    int horSliderSize = 18;
     int marginX = 12;
     
-    Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT - 12).reduced(24, 8) );
+    Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT - horSliderSize).reduced(24, 8) );
     
     {
         Rectangle<int> block (strip.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
@@ -172,11 +173,11 @@ void Sequencer::resized()
         stepDivision->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     }
     
-    Rectangle<int> stripBottom ( area.removeFromTop(12).reduced(24, 0) );
+    Rectangle<int> stripBottom ( area.removeFromTop(horSliderSize).reduced(24, 0) );
     
     {
         Rectangle<int> block (stripBottom.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
-        maxStepsSlider->setBounds(block.removeFromLeft(vertSliderSize * numSteps).reduced(12, 0));
+        maxStepsSlider->setBounds(block.removeFromLeft(vertSliderSize * numSteps).reduced(8, 0));
     }
 }
 
@@ -192,6 +193,7 @@ void Sequencer::parentSizeChanged()
 void Sequencer::timerCallback()
 {
     updateStepKnobColours();
+    updateStepSliderAlpha();
 }
 
 
@@ -226,10 +228,18 @@ void Sequencer::updateStepKnobColours()
         else
             pitchSlider[i].get()->setColour(Slider::thumbColourId, darkThumb);
     }
-    
-    
-
 }
+
+void Sequencer::updateStepSliderAlpha()
+{
+    for (int i = 0; i < 8; i++)
+    if (i <= *processor.maxStepsParam)
+        pitchSlider[i].get()->setAlpha(1.0);
+    else
+        pitchSlider[i].get()->setAlpha(0.3);
+}
+
+
 //==============================================================================
 
 
