@@ -201,16 +201,12 @@ void Sequencer::fillStepData(int stepToFill, Step data )
 
 void Sequencer::updateGlobalNoteLengthLabel()
 {
-    int val = processor.globalNoteLengthVal * 100;
-    String s = std::to_string(val) + "%";
-    globalNoteLengthLabel->setText(s, dontSendNotification);
+    
 }
 
 void Sequencer::updateStepDivisionLabel()
 {
-    int val = processor.sequencerStepDivisionVal;
-    String s = "1/" + std::to_string(val) + "th";
-    stepDivisionLabel->setText(s, dontSendNotification);
+    
 }
 
 

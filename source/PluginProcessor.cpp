@@ -115,11 +115,9 @@ oversampleSwitchParam(nullptr),
 softClipSwitchParam(nullptr),
 
 useSequencerParam(nullptr),
-useHQOversamplingParam(nullptr),
+useHQOversamplingParam(nullptr)
 
-filterEnvelope(nullptr),
 
-ampEnvelope(nullptr)
 
 {
     lastPosInfo.resetToDefault();
@@ -263,7 +261,6 @@ ampEnvelope(nullptr)
     };
     
 	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.1f, 1.0f, 0.5f));
-	addParameter(stepDivisionParam   = new AudioParameterInt("stepDivisionParam", "Seq. Rate", 1, 6, 3));
     
     addParameter(stepDivisionFloatParam   = new AudioParameterFloat("stepDivisionFloatParam", "Seq. Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin) , 16.0));
     
@@ -271,10 +268,7 @@ ampEnvelope(nullptr)
     initialiseSynth();
     
     keyboardState.addListener(this);
-	//sequencerState.addListener(this);
     
-    filterEnvelope = std::unique_ptr<ADSR>( new ADSR );
-    ampEnvelope    = std::unique_ptr<ADSR>( new ADSR );
     
     for(int channel = 0; channel < 2; channel++)
     {
@@ -317,17 +311,6 @@ void MonosynthPluginAudioProcessor::initialiseSynth()
 
 
 
-
-
-void MonosynthPluginAudioProcessor::toggleSequencer(bool on)
-{
-    
-    
-    useSequencer = on;
-    lastSequencerChoice = on;
-    
-    
-}
 
 //==============================================================================
 bool MonosynthPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -450,11 +433,7 @@ void MonosynthPluginAudioProcessor::reset()
 
 void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
-    //if(!lastSequencerChoice)
-    
-       // if (filterEnvelope->getState() == ADSR::env_idle || filterEnvelope->getState() == ADSR::env_release)
-    filterEnvelope->gate(true);
-    ampEnvelope->gate(true);
+   
     
     lfo.setPhase(0.0);
     
@@ -468,10 +447,6 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {
     
-    if (lastNotePlayed == midiNoteNumber)
-        ampEnvelope->gate(false);
-    
-    filterEnvelope->gate(false);
     
 }
 
@@ -528,8 +503,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     pulsewidthSmooth2.reset(newsr, cutoffRampTimeDefault);
     pulsewidthSmooth3.reset(newsr, cutoffRampTimeDefault);
     
-    filterEnvelope->setSampleRate(newsr);
-    ampEnvelope->setSampleRate(newsr);
+   
     
     
     smoothing[0]->init(newsr, 4.0);
@@ -857,38 +831,6 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 	}
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyAmpEnvelope(AudioBuffer<FloatType>& buffer)
-{
-    
-    int numSamples = buffer.getNumSamples();
-    
-    FloatType* channelDataLeft  = buffer.getWritePointer(0);
-    FloatType* channelDataRight = buffer.getWritePointer(1);
-    
-    ampEnvelope->setAttackRate(*attackParam1);
-    ampEnvelope->setAttackRate(*attackParam1);
-    ampEnvelope->setDecayRate(*decayParam1);
-    ampEnvelope->setReleaseRate(*releaseParam1);
-    ampEnvelope->setSustainLevel(dbToGain(*sustainParam1, MIN_INFINITY_DB));
-    ampEnvelope->setTargetRatioA(*attackCurve1Param);
-    ampEnvelope->setTargetRatioDR(*decayRelCurve1Param);
-    
-    
-    int i = 0;
-    
-    while ( --numSamples >= 0)
-    {
-        float val = ampEnvelope->process();
-        envGain.setValue( val );
-        channelDataLeft[i] *= envGain.getNextValue();
-        channelDataRight[i] *= envGain.getNextValue();
-        i++;
-    }
-}
-
-
-
 
 void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 {
@@ -993,7 +935,6 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 void MonosynthPluginAudioProcessor::timerCallback()
 {
-	debugInfo = std::to_string(noteOffPositions.size());
 }
 
 template <typename FloatType>
@@ -1176,7 +1117,7 @@ bool MonosynthPluginAudioProcessor::saturationOn()
 
 bool MonosynthPluginAudioProcessor::noteIsBeingPlayed()
 {
-    return ampEnvelope->getState() != ADSR::env_idle;
+    return true;
 }
 
 bool MonosynthPluginAudioProcessor::lfoSynced()
@@ -1188,6 +1129,6 @@ bool MonosynthPluginAudioProcessor::lfoSynced()
 
 bool MonosynthPluginAudioProcessor::isSequencerPlaying()
 {
-	return sequencerPlaying;
+	return *useSequencerParam;
 }
 

@@ -119,7 +119,6 @@ public:
     void getStateInformation (MemoryBlock&) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    void toggleSequencer(bool on);
 	bool isSequencerPlaying();
     
     //==============================================================================
@@ -254,17 +253,13 @@ public:
     
     AudioParameterInt* stepPitchParam[8];
 	AudioParameterFloat* stepNoteLengthParam;
-	AudioParameterInt* stepDivisionParam;
     AudioParameterFloat* stepDivisionFloatParam;
     
     
     AudioParameterInt* useSequencerParam;
     AudioParameterInt* useHQOversamplingParam;
 	
-    int sequencerStepDivisionVal;
-    float globalNoteLengthVal;
 
-	std::vector<int> noteOffPositions;
 
 	String debugInfo;
 private:
@@ -319,7 +314,7 @@ private:
 
     template <typename FloatType>
     void applyGain (AudioBuffer<FloatType>& buffer);
-
+    
     template <typename FloatType>
     void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
 
@@ -329,8 +324,7 @@ private:
 	template <typename FloatType>
 	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
 
-    template <typename FloatType>
-    void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
+   
     
 	
     
@@ -367,9 +361,7 @@ private:
 
     Synthesiser synth;
     
-	bool noteIsPlaying = false;
     
-   // ScopedPointer<LadderFilterBase> filterA[2], filterB[2], filterC[2];
 	
     
     enum modTarget {
@@ -380,14 +372,12 @@ private:
     
     void applyModToTarget(int target, double amount);
 
-    std::unique_ptr<ADSR> filterEnvelope;
-    std::unique_ptr<ADSR> ampEnvelope;
+    
     LFO lfo;
     
     double modAmount;
     
     int mNumVoices;
-    int lastChosenFilter;
 
     void initialiseSynth();
     void updateCurrentTimeInfoFromHost();
@@ -426,9 +416,7 @@ private:
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     //std::unique_ptr<PulseClock> pulseClock;
     
-    bool isAnyKeyDown = false;
     bool useSequencer = false;
-	bool sequencerPlaying = false;
     
     static BusesProperties getBusesProperties();
    
