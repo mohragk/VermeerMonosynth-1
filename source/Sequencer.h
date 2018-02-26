@@ -26,6 +26,7 @@
 #include "SequencerProcessor.h"
 
 
+
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -99,9 +100,7 @@ private:
     // members
     MonosynthPluginAudioProcessor& processor;
     SequencerProcessor& sequencerProcessor;
-    
-    
-    
+
     CriticalSection lock;
 
     

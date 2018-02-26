@@ -100,6 +100,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerProcessor& sp) 
     maxStepsSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider (*processor.maxStepsParam, knobStyle(LINEARHORIZONTAL)));
     addAndMakeVisible(maxStepsSlider.get());
     
+    
     setSize (890, SEQUENCER_HEIGHT);
     
     
@@ -236,7 +237,10 @@ void Sequencer::updateStepSliderAlpha()
     if (i <= *processor.maxStepsParam)
         pitchSlider[i].get()->setAlpha(1.0);
     else
+    {
         pitchSlider[i].get()->setAlpha(0.3);
+    }
+    
 }
 
 
