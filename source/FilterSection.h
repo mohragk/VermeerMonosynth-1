@@ -54,6 +54,7 @@ private:
     
     std::unique_ptr<ParameterSlider>
         filterCutoffSlider,
+		filterKeyFollowSlider,
         filterResonanceSlider,
         filterContourSlider,
         filterDriveSlider,

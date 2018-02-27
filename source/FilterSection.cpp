@@ -50,7 +50,10 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filterCutoffLabel->setEditable (false, false, false);
     filterCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
     filterCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
+
+	filterKeyFollowSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.useFilterKeyFollowParam, knobStyle(LINEARVERTICAL)));
+	addAndMakeVisible(filterKeyFollowSlider.get());
+
     filterResonanceSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.filterQParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterResonanceSlider.get());   //
     
@@ -162,7 +165,9 @@ void FilterSection::resized()
         filterCutoffLabel->setBounds (stripArea.removeFromTop(labelHeight));
         filterCutoffLabel->setJustificationType(Justification::centredBottom);
         filterCutoffSlider->setBounds (stripArea.removeFromTop(rotaryHeight));
-        
+
+		Rectangle<int> mini2(filterCutoffSlider->getBounds());
+		filterKeyFollowSlider->setBounds(mini2.removeFromRight(12).reduced(0, 8));
         
         filterResonanceLabel->setBounds (stripArea.removeFromTop(labelHeight));
         filterResonanceLabel->setJustificationType(Justification::centredBottom);

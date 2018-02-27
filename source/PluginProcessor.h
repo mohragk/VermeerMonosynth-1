@@ -259,6 +259,8 @@ public:
     
     AudioParameterInt* useSequencerParam;
     AudioParameterInt* useHQOversamplingParam;
+
+	AudioParameterBool* useFilterKeyFollowParam;
 	
 
 

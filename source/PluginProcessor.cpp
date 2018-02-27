@@ -164,6 +164,8 @@ useHQOversamplingParam(nullptr)
     
     // Filter Select Parameter
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 2));
+	addParameter (useFilterKeyFollowParam = new AudioParameterBool("useFilterKeyFollowParam", "Key follow", false));
+
     
     addParameter (pitchModParam = new AudioParameterFloat("pitchMod", "Pitch Modulation", NormalisableRange<float> (0.0f, 2000.0f, 0.0f, 0.5f, false), 0.0f));
     addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24, 0));
@@ -728,11 +730,12 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         const double contourRange = *filterContourParam;
         const double filterEnvelopeVal = synthVoice->getFilterEnvelopeValue();
 		const double keyFollowCutoff =  MidiMessage::getMidiNoteInHertz ( synthVoice->getLastNotePlayed() );
-        
-		if (filterKeyFollow)
-			currentCutoff = keyFollowCutoff;
-		else
-			currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
+		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
+
+		if (*useFilterKeyFollowParam)
+			currentCutoff += keyFollowCutoff;
+		
+			
         
         cutoff.setValue				(*filterCutoffParam);
         cutoffFromEnvelope.setValue	(currentCutoff);
