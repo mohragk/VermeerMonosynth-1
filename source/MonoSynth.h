@@ -57,7 +57,6 @@ public:
         noteOffset(0),
         lfoValue(0.0),
         egValue(0.0),
-        //modAmountPW[3];
         pitchModulation(0.0),
         pitchBendOffset(0.0),
         glideTime(0.0),
@@ -123,6 +122,8 @@ public:
         pitchEnvelope.get()->gate(true);
         ampEnvelope.get()->gate(true);
         filterEnvelope.get()->gate(true);
+
+		lastNotePlayed = midiNoteNumber;
         
     }
     
@@ -163,6 +164,11 @@ public:
         return numOscillators;
     }
     
+
+	int getLastNotePlayed()
+	{
+		return lastNotePlayed;
+	}
     
     // Set pitch envelope parameters.
     void setPitchEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
@@ -410,6 +416,7 @@ private:
     double pitchModAmount;
     
     bool hardSync = false;
+	int lastNotePlayed = 60;
     
     Random rand;
     

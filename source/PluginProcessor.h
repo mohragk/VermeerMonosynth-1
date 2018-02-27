@@ -359,6 +359,7 @@ private:
     
     bool hqOversampling = false;
     bool prevHqOversampling = false;
+	bool filterKeyFollow = true; //TEST
 
     Synthesiser synth;
     

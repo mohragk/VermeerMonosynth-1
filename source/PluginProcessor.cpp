@@ -727,7 +727,12 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         const double lfoFilterRange = 6000.0;
         const double contourRange = *filterContourParam;
         const double filterEnvelopeVal = synthVoice->getFilterEnvelopeValue();
-        currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
+		const double keyFollowCutoff =  MidiMessage::getMidiNoteInHertz ( synthVoice->getLastNotePlayed() );
+        
+		if (filterKeyFollow)
+			currentCutoff = keyFollowCutoff;
+		else
+			currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
         
         cutoff.setValue				(*filterCutoffParam);
         cutoffFromEnvelope.setValue	(currentCutoff);
