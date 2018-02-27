@@ -38,7 +38,8 @@
 //#include "PulseClock.h"
 #include "lfo.h"
 #include "SequencerState.h"
-
+#include "SequencerProcessor.h"
+#include "ParamSmoother.h"
 
 
 #include "MoogLadders/ImprovedModel.h"
@@ -47,7 +48,7 @@
 #include "MoogLadders/DiodeLadderModel.h"
 #include "MoogLadders/ThreeFiveModel.h"
 
-#include "SequencerProcessor.h"
+
 
 
 
@@ -267,43 +268,7 @@ public:
 	String debugInfo;
 private:
 	
-	class SmoothParam {
-	public:
-		SmoothParam()
-		{
-			reset();
-		}
-
-		~SmoothParam()
-		{}
-
-		void init(double sr, double millis) 
-		{
-			a = exp(-double_Pi / (millis * 0.001 * sr));
-			b = 1.0 - a;
-			z = 0.0;
-		}
-
-		void reset()
-		{
-			a = 0.0;
-			b = 0.0;
-			z = 0.0;
-		}
-
-		inline double processSmooth(double val)
-		{
-			z = (val * b) + (z * a);
-			return z;
-		}
-
-        
-        
-	private:
-		double a, b, z;
-		double coeff;
-	};
-    
+	
     
     
 	float linToLog(float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
@@ -366,8 +331,6 @@ private:
     Synthesiser synth;
     
     
-	
-    
     enum modTarget {
         modPitch,
         modCutoff,
@@ -415,7 +378,7 @@ private:
     
     bool filterOn = true;
     
-	std::unique_ptr<SmoothParam> smoothing[6];
+	std::unique_ptr<ParamSmoother> smoothing[6];
     
     std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
     

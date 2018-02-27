@@ -94,10 +94,6 @@ private:
 
 	Label timecodeDisplayLabel;
 	
-   
-	std::unique_ptr<Label> debugLabel;
-    
-
     std::unique_ptr<Label>
         titleLabel
    ;
@@ -141,8 +137,7 @@ private:
     void showSequencer(bool shouldShow);
     void updateTimecodeDisplay (AudioPlayHead::CurrentPositionInfo);
     
-    void updateParameterDisplay();
-
+ 
 };
 
 #endif // PLUGIN_EDITOR_H

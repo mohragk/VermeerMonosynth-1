@@ -167,7 +167,7 @@ void FilterSection::resized()
         filterCutoffSlider->setBounds (stripArea.removeFromTop(rotaryHeight));
 
 		Rectangle<int> mini2(filterCutoffSlider->getBounds());
-		filterKeyFollowSlider->setBounds(mini2.removeFromRight(12).reduced(0, 8));
+		filterKeyFollowSlider->setBounds(mini2.removeFromRight(24).reduced(6, 8));
         
         filterResonanceLabel->setBounds (stripArea.removeFromTop(labelHeight));
         filterResonanceLabel->setJustificationType(Justification::centredBottom);

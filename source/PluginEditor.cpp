@@ -141,15 +141,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     titleLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
 
-	//debug
-	debugLabel = std::unique_ptr<Label>(new Label("debugLabel", TRANS("debugInfo")));
-	addAndMakeVisible(debugLabel.get());
-	debugLabel->setFont(Font(font, 18.00f, Font::plain).withExtraKerningFactor(0.150f));
-	debugLabel->setJustificationType(Justification::centredLeft);
-	debugLabel->setEditable(false, false, false);
-	debugLabel->setColour(Label::textColourId, Colours::white);
-	debugLabel->setColour(TextEditor::textColourId, Colours::black);
-	debugLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+	
 
     
     //Oversample button
@@ -169,7 +161,6 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     midiKeyboard.setAvailableRange(12, 115);
     midiKeyboard.setLowestVisibleKey(36);
     midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
-    
     
     
     
@@ -426,8 +417,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     hqOversamplingButton->setBounds(buttonArea.removeFromRight(48));
     hqOversamplingButton->setButtonText("");
 
-	Rectangle<int> debugArea(titleLabel->getBounds());
-	debugLabel->setBounds(debugArea.removeFromLeft(200));
+
     
     
     //
@@ -467,8 +457,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     midiKeyboard.setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, Colour (0xffc8e6ff));
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     
-    // SEQUENCER SECTION
-    //sequencerSection->setBounds(area.removeFromBottom(SEQUENCER_HEIGHT));
+    
     
     
     getProcessor().lastUIWidth = getWidth();
@@ -482,11 +471,6 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
 {
     updateTimecodeDisplay (getProcessor().lastPosInfo);
 
-	String debugString = getProcessor().debugInfo;
-
-	debugLabel->setText(debugString, dontSendNotification);
-    
-    
     updateStates();
     
 }
@@ -508,7 +492,6 @@ void MonosynthPluginAudioProcessorEditor::updateStates()
 {
     //sequencer
     bool seqState =  *getProcessor().useSequencerParam;
-    //expandSequencerButton.get()->setToggleState(seqState, dontSendNotification);
     showSequencer(seqState);
     
     
@@ -608,11 +591,6 @@ void MonosynthPluginAudioProcessorEditor::updateTimecodeDisplay (AudioPlayHead::
     timecodeDisplayLabel.setText (displayText.toString(), dontSendNotification);
 }
 
-
-void MonosynthPluginAudioProcessorEditor::updateParameterDisplay()
-{
-    
-}
 
 //==============================================================================
 // Binary resources - be careful not to edit any of these sections!

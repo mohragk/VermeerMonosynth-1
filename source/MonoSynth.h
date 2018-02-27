@@ -29,6 +29,8 @@ DISCLAIMED.
 #include "Oscillator.h"
 #include "lfo.h"
 #include "adsr/ADSR.h"
+#include "ParamSmoother.h"
+
 
 /** A demo synth sound that's just a basic sine wave.. */
 class MonosynthSound : public SynthesiserSound
@@ -94,6 +96,8 @@ public:
     {
         pitchEnvelope.get()->setSampleRate(sr);
         ampEnvelope.get()->setSampleRate(sr);
+        
+        
         
     }
     
@@ -425,7 +429,7 @@ private:
     std::unique_ptr<ADSR> filterEnvelope;
     
     std::unique_ptr<Oscillator> osc[3];
-    
+        
     JUCE_LEAK_DETECTOR (MonosynthVoice)
 };
 

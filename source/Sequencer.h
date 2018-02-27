@@ -131,7 +131,6 @@ private:
     void updateGlobalNoteLengthLabel();
 	void updateStepKnobColours();
     void updateStepSliderAlpha();
-    void updateParameterDisplayText();
    
     
 

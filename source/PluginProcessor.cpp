@@ -281,8 +281,8 @@ useHQOversamplingParam(nullptr)
     
     
     // Oversampling 2 times with FIR filtering
-    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 1, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
-    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 1, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
+    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 2, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
+    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 2, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
     
     // HQ Oversampling 8 times with FIR filtering
     oversamplingFloatHQ  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
@@ -290,7 +290,7 @@ useHQOversamplingParam(nullptr)
     
 
     for (int i = 0; i < 6; i++)
-        smoothing[i] = std::unique_ptr<SmoothParam>(new SmoothParam);
+        smoothing[i] = std::unique_ptr<ParamSmoother>(new ParamSmoother);
     
     sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( sequencerState ) );
     
@@ -388,6 +388,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     oversamplingDouble->reset();
     oversamplingFloatHQ->reset();
     oversamplingDoubleHQ->reset();
+    
     
     for (int channel = 0; channel < 2; channel++)
     {
@@ -495,7 +496,6 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     lfo.setSampleRate(newsr);
     
     
-    
     cutoff.reset(newsr, cutoffRampTimeDefault);
     cutoffFromEnvelope.reset(newsr, cutoffRampTimeDefault);
     resonance.reset(newsr, 0.001);
@@ -513,6 +513,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     for (int i = 0; i < 6; i++)
         smoothing[i]->init(newsr, 2.0);
     
+    smoothing[4]->init(newsr, 10.0);
 
     
     sampleRate = newsr;
@@ -571,22 +572,11 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     }
     
     
-    
-    
-	// Now pass any incoming midi messages to our keyboard state object, and let it
-	// add messages to the buffer if the user is clicking on the on-screen keys
-	
-	
   
     
     // GET SYNTHDATA
     synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBuffer.getNumSamples() ) );
     
-    
-	
-    
-    
-   
     
     
     
@@ -642,9 +632,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     if (*softClipSwitchParam == 1)
         softClipBuffer(osBuffer);
 
-    
-    
-    
+   
 
     //DOWNSAMPLING
 	oversampling->processSamplesDown(block);
@@ -932,7 +920,6 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     int stepSize = jmin(16, numSamples);
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
-    
     
     
     for (int i = 0; i < numSamples; i++)
