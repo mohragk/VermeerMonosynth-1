@@ -195,6 +195,7 @@ void Sequencer::timerCallback()
 {
     updateStepKnobColours();
     updateStepSliderAlpha();
+    updateParameterDisplayText();
 }
 
 
@@ -243,6 +244,13 @@ void Sequencer::updateStepSliderAlpha()
     
 }
 
+
+void Sequencer::updateParameterDisplayText()
+{
+    if (pitchSlider[0].get()->isBeingDragged)
+        std::cout << pitchSlider[0].get()->getValue() << std::endl;
+        
+}
 
 //==============================================================================
 

@@ -609,6 +609,11 @@ void MonosynthPluginAudioProcessorEditor::updateTimecodeDisplay (AudioPlayHead::
 }
 
 
+void MonosynthPluginAudioProcessorEditor::updateParameterDisplay()
+{
+    
+}
+
 //==============================================================================
 // Binary resources - be careful not to edit any of these sections!
 

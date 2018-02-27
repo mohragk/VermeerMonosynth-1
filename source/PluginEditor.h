@@ -140,6 +140,8 @@ private:
     void updateStates();
     void showSequencer(bool shouldShow);
     void updateTimecodeDisplay (AudioPlayHead::CurrentPositionInfo);
+    
+    void updateParameterDisplay();
 
 };
 

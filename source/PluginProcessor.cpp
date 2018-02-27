@@ -869,19 +869,7 @@ void MonosynthPluginAudioProcessor::getStateInformation (MemoryBlock& destData)
     xml.setAttribute ("uiWidth", lastUIWidth);
     xml.setAttribute ("uiHeight", lastUIHeight);
     
-    xml.setAttribute ("sequencerOn", lastSequencerChoice);
-    xml.setAttribute ("oversampleOn", lastOversampleChoice);
     
-    
-    xml.setAttribute ("seqNoteLength", lastSeqNoteLength);
-    xml.setAttribute ("seqDivision", lastSeqDivision);
-    
-    
-    for (int step = 0; step < 8; step++)
-    {
-        String s = "seqPitchVal" + std::to_string(step);
-        xml.setAttribute (s, lastSeqPitchValue[step]);
-    }
     
     // Store the values of all our parameters, using their param ID as the XML attribute
     for (int i = 0; i < getNumParameters(); ++i)
@@ -909,14 +897,6 @@ void MonosynthPluginAudioProcessor::setStateInformation (const void* data, int s
             lastUIWidth  = jmax (xmlState->getIntAttribute ("uiWidth", lastUIWidth), 400);
             lastUIHeight = jmax (xmlState->getIntAttribute ("uiHeight", lastUIHeight), 200);
             
-            lastSequencerChoice  = xmlState->getBoolAttribute("sequencerOn");
-            lastOversampleChoice = xmlState->getBoolAttribute("oversampleOn");
-            
-            for (int step = 0; step < 8; step++)
-            {
-                String s = "seqPitchVal" + std::to_string(step);
-                lastSeqPitchValue[step] = xmlState->getIntAttribute(s);
-            }
             
             // Now reload our parameters..
             for (int i = 0; i < getNumParameters(); ++i)

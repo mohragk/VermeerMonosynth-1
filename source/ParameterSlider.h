@@ -52,8 +52,8 @@ public:
 
     void timerCallback() override       { updateSliderPos(); }
 
-    void startedDragging() override     { param.beginChangeGesture(); setColour(thumbColourId, lightThumb); }
-    void stoppedDragging() override     { param.endChangeGesture();   setColour(thumbColourId, darkThumb);	}
+    void startedDragging() override     { param.beginChangeGesture(); setColour(thumbColourId, lightThumb); isBeingDragged = true; }
+    void stoppedDragging() override     { param.endChangeGesture();   setColour(thumbColourId, darkThumb);	isBeingDragged = false;}
 
 	
 
@@ -71,7 +71,7 @@ public:
         
     }
 
-	
+    bool isBeingDragged = false;
 
     AudioProcessorParameter& param;
 	Colour lightThumb = Colour(0xffdee5fc);
