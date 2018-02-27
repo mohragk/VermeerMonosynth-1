@@ -733,7 +733,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
 
 		if (*useFilterKeyFollowParam)
-			currentCutoff += keyFollowCutoff;
+			currentCutoff += smoothing[4].get()->processSmooth( keyFollowCutoff );
 		
 			
         
