@@ -61,7 +61,7 @@ void SequencerProcessor::processSequencer(int bufferSize)
         }
         
         //CHECK IF NOTES SHOULD BE RELEASED
-        for (int i = 0; i < numSteps; i++)
+        for (int i = 0; i < maxSteps; i++)
         {
             
             if (!step[i].isReleased)
