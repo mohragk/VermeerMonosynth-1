@@ -292,7 +292,7 @@ useHQOversamplingParam(nullptr)
     for (int i = 0; i < 6; i++)
         smoothing[i] = std::unique_ptr<ParamSmoother>(new ParamSmoother);
     
-    sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( sequencerState ) );
+    sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( keyboardState ) );
     
 }
 
@@ -566,8 +566,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // SEQUENCER
     if(*useSequencerParam)
     {
-        sequencerProcessor.get()->processSequencer(osBuffer.getNumSamples());
-        sequencerState.processBuffer(midiMessages, 0, osBuffer.getNumSamples(), true);
+        sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples());
+        //sequencerState.processBuffer(midiMessages, 0, osBuffer.getNumSamples(), true);
         
     }
     

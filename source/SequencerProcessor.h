@@ -20,10 +20,10 @@
 
 
 
-class SequencerProcessor :  public SequencerStateListener
+class SequencerProcessor :  public MidiKeyboardStateListener
 {
 public:
-    SequencerProcessor( SequencerState& st );
+    SequencerProcessor( MidiKeyboardState& ks );
     
     
     ~SequencerProcessor();
@@ -46,16 +46,16 @@ public:
     {
         int    stepNumber = 0;
         int    noteNumber = 60;
-        int    timeStamp = 0;
-        int    noteLengthMillis = 10;
+        double timeStamp = 0;
+        double noteLengthTicks = 0;
         bool   isReleased = false;
         bool   isActive = false;
     } step[numSteps];
     
    
     
-    void handleSequencerNoteOn (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
-    void handleSequencerNoteOff (SequencerState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    void handleNoteOn (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    void handleNoteOff (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
     int getStepCount() { return stepCount; };
     
@@ -66,13 +66,13 @@ public:
     
     bool isActivated(){ return isActive; };
     
-    void processSequencer(int bufferSize);
+    void processSequencer(MidiBuffer& midBuf, int bufferSize);
     
     void setStepData(int curStep, int note, int noteLen, int time, bool isRel, bool isAct)
     {
         step[curStep].stepNumber = curStep;
         step[curStep].noteNumber = note;
-        step[curStep].noteLengthMillis = noteLen;
+        step[curStep].noteLengthTicks = noteLen;
         step[curStep].timeStamp = time;
         step[curStep].isReleased = isRel;
         step[curStep].isActive = isAct;
@@ -113,7 +113,7 @@ public:
     
 private:
     
-    SequencerState& seqState;
+    MidiKeyboardState& keyState;
     
     PulseClock pulseClock;
     
@@ -125,14 +125,15 @@ private:
     bool isPlaying = false;
     bool isActive = false;
     
-    void playStep(int currentStep);
+    void playStep(MidiBuffer& midBuf, int currentStep, int curSample);
     
     
     void startPulseClock();
-    void stopPulseClock();
     
     double getPulseInHz( int bpm, int division );
+    int getPulseInMillis(int bpm, int division );
     int startTime;
+    double startTimeHires;
     
     int stepPitchValue[numSteps];
     double noteLength;
