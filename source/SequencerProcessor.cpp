@@ -61,13 +61,13 @@ void SequencerProcessor::processSequencer(int bufferSize)
         }
         
         //CHECK IF NOTES SHOULD BE RELEASED
-        for (int i = 0; i < maxSteps; i++)
+        for (int i = 0; i <= maxSteps; i++)
         {
             
             if (!step[i].isReleased)
             {
                 int currentTime = static_cast<int>( std::round(Time::getMillisecondCounterHiRes() ) - startTime);
-                int range = 4;
+                int range = 16;
                 
                 if (step[i].timeStamp + step[i].noteLengthMillis > currentTime - range && step[i].timeStamp + step[i].noteLengthMillis < currentTime + range )
                 {
