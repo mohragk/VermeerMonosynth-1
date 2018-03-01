@@ -13,8 +13,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-
-#include "SequencerState.h"
 #include "PulseClock.h"
 
 
@@ -124,29 +122,29 @@ private:
     
     int lastNotePlayed = 60;
     int currentMidiChannel = 1;
-    int stepCount = 0;
-    int maxSteps = 8;
+    int stepCount;
+    int maxSteps;
     
-    bool isPlaying = false;
-    bool isActive = false;
+    bool isPlaying;
+    bool isActive;
     
+	int stepPitchValue[numSteps];
+	double noteLength;
+	double timeDivision;
+	int currentBPM;
+
+	uint32 globalSampleCount;
+	double sampleRate;
+
     void playStep(MidiBuffer& midBuf, int currentStep, int curSample);
-    
     
     void startPulseClock();
     
     double getPulseInHz( int bpm, int division );
     int getPulseInSamples(int bpm, int division, double sr );
-    int startTime;
-    double startTimeHires;
+   
     
-    int stepPitchValue[numSteps];
-    double noteLength;
-    double timeDivision;
-    int currentBPM;
-    
-    uint32 globalSampleCount;
-    double sampleRate;
+   
     
     JUCE_LEAK_DETECTOR (SequencerProcessor)
     

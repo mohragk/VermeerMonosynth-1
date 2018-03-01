@@ -59,7 +59,6 @@
 */
 class MonosynthPluginAudioProcessor  : public AudioProcessor,
                                         private MidiKeyboardStateListener,
-										//private SequencerStateListener,
                                         private Timer
 {
 public:
@@ -130,7 +129,6 @@ public:
     // this is kept up to date with the midi messages that arrive, and the UI component
     // registers with it so it can represent the incoming messages
     MidiKeyboardState keyboardState;
-	SequencerState sequencerState;
     std::unique_ptr<SequencerProcessor> sequencerProcessor;
     
     //Sequencer sequencer;

@@ -350,7 +350,6 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     resetSamplerates(newSampleRate);
     
     keyboardState.reset();
-	sequencerState.reset();
 
     for(int channel = 0; channel < 2; channel++)
     {
@@ -382,7 +381,6 @@ void MonosynthPluginAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     keyboardState.reset();
-	sequencerState.reset();
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -570,7 +568,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     if(*useSequencerParam)
     {
         sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples());
-        //sequencerState.processBuffer(midiMessages, 0, osBuffer.getNumSamples(), true);
         
     }
     

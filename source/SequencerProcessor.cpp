@@ -10,7 +10,19 @@
 
 #include "SequencerProcessor.h"
 
-SequencerProcessor::SequencerProcessor ( MidiKeyboardState& ks ) : keyState(ks), globalSampleCount(0)
+SequencerProcessor::SequencerProcessor ( MidiKeyboardState& ks ) : 
+	keyState(ks), 
+	lastNotePlayed(60), 
+	currentMidiChannel(1),
+	stepCount(0),
+	maxSteps(8),
+	isPlaying(false),
+	isActive(false), 
+	stepPitchValue {0,0,0,0,0,0,0,0},
+	noteLength(0.5),
+	timeDivision(16.0),
+	globalSampleCount(0),
+	sampleRate(44100.0)
 {
     keyState.addListener(this);
 }
@@ -48,9 +60,8 @@ void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize)
 {
     int numSamples = bufferSize;
     int sampleCount = 0;
-    midBuf.clear();
-    
-    ScopedLock s1 (lock);
+   
+	midBuf.clear();
     
     while (--numSamples >= 0)
     {
@@ -65,7 +76,7 @@ void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize)
         }
         
         //CHECK IF NOTES SHOULD BE RELEASED
-        for (int i = 0; i <= maxSteps; i++)
+        for (int i = 0; i <= maxSteps; i++) //@Robust: might change to full range checking
         {
             
             if (!step[i].isReleased)
