@@ -480,7 +480,10 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     
     
     synth.setCurrentPlaybackSampleRate (newsr);
+    
+    sequencerProcessor.get()->setSampleRate(newsr);
     sequencerProcessor.get()->setPulseClockSampleRate(newsr);
+    
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
 

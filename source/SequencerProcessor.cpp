@@ -10,7 +10,7 @@
 
 #include "SequencerProcessor.h"
 
-SequencerProcessor::SequencerProcessor ( MidiKeyboardState& ks ) : keyState(ks), startTime((int)Time::getMillisecondCounterHiRes()), startTimeHires(Time::getMillisecondCounterHiRes())
+SequencerProcessor::SequencerProcessor ( MidiKeyboardState& ks ) : keyState(ks), globalSampleCount(0)
 {
     keyState.addListener(this);
 }
@@ -50,6 +50,7 @@ void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize)
     int sampleCount = 0;
     midBuf.clear();
     
+    ScopedLock s1 (lock);
     
     while (--numSamples >= 0)
     {
@@ -69,7 +70,7 @@ void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize)
             
             if (!step[i].isReleased)
             {
-                double currentTime = Time::getMillisecondCounterHiRes() - startTimeHires;
+                uint32 currentTime = globalSampleCount;
                 
                 if (step[i].timeStamp + step[i].noteLengthTicks < currentTime)
                 {
@@ -81,6 +82,7 @@ void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize)
             }
         }
         sampleCount++;
+        globalSampleCount++;
     }
     
 }
@@ -88,8 +90,8 @@ void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize)
 void SequencerProcessor::playStep(MidiBuffer& midBuf, int currentStep, int curSample)
 {
     int newNote = lastNotePlayed + stepPitchValue[currentStep];
-    double pulseIntervalMillis = getPulseInMillis(currentBPM, timeDivision);
-    double releaseTime = noteLength * pulseIntervalMillis;
+    double pulseIntervalSamples = getPulseInSamples(currentBPM, timeDivision, sampleRate);
+    uint32 releaseTime = std::round( noteLength * pulseIntervalSamples );
     
    
     
@@ -97,7 +99,7 @@ void SequencerProcessor::playStep(MidiBuffer& midBuf, int currentStep, int curSa
     step[currentStep].stepNumber = currentStep;
     step[currentStep].noteNumber = newNote;
     step[currentStep].noteLengthTicks = releaseTime;
-    step[currentStep].timeStamp = Time::getMillisecondCounterHiRes() - startTimeHires;
+    step[currentStep].timeStamp = globalSampleCount;
     step[currentStep].isReleased = false;
     step[currentStep].isActive = true;
     
@@ -136,15 +138,16 @@ double SequencerProcessor::getPulseInHz(int bpm, int division)
     return 1.0 / seconds_per_note;
 }
 
-int SequencerProcessor::getPulseInMillis(int bpm, int division)
+int SequencerProcessor::getPulseInSamples(int bpm, int division, double sr )
 {
     int beats_per_minute = 120;
     beats_per_minute = bpm;
     
+    const int samples_per_millis = sr / 1000.0;
     const int millis_per_beat = 60000 / beats_per_minute;
     const int millis_per_note = millis_per_beat * 4 / division;
     
     // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
     
-    return millis_per_note;
+    return millis_per_note * samples_per_millis;
 }

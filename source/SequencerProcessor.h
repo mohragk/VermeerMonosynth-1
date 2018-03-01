@@ -46,13 +46,16 @@ public:
     {
         int    stepNumber = 0;
         int    noteNumber = 60;
-        double timeStamp = 0;
-        double noteLengthTicks = 0;
+        uint32 timeStamp = 0;
+        int    noteLengthTicks = 0;
         bool   isReleased = false;
         bool   isActive = false;
     } step[numSteps];
     
-   
+    void setSampleRate(double sr)
+    {
+        sampleRate = sr;
+    }
     
     void handleNoteOn (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff (MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
@@ -113,6 +116,8 @@ public:
     
 private:
     
+    CriticalSection lock;
+    
     MidiKeyboardState& keyState;
     
     PulseClock pulseClock;
@@ -131,7 +136,7 @@ private:
     void startPulseClock();
     
     double getPulseInHz( int bpm, int division );
-    int getPulseInMillis(int bpm, int division );
+    int getPulseInSamples(int bpm, int division, double sr );
     int startTime;
     double startTimeHires;
     
@@ -139,6 +144,9 @@ private:
     double noteLength;
     double timeDivision;
     int currentBPM;
+    
+    uint32 globalSampleCount;
+    double sampleRate;
     
     JUCE_LEAK_DETECTOR (SequencerProcessor)
     
