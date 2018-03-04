@@ -194,6 +194,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     animator = std::unique_ptr<ComponentAnimator> (new ComponentAnimator);
     
 
+    
+    //TOOLTIP WINDOW
+    tooltipWindow = std::unique_ptr<TooltipWindow> (new TooltipWindow(this, 700));
 
     // start a timer which will keep our timecode display updated
     startTimerHz (60);

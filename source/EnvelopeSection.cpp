@@ -121,22 +121,22 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
    
 
     
-	attackCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve2Param, knobStyle(ROTARY)));
+	attackCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve3Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackCurveSlider2.get());    //@TODO: add parameter in Processor
     attackCurveSlider2->setTooltip (TRANS("set attack curve from exponential to linear"));
    
 
-	decRelCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve2Param, knobStyle(ROTARY)));
+	decRelCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve3Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decRelCurveSlider2.get());  //
     decRelCurveSlider2->setTooltip (TRANS("set decay and release curves from exponential to linear"));//@TODO: add parameter in Processor
     
 
-	attackCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve3Param, knobStyle(LINEARVERTICAL)));
+	attackCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve2Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackCurveSlider3.get());      //@TODO: add parameter in Processor
     attackCurveSlider3->setTooltip (TRANS("set attack curve from exponential to linear"));
    
 
-	decRelCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve3Param, knobStyle(LINEARVERTICAL)));
+	decRelCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve2Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decRelCurveSlider3.get()); //@TODO: add parameter in Processor
     decRelCurveSlider3->setTooltip (TRANS("set decay and release curves from exponential to linear"));
     
@@ -217,8 +217,8 @@ void EnvelopeSection::resized()
         releaseSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
         
         Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth));
-        attackCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2));
-        decRelCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2));
+        attackCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+        decRelCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
         
         
         
@@ -234,9 +234,9 @@ void EnvelopeSection::resized()
         sustainSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
         releaseSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
         
-        Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth). reduced(envMargin, 0));
-        attackCurveSlider3->setBounds(tweakArea.removeFromTop(rotarySize). reduced(sliderMargin, 0));
-        decRelCurveSlider3->setBounds(tweakArea.removeFromTop(rotarySize).reduced (sliderMargin, 0));
+        Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth));
+        attackCurveSlider3->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+        decRelCurveSlider3->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
         
         
         

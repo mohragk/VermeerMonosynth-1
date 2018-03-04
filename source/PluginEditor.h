@@ -91,6 +91,9 @@ private:
     Colour lineColour;
     
     MidiKeyboardComponent midiKeyboard;
+    
+    std::unique_ptr<TooltipWindow> tooltipWindow;
+
 
 	Label timecodeDisplayLabel;
 	

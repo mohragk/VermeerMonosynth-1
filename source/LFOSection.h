@@ -33,8 +33,7 @@ public:
 	static const int oscSawWaveSymbol_svgSize;
 	static const char* oscSineWaveSymbol_svg;
 	static const int oscSineWaveSymbol_svgSize;
-	static const char* oscNoiseWaveSymbol_svg;
-    static const int oscNoiseWaveSymbol_svgSize;
+	
 
     void paint (Graphics&) override;
     void resized() override;
@@ -73,6 +72,12 @@ private:
         lfoIntensitySlider,
 		lfoSyncSlider,
         lfoSyncedFreqSlider
+    ;
+    
+    std::unique_ptr<Drawable>
+        drawable1,
+        drawable2,
+        drawable3
     ;
     
     

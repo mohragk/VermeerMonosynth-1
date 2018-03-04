@@ -950,7 +950,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         synthVoice->setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
 
         synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
-        synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve3Param, *decayRelCurve3Param);
+        synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve2Param, *decayRelCurve2Param);
 
         synthVoice->setPitchEnvelopeAmount(*pitchModParam);
 
@@ -1076,7 +1076,7 @@ double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::CurrentPos
 {
     const double beats_per_minute = posInfo.bpm;
     const double seconds_per_beat = 60.0 / beats_per_minute;
-    const double seconds_per_note = seconds_per_beat * (lastPosInfo.timeSigDenominator / division);
+    const double seconds_per_note = seconds_per_beat * lastPosInfo.timeSigDenominator / division;
     
     // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
     

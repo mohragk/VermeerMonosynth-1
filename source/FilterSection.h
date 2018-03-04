@@ -14,6 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
+#include "OscillatorSection.h"
 
 //==============================================================================
 /*
@@ -26,10 +27,14 @@ public:
 
     void paint (Graphics&) override;
     void resized() override;
+    
+    
 
 private:
     MonosynthPluginAudioProcessor& processor;
 
+    
+    
 
     enum style
 	{

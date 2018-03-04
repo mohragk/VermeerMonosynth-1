@@ -53,6 +53,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
 
 	filterKeyFollowSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.useFilterKeyFollowParam, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(filterKeyFollowSlider.get());
+    filterKeyFollowSlider.get()->setTooltip("Key Follow ON/OFF");
 
     filterResonanceSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.filterQParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterResonanceSlider.get());   //
@@ -117,6 +118,8 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filter303Label->setColour (TextEditor::textColourId, Colours::black);
     filter303Label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
+    
+ 
     // set our component's initial size
     setSize (300, 420);
     
@@ -199,3 +202,6 @@ void FilterSection::resized()
     
 
 }
+
+
+

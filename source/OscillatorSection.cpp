@@ -253,27 +253,30 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     pulsewidth1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidth1Param, LINEARHORIZONTAL));
     addAndMakeVisible(pulsewidth1Slider.get());
     pulsewidth1Slider->setDoubleClickReturnValue(true, 0.5);
+    pulsewidth1Slider.get()->setTooltip("Adjust Pulsewidth: 0.5 -> 1.0");
     
     pulsewidth2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidth2Param, LINEARHORIZONTAL));
     addAndMakeVisible(pulsewidth2Slider.get());
     pulsewidth2Slider->setDoubleClickReturnValue(true, 0.5);
+    pulsewidth2Slider.get()->setTooltip("Adjust Pulsewidth: 0.5 -> 1.0");
     
     pulsewidth3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidth3Param, LINEARHORIZONTAL));
     addAndMakeVisible(pulsewidth3Slider.get());
     pulsewidth3Slider->setDoubleClickReturnValue(true, 0.5);
+    pulsewidth3Slider.get()->setTooltip("Adjust Pulsewidth: 0.5 -> 1.0");
     
     
     pulsewidthAmount1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthAmount1Param, LINEARHORIZONTAL));
     addAndMakeVisible(pulsewidthAmount1Slider.get());  //
-    
+    pulsewidthAmount1Slider.get()->setTooltip("Set pulsewidth modulation amount from LFO");
     
     pulsewidthAmount2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthAmount2Param, LINEARHORIZONTAL));
     addAndMakeVisible(pulsewidthAmount2Slider.get());  //
-    
+    pulsewidthAmount2Slider.get()->setTooltip("Set pulsewidth modulation amount from LFO");
     
     pulsewidthAmount3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthAmount3Param, LINEARHORIZONTAL));
     addAndMakeVisible(pulsewidthAmount3Slider.get());  //
-    
+    pulsewidthAmount3Slider.get()->setTooltip("Set pulsewidth modulation amount from LFO");
     
     //
     // Drawables for symbols/icons
@@ -295,6 +298,10 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     drawable9 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
 
     
+    
+   
+    
+    
     // set our component's initial size
     setSize (305, 620);
     
@@ -313,6 +320,7 @@ void OscillatorSection::paint (Graphics& g)
     
     int marginY = 8;
     
+    
     {
         int x = getWidth() - 1, y = marginY, width = 1, height = getHeight() - marginY;
         Colour fillColour = Colour (0xffcfcfcf);
@@ -322,139 +330,192 @@ void OscillatorSection::paint (Graphics& g)
         g.fillRect (x, y, width, height);
     }
     
-    
-    
-    
+    //OSC1 Shape Symbols
     {
-        int x = 66, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable25 != 0);
-        if (drawable25 != 0)
-            drawable25->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
+        Rectangle<int> shapeArea (osc1WaveformSlider.get()->getBounds());
+        
+        Rectangle<int> shapeStrip(shapeArea.removeFromBottom(12).reduced(8,0));
+        
+        int shapeWidth = 16;
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable3 != 0);
+            if (drawable3 != 0)
+                drawable3->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                       RectanglePlacement::centred, 1.000f);
+        }
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable2 != 0);
+            if (drawable2 != 0)
+                drawable2->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                       RectanglePlacement::centred, 1.000f);
+        }
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable1 != 0);
+            if (drawable1 != 0)
+                drawable1->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                       RectanglePlacement::centred, 1.000f);
+        }
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable25 != 0);
+            if (drawable25 != 0)
+                drawable25->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                        RectanglePlacement::centred, 1.000f);
+        }
+    
+    
+    }
+   
+    
+    // OSC2 Shape Symbols
+    {
+        Rectangle<int> shapeArea (osc2WaveformSlider.get()->getBounds());
+        
+        Rectangle<int> shapeStrip(shapeArea.removeFromBottom(12).reduced(8,0));
+        
+        int shapeWidth = 16;
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable6 != 0);
+            if (drawable6 != 0)
+                drawable6->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                       RectanglePlacement::centred, 1.000f);
+        }
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable5 != 0);
+            if (drawable5 != 0)
+                drawable5->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                       RectanglePlacement::centred, 1.000f);
+        }
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable4 != 0);
+            if (drawable4 != 0)
+                drawable4->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                       RectanglePlacement::centred, 1.000f);
+        }
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable26 != 0);
+            if (drawable26 != 0)
+                drawable26->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                        RectanglePlacement::centred, 1.000f);
+        }
     }
     
-    {
-        int x = 51, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable1 != 0);
-        if (drawable1 != 0)
-            drawable1->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                   RectanglePlacement::centred, 1.000f);
-    }
     
-    {
-        int x = 36, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable2 != 0);
-        if (drawable2 != 0)
-            drawable2->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                   RectanglePlacement::centred, 1.000f);
-    }
     
+    // OSC3 Shape Symbols
     {
-        int x = 20, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable3 != 0);
-        if (drawable3 != 0)
-            drawable3->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                   RectanglePlacement::centred, 1.000f);
-    }
+        Rectangle<int> shapeArea (osc3WaveformSlider.get()->getBounds());
+        
+        Rectangle<int> shapeStrip(shapeArea.removeFromBottom(12).reduced(8,0));
+        
+        int shapeWidth = 16;
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable9 != 0);
+            if (drawable9 != 0)
+                drawable9->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                       RectanglePlacement::centred, 1.000f);
+        }
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable8 != 0);
+            if (drawable8 != 0)
+                drawable8->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                       RectanglePlacement::centred, 1.000f);
+        }
+        
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable7 != 0);
+            if (drawable7 != 0)
+                drawable7->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                       RectanglePlacement::centred, 1.000f);
+        }
     
-    {
-        int x = 138, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable26 != 0);
-        if (drawable26 != 0)
-            drawable26->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 123, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable4 != 0);
-        if (drawable4 != 0)
-            drawable4->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                   RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 108, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable5 != 0);
-        if (drawable5 != 0)
-            drawable5->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                   RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 92, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable6 != 0);
-        if (drawable6 != 0)
-            drawable6->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                   RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 210, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable27 != 0);
-        if (drawable27 != 0)
-            drawable27->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 195, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable7 != 0);
-        if (drawable7 != 0)
-            drawable7->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                   RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 180, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable8 != 0);
-        if (drawable8 != 0)
-            drawable8->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                   RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 164, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable9 != 0);
-        if (drawable9 != 0)
-            drawable9->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                   RectanglePlacement::centred, 1.000f);
+        {
+            Rectangle<int> mini (shapeStrip.removeFromLeft(shapeWidth));
+            
+            int x = mini.getX(), y = mini.getY(), width = 10, height = 6;
+            //[UserPaintCustomArguments] Customize the painting arguments here..
+            //[/UserPaintCustomArguments]
+            g.setColour (Colours::black);
+            jassert (drawable27 != 0);
+            if (drawable27 != 0)
+                drawable27->drawWithin (g, Rectangle<float> (x, y, width, height),
+                                        RectanglePlacement::centred, 1.000f);
+        }   
     }
 
 }

@@ -53,10 +53,8 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     //Softclip switch
     softClipSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.softClipSwitchParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(softClipSwitchSlider.get());
+    softClipSwitchSlider.get()->setTooltip("Soft Clip ON/OFF");
     
-    // Filter Order; switch from VCA->filter to filter->VCA
-    filterOrderSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.filterOrderParam, LINEARHORIZONTAL));
-    addAndMakeVisible(filterOrderSlider.get());  //
     
     //Saturation
     saturationSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.saturationParam, knobStyle(ROTARY)));
@@ -65,6 +63,7 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     
     saturationSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.waveshapeSwitchParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(saturationSwitchSlider.get());
+    saturationSwitchSlider.get()->setTooltip("Saturation ON/OFF");
     
     
     saturationModeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.waveshapeModeParam, knobStyle(LINEARHORIZONTAL)));
@@ -144,9 +143,7 @@ void MasterSection::resized()
         
       
         saturationModeSlider->setBounds (strip.removeFromTop(rotaryHeight).reduced(8, 0));
-        
-        filterOrderSlider->setBounds (strip.removeFromTop(rotaryHeight).reduced(8, 0));
-       
+               
     }
     
     
