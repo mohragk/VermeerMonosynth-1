@@ -59,10 +59,14 @@ public:
     void resized() override;
     
     /** @internal */
-    void timerCallback();
+    void timerCallback() override;
     
     /** @internal */
-    int useTimeSlice();
+    int useTimeSlice() override;
+    
+    
+    /** Set the backgroundcolour of the scope */
+    void setBackgroundColour(Colour col) { backGroundColour = col; };
 
 private:
     OptionalScopedPointer<TimeSliceThread> backgroundThreadToUse; //MIGHT MAKE THIS std
@@ -84,6 +88,8 @@ private:
     Image image;
     bool needToRepaint;
     CriticalSection imageLock;
+    
+    Colour backGroundColour;
 
     //==============================================================================
     void processPendingSamples();

@@ -14,7 +14,7 @@
 //==============================================================================
 TriggeredScope::TriggeredScope (TimeSliceThread* backgroundThreadToUse_)
     : backgroundThreadToUse (backgroundThreadToUse_, backgroundThreadToUse_ == nullptr ? true : false),
-      numSamplesPerPixel (4), verticalZoomFactor (1.0f), triggerMode (Up), numLeftToAverage (numSamplesPerPixel),
+      numSamplesPerPixel (64), verticalZoomFactor (1.0f), triggerMode (Up), numLeftToAverage (numSamplesPerPixel),
       bufferSize (2048), bufferWritePos (0),
       minBuffer (bufferSize), maxBuffer (bufferSize),
       currentMax (-1.0f), currentMin (1.0f),
@@ -93,7 +93,7 @@ void TriggeredScope::resized()
 
     image = Image (Image::RGB, jmax (1, getWidth()), jmax (1, getHeight()), false);
     Graphics g (image);
-    g.fillAll (Colours::black);
+    g.fillAll (backGroundColour);
     
     needToRepaint = true;
 }
@@ -160,7 +160,7 @@ void TriggeredScope::renderImage()
     
     Graphics g (image);
     
-    g.fillAll (Colours::black);
+    g.fillAll (backGroundColour);
     g.setColour (Colours::white);
     
     const int w = image.getWidth();
