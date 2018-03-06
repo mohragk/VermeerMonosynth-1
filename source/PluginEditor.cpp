@@ -148,6 +148,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     hqOversamplingButton = std::unique_ptr<ParamToggleButton> ( new ParamToggleButton (*owner.useHQOversamplingParam));
     addAndMakeVisible (hqOversamplingButton.get());
     hqOversamplingButton->addListener (this);
+	hqOversamplingButton.get()->setTooltip("High Quality ON/OFF");
     
 
     
@@ -155,6 +156,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     expandSequencerButton = std::unique_ptr<ParamToggleButton> (new ParamToggleButton(*owner.useSequencerParam));
     addAndMakeVisible (expandSequencerButton.get());
     expandSequencerButton->addListener(this);
+	expandSequencerButton.get()->setTooltip("Expand and activate Sequencer");
     
     // Keyboard
     addAndMakeVisible(midiKeyboard);
