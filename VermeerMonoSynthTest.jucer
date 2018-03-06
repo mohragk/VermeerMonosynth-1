@@ -69,6 +69,11 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="XBw4Lp" name="FifoBuffer.h" compile="0" resource="0" file="source/FifoBuffer.h"/>
+    <FILE id="d37YSU" name="TriggeredScope.cpp" compile="1" resource="0"
+          file="source/TriggeredScope.cpp"/>
+    <FILE id="IxoIMm" name="TriggeredScope.h" compile="0" resource="0"
+          file="source/TriggeredScope.h"/>
     <FILE id="f8i8eV" name="AudioOscilloscope.cpp" compile="1" resource="0"
           file="source/AudioOscilloscope.cpp"/>
     <FILE id="xHfbe7" name="AudioOscilloscope.h" compile="0" resource="0"

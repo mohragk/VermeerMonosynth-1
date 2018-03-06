@@ -633,9 +633,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     if (*softClipSwitchParam == 1)
         softClipBuffer(osBuffer);
 
-
-	oscilloscope.processBlock((float*)osBuffer.getReadPointer(0), osBuffer.getNumSamples());
-
+	scope.addSamples((float*)osBuffer.getReadPointer(0), osBuffer.getNumSamples());
 
 
     //DOWNSAMPLING

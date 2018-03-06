@@ -165,9 +165,10 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
     
     
-    //Oscilloscope
-	oscilloscope = &owner.oscilloscope;
+	// Oscilloscope
+	oscilloscope = &owner.scope;
 	addAndMakeVisible(oscilloscope);
+    
     
     //
     // Drawables for symbols/icons
@@ -252,8 +253,6 @@ void MonosynthPluginAudioProcessorEditor::resized()
 
 	Rectangle<int> oscilloArea(titleLabel->getBounds());
 	oscilloscope->setBounds(oscilloArea.removeFromLeft(256));
-	oscilloscope->setAlwaysOnTop(true);
-	oscilloscope->setBackgroundColour(Colours::azure);
     
     
     //
