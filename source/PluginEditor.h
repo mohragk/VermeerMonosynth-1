@@ -35,6 +35,7 @@
 #include "LFOSection.h"
 #include "MasterSection.h"
 #include "Sequencer.h"
+#include "AudioOscilloscope.h"
 
 
 
@@ -75,6 +76,7 @@ public:
     std::unique_ptr<LFOSection> lfoSection;
     std::unique_ptr<MasterSection> masterSection;
     std::unique_ptr<Sequencer> sequencerSection;
+	AudioOscilloscope* oscilloscope;
     
     
 private:

@@ -131,7 +131,7 @@ LFOSection::~LFOSection()
 void LFOSection::paint (Graphics& g)
 {
     
-   //g.fillAll(Colours::darkgreen);
+  // g.fillAll(Colours::darkgreen);
     
     int marginY = 8;
     

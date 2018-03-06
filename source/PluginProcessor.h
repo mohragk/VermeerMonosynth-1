@@ -40,6 +40,7 @@
 #include "SequencerState.h"
 #include "SequencerProcessor.h"
 #include "ParamSmoother.h"
+#include "AudioOscilloscope.h"
 
 
 #include "MoogLadders/ImprovedModel.h"
@@ -131,7 +132,7 @@ public:
     MidiKeyboardState keyboardState;
     std::unique_ptr<SequencerProcessor> sequencerProcessor;
     
-    //Sequencer sequencer;
+	AudioOscilloscope oscilloscope;
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;

@@ -165,7 +165,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
     
     
-    
+    //Oscilloscope
+	oscilloscope = &owner.oscilloscope;
+	addAndMakeVisible(oscilloscope);
     
     //
     // Drawables for symbols/icons
@@ -223,8 +225,6 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
 {
     g.fillAll (Colour (0xff0e0e0e));
     
-    
-    
     {
         int x = 8 , y = 49, width = getWidth() - 16, height = 1;
         Colour fillColour = Colour (0xffcfcfcf);
@@ -233,179 +233,6 @@ void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
     }
-    
-    
-    
-    
-    
-    /*
-    
-    {
-        int x = 538, y = 168, width = 14, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable10 != 0);
-        if (drawable10 != 0)
-            drawable10->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 538, y = 128, width = 14, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable11 != 0);
-        if (drawable11 != 0)
-            drawable11->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 582, y = 168, width = 12, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable12 != 0);
-        if (drawable12 != 0)
-            drawable12->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 582, y = 128, width = 12, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable13 != 0);
-        if (drawable13 != 0)
-            drawable13->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 538, y = 278, width = 14, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable14 != 0);
-        if (drawable14 != 0)
-            drawable14->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 538, y = 238, width = 14, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable15 != 0);
-        if (drawable15 != 0)
-            drawable15->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 582, y = 278, width = 12, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable16 != 0);
-        if (drawable16 != 0)
-            drawable16->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 582, y = 238, width = 12, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable17 != 0);
-        if (drawable17 != 0)
-            drawable17->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 538, y = 390, width = 14, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable18 != 0);
-        if (drawable18 != 0)
-            drawable18->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 538, y = 350, width = 14, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable19 != 0);
-        if (drawable19 != 0)
-            drawable19->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 582, y = 390, width = 12, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable20 != 0);
-        if (drawable20 != 0)
-            drawable20->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    {
-        int x = 582, y = 350, width = 12, height = 8;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable21 != 0);
-        if (drawable21 != 0)
-            drawable21->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    
-    
-    
-    
-    {
-        int x = 682, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable22 != 0);
-        if (drawable22 != 0)
-            drawable22->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    {
-        int x = 660, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable23 != 0);
-        if (drawable23 != 0)
-            drawable23->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-    {
-        int x = 638, y = 224, width = 10, height = 6;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (Colours::black);
-        jassert (drawable24 != 0);
-        if (drawable24 != 0)
-            drawable24->drawWithin (g, Rectangle<float> (x, y, width, height),
-                                    RectanglePlacement::centred, 1.000f);
-    }
-	*/
 }
 
 void MonosynthPluginAudioProcessorEditor::resized()
@@ -423,6 +250,10 @@ void MonosynthPluginAudioProcessorEditor::resized()
     hqOversamplingButton->setButtonText("");
 
 
+	Rectangle<int> oscilloArea(titleLabel->getBounds());
+	oscilloscope->setBounds(oscilloArea.removeFromLeft(256));
+	oscilloscope->setAlwaysOnTop(true);
+	oscilloscope->setBackgroundColour(Colours::azure);
     
     
     //
@@ -462,7 +293,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     midiKeyboard.setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, Colour (0xffc8e6ff));
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     
-    
+	
     
     
     getProcessor().lastUIWidth = getWidth();

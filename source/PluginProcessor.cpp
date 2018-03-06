@@ -381,6 +381,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     keyboardState.reset();
+
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -632,12 +633,17 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     if (*softClipSwitchParam == 1)
         softClipBuffer(osBuffer);
 
-   
+
+	oscilloscope.processBlock((float*)osBuffer.getReadPointer(0), osBuffer.getNumSamples());
+
+
 
     //DOWNSAMPLING
 	oversampling->processSamplesDown(block);
 
-	    
+	
+
+
     // Now ask the host for the current time so we can store it to be displayed later...
     updateCurrentTimeInfoFromHost();
 }

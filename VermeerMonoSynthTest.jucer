@@ -69,6 +69,10 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="f8i8eV" name="AudioOscilloscope.cpp" compile="1" resource="0"
+          file="source/AudioOscilloscope.cpp"/>
+    <FILE id="xHfbe7" name="AudioOscilloscope.h" compile="0" resource="0"
+          file="source/AudioOscilloscope.h"/>
     <FILE id="UCRHL7" name="ParamSmoother.h" compile="0" resource="0" file="source/ParamSmoother.h"/>
     <FILE id="L5yrsA" name="SequencerProcessor.cpp" compile="1" resource="0"
           file="source/SequencerProcessor.cpp"/>
