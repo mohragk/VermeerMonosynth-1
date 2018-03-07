@@ -91,6 +91,9 @@ private:
     
     Colour backGroundColour;
 
+	bool armedUp = false;
+	bool shouldTrigger = false;
+
     //==============================================================================
     void processPendingSamples();
     void renderImage();

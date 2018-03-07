@@ -623,17 +623,24 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
 		osBuffer.clear (i, 0, numSamples);
     
-    
-    // APPLY VOLUME
-    applyGain (osBuffer); // apply our gain-change to the outgoing data..
-    
-    
-    
-    // APPLY SOFTCLIP
-    if (*softClipSwitchParam == 1)
-        softClipBuffer(osBuffer);
 
+	// Update oscilloscope data
+
+	float satuNorm = (*saturationParam - 1.0f) / 4.0f;
+	float zoomFactor = 1.0f - ( satuNorm * satuNorm ) ;
+	scope.setVerticalZoomFactor( jlimit(0.5f, 1.0f, zoomFactor) );
 	scope.addSamples((float*)osBuffer.getReadPointer(0), osBuffer.getNumSamples());
+
+
+
+	// APPLY VOLUME
+	applyGain(osBuffer); // apply our gain-change to the outgoing data..
+
+
+    // APPLY SOFTCLIP
+	if (*softClipSwitchParam == 1)
+		softClipBuffer(osBuffer);
+
 
 
     //DOWNSAMPLING
