@@ -183,7 +183,7 @@ void TriggeredScope::renderImage()
             if (triggerMode == Up)
             {
                 if (minBuffer[prevPosToTest] <= 0.0f
-                    && maxBuffer[posToTest] > 0.0f)
+                    && maxBuffer[posToTest] > 0.1f) // TEST
                 {
                     bufferReadPos = posToTest;
                     break;
