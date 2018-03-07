@@ -296,9 +296,6 @@ private:
         {
 			for (int n = 0; n < numOscillators; n++)
 				osc[n]->setPhase(0.0);
-            
-            std::cout << " we're idling " << std::endl;
-            
         }
         
         if (ampEnvelope.get()->getState() != ADSR::env_idle)

@@ -925,6 +925,9 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
     
+    int note = synthVoice->getLastNotePlayed();
+    scope.setNumSamplesPerPixel( (128 - note) / 2);
+    
     
     for (int i = 0; i < numSamples; i++)
     {
