@@ -66,12 +66,7 @@ void TriggeredScope::setVerticalZoomFactor (float newVerticalZoomFactor)
 
 void TriggeredScope::setTriggerMode (TriggerMode newTriggerMode)
 {
-    if (newTriggerMode == None
-        || newTriggerMode == Up
-        || newTriggerMode == Down)
-    {
-        triggerMode = newTriggerMode;
-    }
+    
 }
 
 void TriggeredScope::addSamples (const float* samples, int numSamples)
@@ -165,13 +160,15 @@ void TriggeredScope::processPendingSamples()
         }
     }
 }
-
+int val = 0;
 void TriggeredScope::mouseDown (const MouseEvent &event)
 {
-    if (shouldOverride)
-        shouldOverride = false;
-    else
-        shouldOverride = true;
+    val++;
+    
+    if (val >= numTriggerModes)
+        val = 0;
+    
+    triggerMode = (TriggerMode) val;
 }
 
 void TriggeredScope::renderImage()
@@ -190,7 +187,6 @@ void TriggeredScope::renderImage()
     if (bufferReadPos < 0 )
         bufferReadPos += bufferSize;
     
-    if (triggerMode != None)
     {
         int posToTest = bufferReadPos;
         int numToSearch = bufferSize;
@@ -200,32 +196,25 @@ void TriggeredScope::renderImage()
             if (prevPosToTest < 0)
                 prevPosToTest += bufferSize;
             
-            if (triggerMode == Up)
+            switch(triggerMode)
             {
-                
-                if (shouldOverride)
+                case Up:
+                    if (minBuffer[prevPosToTest] <= 0.0f && maxBuffer[posToTest] > 0.0f)
+                        bufferReadPos = posToTest;
+                    break;
+                    
+                case Phase:
                 {
                     float scaler = (float)trueBufferSize / (float)numSamplesExt;
-                    
-                    
                     bufferReadPos = std::round( (float)overriddenBufferReadPos * scaler );
-                }
-                else if (minBuffer[prevPosToTest] <= 0.0f && maxBuffer[posToTest] > 0.0f)
-                {
-                    bufferReadPos = posToTest - 1;
                     break;
                 }
-				
-            }
-            else
-            {
-                if (minBuffer[prevPosToTest] > 0.0f
-                    && maxBuffer[posToTest] <= 0.0f)
-                {
-                    bufferReadPos = posToTest;
+                    
+                default:
                     break;
-                }
             }
+            
+            
             
             if (--posToTest < 0)
                 posToTest += bufferSize;
@@ -235,6 +224,7 @@ void TriggeredScope::renderImage()
     float currentX = 0;
     float oldX = 0;
     float oldY = 0;
+    
     while (currentX < w)
     {
         ++bufferReadPos;

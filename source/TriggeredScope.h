@@ -25,9 +25,9 @@ public:
      */
     enum TriggerMode
     {
-        None,   /**<< The trace will just refresh at a constant rate. */
-        Up,     /**<< The start of the trace will be a rising edge. */
-        Down    /**<< The start of the trace will be a falling edge. */
+        Up,         /**<< The start of the trace will be a rising edge. */
+        Phase,       /**<< The start of the trace will be defined by oscillator phase. */
+        numTriggerModes
     };
     
     TriggeredScope(TimeSliceThread* backgroundThreadToUse = nullptr);

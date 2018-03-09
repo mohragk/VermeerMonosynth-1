@@ -141,8 +141,7 @@ private:
         const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;
        
-        if (phs >= two_Pi)
-            phs -= two_Pi;
+       
         
         
         switch (m)
