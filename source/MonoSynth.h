@@ -261,6 +261,23 @@ public:
 
     }
     
+    int getLowestOscillatorRephaseIndex()
+    {
+        double lowest = getLowestPitchedOscFreq();
+        int idx = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            if ( osc[i].get()->getFrequency() == lowest )
+                if (osc[i].get()->isRephase())
+                {
+                    idx = sampleCounter + 1;
+                }
+            
+        }
+        
+        return idx;
+    }
+    
     void sendLFO(LFO& lfo)
     {
         lfoValue = lfo.nextSample();
@@ -304,8 +321,10 @@ private:
         
         if (ampEnvelope.get()->getState() != ADSR::env_idle)
 		{
+           
 			while (--numSamples >= 0)
 			{
+                sampleCounter = startSample;
 				FloatType sample = 0.0;
 
 				//Get Pitch Envelope Amount
@@ -404,7 +423,7 @@ private:
     int initialNote = 0;
     int noteOffset;
     
-   
+    int sampleCounter;
 
     double lfoValue, egValue;
     double modAmountPW[3];

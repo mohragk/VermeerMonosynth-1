@@ -67,6 +67,18 @@ public:
     
     /** Set the backgroundcolour of the scope */
     void setBackgroundColour(Colour col) { backGroundColour = col; };
+    
+    /** Set wether the oscilloscope trigger point should be overriden  */
+    void overrideTriggerPoint(bool choice) { shouldOverride = choice; };
+    
+    /** Set at which point in the buffer the oscilloscope should trigger.
+     
+     This value is an index in an audiobuffer where one of the oscillator's phase
+        has become 0.0.
+     */
+    void setNewTriggerPoint(double newPos);
+    
+    void mouseDown (const MouseEvent &event) override;
 
 private:
     OptionalScopedPointer<TimeSliceThread> backgroundThreadToUse; //MIGHT MAKE THIS std
@@ -77,7 +89,7 @@ private:
     
     int numLeftToAverage;
 
-    int bufferSize, bufferWritePos;
+    int bufferSize, bufferWritePos, overriddenBufferReadPos, trueBufferSize, numSamplesExt;
     HeapBlock<float> minBuffer, maxBuffer;
     
     float currentMax, currentMin;
@@ -93,6 +105,7 @@ private:
 
 	bool armedUp = false;
 	bool shouldTrigger = false;
+    bool shouldOverride = false;
 
     //==============================================================================
     void processPendingSamples();

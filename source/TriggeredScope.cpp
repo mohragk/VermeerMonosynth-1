@@ -83,6 +83,8 @@ void TriggeredScope::addSamples (const float* samples, int numSamples)
 
     samplesToProcess.writeSamples (samples, numSamples);
     
+    numSamplesExt = numSamples;
+    
     needToUpdate = true;
 }
 
@@ -91,7 +93,7 @@ void TriggeredScope::resized()
 {
     const ScopedLock sl (imageLock);
 
-    image = Image (Image::RGB, jmax (1, getWidth()), jmax (1, getHeight()), false);
+    image = Image (Image::RGB, jmax (1, getWidth() * 2), jmax (1, getHeight() * 2), false);
     Graphics g (image);
     
     g.fillAll (backGroundColour);
@@ -103,8 +105,9 @@ void TriggeredScope::paint (Graphics& g)
 {
     const ScopedLock sl (imageLock);
 
-    g.drawImageAt (image, 0, 0);
-   
+    g.setImageResamplingQuality(Graphics::ResamplingQuality::highResamplingQuality);
+    g.drawImageWithin(image, 0, 0, getWidth(), getHeight(), RectanglePlacement::stretchToFit);
+    //g.drawImageAt (image, 0, 0);
 }
 
 void TriggeredScope::timerCallback()
@@ -125,6 +128,11 @@ int TriggeredScope::useTimeSlice()
 
     
     return std::round(1000 / 60);
+}
+
+void TriggeredScope::setNewTriggerPoint(double newPos)
+{
+    overriddenBufferReadPos = newPos;
 }
 
 //==============================================================================
@@ -153,8 +161,17 @@ void TriggeredScope::processPendingSamples()
             
             ++bufferWritePos %= bufferSize;
             numLeftToAverage = numSamplesPerPixel;
+            trueBufferSize = bufferSize / numSamplesPerPixel;
         }
     }
+}
+
+void TriggeredScope::mouseDown (const MouseEvent &event)
+{
+    if (shouldOverride)
+        shouldOverride = false;
+    else
+        shouldOverride = true;
 }
 
 void TriggeredScope::renderImage()
@@ -185,9 +202,15 @@ void TriggeredScope::renderImage()
             
             if (triggerMode == Up)
             {
-				
-                if (minBuffer[prevPosToTest] <= 0.0f
-                    && maxBuffer[posToTest] > 0.0f) // TEST
+                
+                if (shouldOverride)
+                {
+                    float scaler = (float)trueBufferSize / (float)numSamplesExt;
+                    
+                    
+                    bufferReadPos = std::round( (float)overriddenBufferReadPos * scaler );
+                }
+                else if (minBuffer[prevPosToTest] <= 0.0f && maxBuffer[posToTest] > 0.0f)
                 {
                     bufferReadPos = posToTest - 1;
                     break;
@@ -242,12 +265,11 @@ void TriggeredScope::renderImage()
             blendFactor = 1.0f / divisor;
         }
         
-        g.setImageResamplingQuality( Graphics::ResamplingQuality::mediumResamplingQuality );
         
         Colour newCol = Colour(val, val, val, blendFactor);
         g.setColour (newCol);
-       // g.drawVerticalLine (currentX, top, bottom);
-        g.drawLine(oldX, oldY, currentX, top );
+        Line<float> l (oldX, oldY, currentX, top );
+        g.drawLine(l, 1.0f);
         ++currentX;
         
         oldX = currentX;

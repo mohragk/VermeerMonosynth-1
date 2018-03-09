@@ -256,6 +256,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
 	oscilloscope->setBounds(oscilloArea.removeFromTop(TITLE_HEIGHT).reduced( (getWidth() / 2) - 128, 6));
     oscilloscope->setBackgroundColour(Colour (0xff0e0e0e));
     
+    
    
     
     //

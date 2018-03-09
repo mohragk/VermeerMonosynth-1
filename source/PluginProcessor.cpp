@@ -939,7 +939,11 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         if (note > 127)
             note = 127;
         
-        scope.setNumSamplesPerPixel( ( 128 -  note ) * ( osFactor / 4 ) );
+        int newPos = synthVoice->getLowestOscillatorRephaseIndex();
+        
+        scope.setNewTriggerPoint(newPos);
+        //scope.overrideTriggerPoint(true); //TEST
+        scope.setNumSamplesPerPixel( ( 128 -  note ) * ( osFactor / 16 ) );
        
         sequencerProcessor.get()->setMaxSteps(*maxStepsParam);
         sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);
