@@ -272,12 +272,11 @@ useHQOversamplingParam(nullptr)
     keyboardState.addListener(this);
     
     
-    for(int channel = 0; channel < 2; channel++)
-    {
-        filterA[channel] = std::unique_ptr<LadderFilterBase>( new ImprovedMoog );
-        filterB[channel] = std::unique_ptr<LadderFilterBase>( new ThreeFiveModel );
-        filterC[channel] = std::unique_ptr<LadderFilterBase>( new DiodeLadderModel );
-    }
+    
+        filterA = std::unique_ptr<LadderFilterBase>( new ImprovedMoog );
+        filterB = std::unique_ptr<LadderFilterBase>( new ThreeFiveModel );
+        filterC = std::unique_ptr<LadderFilterBase>( new DiodeLadderModel );
+   
     
     
     // Oversampling 2 times with FIR filtering
@@ -351,28 +350,21 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     
     keyboardState.reset();
 
-    for(int channel = 0; channel < 2; channel++)
-    {
+    
         
-        filterA[channel]->SetResonance(0.1);
-        filterA[channel]->SetCutoff(12000.0);
-        filterA[channel]->SetDrive(1.0);
-        
-        
-        filterB[channel]->SetResonance(0.1);
-        filterB[channel]->SetCutoff(12000.0);
-        filterB[channel]->SetDrive(1.0);
-        
-        
-        filterC[channel]->SetResonance(0.1);
-        filterC[channel]->SetCutoff(12000.0);
-        filterC[channel]->SetDrive(1.0);
-        
-    }
+    filterA->SetResonance(0.1);
+    filterA->SetCutoff(12000.0);
+    filterA->SetDrive(1.0);
     
     
+    filterB->SetResonance(0.1);
+    filterB->SetCutoff(12000.0);
+    filterB->SetDrive(1.0);
     
     
+    filterC->SetResonance(0.1);
+    filterC->SetCutoff(12000.0);
+    filterC->SetDrive(1.0);
     
 }
 
@@ -389,12 +381,11 @@ void MonosynthPluginAudioProcessor::releaseResources()
     oversamplingDoubleHQ->reset();
     
     
-    for (int channel = 0; channel < 2; channel++)
-    {
-        filterA[channel]->Reset();
-        filterB[channel]->Reset();
-        filterC[channel]->Reset();
-    }
+   
+    filterA->Reset();
+    filterB->Reset();
+    filterC->Reset();
+    
 
     for (int i = 0; i < 6; i++)
         smoothing[i]->reset();
@@ -420,12 +411,10 @@ void MonosynthPluginAudioProcessor::reset()
     oversamplingDoubleHQ->reset();
     
     
-	for (int channel = 0; channel < 2; channel++)
-	{
-		filterA[channel]->Reset();
-		filterB[channel]->Reset();
-		filterC[channel]->Reset();
-	}
+    filterA->Reset();
+    filterB->Reset();
+    filterC->Reset();
+	
     for (int i = 0; i < 6; i++)
         smoothing[i]->reset();
 }
@@ -488,12 +477,11 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
 
 	synthVoice->setEnvelopeSampleRate(newsr);
     
-    for(int channel = 0; channel < 2; channel++)
-    {
-        filterA[channel]->SetSampleRate(newsr);
-        filterB[channel]->SetSampleRate(newsr);
-        filterC[channel]->SetSampleRate(newsr);
-    }
+    
+    filterA->SetSampleRate(newsr);
+    filterB->SetSampleRate(newsr);
+    filterC->SetSampleRate(newsr);
+   
     
     lfo.setSampleRate(newsr);
     
@@ -592,9 +580,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         if(filterOn)
         {
             // applying filter
-            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA) ; }
-            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB) ; }
-            else                                 { applyFilter(osBuffer, filterC) ; }
+            if (*filterSelectParam == 0)         { applyFilter(osBuffer, *filterA.get()) ; }
+            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, *filterB.get()) ; }
+            else                                 { applyFilter(osBuffer, *filterC.get()) ; }
 			
         }
         
@@ -605,9 +593,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         if(filterOn)
         {
             // applying filter
-            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA) ; }
-            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB) ; }
-            else                                 { applyFilter(osBuffer, filterC) ; }
+            if (*filterSelectParam == 0)         { applyFilter(osBuffer, *filterA.get()) ; }
+            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, *filterB.get()) ; }
+            else                                 { applyFilter(osBuffer, *filterC.get()) ; }
         }
     }
     
@@ -747,13 +735,12 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[])
+void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase& filter)
 {
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
-    FloatType* channelDataRight = buffer.getWritePointer(1);
     
-    int numSamples = buffer.getNumSamples();
+    const int numSamples = buffer.getNumSamples();
 
     
     //
@@ -772,18 +759,13 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 		if (combinedCutoff > CUTOFF_MAX) combinedCutoff = CUTOFF_MAX;
 		if (combinedCutoff < CUTOFF_MIN) combinedCutoff = CUTOFF_MIN;
         
-		
+        auto snapToLocalVal= [](double val) -> double { if (val < 0.0) val = 0.0; else if (val > 1.0) val = 1.0; return val;  };
 
-        for (int channel = 0; channel < 2; channel++)
-        {
-                //filter[channel]->SetSampleRate(sampleRate * oversamp->getOversamplingFactor());
-            auto snapToLocalVal= [](double val) -> double { if (val < 0.0) val = 0.0; else if (val > 1.0) val = 1.0; return val;  };
+        FloatType newReso =  snapToLocalVal(resonance.getNextValue());
 
-            FloatType newReso =  snapToLocalVal(resonance.getNextValue());
-
-            filter[channel]->SetResonance(newReso);
-            filter[channel]->SetDrive(drive.getNextValue());
-        }
+        filter.SetResonance(newReso);
+        filter.SetDrive(drive.getNextValue());
+        
 
         if (samplesLeftOver < stepSize)
             stepSize = samplesLeftOver;
@@ -791,27 +773,27 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 
 		if (prevCutoff == combinedCutoff)
 		{
-			filter[0]->SetCutoff(combinedCutoff);
-			filter[1]->SetCutoff(combinedCutoff);
+			filter.SetCutoff(combinedCutoff);
 
-            if (filter[0]->SetCutoff(combinedCutoff))
-                filter[0]->Process(channelDataLeft, stepSize);
-
-            if (filter[1]->SetCutoff(combinedCutoff))
-                filter[1]->Process(channelDataRight, stepSize);
+            if (filter.SetCutoff(combinedCutoff))
+                filter.Process(channelDataLeft, stepSize);
 		}
 		else
 		{
-			filter[0]->ProcessRamp(channelDataLeft, stepSize, prevCutoff, combinedCutoff);
-			filter[1]->ProcessRamp(channelDataRight, stepSize, prevCutoff, combinedCutoff);
+			filter.ProcessRamp(channelDataLeft, stepSize, prevCutoff, combinedCutoff);
 		}
         
         prevCutoff = combinedCutoff;
-
         samplesLeftOver -= stepSize;
-
         channelDataLeft += stepSize;
-        channelDataRight += stepSize;
+    }
+    
+    FloatType* dataLeftPass2 = buffer.getWritePointer(0);
+    FloatType* dataRightPass2 = buffer.getWritePointer(1);
+    
+    for (int i = 0; i < numSamples; i++)
+    {
+        dataRightPass2[i] = dataLeftPass2[i];
     }
     
 }

@@ -286,7 +286,7 @@ private:
     void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
 
     template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[]);
+    void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase& filter);
 
 	template <typename FloatType>
 	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
@@ -379,7 +379,7 @@ private:
     
 	std::unique_ptr<ParamSmoother> smoothing[6];
     
-    std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
+    std::unique_ptr<LadderFilterBase> filterA, filterB, filterC;
     
     bool useSequencer = false;
     
