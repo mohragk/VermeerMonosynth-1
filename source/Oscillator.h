@@ -37,6 +37,10 @@ public:
         frequency.set(f + deviation);
     }
     
+    double getFrequency()
+    {
+        return frequency.get();
+    }
     
     void setPhase(const double ph)
     {

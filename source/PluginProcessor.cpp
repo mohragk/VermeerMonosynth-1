@@ -580,9 +580,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         if(filterOn)
         {
             // applying filter
-            if (*filterSelectParam == 0)         { applyFilter(osBuffer, *filterA.get()) ; }
-            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, *filterB.get()) ; }
-            else                                 { applyFilter(osBuffer, *filterC.get()) ; }
+            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA.get()) ; }
+            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB.get()) ; }
+            else                                 { applyFilter(osBuffer, filterC.get()) ; }
 			
         }
         
@@ -593,9 +593,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         if(filterOn)
         {
             // applying filter
-            if (*filterSelectParam == 0)         { applyFilter(osBuffer, *filterA.get()) ; }
-            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, *filterB.get()) ; }
-            else                                 { applyFilter(osBuffer, *filterC.get()) ; }
+            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA.get()) ; }
+            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB.get()) ; }
+            else                                 { applyFilter(osBuffer, filterC.get()) ; }
         }
     }
     
@@ -735,7 +735,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase& filter)
+void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter)
 {
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
@@ -763,8 +763,8 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 
         FloatType newReso =  snapToLocalVal(resonance.getNextValue());
 
-        filter.SetResonance(newReso);
-        filter.SetDrive(drive.getNextValue());
+        filter->SetResonance(newReso);
+        filter->SetDrive(drive.getNextValue());
         
 
         if (samplesLeftOver < stepSize)
@@ -773,14 +773,14 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 
 		if (prevCutoff == combinedCutoff)
 		{
-			filter.SetCutoff(combinedCutoff);
+			filter->SetCutoff(combinedCutoff);
 
-            if (filter.SetCutoff(combinedCutoff))
-                filter.Process(channelDataLeft, stepSize);
+            if (filter->SetCutoff(combinedCutoff))
+                filter->Process(channelDataLeft, stepSize);
 		}
 		else
 		{
-			filter.ProcessRamp(channelDataLeft, stepSize, prevCutoff, combinedCutoff);
+			filter->ProcessRamp(channelDataLeft, stepSize, prevCutoff, combinedCutoff);
 		}
         
         prevCutoff = combinedCutoff;
@@ -816,7 +816,7 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 	for (int i = 0; i < numSamples; i++)
 	{
 		dataL[i] = getWaveshaped(readLeft[i], saturation, *waveshapeModeParam);
-		dataR[i] = getWaveshaped(readRight[i], saturation, *waveshapeModeParam);
+        dataR[i] = dataL[i];  //getWaveshaped(readRight[i], saturation, *waveshapeModeParam);
 	}
 }
 
@@ -914,8 +914,16 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
     
-    int note = synthVoice->getLastNotePlayed();
-    scope.setNumSamplesPerPixel( (128 - note) / 2);
+    double lowestFreq = synthVoice->getLowestPitchedOscFreq();
+    int note = log( lowestFreq / 440.0 ) / log(2) * 12 + 69;
+    
+    if (note < 0)
+        note = 0;
+    
+    if (note > 127)
+        note = 127;
+    
+    scope.setNumSamplesPerPixel( (128 - ( note )));
     
     
     for (int i = 0; i < numSamples; i++)

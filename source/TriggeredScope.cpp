@@ -121,7 +121,8 @@ int TriggeredScope::useTimeSlice()
         needToUpdate = false;
     }
 
-    return 10;
+    
+    return std::round(1000 / 60);
 }
 
 //==============================================================================
@@ -177,26 +178,11 @@ void TriggeredScope::renderImage()
         while (--numToSearch >= 0)
         {
             int prevPosToTest = posToTest - 1;
-			int armPos = 0;
             if (prevPosToTest < 0)
                 prevPosToTest += bufferSize;
             
             if (triggerMode == Up)
             {
-				
-				/*
-				if (armedUp == false && minBuffer[prevPosToTest] <= 0.0f && maxBuffer[posToTest] > 0.0f) // LOWER TRESHOLD
-				{
-					armedUp = true;
-					armPos = posToTest;
-				}
-
-				if (armedUp && minBuffer[prevPosToTest] <= 0.2f && maxBuffer[posToTest] > 0.2f) //UPPER TRESHOLD
-				{
-					bufferReadPos = armPos;
-					armedUp = false;
-				}
-				*/
 				
                 if (minBuffer[prevPosToTest] <= 0.0f
                     && maxBuffer[posToTest] > 0.0f) // TEST

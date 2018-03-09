@@ -255,7 +255,11 @@ public:
     }
 
 
-   
+    double getLowestPitchedOscFreq()
+    {
+        return jmin( osc[0].get()->getFrequency(), osc[1].get()->getFrequency(), osc[2].get()->getFrequency() );
+
+    }
     
     void sendLFO(LFO& lfo)
     {

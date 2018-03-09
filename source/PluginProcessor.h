@@ -286,7 +286,7 @@ private:
     void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
 
     template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase& filter);
+    void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
 
 	template <typename FloatType>
 	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
