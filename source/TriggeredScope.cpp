@@ -209,7 +209,9 @@ void TriggeredScope::renderImage()
         }
     }
     
-    int currentX = 0;
+    float currentX = 0;
+    float oldX = 0;
+    float oldY = 0;
     while (currentX < w)
     {
         ++bufferReadPos;
@@ -223,29 +225,33 @@ void TriggeredScope::renderImage()
         
         
         uint8 val = 255;
-        uint16 range = image.getWidth() / 4;
+        float range = image.getWidth() / 4;
         
         
         float blendFactor = 1.0f;
         
         if (currentX <= range)
-            blendFactor = (float)currentX/range;
+            blendFactor = currentX/range;
         
         if (currentX >= image.getWidth() - range )
         {
-            float rangeStart = (float)image.getWidth() - (float)range;
+            float rangeStart = (float)image.getWidth() - range;
             float newX = (float)currentX - rangeStart; //set x to 0
             float divisor = range / (range - newX) ;
             
             blendFactor = 1.0f / divisor;
         }
         
+        g.setImageResamplingQuality( Graphics::ResamplingQuality::mediumResamplingQuality );
         
         Colour newCol = Colour(val, val, val, blendFactor);
         g.setColour (newCol);
-        g.drawVerticalLine (currentX, top, bottom);
-        
+       // g.drawVerticalLine (currentX, top, bottom);
+        g.drawLine(oldX, oldY, currentX, top );
         ++currentX;
+        
+        oldX = currentX;
+        oldY = top;
     }
     
     needToRepaint = true;

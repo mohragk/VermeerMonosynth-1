@@ -131,9 +131,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     //
     // TITLE
     //
-    titleLabel = std::unique_ptr<Label> ( new Label ("Title", TRANS("Vermeer Monosynth-1")));
+    titleLabel = std::unique_ptr<Label> ( new Label ("Title", TRANS("Monosynth-1")));
     addAndMakeVisible (titleLabel.get());
-    titleLabel->setFont (Font (font, 24.00f, Font::plain).withExtraKerningFactor (0.150f));
+    titleLabel->setFont (Font (font, 22.00f, Font::plain).withExtraKerningFactor (0.150f));
     titleLabel->setJustificationType (Justification::centredBottom);
     titleLabel->setEditable (false, false, false);
     titleLabel->setColour (Label::textColourId, Colours::white);
@@ -243,8 +243,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     // TITLE
     
     
-    titleLabel->setBounds (area.removeFromTop(TITLE_HEIGHT));
-    titleLabel->setJustificationType(Justification::centred);
+    titleLabel->setBounds (area.removeFromTop(TITLE_HEIGHT).reduced(12,0));
+    titleLabel->setJustificationType(Justification::centredLeft);
     //oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36); // TODO
     
     Rectangle<int> buttonArea (titleLabel->getBounds());
@@ -252,8 +252,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     hqOversamplingButton->setButtonText("");
 
 
-	Rectangle<int> oscilloArea(titleLabel->getBounds());
-	oscilloscope->setBounds(oscilloArea.removeFromLeft(192).reduced(12, 0));
+	Rectangle<int> oscilloArea(getLocalBounds());
+	oscilloscope->setBounds(oscilloArea.removeFromTop(TITLE_HEIGHT).reduced( (getWidth() / 2) - 128, 6));
     oscilloscope->setBackgroundColour(Colour (0xff0e0e0e));
     
    

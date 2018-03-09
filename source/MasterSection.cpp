@@ -77,6 +77,8 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     saturationLabel->setColour (TextEditor::textColourId, Colours::black);
     saturationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
+    
+    
     startTimerHz(60);
 
 }
