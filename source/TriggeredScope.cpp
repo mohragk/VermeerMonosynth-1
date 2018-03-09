@@ -93,8 +93,9 @@ void TriggeredScope::resized()
 
     image = Image (Image::RGB, jmax (1, getWidth()), jmax (1, getHeight()), false);
     Graphics g (image);
-    g.fillAll (backGroundColour);
     
+    g.fillAll (backGroundColour);
+   
     needToRepaint = true;
 }
 
@@ -103,6 +104,7 @@ void TriggeredScope::paint (Graphics& g)
     const ScopedLock sl (imageLock);
 
     g.drawImageAt (image, 0, 0);
+   
 }
 
 void TriggeredScope::timerCallback()
@@ -162,7 +164,7 @@ void TriggeredScope::renderImage()
     Graphics g (image);
     
     g.fillAll (backGroundColour);
-    g.setColour (Colours::white);
+    
     
     const int w = image.getWidth();
     const int h = image.getHeight();
@@ -217,7 +219,32 @@ void TriggeredScope::renderImage()
         const float top = (1.0f - (0.5f + (0.5f * verticalZoomFactor * maxBuffer[bufferReadPos]))) * h;
         const float bottom = (1.0f - (0.5f + (0.5f * verticalZoomFactor * minBuffer[bufferReadPos]))) * h;
 
+        
+        
+        
+        uint8 val = 255;
+        uint16 range = image.getWidth() / 4;
+        
+        
+        float blendFactor = 1.0f;
+        
+        if (currentX <= range)
+            blendFactor = (float)currentX/range;
+        
+        if (currentX >= image.getWidth() - range )
+        {
+            float rangeStart = (float)image.getWidth() - (float)range;
+            float newX = (float)currentX - rangeStart; //set x to 0
+            float divisor = range / (range - newX) ;
+            
+            blendFactor = 1.0f / divisor;
+        }
+        
+        
+        Colour newCol = Colour(val, val, val, blendFactor);
+        g.setColour (newCol);
         g.drawVerticalLine (currentX, top, bottom);
+        
         ++currentX;
     }
     

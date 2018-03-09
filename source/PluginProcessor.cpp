@@ -914,21 +914,32 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
     
-    double lowestFreq = synthVoice->getLowestPitchedOscFreq();
-    int note = log( lowestFreq / 440.0 ) / log(2) * 12 + 69;
+    double osFactor = 1.0;
     
-    if (note < 0)
-        note = 0;
-    
-    if (note > 127)
-        note = 127;
-    
-    scope.setNumSamplesPerPixel( (128 - ( note )));
+    if(*useHQOversamplingParam)
+    {
+        osFactor = oversamplingDoubleHQ->getOversamplingFactor();
+       
+    }
+    else
+    {
+        osFactor = oversamplingDouble->getOversamplingFactor();
+    }
     
     
     for (int i = 0; i < numSamples; i++)
     {
+     
+        double lowestFreq = synthVoice->getLowestPitchedOscFreq();
+        int note = log( lowestFreq / 440.0 ) / log(2) * 12 + 69;
         
+        if (note < 0)
+            note = 0;
+        
+        if (note > 127)
+            note = 127;
+        
+        scope.setNumSamplesPerPixel( ( 128 -  note ) * ( osFactor / 4 ) );
        
         sequencerProcessor.get()->setMaxSteps(*maxStepsParam);
         sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);

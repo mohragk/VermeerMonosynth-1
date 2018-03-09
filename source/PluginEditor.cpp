@@ -170,6 +170,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	addAndMakeVisible(oscilloscope);
     
     
+    
     //
     // Drawables for symbols/icons
     //
@@ -252,9 +253,10 @@ void MonosynthPluginAudioProcessorEditor::resized()
 
 
 	Rectangle<int> oscilloArea(titleLabel->getBounds());
-	oscilloscope->setBounds(oscilloArea.removeFromLeft(256).reduced(64, 0));
+	oscilloscope->setBounds(oscilloArea.removeFromLeft(192).reduced(12, 0));
     oscilloscope->setBackgroundColour(Colour (0xff0e0e0e));
     
+   
     
     //
     // MODULES
