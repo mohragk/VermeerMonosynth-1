@@ -88,7 +88,7 @@ void TriggeredScope::resized()
 {
     const ScopedLock sl (imageLock);
 
-    image = Image (Image::RGB, jmax (1, getWidth() * 2), jmax (1, getHeight() * 2), false);
+    image = Image (Image::RGB, jmax (1, getWidth()*2), jmax (1, getHeight()*2), false);
     Graphics g (image);
     
     g.fillAll (backGroundColour);
@@ -100,7 +100,7 @@ void TriggeredScope::paint (Graphics& g)
 {
     const ScopedLock sl (imageLock);
 
-    g.setImageResamplingQuality(Graphics::ResamplingQuality::highResamplingQuality);
+    //g.setImageResamplingQuality(Graphics::ResamplingQuality::highResamplingQuality);
     g.drawImageWithin(image, 0, 0, getWidth(), getHeight(), RectanglePlacement::stretchToFit);
     //g.drawImageAt (image, 0, 0);
 }
@@ -122,7 +122,7 @@ int TriggeredScope::useTimeSlice()
     }
 
     
-    return std::round(1000 / 60);
+    return 10;
 }
 
 void TriggeredScope::setNewTriggerPoint(double newPos)
@@ -154,9 +154,10 @@ void TriggeredScope::processPendingSamples()
             currentMax = -1.0f;
             currentMin = 1.0f;
             
-            ++bufferWritePos %= bufferSize;
+            
             numLeftToAverage = numSamplesPerPixel;
             trueBufferSize = bufferSize / numSamplesPerPixel;
+            ++bufferWritePos %= bufferSize;
         }
     }
 }
@@ -199,14 +200,14 @@ void TriggeredScope::renderImage()
             switch(triggerMode)
             {
                 case Up:
-                    if (minBuffer[prevPosToTest] <= 0.0f && maxBuffer[posToTest] > 0.0f)
+                    if (maxBuffer[prevPosToTest] <= 0.0f && maxBuffer[posToTest] > 0.0f)
                         bufferReadPos = posToTest;
                     break;
                     
                 case Phase:
                 {
                     float scaler = (float)trueBufferSize / (float)numSamplesExt;
-                    bufferReadPos = std::round( (float)overriddenBufferReadPos * scaler );
+                    bufferReadPos =  overriddenBufferReadPos * scaler ;
                     break;
                 }
                     
@@ -259,7 +260,7 @@ void TriggeredScope::renderImage()
         Colour newCol = Colour(val, val, val, blendFactor);
         g.setColour (newCol);
         Line<float> l (oldX, oldY, currentX, top );
-        g.drawLine(l, 1.0f);
+        g.drawLine(l, 2.0f);
         ++currentX;
         
         oldX = currentX;

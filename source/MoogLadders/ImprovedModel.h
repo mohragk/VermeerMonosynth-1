@@ -176,7 +176,7 @@ private:
     }
 
 	template <typename FloatType>
-	FloatType doFilter(FloatType sample)
+	FloatType JUCE_VECTOR_CALLTYPE doFilter(FloatType sample)
 	{
 		if (sampleRate <= 0.0)
 			return sample;
@@ -206,9 +206,10 @@ private:
 		return V[3];
 	}
     
-    double V[4];
-    double dV[4];
-    double tV[4];
+    std::array<double, 4> V, dV, tV;
+    //double V[4];
+   // double dV[4];
+   // double tV[4];
     
     double x;
     double g;

@@ -804,7 +804,6 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 	const int numSamples = buffer.getNumSamples();
 
     const FloatType* readLeft = buffer.getReadPointer(0);
-    const FloatType* readRight = buffer.getReadPointer(1);
     
 	FloatType* dataL = buffer.getWritePointer(0);
 	FloatType* dataR = buffer.getWritePointer(1);
@@ -917,19 +916,15 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     double osFactor = 1.0;
     
     if(*useHQOversamplingParam)
-    {
         osFactor = oversamplingDoubleHQ->getOversamplingFactor();
-       
-    }
     else
-    {
         osFactor = oversamplingDouble->getOversamplingFactor();
-    }
     
     
     for (int i = 0; i < numSamples; i++)
     {
      
+        // SCOPE
         double lowestFreq = synthVoice->getLowestPitchedOscFreq();
         int note = log( lowestFreq / 440.0 ) / log(2) * 12 + 69;
         
@@ -942,20 +937,17 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         int newPos = synthVoice->getLowestOscillatorRephaseIndex();
         
         scope.setNewTriggerPoint(newPos);
-        //scope.overrideTriggerPoint(true); //TEST
         scope.setNumSamplesPerPixel( ( 128 -  note ) * ( osFactor / 16 ) );
        
+        
+        //SEQUENCER
         sequencerProcessor.get()->setMaxSteps(*maxStepsParam);
         sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);
         
-        
         for (int i = 0; i < 8; i++ )
-        {
             sequencerProcessor.get()->setStepPitch(i, *stepPitchParam[i]);
-        }
         
         sequencerProcessor.get()->setGlobalNoteLength(*stepNoteLengthParam);
-        
         sequencerProcessor.get()->setBPM(lastPosInfo.bpm);
         
         
