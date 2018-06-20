@@ -273,9 +273,9 @@ useHQOversamplingParam(nullptr)
     
     
     
-        filterA = std::unique_ptr<LadderFilterBase>( new ImprovedMoog );
-        filterB = std::unique_ptr<LadderFilterBase>( new ThreeFiveModel );
-        filterC = std::unique_ptr<LadderFilterBase>( new DiodeLadderModel );
+    filterA = std::unique_ptr<LadderFilterBase>( new ImprovedMoog );
+    filterB = std::unique_ptr<LadderFilterBase>( new ThreeFiveModel );
+    filterC = std::unique_ptr<LadderFilterBase>( new DiodeLadderModel );
    
     
     
@@ -526,6 +526,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         prevHqOversampling = hqOn;
     }
 
+    
+    
+    
+    
     // OVERSAMPLING
     dsp::AudioBlock<FloatType> block (buffer);
     dsp::AudioBlock<FloatType> osBlock;
@@ -543,10 +547,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     const int numSamples = osBuffer.getNumSamples();
 
-	updateParameters(buffer);
-
     
-    
+    // PARAMETER UPDATE
+    updateParameters(osBuffer);
 
    
     // KEYBOARD
@@ -583,7 +586,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
             if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA.get()) ; }
             else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB.get()) ; }
             else                                 { applyFilter(osBuffer, filterC.get()) ; }
-			
+            
         }
         
         
@@ -600,41 +603,39 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     }
     
 
-	//APPLYING WAVESHAPER
-	if(*waveshapeSwitchParam == 1)
-		applyWaveshaper(osBuffer);
+    //APPLYING WAVESHAPER
+    if(*waveshapeSwitchParam == 1)
+        applyWaveshaper(osBuffer);
  
     
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
     for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
-		osBuffer.clear (i, 0, numSamples);
+        osBuffer.clear (i, 0, numSamples);
     
 
-	// Update oscilloscope data
-
-	float satuNorm = (*saturationParam - 1.0f) / 4.0f;
-	float zoomFactor = 1.0f - ( satuNorm * satuNorm ) ;
-	scope.setVerticalZoomFactor( jlimit(0.5f, 1.0f, zoomFactor) );
-	scope.addSamples((float*)osBuffer.getReadPointer(0), osBuffer.getNumSamples());
+    // Update oscilloscope data
+    updateOscilloscope(osBuffer);
+    
 
 
 
-	// APPLY VOLUME
-	applyGain(osBuffer); // apply our gain-change to the outgoing data..
+    // APPLY VOLUME
+    applyGain(osBuffer); // apply our gain-change to the outgoing data..
 
 
     // APPLY SOFTCLIP
-	if (*softClipSwitchParam == 1)
-		softClipBuffer(osBuffer);
+    if (*softClipSwitchParam == 1)
+        softClipBuffer(osBuffer);
 
 
 
     //DOWNSAMPLING
-	oversampling->processSamplesDown(block);
-
-	
+    oversampling->processSamplesDown(block);
+    
+    
+   
 
 
     // Now ask the host for the current time so we can store it to be displayed later...
@@ -817,6 +818,16 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 		dataL[i] = getWaveshaped(readLeft[i], saturation, *waveshapeModeParam);
         dataR[i] = dataL[i];  //getWaveshaped(readRight[i], saturation, *waveshapeModeParam);
 	}
+}
+
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::updateOscilloscope(AudioBuffer<FloatType>& buffer)
+{
+ 
+    float satuNorm = (*saturationParam - 1.0f) / 4.0f;
+    float zoomFactor = 1.0f - ( satuNorm * satuNorm ) ;
+    scope.setVerticalZoomFactor( jlimit(0.5f, 1.0f, zoomFactor) );
+    scope.addSamples((float*)buffer.getReadPointer(0), buffer.getNumSamples());
 }
 
 

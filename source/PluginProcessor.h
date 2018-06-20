@@ -291,7 +291,8 @@ private:
 	template <typename FloatType>
 	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
 
-   
+    template <typename FloatType>
+    void updateOscilloscope(AudioBuffer<FloatType>& buffer);
     
 	
     
