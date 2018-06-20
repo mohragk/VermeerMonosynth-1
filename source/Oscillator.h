@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(44100.0), level(0.75), pulsewidth(0.5)
+    Oscillator() : sampleRate(44100.0), phaseIncrement(0.0), level(1.0), pulsewidth(0.5), deviation(0.0), rephase(false)
     {
 		frequency.set(0.0);
 		phase.set(0.0);
@@ -37,6 +37,10 @@ public:
         frequency.set(f + deviation);
     }
     
+    double getFrequency()
+    {
+        return frequency.get();
+    }
     
     void setPhase(const double ph)
     {
@@ -109,7 +113,7 @@ public:
             value = naiveWaveFormForMode(mode, phase.get());
             value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi);
             value += poly_blep( t, phaseIncrement );
-            value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement ); //BUG!!! 1.0 - 0.5 should be pulsewidth
+            value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
         }
         else
         {
@@ -124,9 +128,8 @@ public:
         {
             phase.set(0.0);
             rephase = true;
-            deviation = random.nextFloat() * 0.15;
-            
         }
+    
         
         return value * level * gain.get();// * velocityFactor;
     }
@@ -138,8 +141,7 @@ private:
         const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;
        
-        if (phs >= two_Pi)
-            phs -= two_Pi;
+       
         
         
         switch (m)
@@ -208,8 +210,9 @@ private:
     Random random;
     double deviation;
     
-    bool rephase = false;
+    bool rephase;
     
+	JUCE_LEAK_DETECTOR(Oscillator);
 };
 
 #endif /* Oscillator_h */

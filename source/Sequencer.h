@@ -1,0 +1,141 @@
+/*
+  ==============================================================================
+
+  Created with Projucer version: 5.2.1
+
+  ------------------------------------------------------------------------------
+
+  The Projucer is part of the JUCE library.
+  Copyright (c) 2017 - ROLI Ltd.
+
+  ==============================================================================
+*/
+
+
+
+
+#ifndef SEQUENCER_H
+#define SEQUENCER_H
+#define SEQUENCER_HEIGHT 140
+
+
+#include "../JuceLibraryCode/JuceHeader.h"
+
+#include "PluginProcessor.h"
+#include "ParameterSlider.h"
+#include "SequencerProcessor.h"
+
+
+
+//==============================================================================
+/**
+                                                                    //[Comments]
+    An auto-generated component, created by the Projucer.
+
+    Describe your class and how it works here!
+                                                                    //[/Comments]
+*/
+
+
+
+
+class Sequencer  : public Component, private Timer
+{
+public:
+    //==============================================================================
+    Sequencer (MonosynthPluginAudioProcessor& p, SequencerProcessor& sp);
+    ~Sequencer();
+    
+    //==============================================================================
+    //[UserMethods]     -- You can add your own custom methods in this section.
+    //[/UserMethods]
+    
+    void paint (Graphics& g) override;
+    void resized() override;
+    
+    void parentSizeChanged() override;
+    void timerCallback() override;
+    
+    
+    void makeActive(bool on);
+    bool isActivated(){ return isActive;};
+    
+    
+    enum steps
+    {
+        STEP1 = 0,
+        STEP2,
+        STEP3,
+        STEP4,
+        STEP5,
+        STEP6,
+        STEP7,
+        STEP8,
+        numSteps
+        
+    };
+    
+   
+
+    struct Step
+    {
+        int    stepNumber = 0;
+        int    noteNumber = 60;
+        int    timeStamp = 0;
+        int    noteLengthMillis = 10;
+        bool   isReleased = false;
+        bool   isActive = false;
+    } step[numSteps];
+
+    
+    
+    
+    void fillStepData(int stepToFill, Step data );
+    
+
+private:
+    
+    class StepSlider;
+    
+    // members
+    MonosynthPluginAudioProcessor& processor;
+    SequencerProcessor& sequencerProcessor;
+
+    CriticalSection lock;
+
+    
+    std::unique_ptr<ParameterSlider> pitchSlider[numSteps];
+    std::unique_ptr<ParameterSlider> globalNoteLengthSlider;
+    std::unique_ptr<ParameterSlider> stepDivision;
+    std::unique_ptr<ParameterSlider> maxStepsSlider;
+    
+    std::unique_ptr<Label> stepDivisionLabel, globalNoteLengthLabel;
+    
+    enum style
+    {
+        ROTARY = 0,
+        LINEARHORIZONTAL,
+        LINEARVERTICAL
+    };
+    
+    Colour lightThumb = Colour(0xffdee5fc);
+    Colour darkThumb = Colour(0xff3e7db3);
+    
+    int stepCount = 0;
+    
+   
+    bool isActive = false;
+    
+    // methods
+    void updateStepDivisionLabel();
+    void updateGlobalNoteLengthLabel();
+	void updateStepKnobColours();
+    void updateStepSliderAlpha();
+   
+    
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sequencer)
+};
+
+#endif // SEQUENCER_H

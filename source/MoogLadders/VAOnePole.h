@@ -17,22 +17,21 @@ class VAOnePole : public LadderFilterBase
 {
     public :
     
-        VAOnePole() : LadderFilterBase()
+        VAOnePole() : LadderFilterBase(),
+    
+                        Alpha(1.0),
+                        Beta(0.0),
+                        Gamma(1.0),
+                        Delta(0.0),
+                        Epsilon(0.0),
+                        a0(1.0),
+                        Z1(0.0),
+                        Feedback(0.0),
+                        type(LPF1),
+                        sampleRate(44100.0),
+						oldCutoff(1000.0)
         {
-            Alpha = 1.0;
-            Beta = 0.0;
-            Z1 = 0.0;
-            Gamma = 1.0;
-            Delta = 0.0;
-            Epsilon = 0.0;
-            a0 = 1.0;
-            Feedback = 0.0;
-            
-            // default to lpf
-            type = LPF1;
-            
             Reset();
-            
         }
         
         virtual ~VAOnePole()
@@ -67,7 +66,7 @@ class VAOnePole : public LadderFilterBase
     
         virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
         {
-            const auto increment = (endCutoff - beginCutoff) / (float) n;
+			const auto increment = (endCutoff - beginCutoff) / static_cast<float> (n);
             
             for (uint32_t i = 0; i < n; i++)
             {
@@ -79,7 +78,7 @@ class VAOnePole : public LadderFilterBase
     
         virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
         {
-            const auto increment = (endCutoff - beginCutoff) / (double) n;
+			const auto increment = (endCutoff - beginCutoff) / static_cast<double> (n);
             
             for (uint32_t i = 0; i < n; i++)
             {
@@ -150,10 +149,22 @@ class VAOnePole : public LadderFilterBase
 		virtual bool SetCutoff(double c) override
 		{
             if (isnan(c))
-                return false;
+                c = 1000.0;
+            
+            if (c > 20000.0)
+                c = 20000.0;
+            
+            if (c < 40.0)
+                c = 40.0;
             
 			cutoff.set(c);
-            Update();
+            
+			if (oldCutoff != c)
+			{
+				Update();
+			}
+
+			oldCutoff = c;
             return true;
 		}
     
@@ -179,6 +190,7 @@ class VAOnePole : public LadderFilterBase
     
         FilterType type;
         double sampleRate;
+		double oldCutoff;
 };
 
 

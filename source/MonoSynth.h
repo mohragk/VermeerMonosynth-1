@@ -23,8 +23,14 @@ DISCLAIMED.
 
 ==============================================================================
 */
+#ifndef MONOSYNTH_H
+#define MONOSYNTH_H
 
 #include "Oscillator.h"
+#include "lfo.h"
+#include "adsr/ADSR.h"
+#include "ParamSmoother.h"
+
 
 /** A demo synth sound that's just a basic sine wave.. */
 class MonosynthSound : public SynthesiserSound
@@ -44,17 +50,37 @@ public:
 class MonosynthVoice  : public SynthesiserVoice
 {
 public:
-	MonosynthVoice() : pitchEnvelope(nullptr), numOscillators(3)
+    MonosynthVoice() :
+        sampleRate(44100.0),
+        phase(0.0),
+        envState(0),
+        numOscillators(3),
+        initialNote(0),
+        noteOffset(0),
+        lfoValue(0.0),
+        egValue(0.0),
+        pitchModulation(0.0),
+        pitchBendOffset(0.0),
+        glideTime(0.0),
+        midiFrequency(0.0),
+        maxFreq(0.0), minFreq(0.0),
+        pitchModAmount(0.0),
+        hardSync(false)
     {
-		pitchEnvelope = new ADSR();
-
+        pitchEnvelope = std::unique_ptr<ADSR> ( new ADSR );
+        ampEnvelope   = std::unique_ptr<ADSR> ( new ADSR );
+        filterEnvelope   = std::unique_ptr<ADSR> ( new ADSR );
+        
 		for (int n = 0; n < numOscillators; n++)
+        {
+            modAmountPW[n] = 0.0;
+            oscDetuneAmount[n] = 0.0;
 			osc[n] = std::unique_ptr<Oscillator>( new Oscillator );
+        }
     }
     
     ~MonosynthVoice()
     {
-        pitchEnvelope = nullptr;
         
 		for (int n = 0; n < numOscillators; n++)
 			osc[n] = nullptr;
@@ -65,17 +91,29 @@ public:
         return dynamic_cast<MonosynthSound*> (sound) != nullptr;
     }
     
+    
+    void setEnvelopeSampleRate( double sr )
+    {
+        pitchEnvelope.get()->setSampleRate(sr);
+        ampEnvelope.get()->setSampleRate(sr);
+        
+        
+        
+    }
+    
+    void setFilterEnvelopeSampleRate(double sr)
+    {
+        filterEnvelope.get()->setSampleRate(sr);
+    }
+    
     void startNote (int midiNoteNumber, float velocity,
                     SynthesiserSound* /*sound*/,
                     int /*currentPitchWheelPosition*/) override
     {
-        
         double sr = getSampleRate();
-
-		
-
+        
 		// Might be abundant, but just to be safe
-        pitchEnvelope->setSampleRate(sr);
+        //pitchEnvelope->setSampleRate(sr);
         
 		for (int n = 0; n < numOscillators; n++)
 		{
@@ -83,17 +121,21 @@ public:
 			osc[n]->setVelocityFactor(velocity);
 		}
         
-       
-               
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
-
         
-        pitchEnvelope->gate(true);
+        pitchEnvelope.get()->gate(true);
+        ampEnvelope.get()->gate(true);
+        filterEnvelope.get()->gate(true);
+
+		lastNotePlayed = midiNoteNumber;
+        
     }
     
     void stopNote (float /*velocity*/, bool allowTailOff) override
     {
-        pitchEnvelope->gate(false);
+        pitchEnvelope.get()->gate(false);
+        ampEnvelope.get()->gate(false);
+        filterEnvelope.get()->gate(false);
         clearCurrentNote();
     }
     
@@ -126,16 +168,47 @@ public:
         return numOscillators;
     }
     
+
+	int getLastNotePlayed()
+	{
+		return lastNotePlayed;
+	}
     
     // Set pitch envelope parameters.
     void setPitchEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
     {
-        pitchEnvelope->setAttackRate(attack);
-        pitchEnvelope->setDecayRate(decay);
-        pitchEnvelope->setSustainLevel(sustain);
-        pitchEnvelope->setReleaseRate(release);
-        pitchEnvelope->setTargetRatioA(attackCurve);
-        pitchEnvelope->setTargetRatioDR(decRelCurve);
+        pitchEnvelope.get()->setAttackRate(attack);
+        pitchEnvelope.get()->setDecayRate(decay);
+        pitchEnvelope.get()->setSustainLevel(sustain);
+        pitchEnvelope.get()->setReleaseRate(release);
+        pitchEnvelope.get()->setTargetRatioA(attackCurve);
+        pitchEnvelope.get()->setTargetRatioDR(decRelCurve);
+    }
+    
+    void setAmpEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
+    {
+        ampEnvelope.get()->setAttackRate(attack);
+        ampEnvelope.get()->setDecayRate(decay);
+        ampEnvelope.get()->setSustainLevel(sustain);
+        ampEnvelope.get()->setReleaseRate(release);
+        ampEnvelope.get()->setTargetRatioA(attackCurve);
+        ampEnvelope.get()->setTargetRatioDR(decRelCurve);
+    }
+    
+    void filterAmpEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
+    {
+        filterEnvelope.get()->setAttackRate(attack);
+        filterEnvelope.get()->setDecayRate(decay);
+        filterEnvelope.get()->setSustainLevel(sustain);
+        filterEnvelope.get()->setReleaseRate(release);
+        filterEnvelope.get()->setTargetRatioA(attackCurve);
+        filterEnvelope.get()->setTargetRatioDR(decRelCurve);
+    }
+    
+    
+    double getFilterEnvelopeValue()
+    {
+        return filterEnvelope.get()->process();
     }
     
     // Pretty dumb name, but this influences the amount of pitch deviation generated from the envelope.
@@ -181,10 +254,29 @@ public:
         osc[2]->setMode(mode3);
     }
 
-	void sendEnvelope(ADSR& envelope)
-	{
-		envState =  envelope.getState();
-	}
+
+    double getLowestPitchedOscFreq()
+    {
+        return jmin( osc[0].get()->getFrequency(), osc[1].get()->getFrequency(), osc[2].get()->getFrequency() );
+
+    }
+    
+    int getLowestOscillatorRephaseIndex()
+    {
+        double lowest = getLowestPitchedOscFreq();
+        int idx = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            if ( osc[i].get()->getFrequency() == lowest )
+                if (osc[i].get()->isRephase())
+                {
+                    idx = sampleCounter + 1;
+                }
+            
+        }
+        
+        return idx;
+    }
     
     void sendLFO(LFO& lfo)
     {
@@ -216,30 +308,30 @@ public:
 
 private:
     
+    
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
         
-       
-        
-        if (envState == 0)
+        if (ampEnvelope.get()->getState() == ADSR::env_idle)
         {
 			for (int n = 0; n < numOscillators; n++)
 				osc[n]->setPhase(0.0);
-            
         }
         
-		if (envState != 0)
+        if (ampEnvelope.get()->getState() != ADSR::env_idle)
 		{
+           
 			while (--numSamples >= 0)
 			{
+                sampleCounter = startSample;
 				FloatType sample = 0.0;
 
 				//Get Pitch Envelope Amount
 				FloatType pitchEnvAmt = pitchEnvelope->process();
 
 				//Apply Pitch Envelope and PitchBend Amount, deviated from current pitch
-				FloatType newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
+                FloatType newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
 				FloatType osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreq);
@@ -261,6 +353,8 @@ private:
 
 				sample /= numOscillators;
 
+                // get amplitude envelope
+                sample *= ampEnvelope.get()->process();
                 
                 FloatType* dataLeft = outputBuffer.getWritePointer(0);
                 FloatType* dataRight = outputBuffer.getWritePointer(1);
@@ -268,12 +362,7 @@ private:
                 dataLeft[startSample] = sample;
                 dataRight[startSample] = sample;
                 
-                /*
-				for (int i = 0; i < outputBuffer.getNumChannels(); i++)
-				{
-                    outputBuffer.addSample(i, startSample, sample);
-				}
-                */
+                
                 
 				++startSample;
 			}
@@ -333,6 +422,8 @@ private:
     
     int initialNote = 0;
     int noteOffset;
+    
+    int sampleCounter;
 
     double lfoValue, egValue;
     double modAmountPW[3];
@@ -350,11 +441,17 @@ private:
     double pitchModAmount;
     
     bool hardSync = false;
+	int lastNotePlayed = 60;
     
     Random rand;
     
-    ScopedPointer<ADSR> pitchEnvelope;
+    std::unique_ptr<ADSR> pitchEnvelope;
+    std::unique_ptr<ADSR> ampEnvelope;
+    std::unique_ptr<ADSR> filterEnvelope;
+    
     std::unique_ptr<Oscillator> osc[3];
+        
+    JUCE_LEAK_DETECTOR (MonosynthVoice)
 };
 
-
+#endif // MONOSYNTH_H

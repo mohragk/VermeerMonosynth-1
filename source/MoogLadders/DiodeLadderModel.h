@@ -18,21 +18,23 @@ class DiodeLadderModel : public LadderFilterBase
 {
     public:
     
-    DiodeLadderModel() : LadderFilterBase()
+    DiodeLadderModel() : LadderFilterBase(),
+                            sampleRate(44100.0),
+                            Gamma(0.0),
+                            type(LPF4),
+                            SG1(0.0), SG2(0.0), SG3(0.0), SG4(0.0),
+							oldCutoff(1000.0)
+    
     {
         resonance.set(0.0);
 		SetCutoff(1000.0);
         
-        Gamma = 0.0;
-        
-        SG1 = 0.0; SG2 = 0.0; SG3 = 0.0; SG4 = 0.0;
         
         va_LPF1.setFilterType(LPF1);
         va_LPF2.setFilterType(LPF1);
         va_LPF3.setFilterType(LPF1);
         va_LPF4.setFilterType(LPF1);
         
-        type = LPF4;
         
         Reset();
         
@@ -197,13 +199,26 @@ class DiodeLadderModel : public LadderFilterBase
     {
 
 		if (isnan(c))
-			return false;
+			c = 1000.0;
+        
+        
+        if (c > 20000.0)
+            c = 20000.0;
+        
+        if (c < 40.0)
+            c = 40.0;
 
         jassert (c > 0 && c <= (sampleRate * 0.5));
         
         cutoff.set(c);
-        Update();
+
+		if (oldCutoff != c)
+		{
+			Update();
+		}
         
+		oldCutoff = c;
+
         return true;
     }
     
@@ -228,6 +243,8 @@ class DiodeLadderModel : public LadderFilterBase
     VAOnePole va_LPF1, va_LPF2, va_LPF3, va_LPF4;
     
     double SG1, SG2, SG3, SG4;
+
+	double oldCutoff;
 };
 
 

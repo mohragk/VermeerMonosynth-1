@@ -24,16 +24,26 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef PLUGIN_EDITOR_H
+#define PLUGIN_EDITOR_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "OscillatorSection.h"
+#include "FilterSection.h"
+#include "EnvelopeSection.h"
+#include "LFOSection.h"
+#include "MasterSection.h"
+#include "Sequencer.h"
+#include "TriggeredScope.h"
+
 
 
 //==============================================================================
 /** This is the editor component that our filter will display.
 */
 class MonosynthPluginAudioProcessorEditor  : public AudioProcessorEditor,
+                                            public Button::Listener,
 										
                                             private Timer
                                             //private MidiKeyboardStateListener
@@ -46,16 +56,11 @@ public:
     void paint (Graphics&) override;
     void resized() override;
     void timerCallback() override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
+    
 
 	// Binary resources:
-	static const char* oscSquareWaveSymbol_svg;
-	static const int oscSquareWaveSymbol_svgSize;
-	static const char* oscSquareWaveSymbol_svg2;
-	static const int oscSquareWaveSymbol_svg2Size;
-	static const char* oscSawWaveSymbol_svg;
-	static const int oscSawWaveSymbol_svgSize;
-	static const char* oscSineWaveSymbol_svg;
-	static const int oscSineWaveSymbol_svgSize;
+	
 	static const char* attackCurveLinear_symbol_svg;
 	static const int attackCurveLinear_symbol_svgSize;
 	static const char* attackCurveExponential_symbol_svg;
@@ -64,12 +69,22 @@ public:
 	static const int decayCurveLinear_symbol_svgSize;
 	static const char* decayCurveExponential_symbol_svg;
 	static const int decayCurveExponential_symbol_svgSize;
-	static const char* oscNoiseWaveSymbol_svg;
-    static const int oscNoiseWaveSymbol_svgSize;
 
+    std::unique_ptr<OscillatorSection> oscillatorSection;
+    std::unique_ptr<FilterSection> filterSection;
+    std::unique_ptr<EnvelopeSection> envelopeSection;
+    std::unique_ptr<LFOSection> lfoSection;
+    std::unique_ptr<MasterSection> masterSection;
+    std::unique_ptr<Sequencer> sequencerSection;
+
+	TriggeredScope* oscilloscope;
+    
+    
 private:
-    class ParameterSlider;
-	enum style
+    
+    class ParamToggleButton;
+    
+    enum style
 	{
 		ROTARY = 0,
 		LINEARHORIZONTAL,
@@ -79,210 +94,43 @@ private:
     Colour lineColour;
     
     MidiKeyboardComponent midiKeyboard;
+    
+    std::unique_ptr<TooltipWindow> tooltipWindow;
+
 
 	Label timecodeDisplayLabel;
-
-   ScopedPointer<Label>  
-        mainLabel,
-        titleLabel,
-        osc1GainLabel,
-        osc1WaveformLabel,
-        osc1OffsetLabel,
-        oscillatorsLabel,
-        osc1TuneLabel,
-        osc2GainLabel,
-        osc2WaveformLabel,
-        osc2OffsetLabel,
-        osc2TuneLabel,
-        osc3GainLabel,
-        osc3WaveformLabel,
-        osc3OffsetLabel,
-        osc3TuneLabel,
-    
-        oscSyncLabel,
-        oscSyncONLabel,
-        oscSyncOFFLabel,
-        filterLabel,
-        filterCutoffLabel,
-        filterResonanceLabel,
-        filterContourLabel,
-        filterDriveLabel,
-    
-        filterMoogLabel,
-        filterMS20Label,
-        filter303Label,
-    
-        envelopesLabel,
-        envAmpLabel,
-        envFilterLabel,
-        envPitchLabel,
-        volumeLabel,
-        pitchModLabel,
-    
-        lfoLabel,
-    
-        lfoRateLabel,
-        lfoModeLabel,
-        lfoIntensityLabel,
-        modTargetLabel,
-        modTargetCutoffLabel,
-        modTargetPitchLabel,
-        modTargetOffLabel,
-    
-    saturationLabel
-
-            ;
+	
+    std::unique_ptr<Label>
+        titleLabel
+   ;
     
    std::unique_ptr<ParameterSlider>
-	   volumeSlider,
-	   osc1GainSlider,
-	   osc1OffsetSlider,
-	   osc1TuneSlider,
-	   osc1WaveformSlider,
-
-	   osc2GainSlider,
-	   osc2OffsetSlider,
-	   osc2TuneSlider,
-	   osc2WaveformSlider,
-
-	   osc3GainSlider,
-	   osc3OffsetSlider,
-	   osc3TuneSlider,
-	   osc3WaveformSlider,
-	   oscSyncSlider,
-
-	   pitchModSlider,
-
-	   filterCutoffSlider,
-	
-        filterResonanceSlider,
-        filterContourSlider,
-        filterDriveSlider,
-
-        attackSlider1,
-        decaySlider1,
-        sustainSlider1,
-        releaseSlider1,
-        attackCurveSlider1,
-        decRelCurveSlider1,
-
-
-        attackSlider2,
-        decaySlider2,
-        sustainSlider2,
-        releaseSlider2,
-        attackCurveSlider2,
-        decRelCurveSlider2,
-
-        attackSlider3,
-        decaySlider3,
-        sustainSlider3,
-        releaseSlider3,
-        attackCurveSlider3,
-        decRelCurveSlider3,
-
-        modTargetSlider,
-
-        lfoRateSlider,
-        lfoModeSlider,
-        lfoIntensitySlider,
-		lfoSyncSlider,
-    
-        filterSelectSlider,
-    
-        lfoSyncedFreqSlider,
-    
-       
-    
-        filterOrderSlider,
-    
-        saturationSwitchSlider,
-    
-
-
-	    pulsewidth1Slider,
-	   pulsewidth2Slider,
-	   pulsewidth3Slider,
-
-        pulsewidthAmount1Slider,
-        pulsewidthAmount2Slider,
-        pulsewidthAmount3Slider,
-
-		saturationSlider,
-    
         oversampleSwitchSlider
-        ;
+    ;
 
     
     std::unique_ptr<Drawable>
-    drawable25,
-    drawable1,
-    drawable2,
-    drawable3,
+        drawable10,
+        drawable11,
+        drawable12,
+        drawable13,
+        drawable14,
+        drawable15,
+        drawable16,
+        drawable17,
+        drawable18,
+        drawable19,
+        drawable20,
+        drawable21,
+        drawable22,
+        drawable23,
+        drawable24
+    ;
     
-    drawable26,
-    drawable4,
-    drawable5,
-    drawable6,
+    std::unique_ptr<ParamToggleButton> hqOversamplingButton, expandSequencerButton;
     
-    drawable27,
-    drawable7,
-    drawable8,
-    drawable9,
-    
-    
-    
-    drawable10,
-    drawable11,
-    drawable12,
-    drawable13,
-    drawable14,
-    drawable15,
-    drawable16,
-    drawable17,
-    drawable18,
-    drawable19,
-    drawable20,
-    drawable21,
-    drawable22,
-    drawable23,
-    drawable24;
-    
-    /*
-    ScopedPointer<Drawable> drawable25;
-    ScopedPointer<Drawable> drawable1;
-    ScopedPointer<Drawable> drawable2;
-    ScopedPointer<Drawable> drawable3;
-    
-    ScopedPointer<Drawable> drawable26;
-    ScopedPointer<Drawable> drawable4;
-    ScopedPointer<Drawable> drawable5;
-    ScopedPointer<Drawable> drawable6;
-    
-    ScopedPointer<Drawable> drawable27;
-    ScopedPointer<Drawable> drawable7;
-    ScopedPointer<Drawable> drawable8;
-    ScopedPointer<Drawable> drawable9;
-    
-    
-    
-    ScopedPointer<Drawable> drawable10;
-    ScopedPointer<Drawable> drawable11;
-    ScopedPointer<Drawable> drawable12;
-    ScopedPointer<Drawable> drawable13;
-    ScopedPointer<Drawable> drawable14;
-    ScopedPointer<Drawable> drawable15;
-    ScopedPointer<Drawable> drawable16;
-    ScopedPointer<Drawable> drawable17;
-    ScopedPointer<Drawable> drawable18;
-    ScopedPointer<Drawable> drawable19;
-    ScopedPointer<Drawable> drawable20;
-    ScopedPointer<Drawable> drawable21;
-    ScopedPointer<Drawable> drawable22;
-    ScopedPointer<Drawable> drawable23;
-    ScopedPointer<Drawable> drawable24;
-    */
-    
+    std::unique_ptr<ComponentAnimator> animator;
+   
     
     String font;
     //==============================================================================
@@ -291,5 +139,11 @@ private:
         return static_cast<MonosynthPluginAudioProcessor&> (processor);
     }
 
+    void updateStates();
+    void showSequencer(bool shouldShow);
     void updateTimecodeDisplay (AudioPlayHead::CurrentPositionInfo);
+    
+ 
 };
+
+#endif // PLUGIN_EDITOR_H

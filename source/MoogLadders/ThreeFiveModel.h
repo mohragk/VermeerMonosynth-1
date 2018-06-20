@@ -17,13 +17,10 @@
 class ThreeFiveModel : public LadderFilterBase
 {
 public:
-    ThreeFiveModel() : LadderFilterBase()
+    ThreeFiveModel() : LadderFilterBase(), sampleRate(44100.0), type(LPF2), Alpha0(0.0), oldCutoff(1000.0)
     {
 		SetCutoff(1000.0);
-
-        //init
-        resonance.set( 0.01 );
-        Alpha0 = 0;
+        SetResonance( 0.0 );
         
         // set filter types
         va_LPF1.setFilterType(LPF1);
@@ -31,8 +28,6 @@ public:
         va_HPF1.setFilterType(HPF1);
         va_HPF2.setFilterType(HPF1);
         
-        
-        type = LPF2;
         
         Reset();
         
@@ -100,7 +95,7 @@ public:
     
     virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
     {
-        const auto increment = (endCutoff - beginCutoff) / (float) n;
+        const auto increment = (endCutoff - beginCutoff) / static_cast<float> ( n );
         
         for (uint32_t i = 0; i < n; i++)
         {
@@ -113,7 +108,7 @@ public:
     
     virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
     {
-        const auto increment = (endCutoff - beginCutoff) / (double) n;
+		const auto increment = (endCutoff - beginCutoff) / static_cast<double> (n);
         
         for (uint32_t i = 0; i < n; i++)
         {
@@ -196,13 +191,25 @@ public:
     virtual bool SetCutoff(double c) override
     {
 
-		    if (isnan(c))
-            return false;
+        if (isnan(c))
+            c = 1000.0;
+        
+        if (c > 20000.0)
+            c = 20000.0;
+        
+        if (c < 40.0)
+            c = 40.0;
 
-		    jassert(c > 0 && c <= (sampleRate * 0.5));
+        jassert(c > 0 && c <= (sampleRate * 0.5));
         
         cutoff.set(c);
-        Update();
+
+		if (oldCutoff != c)
+		{
+			Update();
+		}
+
+		oldCutoff = c;
         
         return true;
     }
@@ -224,6 +231,7 @@ public:
     
     double Alpha0;
     
+	double oldCutoff;
     
 };
 

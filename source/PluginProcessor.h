@@ -24,10 +24,24 @@
   ==============================================================================
 */
 
-#pragma once
+#ifndef PLUGIN_PROCESSOR_H
+#define PLUGIN_PROCESSOR_H
+
+
 
 #include "../JuceLibraryCode/JuceHeader.h"
+
+
+
+
 #include "adsr/ADSR.h"
+//#include "PulseClock.h"
+#include "lfo.h"
+#include "SequencerState.h"
+#include "SequencerProcessor.h"
+#include "ParamSmoother.h"
+#include "TriggeredScope.h"
+
 
 #include "MoogLadders/ImprovedModel.h"
 #include "MoogLadders/SEMModel.h"
@@ -35,7 +49,8 @@
 #include "MoogLadders/DiodeLadderModel.h"
 #include "MoogLadders/ThreeFiveModel.h"
 
-#include "lfo.h"
+
+
 
 
 
@@ -44,7 +59,8 @@
     As the name suggest, this class does the actual audio processing.
 */
 class MonosynthPluginAudioProcessor  : public AudioProcessor,
-                                        private MidiKeyboardStateListener
+                                        private MidiKeyboardStateListener,
+                                        private Timer
 {
 public:
     //==============================================================================
@@ -56,13 +72,14 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
     void reset() override;
+    void timerCallback() override;
 
     //==============================================================================
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
     {
 
         jassert (! isUsingDoublePrecision());
-        if (hqOversampling)
+        if (*useHQOversamplingParam)
             process (buffer, midiMessages, oversamplingFloatHQ);
         else
             process (buffer, midiMessages, oversamplingFloat);
@@ -72,7 +89,7 @@ public:
     {
 
         jassert (! isUsingDoublePrecision());
-        if (hqOversampling)
+        if (*useHQOversamplingParam)
             process (buffer, midiMessages, oversamplingDoubleHQ);
         else
             process (buffer, midiMessages, oversamplingDouble);
@@ -103,6 +120,8 @@ public:
     void getStateInformation (MemoryBlock&) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+	bool isSequencerPlaying();
+    
     //==============================================================================
     // These properties are public so that our editor component can access them
     // A bit of a hacky way to do it, but it's only a demo! Obviously in your own
@@ -111,9 +130,14 @@ public:
     // this is kept up to date with the midi messages that arrive, and the UI component
     // registers with it so it can represent the incoming messages
     MidiKeyboardState keyboardState;
+    std::unique_ptr<SequencerProcessor> sequencerProcessor;
+    
+	TriggeredScope scope;
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
+    
+
 
     // this keeps a copy of the last set of time info that was acquired during an audio
     // callback - the UI component will read this and display it.
@@ -123,35 +147,23 @@ public:
     // filter's other parameters, and the UI component will update them when it gets
     // resized.
     int lastUIWidth, lastUIHeight;
+    int lastSeqPitchValue[8] = {0,0,0,0,0,0,0,0};
+    int lastSeqNoteLength = 50;
+    int lastSeqDivision = 4;
     
-
+    bool lastOversampleChoice = false;
+    bool lastSequencerChoice = false;
     
-    
-    //Set Envelope values
-    void setPitchEnvelope(float attack, float decay, float sustain, float release, float attackCurve, float decRelCurve);
-   
-
-    
-    void setPitchEnvelopeAmount( float pitchMod);
-    //void setOscOffset(float offset);
-    void setOsc1DetuneAmount(float fine, int coarse);
-    void setOsc2DetuneAmount(float fine, int coarse);
-    void setOsc3DetuneAmount(float fine, int coarse);
-    void setOscGains(float osc1Gain, float osc2Gain, float osc3Gain);
-    void setOscModes(int osc1Mode, int osc2Mode, int osc3Mode);
-	void setEnvelopeState( ADSR& envelope);
-    void setHardSync(int sync);
-    void sendLFO( LFO& thislfo);
-	void setPW(double amt, int osc);
-    void setPWAmount(double amt, int osc);
-
 	bool noteIsBeingPlayed();
     
     bool saturationOn();
 
 	bool lfoSynced();
-	
-  
+    
+
+	//@Cleanup: unused?
+    SynthesiserVoice* getSynthesiserVoice() { return synth.getVoice(0) ; };
+      
     
     // Our parameters
     AudioParameterFloat* gainParam;
@@ -169,7 +181,7 @@ public:
     
     AudioParameterInt* oscSyncParam;
     
-    AudioParameterFloat* filterParam;
+    AudioParameterFloat* filterCutoffParam;
     AudioParameterFloat* filterQParam;
     AudioParameterFloat* filterContourParam;
     AudioParameterFloat* filterDriveParam;
@@ -222,7 +234,7 @@ public:
     AudioParameterInt* overSampleParam;
     
     AudioParameterInt* filterOrderParam;
-    AudioParameterInt* waveshapeSwitchParam;
+    
 
 	AudioParameterFloat* pulsewidth1Param;
 	AudioParameterFloat* pulsewidth2Param;
@@ -233,75 +245,78 @@ public:
     AudioParameterFloat* pulsewidthAmount3Param;
 
 	AudioParameterFloat* saturationParam;
+    AudioParameterInt* waveshapeSwitchParam;
+    AudioParameterInt* waveshapeModeParam;
     
     AudioParameterInt* oversampleSwitchParam;
+    AudioParameterInt* softClipSwitchParam;
+    
+    AudioParameterInt* stepPitchParam[8];
+	AudioParameterFloat* stepNoteLengthParam;
+    AudioParameterFloat* stepDivisionFloatParam;
+    AudioParameterInt* maxStepsParam;
     
     
-private:
+    AudioParameterInt* useSequencerParam;
+    AudioParameterInt* useHQOversamplingParam;
 
-
-    //==============================================================================
-    
-	class SmoothParam {
-	public:
-		SmoothParam()
-		{
-			reset();
-		}
-
-		~SmoothParam()
-		{}
-
-		void init(double sr, double millis) 
-		{
-			a = exp(-double_Pi / (millis * 0.001 * sr));
-			b = 1.0 - a;
-			z = 0.0;
-		}
-
-		void reset()
-		{
-			a = 0.0;
-			b = 0.0;
-			z = 0.0;
-		}
-
-		inline double processSmooth(double val)
-		{
-			z = (val * b) + (z * a);
-			return z;
-		}
-
-	private:
-		double a, b, z;
-		double coeff;
-	};
+	AudioParameterBool* useFilterKeyFollowParam;
 	
+
+
+	String debugInfo;
+private:
+	
+	
+    
+    
+	float linToLog(float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
+	float logToLin(float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
+
+    inline float gainToDb(float gain, float min)    { return gain > 0.0f ? 20.0f * std::log10(gain) : min; };
+    inline float dbToGain(float dB, float min)      { return dB > min ? std::pow(10.0f, dB * 0.05f) : 0.0; }
+
 	template <typename FloatType>
     void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);
 
     template <typename FloatType>
     void applyGain (AudioBuffer<FloatType>& buffer);
-
+    
     template <typename FloatType>
     void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
 
     template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer, std::unique_ptr<LadderFilterBase> filter[]);
+    void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
 
 	template <typename FloatType>
 	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
 
     template <typename FloatType>
-    void applyAmpEnvelope (AudioBuffer<FloatType>& buffer);
+    void updateOscilloscope(AudioBuffer<FloatType>& buffer);
+    
+	
+    
 
-	double wave_shape(double sample, double overdrive);
+	double getWaveshaped(double sample, double overdrive, int mode)
+    {
+        
+        // tanh
+        if (mode == 0)
+            return dsp::FastMathApproximations::tanh(overdrive * sample);
+        
+        
+        //Arraya
+        return (3.0 * (sample * overdrive) / 2) * (1 - ((sample * overdrive) * (sample * overdrive)) / 3.0);
+        
+    };
+
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
     void resetSamplerates(double sr);
     void setOversampleQuality(int q);
     
+   
     
     std::unique_ptr<dsp::Oversampling<float>> oversamplingFloat;
 	std::unique_ptr<dsp::Oversampling<double>> oversamplingDouble;
@@ -311,13 +326,10 @@ private:
     
     bool hqOversampling = false;
     bool prevHqOversampling = false;
+	bool filterKeyFollow = true; //TEST
 
     Synthesiser synth;
     
-	bool noteIsPlaying = false;
-    
-   // ScopedPointer<LadderFilterBase> filterA[2], filterB[2], filterC[2];
-	
     
     enum modTarget {
         modPitch,
@@ -327,14 +339,12 @@ private:
     
     void applyModToTarget(int target, double amount);
 
-    std::unique_ptr<ADSR> filterEnvelope;
-    std::unique_ptr<ADSR> ampEnvelope;
+    
     LFO lfo;
     
     double modAmount;
     
     int mNumVoices;
-    int lastChosenFilter;
 
     void initialiseSynth();
     void updateCurrentTimeInfoFromHost();
@@ -342,32 +352,41 @@ private:
 	template <typename FloatType>
     void updateParameters(AudioBuffer<FloatType>& buffer);
     
-    float softClip(float s);
+    template <typename FloatType>
+    FloatType softClip(FloatType s);
+    
+    template <typename FloatType>
+    void softClipBuffer(AudioBuffer<FloatType>& buffer);
 
     float contourVelocity;
 	double cutoffModulationAmt; 
     
-    double currentCutoff = 20.0, prevCutoff = 20.0;
+    double currentCutoff = 40.0, prevCutoff = 40.0;
     
     double sampleRate;
     
 	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, pulsewidthSmooth1, pulsewidthSmooth2, pulsewidthSmooth3;
-	LinearSmoothedValue<double> cutoffFromEnvelope;
+	LinearSmoothedValue<double> cutoffFromEnvelope, saturationAmount;
 	
 	double cutoffRampTimeDefault = 0.0002, cutoffRampTime;
 	
     
     int lastNotePlayed;
+	int curMidiChannel;
     
-    double masterGain, masterGainPrev;
+    double masterGain = 0.0, masterGainPrev = 0.0;
     
     bool filterOn = true;
     
-	std::unique_ptr<SmoothParam> smoothing[6];
+	std::unique_ptr<ParamSmoother> smoothing[6];
     
-    std::unique_ptr<LadderFilterBase> filterA[2], filterB[2], filterC[2];
+    std::unique_ptr<LadderFilterBase> filterA, filterB, filterC;
+    
+    bool useSequencer = false;
     
     static BusesProperties getBusesProperties();
    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthPluginAudioProcessor)
 };
+
+#endif // PLUGIN_PROCESSOR_H

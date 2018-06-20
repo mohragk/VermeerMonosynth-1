@@ -47,6 +47,7 @@ public:
     void setState(envState newState);
     void reset(void);
     void resetToAttack(void);
+    bool isGateOn(){ return gateOn;};
 
     
 protected:
@@ -65,7 +66,8 @@ protected:
     double attackBase;
     double decayBase;
     double releaseBase;
- 
+    bool gateOn;
+    
     double calcCoef(double rate, double targetRatio);
 };
 
@@ -136,9 +138,15 @@ inline void ADSR::processSample(double *sample, int numSamples)
 
 inline void ADSR::gate(int gate) {
     if (gate)
+    {
         state = env_attack;
+        gateOn = true;
+    }
     else if (state != env_idle)
+    {
         state = env_release;
+        gateOn = false;
+    }
 }
 
 inline void ADSR::setState(envState newState)

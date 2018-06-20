@@ -40,7 +40,7 @@ class ImprovedMoog : public LadderFilterBase
 {
 public:
     
-    ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0)
+    ImprovedMoog() : LadderFilterBase(), sampleRate(44100.0), oldCutoff(1000.0)
     {
         drive = 1.0f;
 		SetCutoff(1000.0);
@@ -89,7 +89,7 @@ public:
     
     virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
     {
-        const auto increment = (endCutoff - beginCutoff) / (double) n;
+		const auto increment = (endCutoff - beginCutoff) / static_cast<double> (n);
         
         for (uint32_t i = 0; i < n; i++)
         {
@@ -101,7 +101,7 @@ public:
     
     virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
     {
-        const auto increment = (endCutoff - beginCutoff) / (float) n;
+		const auto increment = (endCutoff - beginCutoff) / static_cast<float> (n);
         
         for (uint32_t i = 0; i < n; i++)
         {
@@ -132,12 +132,24 @@ public:
     virtual bool SetCutoff(double c) override
     {
 		if (isnan(c))
-			return false;
+			c = 1000.0;
+        
+        if (c > 20000.0)
+            c = 20000.0;
+            
+        if (c < 40.0 )
+            c = 40.0;
   		
 		jassert(c > 0 && c <= (sampleRate * 0.5));
 
         cutoff.set(c);
-        Update();
+
+		if (oldCutoff != c)
+		{
+			Update();
+		}
+
+		oldCutoff = c;
         
         return true;
     }
@@ -164,7 +176,7 @@ private:
     }
 
 	template <typename FloatType>
-	FloatType doFilter(FloatType sample)
+	FloatType JUCE_VECTOR_CALLTYPE doFilter(FloatType sample)
 	{
 		if (sampleRate <= 0.0)
 			return sample;
@@ -194,9 +206,10 @@ private:
 		return V[3];
 	}
     
-    double V[4];
-    double dV[4];
-    double tV[4];
+    std::array<double, 4> V, dV, tV;
+    //double V[4];
+   // double dV[4];
+   // double tV[4];
     
     double x;
     double g;
@@ -204,6 +217,7 @@ private:
     double sampleRate;
     double multiplier;
 
+	double oldCutoff;
 };
 
 #endif
