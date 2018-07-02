@@ -21,7 +21,9 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
                                                                 softClipSwitchSlider(nullptr),
                                                                 filterOrderSlider(nullptr),
                                                                 saturationSlider(nullptr),
-                                                                saturationSwitchSlider(nullptr)
+                                                                saturationSwitchSlider(nullptr),
+																arpeggiatorSpeedSlider(nullptr),
+																arpeggioSwitchSlider(nullptr)
 
 
 {
@@ -77,7 +79,15 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     saturationLabel->setColour (TextEditor::textColourId, Colours::black);
     saturationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    
+
+	//ARPEGGIATOR
+	arpeggiatorSpeedSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.arpeggioNoteLengthParam, knobStyle(ROTARY)));
+	addAndMakeVisible(arpeggiatorSpeedSlider.get());
+	arpeggiatorSpeedSlider->setTooltip("Arpeggiator Speed");
+
+	arpeggioSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.arpeggioUseParam, knobStyle(LINEARVERTICAL)));
+	addAndMakeVisible(arpeggioSwitchSlider.get());
+	arpeggioSwitchSlider->setTooltip("Arpeggio ON/OFF");
     
     startTimerHz(60);
 
@@ -145,6 +155,11 @@ void MasterSection::resized()
         
       
         saturationModeSlider->setBounds (strip.removeFromTop(rotaryHeight).reduced(8, 0));
+
+		arpeggiatorSpeedSlider->setBounds(strip.removeFromTop(rotaryHeight));
+		Rectangle<int> mini3(arpeggiatorSpeedSlider->getBounds());
+		arpeggioSwitchSlider->setBounds(mini3.removeFromRight(12).reduced(0, 8));
+		
                
     }
     

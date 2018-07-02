@@ -41,6 +41,7 @@
 #include "SequencerProcessor.h"
 #include "ParamSmoother.h"
 #include "TriggeredScope.h"
+#include "Arpeggiator.h"
 
 
 #include "MoogLadders/ImprovedModel.h"
@@ -263,11 +264,14 @@ public:
 	AudioParameterBool* useFilterKeyFollowParam;
 	
 
+	AudioParameterFloat* arpeggioNoteLengthParam;
+	AudioParameterBool*  arpeggioUseParam;
+
 
 	String debugInfo;
 private:
 	
-	
+	Arpeggiator arp;
     
     
 	float linToLog(float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };

@@ -115,7 +115,10 @@ oversampleSwitchParam(nullptr),
 softClipSwitchParam(nullptr),
 
 useSequencerParam(nullptr),
-useHQOversamplingParam(nullptr)
+useHQOversamplingParam(nullptr),
+
+arpeggioNoteLengthParam(nullptr),
+arpeggioUseParam(nullptr)
 
 
 
@@ -266,6 +269,11 @@ useHQOversamplingParam(nullptr)
     addParameter(stepDivisionFloatParam   = new AudioParameterFloat("stepDivisionFloatParam", "Seq. Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin) , 16.0));
     
     addParameter(maxStepsParam = new AudioParameterInt ("maxStepsParam", "Max. Steps", 0, 7, 7 ));
+
+
+	//ARPEGGIATOR
+	addParameter(arpeggioNoteLengthParam = new AudioParameterFloat("apreggioNoteLengthParam", "Arpeggio Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin), 16.0));
+	addParameter(arpeggioUseParam = new AudioParameterBool("arpeggioUseParam", "Arpeggio ON/OFF", false));
     
     initialiseSynth();
     
@@ -365,6 +373,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     filterC->SetResonance(0.1);
     filterC->SetCutoff(12000.0);
     filterC->SetDrive(1.0);
+
+	
     
 }
 
@@ -450,9 +460,6 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     double newsr = sr;
     
     
-    
-    
-    
     if(*useHQOversamplingParam)
     {
         newsr *= oversamplingDoubleHQ->getOversamplingFactor();
@@ -505,6 +512,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     
     smoothing[4]->init(newsr, 10.0);
 
+	arp.prepareToPlay(newsr, 0);
     
     sampleRate = newsr;
 }
@@ -563,7 +571,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         
     }
     
-    
+    //ARPEGGIATOR
+	arp.process(osBuffer, midiMessages, *arpeggioUseParam);
   
     
     // GET SYNTHDATA
@@ -1005,6 +1014,11 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             synthVoice->setPulsewidth(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
             synthVoice->setPulsewidth(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
         }
+
+		double hertz = getLFOSyncedFreq(lastPosInfo, *arpeggioNoteLengthParam);
+
+		
+		arp.setSpeedInHz(hertz);
     }
 }
 
