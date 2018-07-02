@@ -56,46 +56,48 @@ void SequencerProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int 
 }
 
 
-void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize)
+void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize, bool useSequencer)
 {
     int numSamples = bufferSize;
     int sampleCount = 0;
    
-	midBuf.clear();
-    
-    while (--numSamples >= 0)
+    if (useSequencer)
     {
-        if(isPlaying)
-        {
-            pulseClock.update();
-            
-            if(pulseClock.isPulseHigh())
-            {
-                playStep(midBuf, stepCount, sampleCount);
-            }
-        }
+        midBuf.clear();
         
-        //CHECK IF NOTES SHOULD BE RELEASED
-        for (int i = 0; i <= maxSteps; i++) //@Robust: might change to full range checking
+        while (--numSamples >= 0)
         {
-            
-            if (!step[i].isReleased)
+            if(isPlaying)
             {
-                uint32 currentTime = globalSampleCount;
+                pulseClock.update();
                 
-                if (step[i].timeStamp + step[i].noteLengthTicks < currentTime)
+                if(pulseClock.isPulseHigh())
                 {
-                    int note = step[i].noteNumber;
-                    midBuf.addEvent( MidiMessage::noteOff(currentMidiChannel, note, 1.0f), sampleCount);
-                    step[i].isReleased = true;
-                    step[i].isActive = false;
+                    playStep(midBuf, stepCount, sampleCount);
                 }
             }
+            
+            //CHECK IF NOTES SHOULD BE RELEASED
+            for (int i = 0; i <= maxSteps; i++) //@Robust: might change to full range checking
+            {
+                
+                if (!step[i].isReleased)
+                {
+                    uint32 currentTime = globalSampleCount;
+                    
+                    if (step[i].timeStamp + step[i].noteLengthTicks < currentTime)
+                    {
+                        int note = step[i].noteNumber;
+                        midBuf.addEvent( MidiMessage::noteOff(currentMidiChannel, note, 1.0f), sampleCount);
+                        step[i].isReleased = true;
+                        step[i].isActive = false;
+                    }
+                }
+            }
+            sampleCount++;
+            globalSampleCount++;
         }
-        sampleCount++;
-        globalSampleCount++;
     }
-    
 }
 
 void SequencerProcessor::playStep(MidiBuffer& midBuf, int currentStep, int curSample)

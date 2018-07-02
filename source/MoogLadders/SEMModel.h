@@ -76,8 +76,7 @@ class SEMModel : public LadderFilterBase
 		template <typename FloatType>
 		FloatType doFilter(FloatType sample)
 		{
-			if (sampleRate <= 0.0)
-				return sample;
+			
 
 			// form the HPF output first
 			FloatType hpf = Alpha0 * (sample - Rho * Z11 - Z12);

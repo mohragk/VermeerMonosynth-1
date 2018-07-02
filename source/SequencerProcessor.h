@@ -67,7 +67,7 @@ public:
     
     bool isActivated(){ return isActive; };
     
-    void processSequencer(MidiBuffer& midBuf, int bufferSize);
+    void processSequencer(MidiBuffer& midBuf, int bufferSize, bool useSequencer);
     
     void setStepData(int curStep, int note, int noteLen, int time, bool isRel, bool isAct)
     {

@@ -124,9 +124,6 @@ public:
     {
 		
 
-		if (sampleRate <= 0.0)
-			return sample;
-
 		FloatType y = 0.0;
 		
 		if (type == LPF2)

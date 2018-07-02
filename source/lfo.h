@@ -66,13 +66,13 @@ class LFO
             switch (mode) 
             {
                 case OSCILLATOR_MODE_SINE:
-                    value = sin(phase);
+                    value = sin(phase * two_Pi);
                     break;
                 case OSCILLATOR_MODE_SAW:
-                    value = 1.0 - (phase / two_Pi);
+                    value = 1.0 - (phase / 1.0);
                     break;
                 case OSCILLATOR_MODE_SQUARE:
-                    if (phase <= double_Pi) {
+                    if (phase <= 0.5) {
                         value = 1.0;
                     } else {
                         value = -1.0;
@@ -87,9 +87,9 @@ class LFO
             
             phase += phaseIncrement;
             
-            while (phase >= 2.0 * double_Pi)
+            while (phase >= 1.0)
             {
-                phase -= 2.0 * double_Pi;
+                phase -= 1.0;
             }
             
             
@@ -102,7 +102,7 @@ class LFO
         double getPhaseIncrement(double freq, double sr)
         {
             const double nyFreq = jmin( freq, sr / 2.0 );
-            return ( ( 2.0 * double_Pi ) * nyFreq ) / sr;
+            return ( nyFreq ) / sr;
             
         }
     

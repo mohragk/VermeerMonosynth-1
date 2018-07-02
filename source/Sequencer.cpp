@@ -104,7 +104,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerProcessor& sp) 
     setSize (890, SEQUENCER_HEIGHT);
     
     
-	startTimerHz(60);
+	startTimerHz(120);
     
     
 }

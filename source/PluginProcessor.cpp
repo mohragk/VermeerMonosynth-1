@@ -565,6 +565,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     // SEQUENCER
+<<<<<<< Updated upstream
     if(*useSequencerParam)
     {
         sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples());
@@ -573,6 +574,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     //ARPEGGIATOR
 	arp.process(osBuffer, midiMessages, *arpeggioUseParam);
+=======
+    sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples(), bool( *useSequencerParam ));
+    
+>>>>>>> Stashed changes
   
     
     // GET SYNTHDATA
@@ -587,29 +592,13 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
 
 
-    if (*filterOrderParam == 0)
-    {
-        if(filterOn)
-        {
-            // applying filter
-            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA.get()) ; }
-            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB.get()) ; }
-            else                                 { applyFilter(osBuffer, filterC.get()) ; }
-            
-        }
-        
-        
-    }
-    else
-    {
-        if(filterOn)
-        {
-            // applying filter
-            if (*filterSelectParam == 0)         { applyFilter(osBuffer, filterA.get()) ; }
-            else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB.get()) ; }
-            else                                 { applyFilter(osBuffer, filterC.get()) ; }
-        }
-    }
+    
+    // applying filter
+    if      (*filterSelectParam == 0)    { applyFilter(osBuffer, filterA.get()) ; }
+    else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB.get()) ; }
+    else                                 { applyFilter(osBuffer, filterC.get()) ; }
+    
+    
     
 
     //APPLYING WAVESHAPER
