@@ -565,20 +565,12 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     // SEQUENCER
-<<<<<<< Updated upstream
-    if(*useSequencerParam)
-    {
-        sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples());
-        
-    }
-    
-    //ARPEGGIATOR
-	arp.process(osBuffer, midiMessages, *arpeggioUseParam);
-=======
     sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples(), bool( *useSequencerParam ));
     
->>>>>>> Stashed changes
   
+	//ARPEGGIATOR
+	arp.process(osBuffer, midiMessages, *arpeggioUseParam, false);
+
     
     // GET SYNTHDATA
     synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBuffer.getNumSamples() ) );
