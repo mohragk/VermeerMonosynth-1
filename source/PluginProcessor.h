@@ -38,6 +38,7 @@
 //#include "PulseClock.h"
 #include "lfo.h"
 
+#include "SequencerState.h"
 #include "SequencerProcessor.h"
 #include "ParamSmoother.h"
 #include "TriggeredScope.h"
@@ -134,6 +135,7 @@ public:
     std::unique_ptr<SequencerProcessor> sequencerProcessor;
     
 	TriggeredScope scope;
+    SequencerState sequencer2;
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
