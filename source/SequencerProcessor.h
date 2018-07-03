@@ -133,7 +133,7 @@ private:
 	double timeDivision;
 	int currentBPM;
 
-	uint32 globalSampleCount;
+	unsigned long int globalSampleCount;
 	double sampleRate;
 
     void playStep(MidiBuffer& midBuf, int currentStep, int curSample);

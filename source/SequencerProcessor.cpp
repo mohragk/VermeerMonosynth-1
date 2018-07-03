@@ -78,12 +78,12 @@ void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize, bo
             }
             
             //CHECK IF NOTES SHOULD BE RELEASED
-            for (int i = 0; i <= maxSteps; i++) //@Robust: might change to full range checking
+            for (int i = 0; i <= maxSteps; i++) 
             {
                 
                 if (!step[i].isReleased)
                 {
-                    uint32 currentTime = globalSampleCount;
+                    unsigned long int currentTime = globalSampleCount;
                     
                     if (step[i].timeStamp + step[i].noteLengthTicks < currentTime)
                     {
@@ -95,7 +95,7 @@ void SequencerProcessor::processSequencer(MidiBuffer& midBuf, int bufferSize, bo
                 }
             }
             sampleCount++;
-            globalSampleCount++;
+			globalSampleCount = (globalSampleCount + 1) % std::numeric_limits<unsigned long int>::max();
         }
     }
 }
