@@ -24,7 +24,8 @@ class Arpeggiator
 
 		void prepareToPlay(double sr, int)
 		{
-			notes.clear();
+			sortedNotes.clear();
+			playedNotes.clear();
 			currentNote = 0;
 			lastNoteValue = -1;
 			time = 0;
@@ -38,7 +39,7 @@ class Arpeggiator
 		}
 
 		template <typename FloatType>
-		void process(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useArpeggiator)
+		void process(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useArpeggiator, bool sorted)
 		{
 			if (useArpeggiator)
 			{
@@ -51,8 +52,17 @@ class Arpeggiator
 
 				for (MidiBuffer::Iterator it(midi); it.getNextEvent(msg, ignore);)
 				{
-					if (msg.isNoteOn())  notes.add(msg.getNoteNumber());
-					else if (msg.isNoteOff()) notes.removeValue(msg.getNoteNumber());
+					if (msg.isNoteOn())  
+					{
+						sortedNotes.add(msg.getNoteNumber());
+						playedNotes.add(msg.getNoteNumber());
+					}
+					else if (msg.isNoteOff()) 
+					{
+						sortedNotes.removeValue(msg.getNoteNumber());
+						playedNotes.removeFirstMatchingValue(msg.getNoteNumber());
+					}
+					
 				}
 
 				midi.clear();
@@ -67,20 +77,27 @@ class Arpeggiator
 						lastNoteValue = -1;
 					}
 
-					if (notes.size() > 0)
+					if (sortedNotes.size() > 0)
 					{
-						currentNote = (currentNote + 1) % notes.size();
-						lastNoteValue = notes[currentNote];
-						midi.addEvent(MidiMessage::noteOn(1, lastNoteValue, (uint8)127), offset);
+						if(sorted)
+						{
+							currentNote = (currentNote + 1) % sortedNotes.size();
+							lastNoteValue = sortedNotes[currentNote];
+							midi.addEvent(MidiMessage::noteOn(1, lastNoteValue, (uint8)127), offset);
+						} 
+						else
+						{
+							currentNote = (currentNote + 1) % playedNotes.size();
+							lastNoteValue = playedNotes[currentNote];
+							midi.addEvent(MidiMessage::noteOn(1, lastNoteValue, (uint8)127), offset);
+						}
+						
 					}
 
 				}
 
 				time = (time + numSamples) % noteDuration;
 			}
-			
-
-
 		}
 
 	private:
@@ -88,7 +105,8 @@ class Arpeggiator
 		int currentNote, lastNoteValue;
 		int time;
 		float sampleRate;
-		SortedSet<int> notes;
+		SortedSet<int> sortedNotes;
+		Array<int> playedNotes;
 
 		//==============================================================================
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Arpeggiator)
