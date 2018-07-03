@@ -14,51 +14,43 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 
-class SequencerState;
-
-class SequencerStateListener
-{
-public:
-
-	SequencerStateListener() {};
-	virtual~SequencerStateListener() {};
-
-	//pure virtual
-	virtual void handleSequencerNoteOn(SequencerState* source, int midiChannel, int midiNoteNumber, float velocity) = 0;
-	virtual void handleSequencerNoteOff(SequencerState* source, int midiChannel, int midiNoteNumber, float velocity) = 0;
-
-
-};
-
 class SequencerState
 {
 public:
 	
-	SequencerState();
+    SequencerState()
+    {}
 
-	~SequencerState();
+    ~SequencerState()
+    {}
 
    
     
-	void reset();
-//	void setSampleRate(float sr) noexcept { sampleRate = sr; };
+	void prepareToPlay(double sr)
+    {
+        
+    }
 
 	//METHODS
-	void addNote(const int midiChannel, const int midiNoteNumber, const float velocity, const int noteLengthSamples, const int curTimeSamples);
-    
-    
-    void noteOn(const int midiChannel, const int midiNoteNumber, const float velocity);
-    void noteOff(const int midiChannel, const int midiNoteNumber, const float velocity);
-	void allNotesOff(const int midiChannel);
+	
 
-	void processBuffer(MidiBuffer& buffer, const int startSample, const int numSamples, const bool insertPreviousNotes);
+    template <typename FloatType>
+	void processBuffer(AudioBUffer<FloatType>& buffer, MidiBuffer& buffer, bool useSequencer)
+    {
+        // do shit
+    }
     
     
-	void addListener(SequencerStateListener* const listener);
-	void removeListener(SequencerStateListener* const listener);
+
     
     
-    
+    struct Step
+    {
+        int noteValue = -1;
+        bool isActive = false;
+        bool isReleased = false;
+        
+    }
     
     
 
@@ -66,24 +58,12 @@ private:
 
 
 	//MEMBERS
+    int maxSteps = 8;
+    int numSteps = 8;
 
-	CriticalSection lock;
+    double speedInHz;
+    Array<Step> steps;
     
-    
-	MidiBuffer internalBuffer;
-	Array<SequencerStateListener*> listeners;
-
-
-    int startTime;
-
-
-	//METHODS
-
-	void noteOnInternal(const int midiChannel, const int midiNoteNumber, float velocity);
-	void noteOffInternal(const int midiChannel, const int midiNoteNumber, float velocity);
-	
-
-	void processMidiEvent(const MidiMessage& message);
 
     JUCE_LEAK_DETECTOR (SequencerState)
 };

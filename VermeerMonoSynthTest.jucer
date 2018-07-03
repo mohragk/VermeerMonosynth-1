@@ -80,8 +80,6 @@
           file="source/SequencerProcessor.cpp"/>
     <FILE id="epB0jA" name="SequencerProcessor.h" compile="0" resource="0"
           file="source/SequencerProcessor.h"/>
-    <FILE id="E5EF7i" name="SequencerState.cpp" compile="1" resource="0"
-          file="source/SequencerState.cpp"/>
     <FILE id="fswhRw" name="SequencerState.h" compile="0" resource="0"
           file="source/SequencerState.h"/>
     <FILE id="uGPIXG" name="EditorDefines.h" compile="0" resource="0" file="source/EditorDefines.h"/>
