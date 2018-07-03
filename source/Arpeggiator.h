@@ -27,9 +27,9 @@ class Arpeggiator
 			notes.clear();
 			currentNote = 0;
 			lastNoteValue = -1;
-			time = 0.0;
+			time = 0;
 			sampleRate = static_cast<float> (sr);
-			speedInHz = 0.5f;
+			speedInHz = 10.f;
 		}
 
 		void setSpeedInHz(double sp)
