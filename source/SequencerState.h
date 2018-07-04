@@ -21,7 +21,7 @@ public:
     SequencerState() :
                         maxSteps(8),
                         numSteps(8),
-                        currentStep(8),
+                        currentStep(0),
                         sampleRate(44100.0),
                         speedInHz(10.0),
                         shouldPlay(false)
