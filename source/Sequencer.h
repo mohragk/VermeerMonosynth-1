@@ -24,7 +24,7 @@
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
 #include "SequencerProcessor.h"
-#include "SequencerState.h"
+
 
 
 
@@ -44,7 +44,7 @@ class Sequencer  : public Component, private Timer
 {
 public:
     //==============================================================================
-    Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st);
+    Sequencer (MonosynthPluginAudioProcessor& p, SequencerProcessor& sp);
     ~Sequencer();
     
     //==============================================================================
@@ -78,20 +78,11 @@ public:
     
    
 
-    struct Step
-    {
-        int    stepNumber = 0;
-        int    noteNumber = 60;
-        int    timeStamp = 0;
-        int    noteLengthMillis = 10;
-        bool   isReleased = false;
-        bool   isActive = false;
-    } step[numSteps];
 
     
     
     
-    void fillStepData(int stepToFill, Step data );
+    
     
 
 private:
@@ -100,8 +91,7 @@ private:
     
     // members
     MonosynthPluginAudioProcessor& processor;
-    //SequencerProcessor& sequencerProcessor;
-    SequencerState& sequencerState;
+    SequencerProcessor& sequencerProcessor;
 
     CriticalSection lock;
 

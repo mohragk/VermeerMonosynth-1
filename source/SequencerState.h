@@ -28,7 +28,8 @@ public:
     {
         for (int i = 0; i < numSteps; i++)
         {
-            steps.add(Step());
+			Step s;
+            steps.add(s);
         }
     }
 
@@ -45,9 +46,9 @@ public:
         bool    isActive = false;
         bool    isReleased = false;
         
-        void setAndCalculateNoteValue(double note)
+        int setAndCalculateNoteValue(int note)
         {
-            noteValue = note + pitch;
+            return  note + pitch;
         }
         
         void setPitch(int p)
@@ -88,6 +89,10 @@ public:
         steps[step].setPitch(p);
     }
     
+	void setMaxSteps(int max)
+	{
+		maxSteps = max;
+	}
     
     Step getStepData(int s) { return steps[s]; };
     
@@ -124,17 +129,17 @@ public:
             
             midi.clear();
             
-            if ( (time + numSamples + difference) >= stepDuration )
+            if ( (time + numSamples + difference) >= stepDuration && shouldPlay )
             {
                 auto offset =  jmin((int)(noteDuration - time), numSamples - 1) ;
                 
                 if (offset >= 0)
                 {
-					int note = steps[currentStep].noteValue;
-					midi.addEvent(MidiMessage::noteOff(1, note), offset);
+					//int note = steps[currentStep].noteValue;
+					midi.addEvent(MidiMessage::noteOff(1, currentNoteValue), offset);
 					steps[currentStep].setActive(false);
 
-					currentStep = (currentStep + 1) % maxSteps ;
+					
 					   // currentNoteValue = -1;  
                 }
                     
@@ -145,11 +150,12 @@ public:
             {
                 auto offset =  jmax( 0, jmin((int)(stepDuration - time), numSamples - 1) );
                 
-                steps[currentStep].setAndCalculateNoteValue(currentNoteValue);
+
+				currentStep = (currentStep + 1) % maxSteps;
+				currentNoteValue = steps[currentStep].setAndCalculateNoteValue(currentNoteValue);
                 steps[currentStep].setActive(true);
-                int val = steps[currentStep].noteValue;
                 
-                midi.addEvent(MidiMessage::noteOn(1, val, (uint8)127), offset);
+                midi.addEvent(MidiMessage::noteOn(1, currentNoteValue, (uint8)127), offset);
             }
             
             
