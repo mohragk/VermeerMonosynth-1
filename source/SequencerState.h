@@ -129,7 +129,8 @@ public:
             
             midi.clear();
             
-            if ( (time + numSamples + difference) >= stepDuration && shouldPlay )
+
+            if ( (time + numSamples + difference) >= noteDuration )
             {
                 auto offset =  jmin((int)(noteDuration - time), numSamples - 1) ;
                 
