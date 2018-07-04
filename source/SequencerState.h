@@ -130,18 +130,12 @@ public:
                 
                 if (offset >= 0)
                 {
-                    if (currentNoteValue > 0)
-                    {
-                        int note = steps[currentStep].noteValue;
-                        midi.addEvent(MidiMessage::noteOff(1, note), offset);
-                        steps[currentStep].setActive(false);
-                        
-                        currentStep = (currentStep + 1) % maxSteps ;
-                       // currentNoteValue = -1;
-                    }
-                    
-                    
-                    
+					int note = steps[currentStep].noteValue;
+					midi.addEvent(MidiMessage::noteOff(1, note), offset);
+					steps[currentStep].setActive(false);
+
+					currentStep = (currentStep + 1) % maxSteps ;
+					   // currentNoteValue = -1;  
                 }
                     
             }
