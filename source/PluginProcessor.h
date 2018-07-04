@@ -135,7 +135,6 @@ public:
     std::unique_ptr<SequencerProcessor> sequencerProcessor;
     
 	TriggeredScope scope;
-    SequencerState sequencer2;
 
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
