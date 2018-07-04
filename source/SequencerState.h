@@ -99,7 +99,7 @@ public:
         {
             auto numSamples = buffer.getNumSamples();
             
-            auto stepDuration = static_cast<int> ( std::ceil( noteLengthAmount * sampleRate / speedInHz ) );
+            auto stepDuration = static_cast<int> ( std::ceil( sampleRate / speedInHz ) );
             auto noteDuration = static_cast<int> ( std::ceil( stepDuration * noteLengthAmount ) );
             auto difference = stepDuration - noteDuration;
             
