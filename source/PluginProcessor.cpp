@@ -300,8 +300,7 @@ arpeggioUseParam(nullptr)
         smoothing[i] = std::unique_ptr<ParamSmoother>(new ParamSmoother);
     
     sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( keyboardState ) );
-   
-    
+
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
@@ -479,8 +478,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     
     sequencerProcessor.get()->setSampleRate(newsr);
     sequencerProcessor.get()->setPulseClockSampleRate(newsr);
-    
-   
+
     
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
@@ -569,8 +567,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     // SEQUENCER
     sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples(), bool( *useSequencerParam ));
-    
-    
+
   
 	//ARPEGGIATOR
 	arp.process(osBuffer, midiMessages, *arpeggioUseParam, false);
@@ -946,7 +943,6 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
        
         
         //SEQUENCER
-   
         sequencerProcessor.get()->setMaxSteps(*maxStepsParam);
         sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);
         
@@ -955,7 +951,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         
         sequencerProcessor.get()->setGlobalNoteLength(*stepNoteLengthParam);
         sequencerProcessor.get()->setBPM(lastPosInfo.bpm);
- 
+
         
         // set various parameters
         synthVoice->setOscGains(

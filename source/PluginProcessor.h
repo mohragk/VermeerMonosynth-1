@@ -131,13 +131,12 @@ public:
     // registers with it so it can represent the incoming messages
 
     MidiKeyboardState keyboardState;
-    
-	std::unique_ptr<SequencerProcessor> sequencerProcessor; 
 
-	Arpeggiator arp;
+    std::unique_ptr<SequencerProcessor> sequencerProcessor;
     
 	TriggeredScope scope;
-  
+    SequencerState sequencer2;
+
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
@@ -276,7 +275,7 @@ public:
 private:
 	
 	
-    
+    Arpeggiator arp;
     
 	float linToLog(float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
 	float logToLin(float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
