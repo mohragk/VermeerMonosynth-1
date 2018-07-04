@@ -80,7 +80,7 @@ private:
     
 };
 
-Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerProcessor& sp) : processor(p), sequencerProcessor(sp)
+Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st) : processor(p), sequencerState(st)
 
 {
     typedef StepSlider::style knobStyle;
@@ -216,7 +216,7 @@ void Sequencer::updateStepKnobColours()
 {
     for (int i = 0; i < numSteps; i++)
     {
-        if (sequencerProcessor.getStepData(i).isActive == true)
+        if (sequencerState.getStepData(i).isActive == true)
             pitchSlider[i].get()->setColour(Slider::thumbColourId, lightThumb);
         else
             pitchSlider[i].get()->setColour(Slider::thumbColourId, darkThumb);

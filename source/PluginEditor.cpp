@@ -120,7 +120,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     //SEQUENCER SECTION
-    sequencerSection = std::unique_ptr<Sequencer> (new Sequencer(owner, *owner.sequencerProcessor.get()));
+    sequencerSection = std::unique_ptr<Sequencer> (new Sequencer(owner, owner.seqState));
     addAndMakeVisible(sequencerSection.get());
     sequencerSection->setVisible(false);
     Rectangle<int> seqBounds (0,0 , width, height);

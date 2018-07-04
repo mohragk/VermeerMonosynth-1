@@ -64,7 +64,7 @@ public:
     } steps[8];
 
     
-	
+    Step getStepData (int s) { return steps[s]; };
 
 	//METHODS
     void prepareToPlay(double sr)
@@ -118,6 +118,7 @@ public:
                     for (int i = 0; i < numSteps; ++i)
                         steps[i].setInitialNoteValue(note);
                     
+                    currentStep = 0;
                     shouldPlay = true;
                 }
                 
@@ -146,6 +147,7 @@ public:
                    
                     std::cout << currentStep << std::endl;
                    
+                    currentStep = (currentStep + 1) % (maxSteps + 1) ;
                     noteOff = false;
 
                 }
@@ -158,7 +160,7 @@ public:
                 auto offset =  jmax( 0, jmin((int)(stepDuration - time), numSamples - 1) );
                 
                 
-                currentStep = (currentStep + 1) % (maxSteps + 1) ;
+               
                 int note = steps[currentStep].getPitchedNoteValue();
                 steps[currentStep].setActive(true);
                 

@@ -23,7 +23,8 @@
 
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
-#include "SequencerProcessor.h"
+//#include "SequencerProcessor.h"
+#include "SequencerState.h"
 
 
 
@@ -44,7 +45,7 @@ class Sequencer  : public Component, private Timer
 {
 public:
     //==============================================================================
-    Sequencer (MonosynthPluginAudioProcessor& p, SequencerProcessor& sp);
+    Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st);
     ~Sequencer();
     
     //==============================================================================
@@ -91,7 +92,7 @@ private:
     
     // members
     MonosynthPluginAudioProcessor& processor;
-    SequencerProcessor& sequencerProcessor;
+    SequencerState& sequencerState;
 
     CriticalSection lock;
 
