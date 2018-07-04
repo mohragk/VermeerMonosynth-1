@@ -945,6 +945,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
        
         
         //SEQUENCER
+        /*
         sequencerProcessor.get()->setMaxSteps(*maxStepsParam);
         sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);
         
@@ -953,7 +954,21 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         
         sequencerProcessor.get()->setGlobalNoteLength(*stepNoteLengthParam);
         sequencerProcessor.get()->setBPM(lastPosInfo.bpm);
-
+         */
+        
+        seqState.setMaxSteps(*maxStepsParam);
+        
+        double speed = getLFOSyncedFreq(lastPosInfo, *stepDivisionFloatParam);
+        seqState.setSpeedInHz(speed);
+        
+        for (int i = 0; i < 8; i++)
+            seqState.setPitchAmountForStep(i, *stepPitchParam[i]);
+        
+        seqState.setNoteDuration(*stepNoteLengthParam);
+        
+        
+        
+        
         
         // set various parameters
         synthVoice->setOscGains(

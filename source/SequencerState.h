@@ -41,9 +41,14 @@ public:
         int     pitch;
         bool    isActive = false;
         
-        int setAndCalculateNoteValue(int note)
+        int getPitchedNoteValue()
         {
-            return noteValue =  note + pitch;
+            return noteValue + pitch;
+        }
+        
+        void setInitialNoteValue (int note)
+        {
+            noteValue = note;
         }
         
         void setPitch(int p)
@@ -70,7 +75,7 @@ public:
         speedInHz = 10.0;
     }
 	
-    void setStepSpeedInHz (double hz)
+    void setSpeedInHz (double hz)
     {
         speedInHz = hz;
     }
@@ -93,23 +98,6 @@ public:
     template <typename FloatType>
 	void processBuffer(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useSequencer)
     {
-        //
-        //TEST
-        //
-        
-        for (int i = 0; i < numSteps; ++i)
-        {
-            steps[i].setPitch(i);
-            
-        }
-        
-        speedInHz = 10.0;
-        noteLengthAmount = 0.1;
-        
-        //
-        //
-        //
-        
         if(useSequencer)
         {
             auto numSamples = buffer.getNumSamples();
@@ -128,7 +116,7 @@ public:
                     int note = msg.getNoteNumber();
                     
                     for (int i = 0; i < numSteps; ++i)
-                        steps[i].setAndCalculateNoteValue(note);
+                        steps[i].setInitialNoteValue(note);
                     
                     shouldPlay = true;
                 }
@@ -137,7 +125,6 @@ public:
                 if (msg.isNoteOff())
                 {
                     shouldPlay = false;
-                    lastNotePlayed = false;
                 }
                 
             }
@@ -145,20 +132,21 @@ public:
             midi.clear();
             
 
-            if ( (time + numSamples + difference) >= stepDuration && !lastNotePlayed)
+            if ( (time + numSamples + difference) >= stepDuration && noteOff)
             {
                 auto offset =  jmin((int)(noteDuration - time), numSamples - 1) ;
                 
                 if (offset >= 0)
                 {
 
-                    int note = steps[currentStep].noteValue;
+                    int note = steps[currentStep].getPitchedNoteValue();
                     midi.addEvent(MidiMessage::noteOff(1, note), offset);
                     steps[currentStep].setActive(false);
                     
                    
-                    
-                    lastNotePlayed = true;
+                    std::cout << currentStep << std::endl;
+                   
+                    noteOff = false;
 
                 }
                     
@@ -170,12 +158,13 @@ public:
                 auto offset =  jmax( 0, jmin((int)(stepDuration - time), numSamples - 1) );
                 
                 
-                currentStep = (currentStep + 1) % maxSteps ;
-                int note = steps[currentStep].noteValue;
+                currentStep = (currentStep + 1) % (maxSteps + 1) ;
+                int note = steps[currentStep].getPitchedNoteValue();
                 steps[currentStep].setActive(true);
                 
                 midi.addEvent(MidiMessage::noteOn(1, note, (uint8)127), offset);
                 
+                noteOff = true;
                
             }
             
@@ -206,7 +195,7 @@ private:
     double noteLengthAmount;
     
     bool shouldPlay;
-    bool lastNotePlayed;
+    bool noteOff = false;
     
 
     JUCE_LEAK_DETECTOR (SequencerState)
