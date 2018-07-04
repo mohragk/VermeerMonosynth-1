@@ -25,30 +25,25 @@ public:
                         sampleRate(44100.0),
                         speedInHz(10.0)
     {
-        for (int i = 0; i < numSteps; i++)
-        {
-			Step s;
-            steps.add(s);
-        }
+
     }
 
     ~SequencerState()
     {
-        steps.clear();
     }
 
    
 
     struct Step
     {
-        int     noteValue = 60;
-        int     pitch = 0;
+        
+        int     noteValue;
+        int     pitch;
         bool    isActive = false;
-        bool    isReleased = false;
         
         int setAndCalculateNoteValue(int note)
         {
-            return  note + pitch;
+            return noteValue =  note + pitch;
         }
         
         void setPitch(int p)
@@ -61,8 +56,9 @@ public:
             isActive = a;
         }
         
-    };
+    } steps[8];
 
+    
 	
 
 	//METHODS
@@ -97,6 +93,23 @@ public:
     template <typename FloatType>
 	void processBuffer(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useSequencer)
     {
+        //
+        //TEST
+        //
+        
+        for (int i = 0; i < numSteps; ++i)
+        {
+            steps[i].setPitch(i);
+            
+        }
+        
+        speedInHz = 10.0;
+        noteLengthAmount = 0.1;
+        
+        //
+        //
+        //
+        
         if(useSequencer)
         {
             auto numSamples = buffer.getNumSamples();
@@ -111,16 +124,28 @@ public:
             for(MidiBuffer::Iterator it(midi); it.getNextEvent(msg, ignore);)
             {
                 if (msg.isNoteOn())
-                    currentNoteValue = msg.getNoteNumber();
+                {
+                    int note = msg.getNoteNumber();
+                    
+                    for (int i = 0; i < numSteps; ++i)
+                        steps[i].setAndCalculateNoteValue(note);
+                    
+                    shouldPlay = true;
+                }
+                
                 
                 if (msg.isNoteOff())
-                    currentNoteValue = -1;
+                {
+                    shouldPlay = false;
+                    lastNotePlayed = false;
+                }
+                
             }
             
             midi.clear();
             
 
-            if ( (time + numSamples + difference) >= noteDuration )
+            if ( (time + numSamples + difference) >= stepDuration && !lastNotePlayed)
             {
                 auto offset =  jmin((int)(noteDuration - time), numSamples - 1) ;
                 
@@ -131,22 +156,27 @@ public:
                     midi.addEvent(MidiMessage::noteOff(1, note), offset);
                     steps[currentStep].setActive(false);
                     
-                    currentStep = (currentStep + 1) % maxSteps ;
+                   
                     
-                    
+                    lastNotePlayed = true;
 
                 }
                     
             }
             
             
-            if ( (time + numSamples) >= stepDuration )
+            if ( (time + numSamples) >= stepDuration && shouldPlay )
             {
                 auto offset =  jmax( 0, jmin((int)(stepDuration - time), numSamples - 1) );
-                steps[currentStep].setNoteValue(currentNoteValue);
+                
+                
+                currentStep = (currentStep + 1) % maxSteps ;
+                int note = steps[currentStep].noteValue;
                 steps[currentStep].setActive(true);
                 
-                midi.addEvent(MidiMessage::noteOn(1, currentNoteValue, (uint8)127), offset);
+                midi.addEvent(MidiMessage::noteOn(1, note, (uint8)127), offset);
+                
+               
             }
             
             
@@ -155,29 +185,7 @@ public:
     }
     
     
-    struct Step
-    {
-        int     noteValue = -1;
-        int     pitch = 0;
-        bool    isActive = false;
-        bool    isReleased = false;
-        
-        void setNoteValue(double note)
-        {
-            noteValue = note + pitch;
-        }
-        
-        void setPitch(int p)
-        {
-            pitch = p;
-        }
-        
-        void setActive (bool a)
-        {
-            isActive = a;
-        }
-        
-    };
+    
     
     
 
@@ -189,7 +197,6 @@ private:
     int numSteps;
     int currentStep;
     
-    int currentNoteValue;
     
     int time;
 
@@ -198,7 +205,8 @@ private:
     double speedInHz;
     double noteLengthAmount;
     
-    Array<Step> steps;
+    bool shouldPlay;
+    bool lastNotePlayed;
     
 
     JUCE_LEAK_DETECTOR (SequencerState)

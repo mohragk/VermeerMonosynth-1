@@ -479,6 +479,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     sequencerProcessor.get()->setSampleRate(newsr);
     sequencerProcessor.get()->setPulseClockSampleRate(newsr);
 
+    seqState.prepareToPlay(newsr);
     
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
@@ -566,8 +567,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     // SEQUENCER
-    sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples(), bool( *useSequencerParam ));
-
+    //sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples(), bool( *useSequencerParam ));
+    
+    seqState.processBuffer(osBuffer, midiMessages, bool(*useSequencerParam));
   
 	//ARPEGGIATOR
 	arp.process(osBuffer, midiMessages, *arpeggioUseParam, false);

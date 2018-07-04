@@ -37,6 +37,7 @@
 #include "adsr/ADSR.h"
 //#include "PulseClock.h"
 #include "lfo.h"
+#include "SequencerState.h"
 #include "SequencerProcessor.h"
 #include "ParamSmoother.h"
 #include "TriggeredScope.h"
@@ -133,6 +134,7 @@ public:
     MidiKeyboardState keyboardState;
 
     std::unique_ptr<SequencerProcessor> sequencerProcessor;
+    SequencerState seqState;
     
 	TriggeredScope scope;
 
