@@ -132,10 +132,10 @@ public:
     // this is kept up to date with the midi messages that arrive, and the UI component
     // registers with it so it can represent the incoming messages
     MidiKeyboardState keyboardState;
-    std::unique_ptr<SequencerProcessor> sequencerProcessor;
+    std::unique_ptr<SequencerProcessor> sequencerProcessor; //REMOVE
     
 	TriggeredScope scope;
-    SequencerState sequencer2;
+    std::unique_ptr<SequencerState> sequencerState;
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;

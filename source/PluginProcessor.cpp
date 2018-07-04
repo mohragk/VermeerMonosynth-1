@@ -299,7 +299,9 @@ arpeggioUseParam(nullptr)
     for (int i = 0; i < 6; i++)
         smoothing[i] = std::unique_ptr<ParamSmoother>(new ParamSmoother);
     
-    sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( keyboardState ) );
+    //sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( keyboardState ) );
+    
+    sequencerState = std::unique_ptr<SequencerState> (new SequencerState);
     
 }
 
@@ -476,8 +478,10 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     
     synth.setCurrentPlaybackSampleRate (newsr);
     
-    sequencerProcessor.get()->setSampleRate(newsr);
-    sequencerProcessor.get()->setPulseClockSampleRate(newsr);
+    //sequencerProcessor.get()->setSampleRate(newsr);
+    //sequencerProcessor.get()->setPulseClockSampleRate(newsr);
+    
+    sequencerState.get()->prepareToPlay(newsr);
     
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
@@ -565,7 +569,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     // SEQUENCER
-    sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples(), bool( *useSequencerParam ));
+    //sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples(), bool( *useSequencerParam ));
+    sequencerState.get()->processBuffer(osBuffer, midiMessages, bool(*useSequencerParam) );
     
   
 	//ARPEGGIATOR
@@ -942,6 +947,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
        
         
         //SEQUENCER
+        /*
         sequencerProcessor.get()->setMaxSteps(*maxStepsParam);
         sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);
         
@@ -950,7 +956,15 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         
         sequencerProcessor.get()->setGlobalNoteLength(*stepNoteLengthParam);
         sequencerProcessor.get()->setBPM(lastPosInfo.bpm);
+        */
+        //
+        //
+        double speed = getLFOSyncedFreq(lastPosInfo, *stepDivisionFloatParam);
+        sequencerState.get()->setStepSpeedInHz(speed);
         
+        sequencerState.get()->setNoteDuration(*stepNoteLengthParam);
+         for (int i = 0; i < 8; i++ )
+             sequencerState.get()->setPitchAmountForStep(i, *stepPitchParam[i]);
         
         // set various parameters
         synthVoice->setOscGains(

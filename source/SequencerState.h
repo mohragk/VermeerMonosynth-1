@@ -23,7 +23,8 @@ public:
                         numSteps(8),
                         currentStep(8),
                         sampleRate(44100.0),
-                        speedInHz(10.0)
+                        speedInHz(10.0),
+                        shouldPlay(false)
     {
         for (int i = 0; i < numSteps; i++)
         {
@@ -37,6 +38,29 @@ public:
     }
 
    
+    struct Step
+    {
+        int     noteValue = 60;
+        int     pitch = 0;
+        bool    isActive = false;
+        bool    isReleased = false;
+        
+        void setAndCalculateNoteValue(double note)
+        {
+            noteValue = note + pitch;
+        }
+        
+        void setPitch(int p)
+        {
+            pitch = p;
+        }
+        
+        void setActive (bool a)
+        {
+            isActive = a;
+        }
+        
+    };
     
 	
 
@@ -65,6 +89,9 @@ public:
     }
     
     
+    Step getStepData(int s) { return steps[s]; };
+    
+    
     template <typename FloatType>
 	void processBuffer(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useSequencer)
     {
@@ -82,10 +109,17 @@ public:
             for(MidiBuffer::Iterator it(midi); it.getNextEvent(msg, ignore);)
             {
                 if (msg.isNoteOn())
+                {
                     currentNoteValue = msg.getNoteNumber();
+                    shouldPlay = true;
+                    currentStep = 0;
+                }
                 
                 if (msg.isNoteOff())
-                    currentNoteValue = -1;
+                {
+                    shouldPlay = false;
+                    
+                }
             }
             
             midi.clear();
@@ -96,11 +130,16 @@ public:
                 
                 if (offset >= 0)
                 {
-                    int note = steps[currentStep].noteValue;
-                    midi.addEvent(MidiMessage::noteOff(1, note), offset);
-                    steps[currentStep].setActive(false);
+                    if (currentNoteValue > 0)
+                    {
+                        int note = steps[currentStep].noteValue;
+                        midi.addEvent(MidiMessage::noteOff(1, note), offset);
+                        steps[currentStep].setActive(false);
+                        
+                        currentStep = (currentStep + 1) % maxSteps ;
+                       // currentNoteValue = -1;
+                    }
                     
-                    currentStep = (currentStep + 1) % maxSteps ;
                     
                     
                 }
@@ -108,11 +147,11 @@ public:
             }
             
             
-            if ( (time + numSamples) >= stepDuration )
+            if ( (time + numSamples) >= stepDuration && shouldPlay )
             {
                 auto offset =  jmax( 0, jmin((int)(stepDuration - time), numSamples - 1) );
                 
-                steps[currentStep].setNoteValue(currentNoteValue);
+                steps[currentStep].setAndCalculateNoteValue(currentNoteValue);
                 steps[currentStep].setActive(true);
                 int val = steps[currentStep].noteValue;
                 
@@ -125,29 +164,7 @@ public:
     }
     
     
-    struct Step
-    {
-        int     noteValue = -1;
-        int     pitch = 0;
-        bool    isActive = false;
-        bool    isReleased = false;
-        
-        void setNoteValue(double note)
-        {
-            noteValue = note + pitch;
-        }
-        
-        void setPitch(int p)
-        {
-            pitch = p;
-        }
-        
-        void setActive (bool a)
-        {
-            isActive = a;
-        }
-        
-    };
+    
     
     
 
@@ -167,6 +184,8 @@ private:
     
     double speedInHz;
     double noteLengthAmount;
+    
+    bool shouldPlay;
     
     Array<Step> steps;
     
