@@ -32,8 +32,6 @@ public:
     {
     }
 
-   
-
     struct Step
     {
         
@@ -118,7 +116,8 @@ public:
                     pressedKeys.add(note);
                     
                     currentStep = 0;
-                    //shouldPlay = true;
+					time = 0;
+					steps[currentStep].setActive(true);
                 }
                 
                 
@@ -126,13 +125,9 @@ public:
                 {
                     int note = msg.getNoteNumber();
                     pressedKeys.removeFirstMatchingValue(note);
-                    //shouldPlay = false;
                 }
                 
             }
-            
-            midi.clear();
-            
 
             if ( (time + numSamples + difference) >= stepDuration)
             {
@@ -149,10 +144,7 @@ public:
                             steps[i].setActive(false);
                         }
                     }
-                   
-                    
                 }
-                    
             }
             
             
@@ -166,12 +158,12 @@ public:
                     for (int i = 0; i < numSteps; ++i)
                         steps[i].setInitialNoteValue(note);
                     
+					currentStep = (currentStep + 1) % (maxSteps + 1);
+
                     steps[currentStep].setActive(true);
                     
                     int pitchedNote = steps[currentStep].getPitchedNoteValue();
                     midi.addEvent(MidiMessage::noteOn(1, pitchedNote, (uint8)127), offset);
-                    
-                    currentStep = (currentStep + 1) % (maxSteps + 1) ;
                 }
                 
             }
@@ -181,19 +173,11 @@ public:
         }
     }
     
-    
-    
-    
-    
 
 private:
-
-
-	//MEMBERS
     int maxSteps;
     int numSteps;
     int currentStep;
-    
     
     int time;
 
@@ -201,9 +185,7 @@ private:
     
     double speedInHz;
     double noteLengthAmount;
-    
-    bool shouldPlay;
-    
+        
     Array<int> pressedKeys;
 
     JUCE_LEAK_DETECTOR (SequencerState)

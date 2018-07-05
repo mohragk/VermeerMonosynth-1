@@ -299,8 +299,8 @@ arpeggioUseParam(nullptr)
     for (int i = 0; i < 6; i++)
         smoothing[i] = std::unique_ptr<ParamSmoother>(new ParamSmoother);
     
-    sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( keyboardState ) );
-
+   // sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( keyboardState ) );
+	seqState = std::unique_ptr<SequencerState>(new SequencerState);
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
@@ -463,23 +463,23 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     if(*useHQOversamplingParam)
     {
         newsr *= oversamplingDoubleHQ->getOversamplingFactor();
-        if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDoubleHQ->getLatencyInSamples())); }
-        else                            { setLatencySamples(roundToInt(oversamplingFloatHQ->getLatencyInSamples())); }
+       // if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDoubleHQ->getLatencyInSamples())); }
+      //  else                            { setLatencySamples(roundToInt(oversamplingFloatHQ->getLatencyInSamples())); }
     }
     else
     {
         newsr *= oversamplingDouble->getOversamplingFactor();
-        if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
-        else                            { setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
+        //if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
+        //else                            { setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
     }
     
     
     synth.setCurrentPlaybackSampleRate (newsr);
     
-    sequencerProcessor.get()->setSampleRate(newsr);
-    sequencerProcessor.get()->setPulseClockSampleRate(newsr);
+   // sequencerProcessor.get()->setSampleRate(newsr);
+   // sequencerProcessor.get()->setPulseClockSampleRate(newsr);
 
-    seqState.prepareToPlay(newsr);
+    seqState.get()->prepareToPlay(newsr);
     
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
@@ -569,7 +569,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // SEQUENCER
     //sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples(), bool( *useSequencerParam ));
     
-    seqState.processBuffer(osBuffer, midiMessages, bool(*useSequencerParam));
+    seqState.get()->processBuffer(osBuffer, midiMessages, bool(*useSequencerParam));
   
 	//ARPEGGIATOR
 	arp.process(osBuffer, midiMessages, *arpeggioUseParam, false);
@@ -956,15 +956,15 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         sequencerProcessor.get()->setBPM(lastPosInfo.bpm);
          */
         
-        seqState.setMaxSteps(*maxStepsParam);
+        seqState.get()->setMaxSteps(*maxStepsParam);
         
         double speed = getLFOSyncedFreq(lastPosInfo, *stepDivisionFloatParam);
-        seqState.setSpeedInHz(speed);
+        seqState.get()->setSpeedInHz(speed);
         
         for (int i = 0; i < 8; i++)
-            seqState.setPitchAmountForStep(i, *stepPitchParam[i]);
+            seqState.get()->setPitchAmountForStep(i, *stepPitchParam[i]);
         
-        seqState.setNoteDuration(*stepNoteLengthParam);
+        seqState.get()->setNoteDuration(*stepNoteLengthParam);
         
         
         

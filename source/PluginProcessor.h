@@ -133,8 +133,8 @@ public:
 
     MidiKeyboardState keyboardState;
 
-    std::unique_ptr<SequencerProcessor> sequencerProcessor;
-    SequencerState seqState;
+    //std::unique_ptr<SequencerProcessor> sequencerProcessor;
+    std::unique_ptr<SequencerState> seqState;
     
 	TriggeredScope scope;
 
