@@ -69,6 +69,7 @@ public:
 	//METHODS
     void prepareToPlay(double sr)
     {
+	    pressedKeys.clear();
         sampleRate = sr;
         currentStep = 0;
         time = 0;
