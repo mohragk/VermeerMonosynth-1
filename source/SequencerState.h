@@ -114,18 +114,18 @@ public:
                 if (msg.isNoteOn())
                 {
                     int note = msg.getNoteNumber();
-                    
-                    for (int i = 0; i < numSteps; ++i)
-                        steps[i].setInitialNoteValue(note);
+                    pressedKeys.add(note);
                     
                     currentStep = 0;
-                    shouldPlay = true;
+                    //shouldPlay = true;
                 }
                 
                 
                 if (msg.isNoteOff())
                 {
-                    shouldPlay = false;
+                    int note = msg.getNoteNumber();
+                    pressedKeys.removeFirstMatchingValue(note);
+                    //shouldPlay = false;
                 }
                 
             }
@@ -133,41 +133,46 @@ public:
             midi.clear();
             
 
-            if ( (time + numSamples + difference) >= stepDuration && noteOff)
+            if ( (time + numSamples + difference) >= stepDuration)
             {
                 auto offset =  jmin((int)(noteDuration - time), numSamples - 1) ;
                 
                 if (offset >= 0)
                 {
-
-                    int note = steps[currentStep].getPitchedNoteValue();
-                    midi.addEvent(MidiMessage::noteOff(1, note), offset);
-                    steps[currentStep].setActive(false);
+                    for (int i = 0; i < numSteps; i++)
+                    {
+                        if (steps[i].isActive)
+                        {
+                            int note = steps[i].getPitchedNoteValue();
+                            midi.addEvent(MidiMessage::noteOff(1, note), offset);
+                            steps[i].setActive(false);
+                        }
+                    }
+                   
                     
-                   
-                    std::cout << currentStep << std::endl;
-                   
-                    currentStep = (currentStep + 1) % (maxSteps + 1) ;
-                    noteOff = false;
-
                 }
                     
             }
             
             
-            if ( (time + numSamples) >= stepDuration && shouldPlay )
+            if ( (time + numSamples) >= stepDuration )
             {
                 auto offset =  jmax( 0, jmin((int)(stepDuration - time), numSamples - 1) );
+             
+                if (pressedKeys.size() > 0)
+                {
+                    int note = pressedKeys.getLast();
+                    for (int i = 0; i < numSteps; ++i)
+                        steps[i].setInitialNoteValue(note);
+                    
+                    steps[currentStep].setActive(true);
+                    
+                    int pitchedNote = steps[currentStep].getPitchedNoteValue();
+                    midi.addEvent(MidiMessage::noteOn(1, pitchedNote, (uint8)127), offset);
+                    
+                    currentStep = (currentStep + 1) % (maxSteps + 1) ;
+                }
                 
-                
-               
-                int note = steps[currentStep].getPitchedNoteValue();
-                steps[currentStep].setActive(true);
-                
-                midi.addEvent(MidiMessage::noteOn(1, note, (uint8)127), offset);
-                
-                noteOff = true;
-               
             }
             
             
@@ -197,8 +202,8 @@ private:
     double noteLengthAmount;
     
     bool shouldPlay;
-    bool noteOff = false;
     
+    Array<int> pressedKeys;
 
     JUCE_LEAK_DETECTOR (SequencerState)
 };
