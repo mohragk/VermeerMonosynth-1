@@ -14,19 +14,9 @@
 //==============================================================================
 OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) : 
     processor(p),
-    osc1GainLabel(nullptr),
-	osc1WaveformLabel(nullptr),
-	osc1OffsetLabel(nullptr),
+
 	oscillatorsLabel(nullptr),
-	osc1TuneLabel(nullptr),
-	osc2GainLabel(nullptr),
-	osc2WaveformLabel(nullptr),
-	osc2OffsetLabel(nullptr),
-	osc2TuneLabel(nullptr),
-	osc3GainLabel(nullptr),
-	osc3WaveformLabel(nullptr),
-	osc3OffsetLabel(nullptr),
-	osc3TuneLabel(nullptr),
+
 
 	oscSyncLabel(nullptr),
 	oscSyncONLabel(nullptr),
@@ -40,8 +30,9 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     // OSCILLATORS
     //
     
-    addAndMakeVisible (oscillatorsLabel = new Label ("Oscillators",
-                                                     TRANS("Oscillators")));        //
+    oscillatorsLabel = std::unique_ptr<Label>  (new Label ("Oscillators",
+                                                           TRANS("Oscillators")));
+    addAndMakeVisible (oscillatorsLabel.get());        //
     oscillatorsLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     oscillatorsLabel->setJustificationType (Justification::centred);
     oscillatorsLabel->setEditable (false, false, false);
@@ -50,188 +41,74 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     
     
     // OSC 1
-	osc1GainSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.osc1GainParam, knobStyle(ROTARY)) );
-    addAndMakeVisible (osc1GainSlider.get()); //
+    for (int osc = 0; osc < 3; osc++)
+    {
+        oscGainSlider[osc] = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.oscGainParam[osc], knobStyle(ROTARY)) );
+        addAndMakeVisible (oscGainSlider[osc].get()); //
+        
+        oscGainLabel[osc] = std::unique_ptr<Label> (new Label("OSC"+std::to_string(osc)+" Gain Label", TRANS("Gain")));
+        addAndMakeVisible(oscGainLabel[osc].get());
+        setLabelStyle(*oscGainLabel[osc].get());
+        
+        oscWaveformSlider[osc] = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.oscModeParam[osc], knobStyle(LINEARHORIZONTAL)) );
+        addAndMakeVisible (oscWaveformSlider[osc].get()); //no label but graphics
+        
+        oscWaveformLabel[osc] = std::unique_ptr<Label>(new Label ("OSC"+std::to_string(osc)+" Waveform Label", TRANS("Shape")));
+        addAndMakeVisible (oscWaveformLabel[osc].get());
+        setLabelStyle(*oscWaveformLabel[osc].get());
+        
+        oscTuneSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscDetuneAmountParam[osc], knobStyle(ROTARY)));
+        addAndMakeVisible(oscTuneSlider[osc].get()); //
+        oscTuneSlider[osc]->setDoubleClickReturnValue(true, 0.5);
+        
+        oscTuneLabel[osc] = std::unique_ptr<Label> (new Label ("OSC"+std::to_string(osc)+" Tune Label", TRANS("Tune")));
+        addAndMakeVisible (oscTuneLabel[osc].get());
+        setLabelStyle(*oscTuneLabel[osc].get());
+        
+        
+        oscOffsetSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscOffsetParam[osc], knobStyle(ROTARY)));
+        addAndMakeVisible (oscOffsetSlider[osc].get()); //
+        oscOffsetSlider[osc]->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
+        oscOffsetSlider[osc]->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
+        oscOffsetSlider[osc]->setDoubleClickReturnValue(true, 0.5);
+        
+        
+        oscOffsetLabel[osc] = std::unique_ptr<Label> (new Label ("oscOffsetLabel"+std::to_string(osc), TRANS("Offset")));          //
+        addAndMakeVisible (oscOffsetLabel[osc].get());
+        setLabelStyle(*oscOffsetLabel[osc].get());
+        
+        
+        // PWM
+        pulsewidthSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthParam[osc], LINEARHORIZONTAL));
+        addAndMakeVisible(pulsewidthSlider[osc].get());
+        pulsewidthSlider[osc]->setDoubleClickReturnValue(true, 0.5);
+        pulsewidthSlider[osc].get()->setTooltip("Adjust Pulsewidth: 0.5 -> 1.0");
+        
+        pulsewidthAmountSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthAmountParam[osc], LINEARHORIZONTAL));
+        addAndMakeVisible(pulsewidthAmountSlider[osc].get());  //
+        pulsewidthAmountSlider[osc].get()->setTooltip("Set pulsewidth modulation amount from LFO");
+    }
     
-	addAndMakeVisible(osc1GainLabel = new Label("OSC1 Gain Label",
-		TRANS("Gain")));
-    osc1GainLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f)); //
-    osc1GainLabel->setJustificationType (Justification::centred);
-    osc1GainLabel->setEditable (false, false, false);
-    osc1GainLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc1GainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-	osc1WaveformSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.osc1ModeParam, knobStyle(LINEARHORIZONTAL)) );
-    addAndMakeVisible (osc1WaveformSlider.get()); //no label but graphics
-    
-    
-    addAndMakeVisible (osc1WaveformLabel = new Label ("OSC1 Waveform Label",
-                                                      TRANS("Shape")));                 //
-    osc1WaveformLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    osc1WaveformLabel->setJustificationType (Justification::centred);
-    osc1WaveformLabel->setEditable (false, false, false);
-    osc1WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc1WaveformLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-	osc1TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.osc1DetuneAmountParam, knobStyle(ROTARY)));
-	addAndMakeVisible(osc1TuneSlider.get()); //
-	osc1TuneSlider->setDoubleClickReturnValue(true, 0.5);
-    
-    addAndMakeVisible (osc1TuneLabel = new Label ("OSC1 Tune Label",
-                                                  TRANS("Tune")));                      //
-    osc1TuneLabel->setFont (Font (font, 13.00f, Font::plain).withTypefaceStyle ("Medium").withExtraKerningFactor (0.150f));
-    osc1TuneLabel->setJustificationType (Justification::centred);
-    osc1TuneLabel->setEditable (false, false, false);
-    osc1TuneLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc1TuneLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-	osc1OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscOffsetParam, knobStyle(ROTARY)));
-    addAndMakeVisible (osc1OffsetSlider.get()); //
-    osc1OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
-    osc1OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
-    osc1OffsetSlider->setDoubleClickReturnValue(true, 0.5);
-    
-    addAndMakeVisible (osc1OffsetLabel = new Label ("osc1OffsetLabel",
-                                                    TRANS("Offset")));          //
-    osc1OffsetLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    osc1OffsetLabel->setJustificationType (Justification::centred);
-    osc1OffsetLabel->setEditable (false, false, false);
-    osc1OffsetLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc1OffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    
-    
-    // OSC 2
-	osc2GainSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.osc2GainParam, knobStyle(ROTARY)));
-    addAndMakeVisible (osc2GainSlider.get()); //
-    
-    addAndMakeVisible (osc2GainLabel = new Label ("OSC2 Gain Label",
-                                                  TRANS("Gain")));                  //
-    osc2GainLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    osc2GainLabel->setJustificationType (Justification::centred);
-    osc2GainLabel->setEditable (false, false, false);
-    osc2GainLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc2GainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-	osc2WaveformSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.osc2ModeParam, knobStyle(LINEARHORIZONTAL)));
-    addAndMakeVisible (osc2WaveformSlider.get()); //no label
    
-    
-    addAndMakeVisible (osc2WaveformLabel = new Label ("OSC2 Waveform Label",
-                                                      TRANS("Shape")));             //
-    osc2WaveformLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    osc2WaveformLabel->setJustificationType (Justification::centred);
-    osc2WaveformLabel->setEditable (false, false, false);
-    osc2WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc2WaveformLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-	osc2TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.osc2DetuneAmountParam, knobStyle(ROTARY)));
-	addAndMakeVisible(osc2TuneSlider.get()); //
-	osc2TuneSlider->setDoubleClickReturnValue(true, 0.5);
-    
-	addAndMakeVisible(osc2TuneLabel = new Label("OSC2 Tune Label",
-		TRANS("Tune")));
-    osc2TuneLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f)); //
-    osc2TuneLabel->setJustificationType (Justification::centred);
-    osc2TuneLabel->setEditable (false, false, false);
-    osc2TuneLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc2TuneLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-	osc2OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.osc2OffsetParam, knobStyle(ROTARY)));
-    addAndMakeVisible (osc2OffsetSlider.get()); //
-    osc2OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
-    osc2OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
-    osc2OffsetSlider->setDoubleClickReturnValue(true, 0.5);
-
-    
-    addAndMakeVisible (osc2OffsetLabel = new Label ("OSC2 Offset Label",
-                                                     TRANS("Offset")));           //
-    osc2OffsetLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    osc2OffsetLabel->setJustificationType (Justification::centred);
-    osc2OffsetLabel->setEditable (false, false, false);
-    osc2OffsetLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc2OffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    
-    // OSC 3
-	osc3GainSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.osc3GainParam, knobStyle(ROTARY)));
-    addAndMakeVisible (osc3GainSlider.get()); //
-
-    
-    addAndMakeVisible (osc3GainLabel = new Label ("OSC2 Gain Label",
-                                                  TRANS("Gain")));                  //
-    osc3GainLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    osc3GainLabel->setJustificationType (Justification::centred);
-    osc3GainLabel->setEditable (false, false, false);
-    osc3GainLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc3GainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-	osc3WaveformSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.osc3ModeParam, knobStyle(LINEARHORIZONTAL)));
-    addAndMakeVisible (osc3WaveformSlider.get());    //
-   
-    
-    addAndMakeVisible (osc3WaveformLabel = new Label ("OSC1 Gain Label",
-                                                      TRANS("Shape")));                 //
-    osc3WaveformLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    osc3WaveformLabel->setJustificationType (Justification::centred);
-    osc3WaveformLabel->setEditable (false, false, false);
-    osc3WaveformLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc3WaveformLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-	osc3TuneSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.osc3DetuneAmountParam, knobStyle(ROTARY)));
-    addAndMakeVisible(osc3TuneSlider.get()); //
-    osc3TuneSlider->setDoubleClickReturnValue(true, 0.5);
-    
-    addAndMakeVisible (osc3TuneLabel = new Label ("OSC3 Tune Label",
-                                                  TRANS("Tune")));              //
-    osc3TuneLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    osc3TuneLabel->setJustificationType (Justification::centred);
-    osc3TuneLabel->setEditable (false, false, false);
-    osc3TuneLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc3TuneLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-	osc3OffsetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.osc3OffsetParam, knobStyle(ROTARY)));
-    addAndMakeVisible (osc3OffsetSlider.get()); //
-    osc3OffsetSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
-    osc3OffsetSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
-    osc3OffsetSlider->setDoubleClickReturnValue(true, 0.5);
-
-    
-    addAndMakeVisible (osc3OffsetLabel = new Label ("OSC2 Offset Label",
-                                                    TRANS("Offset")));   //
-    osc3OffsetLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    osc3OffsetLabel->setJustificationType (Justification::centred);
-    osc3OffsetLabel->setEditable (false, false, false);
-    osc3OffsetLabel->setColour (TextEditor::textColourId, Colours::black);
-    osc3OffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
 	oscSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscSyncParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (oscSyncSlider.get());
     oscSyncSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     //oscSyncSlider->setDoubleClickReturnValue(true, 0.5);
    
-    addAndMakeVisible (oscSyncLabel = new Label ("oscSyncLabel",
-                                                      TRANS("Sync")));                 //
-    oscSyncLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    oscSyncLabel->setJustificationType (Justification::centred);
-    oscSyncLabel->setEditable (false, false, false);
-    oscSyncLabel->setColour (TextEditor::textColourId, Colours::black);
-    oscSyncLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    oscSyncLabel = std::unique_ptr<Label> (new Label ("oscSyncLabel", TRANS("Sync")));                 //
+    addAndMakeVisible (oscSyncLabel.get());
+    setLabelStyle(*oscSyncLabel.get());
     
-    addAndMakeVisible (oscSyncONLabel = new Label ("oscSyncONLabel",TRANS("-on")));                 //
-    oscSyncONLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    oscSyncONLabel->setJustificationType (Justification::centred);
-    oscSyncONLabel->setEditable (false, false, false);
-    oscSyncONLabel->setColour (TextEditor::textColourId, Colours::black);
-    oscSyncONLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    addAndMakeVisible (oscSyncOFFLabel = new Label ("oscSyncOFFLabel",
-                                                   TRANS("-off")));                 //
-    oscSyncOFFLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    oscSyncOFFLabel->setJustificationType (Justification::centred);
-    oscSyncOFFLabel->setEditable (false, false, false);
-    oscSyncOFFLabel->setColour (TextEditor::textColourId, Colours::black);
-    oscSyncOFFLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    oscSyncONLabel = std::unique_ptr<Label> (new Label ("oscSyncONLabel",TRANS("-on")));
+    addAndMakeVisible (oscSyncONLabel.get());
+    setLabelStyle(*oscSyncONLabel.get());
+    
+    oscSyncOFFLabel = std::unique_ptr<Label> (new Label ("oscSyncOFFLabel", TRANS("-off")));
+    addAndMakeVisible (oscSyncOFFLabel.get());
+    setLabelStyle(*oscSyncOFFLabel.get());
+    
     
     
     //Pitch MODULATION SLIDER
@@ -239,44 +116,12 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     addAndMakeVisible (pitchModSlider.get());        //
     pitchModSlider->setDoubleClickReturnValue(true, 0.0);
     
-    
-    addAndMakeVisible (pitchModLabel = new Label ("OSC2 Gain Label",
-                                                  TRANS("Pitch Mod")));                     //
-    pitchModLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
-    pitchModLabel->setJustificationType (Justification::centred);
-    pitchModLabel->setEditable (false, false, false);
-    pitchModLabel->setColour (TextEditor::textColourId, Colours::black);
-    pitchModLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    pitchModLabel = std::unique_ptr<Label> (new Label ("OSC2 Gain Label", TRANS("Pitch Mod")));                     //
+    addAndMakeVisible (pitchModLabel.get());
+    setLabelStyle(*pitchModLabel.get());
     
     
-    // PWM
-    pulsewidth1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidth1Param, LINEARHORIZONTAL));
-    addAndMakeVisible(pulsewidth1Slider.get());
-    pulsewidth1Slider->setDoubleClickReturnValue(true, 0.5);
-    pulsewidth1Slider.get()->setTooltip("Adjust Pulsewidth: 0.5 -> 1.0");
-    
-    pulsewidth2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidth2Param, LINEARHORIZONTAL));
-    addAndMakeVisible(pulsewidth2Slider.get());
-    pulsewidth2Slider->setDoubleClickReturnValue(true, 0.5);
-    pulsewidth2Slider.get()->setTooltip("Adjust Pulsewidth: 0.5 -> 1.0");
-    
-    pulsewidth3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidth3Param, LINEARHORIZONTAL));
-    addAndMakeVisible(pulsewidth3Slider.get());
-    pulsewidth3Slider->setDoubleClickReturnValue(true, 0.5);
-    pulsewidth3Slider.get()->setTooltip("Adjust Pulsewidth: 0.5 -> 1.0");
-    
-    
-    pulsewidthAmount1Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthAmount1Param, LINEARHORIZONTAL));
-    addAndMakeVisible(pulsewidthAmount1Slider.get());  //
-    pulsewidthAmount1Slider.get()->setTooltip("Set pulsewidth modulation amount from LFO");
-    
-    pulsewidthAmount2Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthAmount2Param, LINEARHORIZONTAL));
-    addAndMakeVisible(pulsewidthAmount2Slider.get());  //
-    pulsewidthAmount2Slider.get()->setTooltip("Set pulsewidth modulation amount from LFO");
-    
-    pulsewidthAmount3Slider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthAmount3Param, LINEARHORIZONTAL));
-    addAndMakeVisible(pulsewidthAmount3Slider.get());  //
-    pulsewidthAmount3Slider.get()->setTooltip("Set pulsewidth modulation amount from LFO");
+   
     
     //
     // Drawables for symbols/icons
@@ -313,6 +158,15 @@ OscillatorSection::~OscillatorSection()
 {
 }
 
+void OscillatorSection::setLabelStyle(Label& label)
+{
+    label.setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    label.setJustificationType (Justification::centred);
+    label.setEditable (false, false, false);
+    label.setColour (TextEditor::textColourId, Colours::black);
+    label.setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+}
+
 void OscillatorSection::paint (Graphics& g)
 {
     //g.fillAll (Colours::seagreen);
@@ -332,7 +186,7 @@ void OscillatorSection::paint (Graphics& g)
     
     //OSC1 Shape Symbols
     {
-        Rectangle<int> shapeArea (osc1WaveformSlider.get()->getBounds());
+        Rectangle<int> shapeArea (oscWaveformSlider[0].get()->getBounds());
         
         Rectangle<int> shapeStrip(shapeArea.removeFromBottom(12).reduced(8,0));
         
@@ -396,7 +250,7 @@ void OscillatorSection::paint (Graphics& g)
     
     // OSC2 Shape Symbols
     {
-        Rectangle<int> shapeArea (osc2WaveformSlider.get()->getBounds());
+        Rectangle<int> shapeArea (oscWaveformSlider[1].get()->getBounds());
         
         Rectangle<int> shapeStrip(shapeArea.removeFromBottom(12).reduced(8,0));
         
@@ -459,7 +313,7 @@ void OscillatorSection::paint (Graphics& g)
     
     // OSC3 Shape Symbols
     {
-        Rectangle<int> shapeArea (osc3WaveformSlider.get()->getBounds());
+        Rectangle<int> shapeArea (oscWaveformSlider[2].get()->getBounds());
         
         Rectangle<int> shapeStrip(shapeArea.removeFromBottom(12).reduced(8,0));
         
@@ -538,35 +392,37 @@ void OscillatorSection::resized()
     int vertSliderHeight = 24;
     int marginX = 8;
     int marginY = 4;
+    
+    for(int osc = 0; osc < 3; osc++)
     {
         
         Rectangle<int> oscArea (area.removeFromLeft((stripWith)));
         
-        osc1GainLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc1GainLabel->setJustificationType(Justification::centredBottom);
-        osc1GainSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
+        oscGainLabel[osc]->setBounds (oscArea.removeFromTop(labelHeight));
+        oscGainLabel[osc]->setJustificationType(Justification::centredBottom);
+        oscGainSlider[osc]->setBounds (oscArea.removeFromTop(rotaryHeight));
         
         
-        osc1WaveformLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc1WaveformLabel->setJustificationType(Justification::centredBottom);
-        osc1WaveformSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
+        oscWaveformLabel[osc]->setBounds (oscArea.removeFromTop(labelHeight));
+        oscWaveformLabel[osc]->setJustificationType(Justification::centredBottom);
+        oscWaveformSlider[osc]->setBounds (oscArea.removeFromTop(rotaryHeight));
         
-        osc1TuneLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc1TuneLabel->setJustificationType(Justification::centredBottom);
-        osc1TuneSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
+        oscTuneLabel[osc]->setBounds (oscArea.removeFromTop(labelHeight));
+        oscTuneLabel[osc]->setJustificationType(Justification::centredBottom);
+        oscTuneSlider[osc]->setBounds (oscArea.removeFromTop(rotaryHeight));
         
-        osc1OffsetLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc1OffsetLabel->setJustificationType(Justification::centredBottom);
-        osc1OffsetSlider->setBounds (oscArea.removeFromTop(rotaryHeight + rotaryTextHeight));
-        
-        
+        oscOffsetLabel[osc]->setBounds (oscArea.removeFromTop(labelHeight));
+        oscOffsetLabel[osc]->setJustificationType(Justification::centredBottom);
+        oscOffsetSlider[osc]->setBounds (oscArea.removeFromTop(rotaryHeight + rotaryTextHeight));
         
         
-        pulsewidth1Slider->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
-        pulsewidthAmount1Slider->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
+        
+        
+        pulsewidthSlider[osc]->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
+        pulsewidthAmountSlider[osc]->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
     }
     
-    
+    /*
     {
         
         Rectangle<int> oscArea (area.removeFromLeft((stripWith)));
@@ -621,7 +477,7 @@ void OscillatorSection::resized()
         pulsewidth3Slider->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
         pulsewidthAmount3Slider->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
     }
-    
+    */
     {
         Rectangle<int> oscArea (area.removeFromLeft((stripWith)));
         

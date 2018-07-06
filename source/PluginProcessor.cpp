@@ -47,16 +47,6 @@ lastUIHeight (590),
 
 gainParam (nullptr),
 
-osc1GainParam(nullptr),
-osc2GainParam(nullptr),
-osc3GainParam(nullptr),
-osc1DetuneAmountParam(nullptr),
-osc2DetuneAmountParam(nullptr),
-osc3DetuneAmountParam(nullptr),
-
-osc1ModeParam(nullptr),
-osc2ModeParam(nullptr),
-osc3ModeParam(nullptr),
 oscSyncParam(nullptr),
 
 filterCutoffParam(nullptr),
@@ -66,9 +56,7 @@ filterDriveParam(nullptr),
 
 pitchModParam(nullptr),
 
-oscOffsetParam(nullptr),
-osc2OffsetParam(nullptr),
-osc3OffsetParam(nullptr),
+
 
 attackParam1(nullptr),
 decayParam1(nullptr),
@@ -105,9 +93,6 @@ saturationParam(nullptr),
 waveshapeSwitchParam(nullptr),
 waveshapeModeParam(nullptr),
 
-pulsewidthAmount1Param(nullptr),
-pulsewidthAmount2Param(nullptr),
-pulsewidthAmount3Param(nullptr),
 
 overSampleParam(nullptr),
 oversampleSwitchParam(nullptr),
@@ -144,17 +129,26 @@ arpeggioUseParam(nullptr)
 
     addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float>(MIN_INFINITY_DB, 6.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
     
-    addParameter (osc1GainParam  = new AudioParameterFloat ("osc1Gain",  "OSC1 Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
-    addParameter (osc2GainParam  = new AudioParameterFloat ("osc2Gain",  "OSC2 Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
-    addParameter (osc3GainParam  = new AudioParameterFloat ("osc3Gain",  "OSC3 Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
+   
     
-    addParameter (osc1DetuneAmountParam = new AudioParameterFloat("osc1DetuneAmount", "OSC1 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
-    addParameter (osc2DetuneAmountParam = new AudioParameterFloat("osc2DetuneAmount", "OSC2 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
-    addParameter (osc3DetuneAmountParam = new AudioParameterFloat("osc3DetuneAmount", "OSC3 Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
     
-    addParameter(osc1ModeParam = new AudioParameterInt("osc1ModeChoice", "OSC1 Waveform", 0, 3, 2)); // TEST
-    addParameter(osc2ModeParam = new AudioParameterInt("osc2ModeChoice", "OSC2 Waveform", 0, 3, 2));
-    addParameter(osc3ModeParam = new AudioParameterInt("osc3ModeChoice", "OSC3 Waveform", 0, 3, 2));
+    for (int osc = 0; osc < 3; osc++)
+    {
+        addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
+        addParameter (oscDetuneAmountParam[osc] = new AudioParameterFloat("oscDetuneAmount" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
+        addParameter (oscModeParam[osc] = new AudioParameterInt("oscModeChoice" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Waveform", 0, 3, 2));
+        addParameter (oscOffsetParam[osc] = new AudioParameterInt("oscOffset" + std::to_string(osc), "OSC"+std::to_string(osc + 1)+" Offset", -24, 24, 0));
+        
+        // PWM
+        addParameter(pulsewidthParam[osc] = new AudioParameterFloat("pulsewidthParam" + std::to_string(osc), "PW"+std::to_string(osc + 1), 0.0f, 1.0f, 0.0f));
+        addParameter(pulsewidthAmountParam[osc] = new AudioParameterFloat("pulsewidthAmountParam" + std::to_string(osc), "PWM" +std::to_string(osc + 1)+" Amt", 0.0f, 1.0f, 0.0f));
+    }
+    
+    
+    addParameter (pitchModParam = new AudioParameterFloat("pitchMod", "Pitch Modulation", NormalisableRange<float> (0.0f, 2000.0f, 0.0f, 0.5f, false), 0.0f));
+    addParameter (oscSyncParam = new AudioParameterInt("oscSync", "osc2>osc1 sync", 0, 1, 0));
+    
+    
     
    
     
@@ -170,12 +164,7 @@ arpeggioUseParam(nullptr)
 	addParameter (useFilterKeyFollowParam = new AudioParameterBool("useFilterKeyFollowParam", "Key follow", false));
 
     
-    addParameter (pitchModParam = new AudioParameterFloat("pitchMod", "Pitch Modulation", NormalisableRange<float> (0.0f, 2000.0f, 0.0f, 0.5f, false), 0.0f));
-    addParameter (oscOffsetParam = new AudioParameterInt("osc1Offset", "OSC1 Offset", -24, 24, 0));
-    addParameter (osc2OffsetParam = new AudioParameterInt("osc2Offset", "OSC2 Offset", -24, 24, 0));
-    addParameter (osc3OffsetParam = new AudioParameterInt("osc3Offset", "OSC3 Offset", -24, 24, 0));
     
-    addParameter (oscSyncParam = new AudioParameterInt("oscSync", "osc2>osc1 sync", 0, 1, 0));
     
     
     //ENV 1
@@ -221,14 +210,7 @@ arpeggioUseParam(nullptr)
     addParameter(overSampleParam = new AudioParameterInt("overSampleParam", "Oversampling Switch", 0, 1, 1));
     addParameter(filterOrderParam = new AudioParameterInt("filterOrderParam", "Filter Order", 0, 1, 0)); // 0 = VCA->filter; 1 = filter->VCA
     
-    // PWM
-    addParameter(pulsewidth1Param = new AudioParameterFloat("pulsewidth1Param", "PW1", 0.0f, 1.0f, 0.0f));
-	addParameter(pulsewidth2Param = new AudioParameterFloat("pulsewidth2Param", "PW2", 0.0f, 1.0f, 0.0f));
-	addParameter(pulsewidth3Param = new AudioParameterFloat("pulsewidth3Param", "PW3", 0.0f, 1.0f, 0.0f));
-    
-    addParameter(pulsewidthAmount1Param = new AudioParameterFloat("pulsewidthAmount1Param", "PWM1 Amt", 0.0f, 1.0f, 0.0f));
-    addParameter(pulsewidthAmount2Param = new AudioParameterFloat("pulsewidthAmount2Param", "PWM2 Amt", 0.0f, 1.0f, 0.0f));
-    addParameter(pulsewidthAmount3Param = new AudioParameterFloat("pulsewidthAmount3Param", "PWM3 Amt", 0.0f, 1.0f, 0.0f));
+   
 
 	//Saturation/Overdrive
 	addParameter(saturationParam = new AudioParameterFloat("saturationParam", "Saturation", 1.0f, 5.0f, 1.0f));
@@ -265,7 +247,7 @@ arpeggioUseParam(nullptr)
         
     };
     
-	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.1f, 1.0f, 0.5f));
+	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.10f, 0.95f, 0.5f));
     addParameter(stepDivisionFloatParam   = new AudioParameterFloat("stepDivisionFloatParam", "Seq. Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin) , 16.0));
     
     addParameter(maxStepsParam = new AudioParameterInt ("maxStepsParam", "Max. Steps", 0, 7, 7 ));
@@ -971,22 +953,35 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         
         
         // set various parameters
-        synthVoice->setOscGains(
-                    dbToGain(*osc1GainParam, MIN_INFINITY_DB),
-                    dbToGain(*osc2GainParam, MIN_INFINITY_DB),
-                    dbToGain(*osc3GainParam, MIN_INFINITY_DB)
-                    );
         
-        synthVoice->setOscModes(*osc1ModeParam, *osc2ModeParam, *osc3ModeParam);
+        for(int osc = 0; osc < 3; osc++)
+        {
+            synthVoice->setGainForOscillator( dbToGain(*oscGainParam[osc], MIN_INFINITY_DB), osc );
+            synthVoice->setModeForOscillator(*oscModeParam[osc], osc);
+            synthVoice->setDetuneAmountForOscillator(*oscDetuneAmountParam[osc], *oscOffsetParam[osc], osc);
+            synthVoice->setPulsewidthModAmountForOscillator(*pulsewidthAmountParam[osc], osc);
+        }
+        
+        
+        pulsewidthSmooth1.setValue(*pulsewidthParam[0]);// FIXXX
+        pulsewidthSmooth2.setValue(*pulsewidthParam[1]);
+        pulsewidthSmooth3.setValue(*pulsewidthParam[2]);
+        
+        
+        if (i % stepSize == 0)
+        {
+            synthVoice->setPulsewidthForOscillator(smoothing[1]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
+            synthVoice->setPulsewidthForOscillator(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
+            synthVoice->setPulsewidthForOscillator(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
+        }
+      
 
         synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
         synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve2Param, *decayRelCurve2Param);
 
         synthVoice->setPitchEnvelopeAmount(*pitchModParam);
 
-        synthVoice->setOsc1DetuneAmount(*osc1DetuneAmountParam, *oscOffsetParam ); //TEST
-        synthVoice->setOsc2DetuneAmount(*osc2DetuneAmountParam, *osc2OffsetParam);
-        synthVoice->setOsc3DetuneAmount(*osc3DetuneAmountParam, *osc3OffsetParam);
+        
 
         
 
@@ -994,25 +989,13 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 
         
 
-        synthVoice->setModAmountPW(*pulsewidthAmount1Param, 0);
-        synthVoice->setModAmountPW(*pulsewidthAmount2Param, 1);
-        synthVoice->setModAmountPW(*pulsewidthAmount3Param, 2);
+        
 
 		saturationAmount.setValue(*saturationParam);
         
-        pulsewidthSmooth1.setValue(*pulsewidth1Param);
-        pulsewidthSmooth2.setValue(*pulsewidth2Param);
-        pulsewidthSmooth3.setValue(*pulsewidth3Param);
-
+        
+        
         synthVoice->sendLFO(lfo);
-
-
-        if (i % stepSize == 0)
-        {
-            synthVoice->setPulsewidth(smoothing[1]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
-            synthVoice->setPulsewidth(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
-            synthVoice->setPulsewidth(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
-        }
 
 		//ARPEGGIATOR
 		double hertz = getLFOSyncedFreq(lastPosInfo, *arpeggioNoteLengthParam);

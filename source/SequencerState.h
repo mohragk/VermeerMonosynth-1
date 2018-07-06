@@ -115,11 +115,20 @@ public:
                 if (msg.isNoteOn())
                 {
                     int note = msg.getNoteNumber();
+                    
+                    for (int i = 0; i < numSteps; ++i)
+                        steps[i].setInitialNoteValue(note);
+                    
                     pressedKeys.add(note);
                     
-                    currentStep = 0;
-					time = 0;
+                    if (pressedKeys.size() == 1)
+                    {
+                        currentStep = 0;
+                        time = 0;
+                    }
 					steps[currentStep].setActive(true);
+                    
+                    
                 }
                 
                 
@@ -130,6 +139,8 @@ public:
                 }
                 
             }
+            
+            
 
             if ( (time + numSamples + difference) >= stepDuration)
             {

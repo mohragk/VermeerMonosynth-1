@@ -56,20 +56,14 @@ private:
     Colour lineColour;
 
     
-    ScopedPointer<Label>  
-        osc1GainLabel,
-        osc1WaveformLabel,
-        osc1OffsetLabel,
+    std::unique_ptr<Label>
         oscillatorsLabel,
-        osc1TuneLabel,
-        osc2GainLabel,
-        osc2WaveformLabel,
-        osc2OffsetLabel,
-        osc2TuneLabel,
-        osc3GainLabel,
-        osc3WaveformLabel,
-        osc3OffsetLabel,
-        osc3TuneLabel,
+    
+        oscGainLabel[3],
+        oscWaveformLabel[3],
+        oscOffsetLabel[3],
+        oscTuneLabel[3],
+    
     
         oscSyncLabel,
         oscSyncONLabel,
@@ -80,30 +74,16 @@ private:
         ;
         
     std::unique_ptr<ParameterSlider>
-        osc1GainSlider,
-        osc1OffsetSlider,
-        osc1TuneSlider,
-        osc1WaveformSlider,
-
-        osc2GainSlider,
-        osc2OffsetSlider,
-        osc2TuneSlider,
-        osc2WaveformSlider,
-
-        osc3GainSlider,
-        osc3OffsetSlider,
-        osc3TuneSlider,
-        osc3WaveformSlider,
-        oscSyncSlider,
+        oscGainSlider[3],
+        oscOffsetSlider[3],
+        oscTuneSlider[3],
+        oscWaveformSlider[3],
 
         pitchModSlider,
-        pulsewidth1Slider,
-        pulsewidth2Slider,
-        pulsewidth3Slider,
-        
-        pulsewidthAmount1Slider,
-        pulsewidthAmount2Slider,
-        pulsewidthAmount3Slider
+        pulsewidthSlider[3],
+        pulsewidthAmountSlider[3],
+    
+        oscSyncSlider
         ;
 	   
 	   
@@ -125,6 +105,8 @@ private:
         ;
 
     String font;
+    
+    void setLabelStyle(Label& label);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OscillatorSection)
 };

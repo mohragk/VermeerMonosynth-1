@@ -31,6 +31,8 @@ DISCLAIMED.
 #include "adsr/ADSR.h"
 #include "ParamSmoother.h"
 
+#define NUM_OSCILLATORS 3
+
 
 /** A demo synth sound that's just a basic sine wave.. */
 class MonosynthSound : public SynthesiserSound
@@ -225,33 +227,21 @@ public:
         pitchModulation = amt * rangeSemitones;
     }
     
-    void setOscGains(const float g1, const float g2, const float g3)
+    void setGainForOscillator(const float g, const int o)
     {
-        osc[0]->setGain(g1);
-        osc[1]->setGain(g2);
-        osc[2]->setGain(g3);
+        osc[o]->setGain(g);
     }
     
-    void setOsc1DetuneAmount(const double fine, const int coarse)
+    void setDetuneAmountForOscillator(const double fine, int coarse, int osc)
     {
-        oscDetuneAmount[0] = fine + (double) coarse; //Semitones
+        oscDetuneAmount[osc] = fine + (double) coarse;
     }
     
-    void setOsc2DetuneAmount(const double fine, const int coarse)
-    {
-        oscDetuneAmount[1] = fine + (double) coarse; //Semitones
-    }
     
-    void setOsc3DetuneAmount(const double fine, const int coarse)
-    {
-        oscDetuneAmount[2] = fine + (double) coarse; //Semitones
-    }
     
-    void setOscModes(const int mode1, const int mode2, const int mode3)
+    void setModeForOscillator(const int mode, const int o)
     {
-        osc[0]->setMode(mode1);
-        osc[1]->setMode(mode2);
-        osc[2]->setMode(mode3);
+        osc[o]->setMode(mode);
     }
 
 
@@ -288,12 +278,12 @@ public:
         hardSync = sync;
     }
     
-    void setModAmountPW(double amt, int n)
+    void setPulsewidthModAmountForOscillator(double amt, int n)
     {
         modAmountPW[n] = amt;
     }
   
-	void setPulsewidth(double pw, int n)
+	void setPulsewidthForOscillator(double pw, int n)
 	{
         double newPW = pw + ( modAmountPW[n] * ((lfoValue + 1.0) / 2.0) );
         

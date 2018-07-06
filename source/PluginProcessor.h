@@ -173,16 +173,13 @@ public:
     // Our parameters
     AudioParameterFloat* gainParam;
     
-    AudioParameterFloat* osc1GainParam;
-    AudioParameterFloat* osc2GainParam;
-    AudioParameterFloat* osc3GainParam;
-    AudioParameterFloat* osc1DetuneAmountParam;
-    AudioParameterFloat* osc2DetuneAmountParam;
-    AudioParameterFloat* osc3DetuneAmountParam;
-    
-    AudioParameterInt* osc1ModeParam;
-    AudioParameterInt* osc2ModeParam;
-    AudioParameterInt* osc3ModeParam;
+    AudioParameterFloat* oscGainParam[3];
+    AudioParameterFloat* oscDetuneAmountParam[3];
+    AudioParameterInt*   oscModeParam[3];
+    AudioParameterInt*   oscOffsetParam[3];
+    AudioParameterFloat* pulsewidthParam[3];
+    AudioParameterFloat* pulsewidthAmountParam[3];
+   
     
     AudioParameterInt* oscSyncParam;
     
@@ -194,9 +191,7 @@ public:
 
     AudioParameterFloat* pitchModParam;
 
-    AudioParameterInt* oscOffsetParam;
-    AudioParameterInt* osc2OffsetParam;
-    AudioParameterInt* osc3OffsetParam;
+    
 
     
     AudioParameterFloat* attackParam1;
@@ -241,13 +236,7 @@ public:
     AudioParameterInt* filterOrderParam;
     
 
-	AudioParameterFloat* pulsewidth1Param;
-	AudioParameterFloat* pulsewidth2Param;
-	AudioParameterFloat* pulsewidth3Param;
-    
-    AudioParameterFloat* pulsewidthAmount1Param;
-    AudioParameterFloat* pulsewidthAmount2Param;
-    AudioParameterFloat* pulsewidthAmount3Param;
+	
 
 	AudioParameterFloat* saturationParam;
     AudioParameterInt* waveshapeSwitchParam;
