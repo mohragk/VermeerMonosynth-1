@@ -34,6 +34,8 @@
 #define KEYBOARD_HEIGHT 140
 
 
+
+
 class MonosynthPluginAudioProcessorEditor::ParamToggleButton : public ToggleButton, private Timer
 {
 public:
@@ -166,8 +168,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
 	// Oscilloscope
-	oscilloscope = &owner.scope;
-	addAndMakeVisible(oscilloscope);
+	oscilloscope_ptr = &owner.scope;
+	addAndMakeVisible(oscilloscope_ptr);
     
     
     
@@ -223,6 +225,7 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
 
 }
 
+
 //==============================================================================
 void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
 {
@@ -254,8 +257,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
 
 
 	Rectangle<int> oscilloArea(getLocalBounds());
-	oscilloscope->setBounds(oscilloArea.removeFromTop(TITLE_HEIGHT).reduced( (getWidth() / 2) - 128, 6));
-    oscilloscope->setBackgroundColour(Colour (0xff0e0e0e));
+	oscilloscope_ptr->setBounds(oscilloArea.removeFromTop(TITLE_HEIGHT).reduced( (getWidth() / 2) - 128, 6));
+    oscilloscope_ptr->setBackgroundColour(Colour (0xff0e0e0e));
     
     
    
@@ -314,6 +317,8 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
     updateStates();
     
 }
+
+
 
 
 void MonosynthPluginAudioProcessorEditor::buttonClicked (Button* buttonThatWasClicked)

@@ -62,7 +62,9 @@ protected:
     double releaseCoef;
     double sustainLevel;
     double targetRatioA;
+    double old_targetRatioA;
     double targetRatioDR;
+    double old_targetRatioDR;
     double attackBase;
     double decayBase;
     double releaseBase;

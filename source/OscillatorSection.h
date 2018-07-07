@@ -8,12 +8,13 @@
   ==============================================================================
 */
 
+
+
 #ifndef OSCILLATOR_SECTION_H
 #define OSCILLATOR_SECTION_H
 
 
 #include "../JuceLibraryCode/JuceHeader.h"
-
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
 
@@ -26,6 +27,8 @@ public:
     OscillatorSection(MonosynthPluginAudioProcessor& p);
     ~OscillatorSection();
 
+    void setLabelStyle(Label& label, String f);
+    
     void paint (Graphics&) override;
     void resized() override;
     
@@ -44,7 +47,6 @@ public:
 
 private:
     MonosynthPluginAudioProcessor& processor;
-
 
     enum style
 	{
@@ -106,7 +108,7 @@ private:
 
     String font;
     
-    void setLabelStyle(Label& label);
+   
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OscillatorSection)
 };

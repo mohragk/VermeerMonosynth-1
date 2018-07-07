@@ -12,7 +12,7 @@
 #include "OscillatorSection.h"
 
 //==============================================================================
-OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) : 
+OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     processor(p),
 
 	oscillatorsLabel(nullptr),
@@ -48,14 +48,14 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
         
         oscGainLabel[osc] = std::unique_ptr<Label> (new Label("OSC"+std::to_string(osc)+" Gain Label", TRANS("Gain")));
         addAndMakeVisible(oscGainLabel[osc].get());
-        setLabelStyle(*oscGainLabel[osc].get());
+        setLabelStyle(*oscGainLabel[osc].get(), font);
         
         oscWaveformSlider[osc] = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.oscModeParam[osc], knobStyle(LINEARHORIZONTAL)) );
         addAndMakeVisible (oscWaveformSlider[osc].get()); //no label but graphics
         
         oscWaveformLabel[osc] = std::unique_ptr<Label>(new Label ("OSC"+std::to_string(osc)+" Waveform Label", TRANS("Shape")));
         addAndMakeVisible (oscWaveformLabel[osc].get());
-        setLabelStyle(*oscWaveformLabel[osc].get());
+        setLabelStyle(*oscWaveformLabel[osc].get(), font);
         
         oscTuneSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscDetuneAmountParam[osc], knobStyle(ROTARY)));
         addAndMakeVisible(oscTuneSlider[osc].get()); //
@@ -63,7 +63,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
         
         oscTuneLabel[osc] = std::unique_ptr<Label> (new Label ("OSC"+std::to_string(osc)+" Tune Label", TRANS("Tune")));
         addAndMakeVisible (oscTuneLabel[osc].get());
-        setLabelStyle(*oscTuneLabel[osc].get());
+        setLabelStyle(*oscTuneLabel[osc].get(), font);
         
         
         oscOffsetSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscOffsetParam[osc], knobStyle(ROTARY)));
@@ -75,7 +75,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
         
         oscOffsetLabel[osc] = std::unique_ptr<Label> (new Label ("oscOffsetLabel"+std::to_string(osc), TRANS("Offset")));          //
         addAndMakeVisible (oscOffsetLabel[osc].get());
-        setLabelStyle(*oscOffsetLabel[osc].get());
+        setLabelStyle(*oscOffsetLabel[osc].get(), font);
         
         
         // PWM
@@ -98,16 +98,16 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
    
     oscSyncLabel = std::unique_ptr<Label> (new Label ("oscSyncLabel", TRANS("Sync")));                 //
     addAndMakeVisible (oscSyncLabel.get());
-    setLabelStyle(*oscSyncLabel.get());
+    setLabelStyle(*oscSyncLabel.get(), font);
     
     
     oscSyncONLabel = std::unique_ptr<Label> (new Label ("oscSyncONLabel",TRANS("-on")));
     addAndMakeVisible (oscSyncONLabel.get());
-    setLabelStyle(*oscSyncONLabel.get());
+    setLabelStyle(*oscSyncONLabel.get(), font);
     
     oscSyncOFFLabel = std::unique_ptr<Label> (new Label ("oscSyncOFFLabel", TRANS("-off")));
     addAndMakeVisible (oscSyncOFFLabel.get());
-    setLabelStyle(*oscSyncOFFLabel.get());
+    setLabelStyle(*oscSyncOFFLabel.get(), font);
     
     
     
@@ -118,10 +118,10 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     
     pitchModLabel = std::unique_ptr<Label> (new Label ("OSC2 Gain Label", TRANS("Pitch Mod")));                     //
     addAndMakeVisible (pitchModLabel.get());
-    setLabelStyle(*pitchModLabel.get());
+    setLabelStyle(*pitchModLabel.get(), font);
     
     
-   
+    
     
     //
     // Drawables for symbols/icons
@@ -158,9 +158,9 @@ OscillatorSection::~OscillatorSection()
 {
 }
 
-void OscillatorSection::setLabelStyle(Label& label)
+void OscillatorSection::setLabelStyle(Label& label, String f)
 {
-    label.setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    label.setFont (Font (f, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     label.setJustificationType (Justification::centred);
     label.setEditable (false, false, false);
     label.setColour (TextEditor::textColourId, Colours::black);
@@ -422,62 +422,7 @@ void OscillatorSection::resized()
         pulsewidthAmountSlider[osc]->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
     }
     
-    /*
-    {
-        
-        Rectangle<int> oscArea (area.removeFromLeft((stripWith)));
-        
-        osc2GainLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc2GainLabel->setJustificationType(Justification::centredBottom);
-        osc2GainSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
-        
-        
-        osc2WaveformLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc2WaveformLabel->setJustificationType(Justification::centredBottom);
-        osc2WaveformSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
-        
-        osc2TuneLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc2TuneLabel->setJustificationType(Justification::centredBottom);
-        osc2TuneSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
-        
-        osc2OffsetLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc2OffsetLabel->setJustificationType(Justification::centredBottom);
-        osc2OffsetSlider->setBounds (oscArea.removeFromTop(rotaryHeight + rotaryTextHeight));
-        
-        
-        
-        
-        pulsewidth2Slider->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
-        pulsewidthAmount2Slider->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
-    }
-    {
-        
-        Rectangle<int> oscArea (area.removeFromLeft((stripWith)));
-        
-        osc3GainLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc3GainLabel->setJustificationType(Justification::centredBottom);
-        osc3GainSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
-        
-        
-        osc3WaveformLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc3WaveformLabel->setJustificationType(Justification::centredBottom);
-        osc3WaveformSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
-        
-        osc3TuneLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc3TuneLabel->setJustificationType(Justification::centredBottom);
-        osc3TuneSlider->setBounds (oscArea.removeFromTop(rotaryHeight));
-        
-        osc3OffsetLabel->setBounds (oscArea.removeFromTop(labelHeight));
-        osc3OffsetLabel->setJustificationType(Justification::centredBottom);
-        osc3OffsetSlider->setBounds (oscArea.removeFromTop(rotaryHeight + rotaryTextHeight));
-        
-        
-        
-        
-        pulsewidth3Slider->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
-        pulsewidthAmount3Slider->setBounds(oscArea.removeFromTop(vertSliderHeight).reduced(marginX, marginY));
-    }
-    */
+    
     {
         Rectangle<int> oscArea (area.removeFromLeft((stripWith)));
         

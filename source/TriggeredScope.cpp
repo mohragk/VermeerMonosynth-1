@@ -40,7 +40,7 @@ TriggeredScope::TriggeredScope (TimeSliceThread* backgroundThreadToUse_)
     minBuffer.clear (bufferSize);
     maxBuffer.clear (bufferSize);
      
-    startTimerHz (60);
+    startTimerHz (30);
 }
 
 TriggeredScope::~TriggeredScope()

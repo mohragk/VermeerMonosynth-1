@@ -24,11 +24,15 @@
   ==============================================================================
 */
 
+
+
+
 #ifndef PLUGIN_EDITOR_H
 #define PLUGIN_EDITOR_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+
 #include "OscillatorSection.h"
 #include "FilterSection.h"
 #include "EnvelopeSection.h"
@@ -36,7 +40,6 @@
 #include "MasterSection.h"
 #include "Sequencer.h"
 #include "TriggeredScope.h"
-
 
 
 //==============================================================================
@@ -53,6 +56,7 @@ public:
     ~MonosynthPluginAudioProcessorEditor();
 
     //==============================================================================
+    
     void paint (Graphics&) override;
     void resized() override;
     void timerCallback() override;
@@ -77,7 +81,7 @@ public:
     std::unique_ptr<MasterSection> masterSection;
     std::unique_ptr<Sequencer> sequencerSection;
 
-	TriggeredScope* oscilloscope;
+    TriggeredScope* oscilloscope_ptr;
     
     
 private:
