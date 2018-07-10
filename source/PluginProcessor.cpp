@@ -781,7 +781,7 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 	for (int i = 0; i < numSamples; i++)
 	{
 		dataL[i] = getWaveshaped(readLeft[i], saturation, *waveshapeModeParam);
-        dataR[i] = dataL[i];  //getWaveshaped(readRight[i], saturation, *waveshapeModeParam);
+        dataR[i] = dataL[i];  
 	}
 }
 
@@ -800,7 +800,6 @@ void MonosynthPluginAudioProcessor::updateCurrentTimeInfoFromHost()
 {
     if (AudioPlayHead* ph = getPlayHead())
     {
-       
         AudioPlayHead::CurrentPositionInfo newTime;
         
         if (ph->getCurrentPosition (newTime))
@@ -914,19 +913,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         
         scope.setNewTriggerPoint(newPos);
         scope.setNumSamplesPerPixel( ( 128 -  note ) * ( osFactor / 16 ) );
-       
-        
-        //SEQUENCER
-        /*
-        sequencerProcessor.get()->setMaxSteps(*maxStepsParam);
-        sequencerProcessor.get()->setTimeDivision(*stepDivisionFloatParam);
-        
-        for (int i = 0; i < 8; i++ )
-            sequencerProcessor.get()->setStepPitch(i, *stepPitchParam[i]);
-        
-        sequencerProcessor.get()->setGlobalNoteLength(*stepNoteLengthParam);
-        sequencerProcessor.get()->setBPM(lastPosInfo.bpm);
-         */
+      
         
         seqState.get()->setMaxSteps(*maxStepsParam);
         
@@ -937,13 +924,8 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             seqState.get()->setPitchAmountForStep(i, *stepPitchParam[i]);
         
         seqState.get()->setNoteDuration(*stepNoteLengthParam);
-        
-        
-        
-        
-        
+     
         // set various parameters
-        
         for(int osc = 0; osc < 3; osc++)
         {
             synthVoice->setGainForOscillator( dbToGain(*oscGainParam[osc], MIN_INFINITY_DB), osc );
@@ -951,7 +933,6 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             synthVoice->setDetuneAmountForOscillator(*oscDetuneAmountParam[osc], *oscOffsetParam[osc], osc);
             synthVoice->setPulsewidthModAmountForOscillator(*pulsewidthAmountParam[osc], osc);
         }
-        
         
         pulsewidthSmooth1.setValue(*pulsewidthParam[0]);// FIXXX
         pulsewidthSmooth2.setValue(*pulsewidthParam[1]);
@@ -965,28 +946,14 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             synthVoice->setPulsewidthForOscillator(smoothing[PW_3_SMOOTHER]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
         }
       
-
         synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
         synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve2Param, *decayRelCurve2Param);
-
-        synthVoice->setPitchEnvelopeAmount(*pitchModParam);
-
-        
-
-        
-
+		synthVoice->setPitchEnvelopeAmount(*pitchModParam);
         synthVoice->setHardSync(*oscSyncParam);
-
+		synthVoice->sendLFO(lfo);
         
-
-        
-
 		saturationAmount.setValue(*saturationParam);
         
-        
-        
-        synthVoice->sendLFO(lfo);
-
 		//ARPEGGIATOR
 		double hertz = getLFOSyncedFreq(lastPosInfo, *arpeggioNoteLengthParam);
 		arp.setSpeedInHz(hertz);

@@ -28,14 +28,9 @@
 #define PLUGIN_PROCESSOR_H
 
 
-
 #include "../JuceLibraryCode/JuceHeader.h"
 
-
-
-
 #include "adsr/ADSR.h"
-//#include "PulseClock.h"
 #include "lfo.h"
 #include "SequencerState.h"
 #include "SequencerProcessor.h"
@@ -49,10 +44,6 @@
 #include "MoogLadders/VAOnePole.h"
 #include "MoogLadders/DiodeLadderModel.h"
 #include "MoogLadders/ThreeFiveModel.h"
-
-
-
-
 
 
 //==============================================================================
