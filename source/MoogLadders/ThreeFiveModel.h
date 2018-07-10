@@ -135,7 +135,7 @@ public:
 
 			FloatType u = Alpha0 * y1 + S35;
 
-			u = fast_tanh(drive * u);
+			u = saturationLUT(drive * u);
 
 			y = resonance.get() * va_LPF2.doFilter(u);
 
@@ -152,7 +152,7 @@ public:
 
 			y = resonance.get() * u;
 
-			y = fast_tanh(drive * y);
+			y = saturationLUT(drive * y);
 
 			va_LPF1.doFilter(va_HPF2.doFilter(y));
 		}

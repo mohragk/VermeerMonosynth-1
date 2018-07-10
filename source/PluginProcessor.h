@@ -142,7 +142,6 @@ public:
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
 
-
     // this keeps a copy of the last set of time info that was acquired during an audio
     // callback - the UI component will read this and display it.
     AudioPlayHead::CurrentPositionInfo lastPosInfo;
@@ -374,7 +373,17 @@ private:
     
     bool filterOn = true;
     
-	std::unique_ptr<ParamSmoother> smoothing[6];
+	enum smootherForParam {
+		CUTOFF_SMOOTHER,
+		KEY_CUTOFF_SMOOTHER,
+		PW_1_SMOOTHER,
+		PW_2_SMOOTHER,
+		PW_3_SMOOTHER,
+		numSmoothers
+
+	};
+
+	std::unique_ptr<ParamSmoother> smoothing[numSmoothers];
     
     std::unique_ptr<LadderFilterBase> filterA, filterB, filterC;
     

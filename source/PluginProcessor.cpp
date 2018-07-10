@@ -278,7 +278,7 @@ arpeggioUseParam(nullptr)
     oversamplingDoubleHQ = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
     
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < numSmoothers; i++)
         smoothing[i] = std::unique_ptr<ParamSmoother>(new ParamSmoother);
     
    // sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( keyboardState ) );
@@ -379,7 +379,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     filterC->Reset();
     
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < numSmoothers; i++)
         smoothing[i]->reset();
 }
 
@@ -407,7 +407,7 @@ void MonosynthPluginAudioProcessor::reset()
     filterB->Reset();
     filterC->Reset();
 	
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < numSmoothers; i++)
         smoothing[i]->reset();
 }
 
@@ -445,29 +445,23 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     if(*useHQOversamplingParam)
     {
         newsr *= oversamplingDoubleHQ->getOversamplingFactor();
-       // if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDoubleHQ->getLatencyInSamples())); }
-      //  else                            { setLatencySamples(roundToInt(oversamplingFloatHQ->getLatencyInSamples())); }
+        if ( isUsingDoublePrecision() ) { setLatencySamples(roundToInt(oversamplingDoubleHQ->getLatencyInSamples())); }
+        else                            { setLatencySamples(roundToInt(oversamplingFloatHQ->getLatencyInSamples())); }
     }
     else
     {
         newsr *= oversamplingDouble->getOversamplingFactor();
-        //if ( isUsingDoublePrecision() )    { setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
-        //else                            { setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
+        if ( isUsingDoublePrecision() ) { setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
+        else                            { setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
     }
     
     
     synth.setCurrentPlaybackSampleRate (newsr);
-    
-   // sequencerProcessor.get()->setSampleRate(newsr);
-   // sequencerProcessor.get()->setPulseClockSampleRate(newsr);
-
-    seqState.get()->prepareToPlay(newsr);
-    
-    
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
-
 	synthVoice->setEnvelopeSampleRate(newsr);
     
+	seqState.get()->prepareToPlay(newsr);
+	arp.prepareToPlay(newsr, 0);
     
     filterA->SetSampleRate(newsr);
     filterB->SetSampleRate(newsr);
@@ -486,18 +480,16 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     pulsewidthSmooth2.reset(newsr, cutoffRampTimeDefault);
     pulsewidthSmooth3.reset(newsr, cutoffRampTimeDefault);
     
+
    
     
-    
-    smoothing[0]->init(newsr, 4.0);
-    
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < numSmoothers; i++)
         smoothing[i]->init(newsr, 2.0);
-    
-    smoothing[4]->init(newsr, 10.0);
 
-	arp.prepareToPlay(newsr, 0);
+	smoothing[CUTOFF_SMOOTHER]->init(newsr, 4.0);
     
+    smoothing[KEY_CUTOFF_SMOOTHER]->init(newsr, 10.0);
+
     sampleRate = newsr;
 }
 
@@ -518,9 +510,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         prevHqOversampling = hqOn;
     }
 
-    
-    
-    
+
     
     // OVERSAMPLING
     dsp::AudioBlock<FloatType> block (buffer);
@@ -696,7 +686,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
 
 		if (*useFilterKeyFollowParam)
-			currentCutoff += smoothing[4].get()->processSmooth( keyFollowCutoff - CUTOFF_MIN);
+			currentCutoff += smoothing[KEY_CUTOFF_SMOOTHER].get()->processSmooth( keyFollowCutoff - CUTOFF_MIN);
 		
 			
         
@@ -730,7 +720,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff = currentCutoff + smoothing[0]->processSmooth( cutoff.getNextValue() ) ;
+        FloatType combinedCutoff = currentCutoff + smoothing[CUTOFF_SMOOTHER]->processSmooth( cutoff.getNextValue() ) ;
 
 		if (combinedCutoff > CUTOFF_MAX) combinedCutoff = CUTOFF_MAX;
 		if (combinedCutoff < CUTOFF_MIN) combinedCutoff = CUTOFF_MIN;
@@ -970,9 +960,9 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         
         if (i % stepSize == 0)
         {
-            synthVoice->setPulsewidthForOscillator(smoothing[1]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
-            synthVoice->setPulsewidthForOscillator(smoothing[2]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
-            synthVoice->setPulsewidthForOscillator(smoothing[3]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
+            synthVoice->setPulsewidthForOscillator(smoothing[PW_1_SMOOTHER]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
+            synthVoice->setPulsewidthForOscillator(smoothing[PW_2_SMOOTHER]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
+            synthVoice->setPulsewidthForOscillator(smoothing[PW_3_SMOOTHER]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
         }
       
 

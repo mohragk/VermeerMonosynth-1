@@ -19,7 +19,6 @@
 #define IMPROVED_LADDER_H
 
 #include "LadderFilterBase.h"
-#include "../../JuceLibraryCode/JuceHeader.h"
 
 /*
  This model is based on a reference implementation of an algorithm developed by
@@ -234,7 +233,7 @@ private:
 
     
     std::array<double, 4> V, dV, tV;
-	dsp::LookupTableTransform<double> saturationLUT{ [](double x) { return std::tanh(x); }, double(-1), double(1), 256 };
+	
     
     double x;
     double g;
