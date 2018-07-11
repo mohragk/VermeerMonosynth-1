@@ -45,6 +45,7 @@ class Arpeggiator
 			{
 				auto numSamples = buffer.getNumSamples();
 
+                
 				auto noteDuration = static_cast<int> ( std::round( sampleRate / speedInHz) ) ;
 
 				MidiMessage msg;
@@ -56,6 +57,9 @@ class Arpeggiator
 					{
 						sortedNotes.add(msg.getNoteNumber());
 						playedNotes.add(msg.getNoteNumber());
+                        
+                        if(sortedNotes.size() == 1)
+                            time=0;
 					}
 					else if (msg.isNoteOff()) 
 					{
@@ -67,6 +71,11 @@ class Arpeggiator
 
 				midi.clear();
 
+                if (prevSpeedInHz != speedInHz)
+                {
+                    midi.addEvent(MidiMessage::allNotesOff(0), 0);
+                }
+                
 				if ((time + numSamples) >= noteDuration)
 				{
 					auto offset = jmax(0, jmin((int)(noteDuration - time), numSamples - 1));
@@ -97,11 +106,13 @@ class Arpeggiator
 				}
 
 				time = (time + numSamples) % noteDuration;
+                prevSpeedInHz = speedInHz;
 			}
 		}
 
 	private:
-		float speedInHz; //CHANGE
+		float speedInHz;
+        float prevSpeedInHz;
 		int currentNote, lastNoteValue;
 		int time;
 		float sampleRate;

@@ -22,33 +22,33 @@ public:
                         maxSteps(8),
                         numSteps(8),
                         currentStep(0),
+						time(0),
                         sampleRate(44100.0),
-                        speedInHz(10.0)
+                        speedInHz(10.0),
+						noteLengthAmount(0.5)
     {
-        for (int i = 0; i < numSteps; i++)
-        {
-			Step s;
-            steps.add(s);
-        }
+
     }
 
     ~SequencerState()
     {
-        steps.clear();
     }
-
-   
 
     struct Step
     {
-        int     noteValue = 60;
-        int     pitch = 0;
-        bool    isActive = false;
-        bool    isReleased = false;
         
-        int setAndCalculateNoteValue(int note)
+        int     noteValue;
+        int     pitch;
+        bool    isActive = false;
+        
+        int getPitchedNoteValue()
         {
-            return  note + pitch;
+            return noteValue + pitch;
+        }
+        
+        void setInitialNoteValue (int note)
+        {
+            noteValue = note;
         }
         
         void setPitch(int p)
@@ -61,20 +61,22 @@ public:
             isActive = a;
         }
         
-    };
+    } steps[8];
 
-	
+    
+    Step getStepData (int s) { return steps[s]; };
 
 	//METHODS
     void prepareToPlay(double sr)
     {
+	    pressedKeys.clear();
         sampleRate = sr;
         currentStep = 0;
         time = 0;
         speedInHz = 10.0;
     }
 	
-    void setStepSpeedInHz (double hz)
+    void setSpeedInHz (double hz)
     {
         speedInHz = hz;
     }
@@ -111,42 +113,72 @@ public:
             for(MidiBuffer::Iterator it(midi); it.getNextEvent(msg, ignore);)
             {
                 if (msg.isNoteOn())
-                    currentNoteValue = msg.getNoteNumber();
+                {
+                    int note = msg.getNoteNumber();
+                    
+                    for (int i = 0; i < numSteps; ++i)
+                        steps[i].setInitialNoteValue(note);
+                    
+                    pressedKeys.add(note);
+                    
+                    if (pressedKeys.size() == 1)
+                    {
+                        currentStep = 0;
+                        time = 0;
+                    }
+					steps[currentStep].setActive(true);
+                    
+                    
+                }
+                
                 
                 if (msg.isNoteOff())
-                    currentNoteValue = -1;
+                {
+                    int note = msg.getNoteNumber();
+                    pressedKeys.removeFirstMatchingValue(note);
+                }
+                
             }
             
-            midi.clear();
             
 
-            if ( (time + numSamples + difference) >= noteDuration )
+            if ( (time + numSamples + difference) >= stepDuration)
             {
                 auto offset =  jmin((int)(noteDuration - time), numSamples - 1) ;
                 
                 if (offset >= 0)
                 {
-
-                    int note = steps[currentStep].noteValue;
-                    midi.addEvent(MidiMessage::noteOff(1, note), offset);
-                    steps[currentStep].setActive(false);
-                    
-                    currentStep = (currentStep + 1) % maxSteps ;
-                    
-                    
-
+                    for (int i = 0; i < numSteps; i++)
+                    {
+                        if (steps[i].isActive)
+                        {
+                            int note = steps[i].getPitchedNoteValue();
+                            midi.addEvent(MidiMessage::noteOff(1, note), offset);
+                            steps[i].setActive(false);
+                        }
+                    }
                 }
-                    
             }
             
             
             if ( (time + numSamples) >= stepDuration )
             {
                 auto offset =  jmax( 0, jmin((int)(stepDuration - time), numSamples - 1) );
-                steps[currentStep].setNoteValue(currentNoteValue);
-                steps[currentStep].setActive(true);
+             
+                if (pressedKeys.size() > 0)
+                {
+                    int note = pressedKeys.getLast();
+                    for (int i = 0; i < numSteps; ++i)
+                        steps[i].setInitialNoteValue(note);
+                    
+					currentStep = (currentStep + 1) % (maxSteps + 1);
+
+                    steps[currentStep].setActive(true);
+                    
+                    int pitchedNote = steps[currentStep].getPitchedNoteValue();
+                    midi.addEvent(MidiMessage::noteOn(1, pitchedNote, (uint8)127), offset);
+                }
                 
-                midi.addEvent(MidiMessage::noteOn(1, currentNoteValue, (uint8)127), offset);
             }
             
             
@@ -154,42 +186,11 @@ public:
         }
     }
     
-    
-    struct Step
-    {
-        int     noteValue = -1;
-        int     pitch = 0;
-        bool    isActive = false;
-        bool    isReleased = false;
-        
-        void setNoteValue(double note)
-        {
-            noteValue = note + pitch;
-        }
-        
-        void setPitch(int p)
-        {
-            pitch = p;
-        }
-        
-        void setActive (bool a)
-        {
-            isActive = a;
-        }
-        
-    };
-    
-    
 
 private:
-
-
-	//MEMBERS
     int maxSteps;
     int numSteps;
     int currentStep;
-    
-    int currentNoteValue;
     
     int time;
 
@@ -197,9 +198,8 @@ private:
     
     double speedInHz;
     double noteLengthAmount;
-    
-    Array<Step> steps;
-    
+        
+    Array<int> pressedKeys;
 
     JUCE_LEAK_DETECTOR (SequencerState)
 };

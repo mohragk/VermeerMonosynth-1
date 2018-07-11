@@ -101,7 +101,7 @@ class SEMModel : public LadderFilterBase
 
 			//lpf *= 2.0 / resonance;
 
-			lpf = fast_tanh(drive *lpf);
+			lpf = saturationLUT(drive *lpf);
 
 			softClip(lpf);
 

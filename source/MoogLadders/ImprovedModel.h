@@ -19,7 +19,6 @@
 #define IMPROVED_LADDER_H
 
 #include "LadderFilterBase.h"
-//#include "../../JuceLibraryCode/JuceHeader.h"
 
 /*
  This model is based on a reference implementation of an algorithm developed by
@@ -47,7 +46,6 @@ public:
 		SetResonance(0.0);
 
         Reset();
-
     }
     
     virtual ~ImprovedMoog() { }
@@ -94,7 +92,7 @@ public:
         for (uint32_t i = 0; i < n; i++)
         {
             SetCutoff(beginCutoff);
-            samples[i] = doFilter(samples[i]);
+            samples[i] = doFilterLUT(samples[i]); //TEST
             beginCutoff += increment;
         }
     }
@@ -106,7 +104,7 @@ public:
         for (uint32_t i = 0; i < n; i++)
         {
             SetCutoff(beginCutoff);
-            samples[i] = doFilter(samples[i]);
+            samples[i] = doFilterLUT(samples[i]); //TEST
             beginCutoff += increment;
         }
     }
@@ -203,9 +201,38 @@ private:
 
 		return V[3];
 	}
+
+	template <typename FloatType>
+	FloatType doFilterLUT(FloatType sample)
+	{
+		FloatType dV0, dV1, dV2, dV3;
+
+		dV0 = -g * (saturationLUT((drive * sample + resonance.get() * V[3]) / (2.0 * VT)) + tV[0]);
+		V[0] += (dV0 + dV[0]) / (2.0 * sampleRate * multiplier);
+		dV[0] = dV0;
+		tV[0] = saturationLUT(V[0] / (2.0 * VT));
+
+		dV1 = g * (tV[0] - tV[1]);
+		V[1] += (dV1 + dV[1]) / (2.0 * sampleRate * multiplier);
+		dV[1] = dV1;
+		tV[1] = saturationLUT(V[1] / (2.0 * VT));
+
+		dV2 = g * (tV[1] - tV[2]);
+		V[2] += (dV2 + dV[2]) / (2.0 * sampleRate* multiplier);
+		dV[2] = dV2;
+		tV[2] = saturationLUT(V[2] / (2.0 * VT));
+
+		dV3 = g * (tV[2] - tV[3]);
+		V[3] += (dV3 + dV[3]) / (2.0 * sampleRate * multiplier);
+		dV[3] = dV3;
+		tV[3] = saturationLUT(V[3] / (2.0 * VT));
+
+		return V[3];
+	}
+
     
     std::array<double, 4> V, dV, tV;
-
+	
     
     double x;
     double g;

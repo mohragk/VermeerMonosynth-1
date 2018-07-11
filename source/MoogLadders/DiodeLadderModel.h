@@ -126,7 +126,7 @@ class DiodeLadderModel : public LadderFilterBase
         
 		FloatType U = ( sample - resonance.get() * Sigma ) / ( 1 + resonance.get() * Gamma );
         
-        U = fast_tanh(drive * U);
+        U = saturationLUT(drive * U);
         
         return 2.0 * va_LPF4.doFilter( va_LPF3.doFilter( va_LPF2.doFilter( va_LPF1.doFilter( U ) ) ) ) ;
     }

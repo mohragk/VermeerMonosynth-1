@@ -28,15 +28,11 @@
 #define PLUGIN_PROCESSOR_H
 
 
-
 #include "../JuceLibraryCode/JuceHeader.h"
 
-
-
-
 #include "adsr/ADSR.h"
-//#include "PulseClock.h"
 #include "lfo.h"
+#include "SequencerState.h"
 #include "SequencerProcessor.h"
 #include "ParamSmoother.h"
 #include "TriggeredScope.h"
@@ -48,10 +44,6 @@
 #include "MoogLadders/VAOnePole.h"
 #include "MoogLadders/DiodeLadderModel.h"
 #include "MoogLadders/ThreeFiveModel.h"
-
-
-
-
 
 
 //==============================================================================
@@ -132,7 +124,7 @@ public:
 
     MidiKeyboardState keyboardState;
 
-    std::unique_ptr<SequencerProcessor> sequencerProcessor;
+    std::unique_ptr<SequencerState> seqState;
     
 	TriggeredScope scope;
 
@@ -140,7 +132,6 @@ public:
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
     
-
 
     // this keeps a copy of the last set of time info that was acquired during an audio
     // callback - the UI component will read this and display it.
@@ -171,16 +162,13 @@ public:
     // Our parameters
     AudioParameterFloat* gainParam;
     
-    AudioParameterFloat* osc1GainParam;
-    AudioParameterFloat* osc2GainParam;
-    AudioParameterFloat* osc3GainParam;
-    AudioParameterFloat* osc1DetuneAmountParam;
-    AudioParameterFloat* osc2DetuneAmountParam;
-    AudioParameterFloat* osc3DetuneAmountParam;
-    
-    AudioParameterInt* osc1ModeParam;
-    AudioParameterInt* osc2ModeParam;
-    AudioParameterInt* osc3ModeParam;
+    AudioParameterFloat* oscGainParam[3];
+    AudioParameterFloat* oscDetuneAmountParam[3];
+    AudioParameterInt*   oscModeParam[3];
+    AudioParameterInt*   oscOffsetParam[3];
+    AudioParameterFloat* pulsewidthParam[3];
+    AudioParameterFloat* pulsewidthAmountParam[3];
+   
     
     AudioParameterInt* oscSyncParam;
     
@@ -192,9 +180,7 @@ public:
 
     AudioParameterFloat* pitchModParam;
 
-    AudioParameterInt* oscOffsetParam;
-    AudioParameterInt* osc2OffsetParam;
-    AudioParameterInt* osc3OffsetParam;
+    
 
     
     AudioParameterFloat* attackParam1;
@@ -239,13 +225,7 @@ public:
     AudioParameterInt* filterOrderParam;
     
 
-	AudioParameterFloat* pulsewidth1Param;
-	AudioParameterFloat* pulsewidth2Param;
-	AudioParameterFloat* pulsewidth3Param;
-    
-    AudioParameterFloat* pulsewidthAmount1Param;
-    AudioParameterFloat* pulsewidthAmount2Param;
-    AudioParameterFloat* pulsewidthAmount3Param;
+	
 
 	AudioParameterFloat* saturationParam;
     AudioParameterInt* waveshapeSwitchParam;
@@ -384,7 +364,17 @@ private:
     
     bool filterOn = true;
     
-	std::unique_ptr<ParamSmoother> smoothing[6];
+	enum smootherForParam {
+		CUTOFF_SMOOTHER,
+		KEY_CUTOFF_SMOOTHER,
+		PW_1_SMOOTHER,
+		PW_2_SMOOTHER,
+		PW_3_SMOOTHER,
+		numSmoothers
+
+	};
+
+	std::unique_ptr<ParamSmoother> smoothing[numSmoothers];
     
     std::unique_ptr<LadderFilterBase> filterA, filterB, filterC;
     
