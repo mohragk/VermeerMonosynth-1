@@ -78,7 +78,7 @@ protected:
 	Atomic<double> resonance;
 	double drive;
 
-	dsp::LookupTableTransform<double> saturationLUT{ [](double x) { return std::tanh(x); }, double(-5), double(5), 256 };
+	dsp::LookupTableTransform<double> saturationLUT{ [](double x) { return std::tanh(x); }, double(-5), double(5), 128 };
 
 };
 

@@ -46,7 +46,6 @@ public:
 		SetResonance(0.0);
 
         Reset();
-
     }
     
     virtual ~ImprovedMoog() { }
