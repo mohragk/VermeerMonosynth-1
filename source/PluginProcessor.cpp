@@ -539,8 +539,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     // SEQUENCER
-    //sequencerProcessor.get()->processSequencer(midiMessages, osBuffer.getNumSamples(), bool( *useSequencerParam ));
-    
     seqState.get()->processBuffer(osBuffer, midiMessages, bool(*useSequencerParam));
   
 	//ARPEGGIATOR

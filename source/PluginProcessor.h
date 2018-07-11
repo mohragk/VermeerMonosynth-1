@@ -281,6 +281,8 @@ private:
     void updateOscilloscope(AudioBuffer<FloatType>& buffer);
     
 	
+    dsp::LookupTableTransform<double> tanhLUT   { [](double x) { return std::tanh(x); }, double(-5), double(5), 128 };
+    dsp::LookupTableTransform<double> arrayaLUT { [](double x) { return (3.0 * x / 2.0) * (1 - x * x / 3.0); }, double(-5), double(5), 128 };
     
 
 	double getWaveshaped(double sample, double overdrive, int mode)
@@ -288,11 +290,11 @@ private:
         
         // tanh
         if (mode == 0)
-            return dsp::FastMathApproximations::tanh(overdrive * sample);
+            return tanhLUT(overdrive * sample);
         
         
         //Arraya
-        return (3.0 * (sample * overdrive) / 2) * (1 - ((sample * overdrive) * (sample * overdrive)) / 3.0);
+        return arrayaLUT(overdrive * sample);
         
     };
 
@@ -378,7 +380,8 @@ private:
     
     std::unique_ptr<LadderFilterBase> filterA, filterB, filterC;
     
-    bool useSequencer = false;
+   
+    
     
     static BusesProperties getBusesProperties();
    
