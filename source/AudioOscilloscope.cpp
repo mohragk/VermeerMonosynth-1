@@ -30,7 +30,7 @@ AudioOscilloscope::AudioOscilloscope()
     
     setOpaque (true);
     resized();                  // initialise image
-    startTimer (1000/60);     // repaint every 1/50 of a second
+    startTimerHz (60);     // repaint every 1/50 of a second
 }
 
 
