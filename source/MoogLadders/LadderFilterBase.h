@@ -49,22 +49,7 @@ public:
     virtual void SetResonance(double r) = 0;
     virtual bool SetCutoff(double c) = 0;
     virtual void SetDrive(double d) = 0;
-  
-	/*
-
-	virtual void SetCutoffCV1 (double modulator, double amount)
-	{
-	double remapped = ( (20000.0 - 40.0) * (modulator - 0.0) / (1.0 - 0.0) + 40.0 );
-	SetCutoff(remapped * amount);
-	}
-
-	virtual void SetCutoffCV2 (double modulator, double amount)
-	{
-	double remapped = ( (20000.0 - 40.0) * (modulator - 0.0) / (1.0 - 0.0) + 40.0 );
-	SetCutoff(remapped * amount);
-	}
-	*/
-    
+      
     enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
     
     virtual double GetResonance() { return resonance.get(); }

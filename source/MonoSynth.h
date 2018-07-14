@@ -329,9 +329,9 @@ private:
 				FloatType osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreq);
 
 				//Set the new frequency
-                osc[0]->setFrequency(osc1Detuned);
-                osc[1]->setFrequency(osc2Detuned);
-                osc[2]->setFrequency(osc3Detuned);
+                osc[0]->setTargetFrequency(osc1Detuned);
+                osc[1]->setTargetFrequency(osc2Detuned);
+                osc[2]->setTargetFrequency(osc3Detuned);
                 
                                
                 if (osc[0]->isRephase() && hardSync)

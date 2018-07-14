@@ -80,11 +80,13 @@ public:
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
     {
 
+        /*
         jassert (! isUsingDoublePrecision());
         if (*useHQOversamplingParam)
             process (buffer, midiMessages, oversamplingDoubleHQ);
         else
             process (buffer, midiMessages, oversamplingDouble);
+         */
     }
 
 
@@ -346,7 +348,7 @@ private:
     template <typename FloatType>
     void softClipBuffer(AudioBuffer<FloatType>& buffer);
 
-    float contourVelocity;
+    float  contourVelocity;
 	double cutoffModulationAmt; 
     
     double currentCutoff = 40.0, prevCutoff = 40.0;

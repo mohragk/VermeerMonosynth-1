@@ -259,8 +259,10 @@ void TriggeredScope::renderImage()
         
         Colour newCol = Colour(val, val, val, blendFactor);
         g.setColour (newCol);
-        Line<float> l (oldX, oldY, currentX, top );
-        g.drawLine(l, 2.0f);
+        
+        line.setStart(oldX, oldY);
+        line.setEnd(currentX, top);
+        g.drawLine(line, 2.0f);
         ++currentX;
         
         oldX = currentX;

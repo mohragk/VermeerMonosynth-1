@@ -102,6 +102,8 @@ private:
     CriticalSection imageLock;
     
     Colour backGroundColour;
+    
+    Line<float> line;
 
 	bool armedUp = false;
 	bool shouldTrigger = false;

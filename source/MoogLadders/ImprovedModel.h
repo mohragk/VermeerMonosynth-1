@@ -61,7 +61,7 @@ public:
         
     }
     
-    virtual void Update() override
+    virtual inline void Update() override
     {
         x = (MOOG_PI * cutoff.get()) / (sampleRate * multiplier);
         g = 4.0 * MOOG_PI * VT * cutoff.get() * (1.0 - x) / (1.0 + x);

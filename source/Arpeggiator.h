@@ -73,7 +73,7 @@ class Arpeggiator
 
                 if (prevSpeedInHz != speedInHz)
                 {
-                    midi.addEvent(MidiMessage::allNotesOff(0), 0);
+                    midi.addEvent(MidiMessage::allNotesOff(1), 0);
                 }
                 
 				if ((time + numSamples) >= noteDuration)
