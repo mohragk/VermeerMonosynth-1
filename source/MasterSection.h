@@ -57,7 +57,9 @@ private:
         saturationModeSlider,
 
 	   arpeggiatorSpeedSlider,
-	   arpeggioSwitchSlider
+	   arpeggioSwitchSlider,
+    
+        glideTimeSlider
 
     ;
     

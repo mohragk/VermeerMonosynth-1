@@ -90,7 +90,8 @@ public:
         double t = phase.get(); // normalize period
         
         phaseIncrement = updatePhaseIncrement(frequency.get());
-
+        
+        
 		if (phaseIncrement == 0.0)
 			return value;
         
@@ -132,6 +133,7 @@ public:
             rephase = true;
         }
     
+       
         
         return value * level * gain.get();
     }
@@ -197,6 +199,8 @@ private:
         const double nyFreq = jmin( freq, sampleRate / 2.0 );
         return ( nyFreq ) / sampleRate;
     }
+    
+   
     
 
     double sampleRate,  phaseIncrement;

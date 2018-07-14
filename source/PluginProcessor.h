@@ -250,6 +250,8 @@ public:
 
 	AudioParameterFloat* arpeggioNoteLengthParam;
 	AudioParameterBool*  arpeggioUseParam;
+    
+    AudioParameterFloat* glideTimeParam;
 
 
 	String debugInfo;

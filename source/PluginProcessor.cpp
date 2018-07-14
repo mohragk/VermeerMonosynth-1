@@ -103,7 +103,9 @@ useSequencerParam(nullptr),
 useHQOversamplingParam(nullptr),
 
 arpeggioNoteLengthParam(nullptr),
-arpeggioUseParam(nullptr)
+arpeggioUseParam(nullptr),
+
+glideTimeParam(nullptr)
 
 
 
@@ -256,6 +258,11 @@ arpeggioUseParam(nullptr)
 	//ARPEGGIATOR
 	addParameter(arpeggioNoteLengthParam = new AudioParameterFloat("apreggioNoteLengthParam", "Arpeggio Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin), 16.0));
 	addParameter(arpeggioUseParam = new AudioParameterBool("arpeggioUseParam", "Arpeggio ON/OFF", false));
+    
+    
+   
+    //GLIDE
+    addParameter(glideTimeParam = new AudioParameterFloat("glideTimeParam", "Glide Time", NormalisableRange<float>(0.0, 5000.0, 0.0 , 0.5 ), 0.0));
     
     initialiseSynth();
     
@@ -949,6 +956,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 		synthVoice->setPitchEnvelopeAmount(*pitchModParam);
         synthVoice->setHardSync(*oscSyncParam);
 		synthVoice->sendLFO(lfo);
+        synthVoice->setGlideTime(int(*glideTimeParam));
         
 		saturationAmount.setValue(*saturationParam);
         

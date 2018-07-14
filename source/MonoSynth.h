@@ -57,13 +57,13 @@ public:
         phase(0.0),
         envState(0),
         numOscillators(3),
+        glideTimeMillis(0),
         initialNote(0),
         noteOffset(0),
         lfoValue(0.0),
         egValue(0.0),
         pitchModulation(0.0),
         pitchBendOffset(0.0),
-        glideTime(0.0),
         midiFrequency(0.0),
         maxFreq(0.0), minFreq(0.0),
         pitchModAmount(0.0),
@@ -213,6 +213,11 @@ public:
         return filterEnvelope.get()->process();
     }
     
+    void setGlideTime(int timeInMillis)
+    {
+        glideTimeMillis = timeInMillis;
+    }
+    
     // Pretty dumb name, but this influences the amount of pitch deviation generated from the envelope.
     void setPitchEnvelopeAmount (const float pitchMod )
     {
@@ -328,10 +333,18 @@ private:
 				FloatType osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreq);
 				FloatType osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreq);
 
-				//Set the new frequency
-                osc[0]->setTargetFrequency(osc1Detuned);
-                osc[1]->setTargetFrequency(osc2Detuned);
-                osc[2]->setTargetFrequency(osc3Detuned);
+                targetFrequency[0] = osc1Detuned;
+                targetFrequency[1] = osc2Detuned;
+                targetFrequency[2] = osc3Detuned;
+                
+             
+                for (int i = 0; i < 3; i++)
+                {
+                    updateGlidedFrequency(targetFrequency[i], currentFrequency[i], glideTimeMillis);
+                    osc[i]->setFrequency(currentFrequency[i]);
+                }
+            
+               
                 
                                
                 if (osc[0]->isRephase() && hardSync)
@@ -360,7 +373,18 @@ private:
     }
     
     
-  
+    void updateGlidedFrequency (double targetFreq, double& currentFreq,  int glideT)
+    {
+        if (glideTimeMillis > 0)
+        {
+            auto increment = ( targetFreq - currentFreq) / ((static_cast<double>(glideT) / 1000.0) * sampleRate);
+            currentFreq = currentFreq + increment;
+        }
+        else
+        {
+            currentFreq = targetFreq;
+        }
+    }
     
     
     double softClip(double s)
@@ -406,12 +430,16 @@ private:
 
     double phase = 0.0;
 
+    double targetFrequency[3];
+    double currentFrequency[3];
+    
 	int envState;
     
     int numOscillators = 3;
     
     int initialNote = 0;
     int noteOffset;
+    int glideTimeMillis;
     
     int sampleCounter;
 
@@ -423,7 +451,6 @@ private:
    
     
     double pitchBendOffset = 0;
-    double glideTime;
   
     
     double midiFrequency;
