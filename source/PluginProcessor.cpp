@@ -262,7 +262,7 @@ glideTimeParam(nullptr)
     
    
     //GLIDE
-    addParameter(glideTimeParam = new AudioParameterFloat("glideTimeParam", "Glide Time", NormalisableRange<float>(0.0, 5000.0, 0.0 , 0.5 ), 0.0));
+    addParameter(glideTimeParam = new AudioParameterFloat("glideTimeParam", "Glide Time", NormalisableRange<float>(0.0, 5000.0, 0.0 , 0.25 ), 0.0));
     
     initialiseSynth();
     

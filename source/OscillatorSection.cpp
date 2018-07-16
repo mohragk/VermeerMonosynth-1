@@ -87,9 +87,25 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
         pulsewidthAmountSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthAmountParam[osc], LINEARHORIZONTAL));
         addAndMakeVisible(pulsewidthAmountSlider[osc].get());  //
         pulsewidthAmountSlider[osc].get()->setTooltip("Set pulsewidth modulation amount from LFO");
+        
+        
+        
     }
     
    
+    //GLIDE
+    
+    glideLabel = std::unique_ptr<Label> (new Label("glideTimeLabel", TRANS("Glide")));
+    addAndMakeVisible(glideLabel.get());
+    setLabelStyle(*glideLabel.get(), font);
+    
+    
+    glideTimeSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.glideTimeParam, knobStyle(ROTARY) ) );
+    addAndMakeVisible(glideTimeSlider.get());
+    glideTimeSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
+    glideTimeSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
+    glideTimeSlider->setDoubleClickReturnValue(true, 0.5);
+    glideTimeSlider->setTooltip("Glide Time (ms)");
     
 	oscSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscSyncParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (oscSyncSlider.get());
@@ -385,7 +401,7 @@ void OscillatorSection::resized()
     oscillatorsLabel->setJustificationType(Justification::centred);
     
     
-    int stripWith = 72;
+    int stripWidth = 72;
     int labelHeight = 24;
     int rotaryHeight = 60;
     int rotaryTextHeight = 10;
@@ -396,7 +412,7 @@ void OscillatorSection::resized()
     for(int osc = 0; osc < 3; osc++)
     {
         
-        Rectangle<int> oscArea (area.removeFromLeft((stripWith)));
+        Rectangle<int> oscArea (area.removeFromLeft((stripWidth)));
         
         oscGainLabel[osc]->setBounds (oscArea.removeFromTop(labelHeight));
         oscGainLabel[osc]->setJustificationType(Justification::centredBottom);
@@ -424,7 +440,7 @@ void OscillatorSection::resized()
     
     
     {
-        Rectangle<int> oscArea (area.removeFromLeft((stripWith)));
+        Rectangle<int> oscArea (area.removeFromLeft((stripWidth)));
         
         pitchModLabel->setBounds (oscArea.removeFromTop(labelHeight));
         pitchModLabel->setJustificationType(Justification::centredBottom);
@@ -445,6 +461,9 @@ void OscillatorSection::resized()
         oscSyncOFFLabel->setJustificationType(Justification::bottomLeft);
     
     
+        glideLabel->setBounds (oscArea.removeFromTop(labelHeight * 2));
+        glideLabel->setJustificationType(Justification::centredBottom);
+        glideTimeSlider.get()->setBounds(oscArea.removeFromTop(rotaryHeight + rotaryTextHeight));
         
         
     }

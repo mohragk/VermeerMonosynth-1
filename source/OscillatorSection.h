@@ -70,7 +70,8 @@ private:
         oscSyncLabel,
         oscSyncONLabel,
         oscSyncOFFLabel,
-        pitchModLabel
+        pitchModLabel,
+        glideLabel
     
     
         ;
@@ -85,7 +86,9 @@ private:
         pulsewidthSlider[3],
         pulsewidthAmountSlider[3],
     
-        oscSyncSlider
+        oscSyncSlider,
+        glideTimeSlider
+
         ;
 	   
 	   

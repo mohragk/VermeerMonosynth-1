@@ -98,9 +98,7 @@ public:
     {
         pitchEnvelope.get()->setSampleRate(sr);
         ampEnvelope.get()->setSampleRate(sr);
-        
-        
-        
+
     }
     
     void setFilterEnvelopeSampleRate(double sr)

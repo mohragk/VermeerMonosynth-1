@@ -167,6 +167,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
     
     
+    
+    
+    
 	// Oscilloscope
 	oscilloscope_ptr = &owner.scope;
 	addAndMakeVisible(oscilloscope_ptr);

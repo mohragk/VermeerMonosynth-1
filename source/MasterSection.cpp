@@ -90,13 +90,7 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
 	arpeggioSwitchSlider->setTooltip("Arpeggio ON/OFF");
     
     
-    //GLIDE
-    glideTimeSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.glideTimeParam, knobStyle(ROTARY) ) );
-    addAndMakeVisible(glideTimeSlider.get());
-    glideTimeSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
-    glideTimeSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
-    glideTimeSlider->setDoubleClickReturnValue(true, 0.5);
-    glideTimeSlider->setTooltip("Glide Time (ms)");
+    
     
     startTimerHz(60);
 
@@ -169,7 +163,6 @@ void MasterSection::resized()
 		Rectangle<int> mini3(arpeggiatorSpeedSlider->getBounds());
 		arpeggioSwitchSlider->setBounds(mini3.removeFromRight(12).reduced(0, 8));
         
-        glideTimeSlider->setBounds(strip.removeFromTop(rotaryHeight));
 		
                
     }

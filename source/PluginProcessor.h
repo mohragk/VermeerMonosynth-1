@@ -285,8 +285,8 @@ private:
     void updateOscilloscope(AudioBuffer<FloatType>& buffer);
     
 	
-    dsp::LookupTableTransform<double> tanhLUT   { [](double x) { return std::tanh(x); }, double(-5), double(5), 128 };
-    dsp::LookupTableTransform<double> arrayaLUT { [](double x) { return (3.0 * x / 2.0) * (1 - x * x / 3.0); }, double(-5), double(5), 128 };
+    dsp::LookupTableTransform<double> tanhLUT   { [](double x) { return std::tanh(x); }, double(-5), double(5), 256 };
+    dsp::LookupTableTransform<double> arrayaLUT { [](double x) { return (3.0 * x / 2.0) * (1 - x * x / 3.0); }, double(-5), double(5), 256 };
     
 
 	double getWaveshaped(double sample, double overdrive, int mode)
