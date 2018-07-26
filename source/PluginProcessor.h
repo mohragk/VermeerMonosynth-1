@@ -240,6 +240,7 @@ public:
 	AudioParameterFloat* stepNoteLengthParam;
     AudioParameterFloat* stepDivisionFloatParam;
     AudioParameterInt* maxStepsParam;
+	AudioParameterInt* swingParam;
     
     
     AudioParameterInt* useSequencerParam;

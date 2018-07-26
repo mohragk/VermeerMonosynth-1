@@ -25,7 +25,8 @@ public:
 						time(0),
                         sampleRate(44100.0),
                         speedInHz(10.0),
-						noteLengthAmount(0.5)
+						noteLengthAmount(0.5),
+						swingOffset(0.5)
     {
 
     }
@@ -143,8 +144,7 @@ public:
                 
             }
 
-			//TEST!
-			setSwingAmount(65);
+			
             
 
 			auto stepDuration = static_cast<int> (std::ceil(sampleRate / speedInHz));

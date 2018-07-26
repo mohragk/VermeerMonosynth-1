@@ -253,7 +253,7 @@ glideTimeParam(nullptr)
     addParameter(stepDivisionFloatParam   = new AudioParameterFloat("stepDivisionFloatParam", "Seq. Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin) , 16.0));
     
     addParameter(maxStepsParam = new AudioParameterInt ("maxStepsParam", "Max. Steps", 0, 7, 7 ));
-
+	addParameter(swingParam = new AudioParameterInt("swingParam", "Swing Amount", 50, 85, 50));
 
 	//ARPEGGIATOR
 	addParameter(arpeggioNoteLengthParam = new AudioParameterFloat("apreggioNoteLengthParam", "Arpeggio Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin), 16.0));
@@ -929,6 +929,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             seqState.get()->setPitchAmountForStep(i, *stepPitchParam[i]);
         
         seqState.get()->setNoteDuration(*stepNoteLengthParam);
+		seqState.get()->setSwingAmount(*swingParam);
      
         // set various parameters
         for(int osc = 0; osc < 3; osc++)

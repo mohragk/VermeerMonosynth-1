@@ -101,8 +101,10 @@ private:
     std::unique_ptr<ParameterSlider> globalNoteLengthSlider;
     std::unique_ptr<ParameterSlider> stepDivision;
     std::unique_ptr<ParameterSlider> maxStepsSlider;
+	std::unique_ptr<ParameterSlider> swingAmountSlider;
+
     
-    std::unique_ptr<Label> stepDivisionLabel, globalNoteLengthLabel;
+    std::unique_ptr<Label> stepDivisionLabel, globalNoteLengthLabel, swingAmountLabel;
     
     enum style
     {

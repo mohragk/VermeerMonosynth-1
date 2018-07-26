@@ -100,6 +100,8 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st) : pr
     maxStepsSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider (*processor.maxStepsParam, knobStyle(LINEARHORIZONTAL)));
     addAndMakeVisible(maxStepsSlider.get());
     
+	swingAmountSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.swingParam, knobStyle(ROTARY)));
+	addAndMakeVisible(swingAmountSlider.get());
     
     setSize (890, SEQUENCER_HEIGHT);
     
@@ -173,6 +175,13 @@ void Sequencer::resized()
         stepDivision->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 14);
         stepDivision->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     }
+
+	{
+		Rectangle<int> block( strip.removeFromLeft( rotarySize + marginX ) );
+		swingAmountSlider->setBounds(block.removeFromTop(SEQUENCER_HEIGHT * 0.75).reduced(6, 0));
+		swingAmountSlider->setTextBoxStyle(Slider::TextBoxBelow, true, 60, 14);
+		swingAmountSlider->setColour(Slider::textBoxOutlineColourId, Colour(0x008e989b));
+	}
     
     Rectangle<int> stripBottom ( area.removeFromTop(horSliderSize).reduced(24, 0) );
     
