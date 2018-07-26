@@ -101,6 +101,8 @@ softClipSwitchParam(nullptr),
 
 useSequencerParam(nullptr),
 useHQOversamplingParam(nullptr),
+maxStepsParam(nullptr),
+swingParam(nullptr),
 
 arpeggioNoteLengthParam(nullptr),
 arpeggioUseParam(nullptr),
@@ -227,13 +229,10 @@ glideTimeParam(nullptr)
     addParameter(softClipSwitchParam = new AudioParameterInt("softClipSwitchParam", "Softclip ON/OFF", 0, 1, 0));
     
     // SEQUENCER PARAMS
-    
     addParameter(useSequencerParam = new AudioParameterInt( "useSequencerParam", "Use Sequencer", 0, 1 ,0 ));
     
     for (int i = 0; i < 8; i++)
-    {
         addParameter(stepPitchParam[i] = new AudioParameterInt("stepPitchParam" + std::to_string(i), "Seq. Pitch " + std::to_string(i), -12, 12, 0 ));
-    }
     
     auto linToPow = [](float start, float end, float linVal) {
         double remapped = (6.0 - 1.0) * (linVal - 0.0) / (1.0 - 0.0) + 1.0 ; // remap

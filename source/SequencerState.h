@@ -75,6 +75,7 @@ public:
         currentStep = 0;
         time = 0;
         speedInHz = 10.0;
+		swingOffset = 0.5;
     }
 	
     void setSpeedInHz (double hz)
@@ -151,6 +152,8 @@ public:
 
 			if (currentStep % 2)
 				stepDuration = std::ceil( ( (double)stepDuration * 2 ) * swingOffset );
+			else
+				stepDuration = std::ceil(((double)stepDuration * 2) * (1.0 - swingOffset) );
 
 			auto noteDuration = static_cast<int> (std::ceil(stepDuration * noteLengthAmount));
 			auto difference = stepDuration - noteDuration;
