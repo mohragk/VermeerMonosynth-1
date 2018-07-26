@@ -81,6 +81,11 @@ public:
         speedInHz = hz;
     }
     
+	void setSwingAmount(int amountPerc)
+	{
+		swingOffset = (double)amountPerc / 100;
+	}
+
     void setNoteDuration(double amt)
     {
         noteLengthAmount = amt;
@@ -103,9 +108,7 @@ public:
         {
             auto numSamples = buffer.getNumSamples();
             
-            auto stepDuration = static_cast<int> ( std::ceil( sampleRate / speedInHz ) );
-            auto noteDuration = static_cast<int> ( std::ceil( stepDuration * noteLengthAmount ) );
-            auto difference = stepDuration - noteDuration;
+            
             
             MidiMessage msg;
             int ignore;
@@ -139,7 +142,18 @@ public:
                 }
                 
             }
+
+			//TEST!
+			setSwingAmount(65);
             
+
+			auto stepDuration = static_cast<int> (std::ceil(sampleRate / speedInHz));
+
+			if (currentStep % 2)
+				stepDuration = std::ceil( ( (double)stepDuration * 2 ) * swingOffset );
+
+			auto noteDuration = static_cast<int> (std::ceil(stepDuration * noteLengthAmount));
+			auto difference = stepDuration - noteDuration;
             
 
             if ( (time + numSamples + difference) >= stepDuration)
@@ -198,6 +212,7 @@ private:
     
     double speedInHz;
     double noteLengthAmount;
+	double swingOffset;
         
     Array<int> pressedKeys;
 
