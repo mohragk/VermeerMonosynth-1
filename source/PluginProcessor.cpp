@@ -42,8 +42,8 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 //==============================================================================
 MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
 : AudioProcessor (getBusesProperties()),
-lastUIWidth (820),
-lastUIHeight (590),
+lastUIWidth (72 * 8 + 24 * 10),
+lastUIHeight (48 + 460 + 140),
 
 gainParam (nullptr),
 
@@ -99,10 +99,16 @@ oversampleSwitchParam(nullptr),
 
 softClipSwitchParam(nullptr),
 
-useSequencerParam(nullptr),
-useHQOversamplingParam(nullptr),
+stepNoteLengthParam(nullptr),
+stepDivisionFloatParam(nullptr),
 maxStepsParam(nullptr),
 swingParam(nullptr),
+
+useSequencerParam(nullptr),
+useHQOversamplingParam(nullptr),
+
+useFilterKeyFollowParam(nullptr),
+
 
 arpeggioNoteLengthParam(nullptr),
 arpeggioUseParam(nullptr),

@@ -214,7 +214,7 @@ public:
     AudioParameterFloat* lfoRateParam;
     AudioParameterInt*   lfoModeParam;
     AudioParameterFloat* lfoIntensityParam;
-	AudioParameterInt*	lfoSyncParam;
+	AudioParameterInt*	 lfoSyncParam;
 
     AudioParameterInt* filterSelectParam;
     
