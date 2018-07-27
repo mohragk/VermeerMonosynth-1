@@ -57,9 +57,10 @@ public:
         phase(0.0),
         envState(0),
         numOscillators(3),
-        glideTimeMillis(0),
         initialNote(0),
         noteOffset(0),
+        glideTimeMillis(0),
+        sampleCounter(0),
         lfoValue(0.0),
         egValue(0.0),
         pitchModulation(0.0),
@@ -67,7 +68,8 @@ public:
         midiFrequency(0.0),
         maxFreq(0.0), minFreq(0.0),
         pitchModAmount(0.0),
-        hardSync(false)
+        hardSync(false),
+        lastNotePlayed(60)
     {
         pitchEnvelope = std::unique_ptr<ADSR> ( new ADSR );
         ampEnvelope   = std::unique_ptr<ADSR> ( new ADSR );

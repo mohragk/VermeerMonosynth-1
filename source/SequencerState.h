@@ -151,9 +151,9 @@ public:
 			auto stepDuration = static_cast<int> (std::ceil(sampleRate / speedInHz));
 
 			if (currentStep % 2 == 0)
-				stepDuration = std::ceil( ( (double)stepDuration * 2 ) * swingOffset );
+				stepDuration = static_cast<int> (std::ceil((stepDuration * 2.0) * swingOffset));
 			else
-				stepDuration = std::ceil(((double)stepDuration * 2) * (1.0 - swingOffset) );
+				stepDuration = static_cast<int> (std::ceil((stepDuration * 2.0) * (1.0 - swingOffset)));
 
 			auto noteDuration = static_cast<int> (std::ceil(stepDuration * noteLengthAmount));
 			auto difference = stepDuration - noteDuration;
