@@ -75,8 +75,8 @@ void ADSR::setTargetRatioA(double targetRatio) {
     
     if (old_targetRatioA != targetRatio)
     {
-        if (targetRatio < 0.000000001)
-            targetRatio = 0.000000001;  // -180 dB
+        if (targetRatio < 0.00001)
+            targetRatio = 0.00001;  // -180 dB
         targetRatioA = targetRatio;
         attackCoef = calcCoef(attackRate, targetRatioA);
         attackBase = (1.0 + targetRatioA) * (1.0 - attackCoef);
@@ -91,8 +91,8 @@ void ADSR::setTargetRatioDR(double targetRatio) {
     
     if (old_targetRatioDR != targetRatio)
     {
-        if (targetRatio < 0.000000001)
-            targetRatio = 0.000000001;  // -180 dB
+        if (targetRatio < 0.00001)
+            targetRatio = 0.00001;  // -180 dB
         targetRatioDR = targetRatio;
         decayCoef = calcCoef(decayRate, targetRatioDR);
         releaseCoef = calcCoef(releaseRate, targetRatioDR);
