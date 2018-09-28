@@ -499,7 +499,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
         smoothing[i]->init(newsr, 2.0);
 
 	smoothing[CUTOFF_SMOOTHER]->init(newsr, 4.0);
-    
+    smoothing[CONTOUR_SMOOTHER]->init(newsr, 2.0);
     smoothing[KEY_CUTOFF_SMOOTHER]->init(newsr, 10.0);
 
     sampleRate = newsr;
@@ -683,20 +683,19 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         modAmount = *lfoIntensityParam;                            // Make parameter
         applyModToTarget(*modTargetParam, lfoValue * modAmount);
         
-
-		//
-		// @BUG: Cutoff initializes to NaN
-		//
         
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
         const double contourRange = *filterContourParam;
         const double filterEnvelopeVal = synthVoice->getFilterEnvelopeValue();
-		const double keyFollowCutoff =  MidiMessage::getMidiNoteInHertz ( synthVoice->getLastNotePlayed() );
+		
 		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
 
 		if (*useFilterKeyFollowParam)
+        {
+            const double keyFollowCutoff =  MidiMessage::getMidiNoteInHertz ( synthVoice->getLastNotePlayed() );
 			currentCutoff += smoothing[KEY_CUTOFF_SMOOTHER].get()->processSmooth( keyFollowCutoff - CUTOFF_MIN);
+        }
 		
 			
         
@@ -730,7 +729,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff = currentCutoff + smoothing[CUTOFF_SMOOTHER]->processSmooth( cutoff.getNextValue() ) ;
+        FloatType combinedCutoff = smoothing[CONTOUR_SMOOTHER].get()->processSmooth( currentCutoff) + smoothing[CUTOFF_SMOOTHER]->processSmooth( cutoff.getNextValue() ) ;
 
 		if (combinedCutoff > CUTOFF_MAX) combinedCutoff = CUTOFF_MAX;
 		if (combinedCutoff < CUTOFF_MIN) combinedCutoff = CUTOFF_MIN;

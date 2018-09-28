@@ -373,6 +373,7 @@ private:
     
 	enum smootherForParam {
 		CUTOFF_SMOOTHER,
+        CONTOUR_SMOOTHER,
 		KEY_CUTOFF_SMOOTHER,
 		PW_1_SMOOTHER,
 		PW_2_SMOOTHER,

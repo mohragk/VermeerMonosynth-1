@@ -8,13 +8,14 @@
               pluginSilenceInIsSilenceOut="0" pluginTailLength="0" pluginEditorRequiresKeys="1"
               pluginAUExportPrefix="VermeerMonosynth" pluginAUViewClass="JuceDemoProjectAU_V1"
               pluginRTASCategory="" bundleIdentifier="com.vermeer.Monosynth"
-              jucerVersion="5.2.1" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
-              buildAAX="0" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              includeBinaryInAppConfig="1" buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
+              jucerVersion="5.3.2" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
+              buildAAX="0" pluginAAXCategory="2" includeBinaryInAppConfig="1"
+              buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
               companyWebsite="www.soundcloud.com/meneervermeer" companyEmail="meneervermeermusic@gmail.com"
               pluginIsMidiEffectPlugin="0" buildAUv3="0" buildStandalone="1"
               enableIAA="0" displaySplashScreen="1" reportAppUsage="1" splashScreenColour="Dark"
-              cppLanguageStandard="latest" companyCopyright="MRVR inc.">
+              cppLanguageStandard="latest" companyCopyright="MRVR inc." pluginFormats="buildVST,buildStandalone"
+              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn,pluginProducesMidiOut,pluginEditorRequiresKeys">
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="" rtasFolder="~/SDKs/PT_80_SDK"
                objCExtraSuffix="JuceDemo" aaxFolder="" postbuildCommand="" vst3Folder=""
@@ -162,6 +163,6 @@
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <LIVE_SETTINGS>
-    <OSX/>
+    <OSX buildEnabled="1"/>
   </LIVE_SETTINGS>
 </JUCERPROJECT>
