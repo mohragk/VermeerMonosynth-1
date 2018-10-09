@@ -206,10 +206,11 @@ public:
                     
 					currentStep = (currentStep + 1) % (maxSteps + 1);
 
-                    steps[currentStep].setActive(true);
+                   
                     
                     if (steps[currentStep].shouldPlay())
                     {
+                        steps[currentStep].setActive(true);
                         int pitchedNote = steps[currentStep].getPitchedNoteValue();
                         midi.addEvent(MidiMessage::noteOn(1, pitchedNote, (uint8)127), offset);
                     }
