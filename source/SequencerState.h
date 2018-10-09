@@ -63,10 +63,15 @@ public:
             isActive = a;
         }
 	    
-		void shouldPlay( bool b )
+		void setPlayable( bool b )
 		{
 			shouldPlay = b;
 		}
+        
+        bool shouldPlay()
+        {
+            return shouldPlay;
+        }
         
     } steps[8];
 
@@ -106,7 +111,7 @@ public:
 	
 	void setShouldPlayForStep(int step, bool choice)
 	{
-		steps[step].shouldPlay(choice);
+		steps[step].setPlayable(choice);
 	}
     
 	void setMaxSteps(int max)
@@ -203,8 +208,11 @@ public:
 
                     steps[currentStep].setActive(true);
                     
-                    int pitchedNote = steps[currentStep].getPitchedNoteValue();
-                    midi.addEvent(MidiMessage::noteOn(1, pitchedNote, (uint8)127), offset);
+                    if (steps[currentStep].shouldPlay())
+                    {
+                        int pitchedNote = steps[currentStep].getPitchedNoteValue();
+                        midi.addEvent(MidiMessage::noteOn(1, pitchedNote, (uint8)127), offset);
+                    }
                 }
                 
             }
