@@ -33,6 +33,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 
+
 #include "OscillatorSection.h"
 #include "FilterSection.h"
 #include "EnvelopeSection.h"
@@ -40,6 +41,8 @@
 #include "MasterSection.h"
 #include "Sequencer.h"
 #include "TriggeredScope.h"
+
+#include "ParamToggleButton.h"
 
 
 //==============================================================================
@@ -86,7 +89,7 @@ public:
     
 private:
     
-    class ParamToggleButton;
+    //class ParamToggleButton;
     
     enum style
 	{

@@ -68,7 +68,7 @@ public:
 			shouldPlay = b;
 		}
         
-        bool shouldPlay()
+        bool shouldTrigger()
         {
             return shouldPlay;
         }
@@ -208,7 +208,7 @@ public:
 
                    
                     
-                    if (steps[currentStep].shouldPlay())
+                    if (steps[currentStep].shouldTrigger())
                     {
                         steps[currentStep].setActive(true);
                         int pitchedNote = steps[currentStep].getPitchedNoteValue();

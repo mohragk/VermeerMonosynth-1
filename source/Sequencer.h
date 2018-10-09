@@ -23,7 +23,7 @@
 
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
-//#include "SequencerProcessor.h"
+#include "ParamToggleButton.h"
 #include "SequencerState.h"
 
 
@@ -89,7 +89,7 @@ public:
 private:
     
     class StepSlider;
-    
+	//class ParamToggleButton;
     // members
     MonosynthPluginAudioProcessor& processor;
     SequencerState& sequencerState;
@@ -98,6 +98,7 @@ private:
 
     
     std::unique_ptr<ParameterSlider> pitchSlider[numSteps];
+	std::unique_ptr<ParamToggleButton>	 skipStepButton[numSteps];
     std::unique_ptr<ParameterSlider> globalNoteLengthSlider;
     std::unique_ptr<ParameterSlider> stepDivision;
     std::unique_ptr<ParameterSlider> maxStepsSlider;

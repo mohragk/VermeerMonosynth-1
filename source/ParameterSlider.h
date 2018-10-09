@@ -57,17 +57,22 @@ public:
 
 	
 
-    double getValueFromText (const String& text) override   { return param.getValueForText (text); }
-    String getTextFromValue (double value) override         { return param.getText ((float) value, 1024); }
+   double getValueFromText (const String& text) override   { return param.getValueForText (text); }
+   String getTextFromValue (double value) override         { return param.getText ((float) value, 1024); }
 
     void updateSliderPos()
     {
-        const float newValue = param.getValue();
+        float newValue = param.getValue();
 
-        if (newValue != (float) Slider::getValue() && ! isMouseButtonDown())
-        {           
-            Slider::setValue (newValue);
-        }
+		if (!std::isnan(newValue))
+		{
+			if (newValue != (float)Slider::getValue() && !isMouseButtonDown())
+			{
+				Slider::setValue(newValue);
+			}
+		}
+
+        
         
     }
 

@@ -130,15 +130,15 @@ glideTimeParam(nullptr)
     
     auto gainToDecibelLambda = [](auto min, auto end, auto gain) { return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end) ) : -std::numeric_limits<float>::infinity(); };
 	
-	auto linToLogLambda = [](float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
-	auto logToLinLambda = [](float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
+	auto linToLogLambda = [](float start, float end, float linVal) { return std::clamp(start, end, std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start)))); };
+	auto logToLinLambda = [](float start, float end, float logVal) { return std::clamp(start, end, (std::log10(logVal / start) / std::log10(end / start)) ); };
 
 
     
-	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX,	linToLogLambda, logToLinLambda) ;
+	
 
     addParameter (gainParam = new AudioParameterFloat("volume", "Volume" , NormalisableRange<float>(MIN_INFINITY_DB, 6.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
-    
+	//*gainParam = 6.0f;
    
     
     
@@ -160,14 +160,17 @@ glideTimeParam(nullptr)
     
     
     
-   
+	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, linToLogLambda, logToLinLambda);
+	//NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, 0.0f, 0.25f, false);
+	NormalisableRange<float> contourRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, linToLogLambda, logToLinLambda);
+	//NormalisableRange<float> contourRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, 0.0f, 0.25f, false);
     
-	// addParameter (filterParam = new AudioParameterFloat("filter", "Filter Cutoff",                  NormalisableRange<float> (40.0f, 20000.0f, 0.0f, 0.3f, false), 20000.0f));
 	addParameter (filterCutoffParam = new AudioParameterFloat("filter", "Filter Cutoff", cutoffRange, CUTOFF_MAX));
-    
+
 	addParameter (filterQParam = new AudioParameterFloat("filterQ", "Filter Reso.",                 NormalisableRange<float> (0.0f, 1.0f, 0.0f, 1.0f, false), 0.0f));
-    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",	cutoffRange, CUTOFF_MIN));
-    addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0f, 5.0f, 0.0f, 1.0f, false), 1.0f));
+    addParameter (filterContourParam = new AudioParameterFloat("filterContour", "Filter Contour",	contourRange, CUTOFF_MIN));
+
+	addParameter (filterDriveParam = new AudioParameterFloat("filterDrive", "Filter Drive",         NormalisableRange<float> (1.0f, 5.0f, 0.0f, 1.0f, false), 1.0f));
     
     // Filter Select Parameter
     addParameter (filterSelectParam = new AudioParameterInt("filterSelect", "Switch Filter", 0, 2, 2));
@@ -844,7 +847,8 @@ void MonosynthPluginAudioProcessor::getStateInformation (MemoryBlock& destData)
     
     
     // Store the values of all our parameters, using their param ID as the XML attribute
-    for (int i = 0; i < getNumParameters(); ++i)
+    //for (int i = 0; i < getNumParameters(); ++i)
+	for (int i = 0; i < getParameters().size(); ++i)
         if (AudioProcessorParameterWithID* p = dynamic_cast<AudioProcessorParameterWithID*> (getParameters().getUnchecked(i)))
             xml.setAttribute (p->paramID, p->getValue());
     
@@ -871,7 +875,7 @@ void MonosynthPluginAudioProcessor::setStateInformation (const void* data, int s
             
             
             // Now reload our parameters..
-            for (int i = 0; i < getNumParameters(); ++i)
+            for (int i = 0; i < getParameters().size(); ++i)
                 if (AudioProcessorParameterWithID* p = dynamic_cast<AudioProcessorParameterWithID*> (getParameters().getUnchecked(i)))
                     p->setValue ((float) xmlState->getDoubleAttribute (p->paramID, p->getValue()));
         }

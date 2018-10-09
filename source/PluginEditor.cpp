@@ -34,7 +34,7 @@
 #define KEYBOARD_HEIGHT 140
 
 
-
+/*
 
 class MonosynthPluginAudioProcessorEditor::ParamToggleButton : public ToggleButton, private Timer
 {
@@ -71,6 +71,8 @@ private:
         }
     }
 };
+
+*/
 
 //==============================================================================
 MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (MonosynthPluginAudioProcessor& owner)

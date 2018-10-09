@@ -86,10 +86,10 @@
     <FILE id="uGPIXG" name="EditorDefines.h" compile="0" resource="0" file="source/EditorDefines.h"/>
     <FILE id="RMtzUq" name="colorcheck.cpp" compile="1" resource="0" file="source/colorcheck.cpp"/>
     <FILE id="gLySbD" name="colorcheck.h" compile="0" resource="0" file="source/colorcheck.h"/>
+    <FILE id="a3uziP" name="ParamToggleButton.h" compile="0" resource="0"
+          file="source/ParamToggleButton.h"/>
     <FILE id="OuARf9" name="OscNoiseWaveSymbol.svg" compile="0" resource="1"
           file="Resources/OscNoiseWaveSymbol.svg"/>
-    <FILE id="IGiKJp" name="FuturaStd-Medium.otf" compile="0" resource="1"
-          file="Resources/font/FuturaStd-Medium.otf"/>
     <FILE id="IbiCwm" name="MonoSynthIconLarge.png" compile="0" resource="1"
           file="Resources/MonoSynthIconLarge.png"/>
     <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"
@@ -164,5 +164,6 @@
   </MODULES>
   <LIVE_SETTINGS>
     <OSX buildEnabled="1"/>
+    <WINDOWS buildEnabled="0"/>
   </LIVE_SETTINGS>
 </JUCERPROJECT>
