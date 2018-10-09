@@ -130,8 +130,22 @@ glideTimeParam(nullptr)
     
     auto gainToDecibelLambda = [](auto min, auto end, auto gain) { return gain > 0.0f ? 20.0f * std::log10(gain * Decibels::decibelsToGain(end) ) : -std::numeric_limits<float>::infinity(); };
 	
-	auto linToLogLambda = [](float start, float end, float linVal) { return std::clamp(start, end, std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start)))); };
-	auto logToLinLambda = [](float start, float end, float logVal) { return std::clamp(start, end, (std::log10(logVal / start) / std::log10(end / start)) ); };
+	auto linToLogLambda = [](float start, float end, float linVal) { 
+		float result = std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start)));
+		if (result > end)
+			result = end;
+		if (result < start)
+			result = start;
+		return result;
+	};
+	auto logToLinLambda = [](float start, float end, float logVal) { 
+		float result =  (std::log10(logVal / start) / std::log10(end / start));
+		if (result > end)
+			result = end;
+		if (result < start)
+			result = start;
+		return result;
+	};
 
 
     
