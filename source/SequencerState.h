@@ -41,6 +41,7 @@ public:
         int     noteValue;
         int     pitch;
         bool    isActive = false;
+		bool 	shouldPlay = true;
         
         int getPitchedNoteValue()
         {
@@ -61,6 +62,11 @@ public:
         {
             isActive = a;
         }
+	    
+		void shouldPlay( bool b )
+		{
+			shouldPlay = b;
+		}
         
     } steps[8];
 
@@ -97,6 +103,11 @@ public:
     {
         steps[step].setPitch(p);
     }
+	
+	void setShouldPlayForStep(int step, bool choice)
+	{
+		steps[step].shouldPlay(choice);
+	}
     
 	void setMaxSteps(int max)
 	{
