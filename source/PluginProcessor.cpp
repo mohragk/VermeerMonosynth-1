@@ -140,10 +140,10 @@ glideTimeParam(nullptr)
 	};
 	auto logToLinLambda = [](float start, float end, float logVal) { 
 		float result =  (std::log10(logVal / start) / std::log10(end / start));
-		if (result > end)
-			result = end;
-		if (result < start)
-			result = start;
+		if (result > 1.0)
+			result = 1.0;
+		if (result < 0.0)
+			result = 0.0;
 		return result;
 	};
 
