@@ -727,7 +727,8 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         cutoffFromEnvelope.setValue	(currentCutoff);
         resonance.setValue			(*filterQParam);
         drive.setValue				(*filterDriveParam);
-        
+       
+		
     }
     
     

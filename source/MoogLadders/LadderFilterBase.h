@@ -55,6 +55,10 @@ public:
     virtual double GetResonance() { return resonance.get(); }
     virtual double GetCutoff() { return cutoff.get(); }
     virtual double GetSampleRate() { return sampleRate; }
+
+	virtual void addToCutoffBuffer(double val) {
+		cutoffValues.push_back(val);
+	};
 	
 protected:
 	
@@ -65,6 +69,7 @@ protected:
 
 	dsp::LookupTableTransform<double> saturationLUT{ [](double x) { return std::tanh(x); }, double(-5), double(5), 256 };
 
+	std::vector<double> cutoffValues;
 };
 
 #endif

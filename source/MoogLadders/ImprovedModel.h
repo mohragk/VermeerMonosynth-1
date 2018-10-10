@@ -171,11 +171,14 @@ private:
         {
 			samples[i] = doFilter(samples[i]);
         }
+
+		cutoffValues.clear;
     }
 
 	template <typename FloatType>
 	FloatType doFilter(FloatType sample)
 	{
+		//SetCutoff(cutoffValues[sample]);
 
 		FloatType dV0, dV1, dV2, dV3;
 
