@@ -34,14 +34,14 @@
 
 #define MIN_INFINITY_DB -96.0f
 #define CUTOFF_MIN 40.0f
-#define CUTOFF_MAX 20000.0f
+#define CUTOFF_MAX 10000.0f
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
 
 //==============================================================================
 MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
-: AudioProcessor (getBusesProperties()),
+: AudioProcessor ( getBusesProperties() ),
 lastUIWidth (72 * 8 + 24 * 10),
 lastUIHeight (48 + 460 + 140),
 
@@ -338,26 +338,27 @@ void MonosynthPluginAudioProcessor::initialiseSynth()
 //==============================================================================
 bool MonosynthPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-    // Only mono/stereo and input/output must have same layout
-    const AudioChannelSet& mainOutput = layouts.getMainOutputChannelSet();
     
-    // input and output layout must be the same
-    if (layouts.getMainInputChannelSet() != mainOutput)
-        return false;
     
     // do not allow disabling the main buses
-    if (mainOutput.isDisabled()) return false;
+	if ( layouts.getMainInputChannelSet() == AudioChannelSet::disabled()
+		 || layouts.getMainOutputChannelSet() == AudioChannelSet::disabled() )
+		return false;
+
+	// only allow stereo and mono
+	if ( layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
+		&& layouts.getMainOutputChannelSet() != AudioChannelSet::stereo() )
+		return false;
     
-    // only allow stereo and mono
-    if (mainOutput.size() > 2) return false;
-    
-    return true;
+
+    return layouts.getMainInputChannelSet() == layouts.getMainOutputChannelSet();
 }
 
 AudioProcessor::BusesProperties MonosynthPluginAudioProcessor::getBusesProperties()
 {
-    return BusesProperties().withInput  ("Input",  AudioChannelSet::stereo(), true)
-    .withOutput ("Output", AudioChannelSet::stereo(), true);
+    return BusesProperties()
+		.withInput  ("Input", AudioChannelSet::stereo(), true)
+		.withOutput ("Output", AudioChannelSet::stereo(), true);
 }
 
 //==============================================================================
@@ -561,6 +562,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     const int numSamples = osBuffer.getNumSamples();
 
+
+	// Clear the buffer of any samples
+	osBuffer.clear();
     
     // PARAMETER UPDATE
     updateParameters(osBuffer);
