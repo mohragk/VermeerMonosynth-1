@@ -147,10 +147,8 @@ public:
                         currentStep = 0;
                         time = 0;
                     }
-                    if (steps[currentStep].shouldTrigger() == false)
-                        steps[currentStep].setActive(true);
                     
-                    
+                    steps[currentStep].setActive(true);
                 }
                 
                 
@@ -161,6 +159,8 @@ public:
                 }
                 
             }
+            
+            
 
             if (steps[currentStep].shouldTrigger() == false)
                 midi.clear();
