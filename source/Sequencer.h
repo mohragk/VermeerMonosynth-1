@@ -16,7 +16,7 @@
 
 #ifndef SEQUENCER_H
 #define SEQUENCER_H
-#define SEQUENCER_HEIGHT 140
+#define SEQUENCER_HEIGHT 180
 
 
 #include "../JuceLibraryCode/JuceHeader.h"

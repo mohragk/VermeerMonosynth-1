@@ -131,6 +131,8 @@ public:
 
 		lastNotePlayed = midiNoteNumber;
         
+       
+        
     }
     
     void stopNote (float /*velocity*/, bool allowTailOff) override

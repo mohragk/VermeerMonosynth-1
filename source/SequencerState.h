@@ -147,7 +147,8 @@ public:
                         currentStep = 0;
                         time = 0;
                     }
-					steps[currentStep].setActive(true);
+                    if (steps[currentStep].shouldTrigger() == false)
+                        steps[currentStep].setActive(true);
                     
                     
                 }
@@ -161,7 +162,8 @@ public:
                 
             }
 
-			
+            if (steps[currentStep].shouldTrigger() == false)
+                midi.clear();
             
 
 			auto stepDuration = static_cast<int> (std::ceil(sampleRate / speedInHz));

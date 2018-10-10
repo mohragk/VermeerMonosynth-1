@@ -92,6 +92,9 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st) : pr
     {
         pitchSlider[i] = std::unique_ptr<ParameterSlider> ( new ParameterSlider (  *processor.stepPitchParam[i], knobStyle(LINEARVERTICAL) ) );
         addAndMakeVisible (pitchSlider[i].get());
+        
+        skipStepButton[i] = std::unique_ptr<ParamToggleButton> ( new ParamToggleButton( *processor.stepPlayParam[i]));
+        addAndMakeVisible (skipStepButton[i].get());
     }
     
 	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(  *processor.stepDivisionFloatParam, knobStyle(ROTARY)));
@@ -106,7 +109,7 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st) : pr
     setSize (890, SEQUENCER_HEIGHT);
     
     
-	startTimerHz(120);
+	startTimerHz(60);
     
     
 }
@@ -144,11 +147,12 @@ void Sequencer::resized()
     Rectangle<int> area (getLocalBounds());
     
     int rotarySize = 60;
+    int toggleButtonSize = 24;
     int vertSliderSize = 36;
     int horSliderSize = 18;
     int marginX = 12;
     
-    Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT - horSliderSize).reduced(24, 8) );
+    Rectangle<int> strip ( area.removeFromTop(SEQUENCER_HEIGHT - horSliderSize - toggleButtonSize).reduced(24, 8) );
     
     {
         Rectangle<int> block (strip.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
@@ -188,6 +192,16 @@ void Sequencer::resized()
     {
         Rectangle<int> block (stripBottom.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
         maxStepsSlider->setBounds(block.removeFromLeft(vertSliderSize * numSteps).reduced(8, 0));
+    }
+    
+    Rectangle<int> stripButtons ( area.removeFromTop(toggleButtonSize).reduced(24, 0) );
+    {
+        Rectangle<int> block (stripButtons.removeFromLeft(vertSliderSize * numSteps));
+        for (int i = 0; i < numSteps; i++)
+        {
+            skipStepButton[i]->setBounds(block.removeFromLeft(vertSliderSize).reduced(4,0));
+            skipStepButton[i]->setButtonText("");
+        }
     }
 }
 
@@ -235,11 +249,15 @@ void Sequencer::updateStepKnobColours()
 void Sequencer::updateStepSliderAlpha()
 {
     for (int i = 0; i < 8; i++)
-    if (i <= *processor.maxStepsParam)
-        pitchSlider[i].get()->setAlpha(1.0);
-    else
     {
-        pitchSlider[i].get()->setAlpha(0.3);
+        if (i <= *processor.maxStepsParam)
+            pitchSlider[i].get()->setAlpha(1.0);
+        else
+            pitchSlider[i].get()->setAlpha(0.3);
+        
+        if (*processor.stepPlayParam[i] == false)
+            pitchSlider[i].get()->setAlpha(0.3);
+        
     }
     
 }

@@ -237,6 +237,7 @@ public:
     AudioParameterInt* softClipSwitchParam;
     
     AudioParameterInt* stepPitchParam[8];
+    AudioParameterBool* stepPlayParam[8];
 	AudioParameterFloat* stepNoteLengthParam;
     AudioParameterFloat* stepDivisionFloatParam;
     AudioParameterInt* maxStepsParam;

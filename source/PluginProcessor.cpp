@@ -255,7 +255,10 @@ glideTimeParam(nullptr)
     addParameter(useSequencerParam = new AudioParameterInt( "useSequencerParam", "Use Sequencer", 0, 1 ,0 ));
     
     for (int i = 0; i < 8; i++)
+    {
         addParameter(stepPitchParam[i] = new AudioParameterInt("stepPitchParam" + std::to_string(i), "Seq. Pitch " + std::to_string(i), -12, 12, 0 ));
+        addParameter(stepPlayParam[i] = new AudioParameterBool("stepPlayParam" + std::to_string(i), "Seq. On " + std::to_string(i), true));
+    }
     
     auto linToPow = [](float start, float end, float linVal) {
         double remapped = (6.0 - 1.0) * (linVal - 0.0) / (1.0 - 0.0) + 1.0 ; // remap
@@ -948,7 +951,10 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
         seqState.get()->setSpeedInHz(speed);
         
         for (int i = 0; i < 8; i++)
+        {
             seqState.get()->setPitchAmountForStep(i, *stepPitchParam[i]);
+            seqState.get()->setShouldPlayForStep(i, *stepPlayParam[i]);
+        }
         
         seqState.get()->setNoteDuration(*stepNoteLengthParam);
 		seqState.get()->setSwingAmount(*swingParam);
