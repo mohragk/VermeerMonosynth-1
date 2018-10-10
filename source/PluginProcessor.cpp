@@ -34,7 +34,7 @@
 
 #define MIN_INFINITY_DB -96.0f
 #define CUTOFF_MIN 40.0f
-#define CUTOFF_MAX 10000.0f
+#define CUTOFF_MAX 12000.0f
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
@@ -421,7 +421,7 @@ void MonosynthPluginAudioProcessor::reset()
     // Use this method as the place to clear any delay lines, buffers, etc, as it
     // means there's been a break in the audio's continuity.
 
-    cutoff.reset(sampleRate, cutoffRampTimeDefault);
+    cutoff.reset            (sampleRate, cutoffRampTimeDefault);
     cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
     resonance.reset(sampleRate, 0.001);
     drive.reset(sampleRate, 0.001);
@@ -672,7 +672,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 {
 	//filterEnvelope->setSampleRate(sampleRate);
     
-    MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*> ( synth.getVoice(0) );
+	MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*> (synth.getVoice(0));
     
     synthVoice->setFilterEnvelopeSampleRate(sampleRate);
     synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *sustainParam3, *releaseParam3, *attackCurve3Param, *decayRelCurve3Param);
@@ -738,6 +738,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 {
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
+	FloatType* channelDataRight = buffer.getWritePointer(1);
     
     const int numSamples = buffer.getNumSamples();
 
@@ -753,7 +754,8 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff = smoothing[CONTOUR_SMOOTHER].get()->processSmooth( currentCutoff) + smoothing[CUTOFF_SMOOTHER]->processSmooth( cutoff.getNextValue() ) ;
+        FloatType combinedCutoff = smoothing[CONTOUR_SMOOTHER]->processSmooth( cutoffFromEnvelope.getNextValue() )
+								 + smoothing[CUTOFF_SMOOTHER]->processSmooth ( cutoff.getNextValue() ) ;
 
 		if (combinedCutoff > CUTOFF_MAX) combinedCutoff = CUTOFF_MAX;
 		if (combinedCutoff < CUTOFF_MIN) combinedCutoff = CUTOFF_MIN;
@@ -772,10 +774,13 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 
 		if (prevCutoff == combinedCutoff)
 		{
-			filter->SetCutoff(combinedCutoff);
+			//filter->SetCutoff(combinedCutoff);
 
-            if (filter->SetCutoff(combinedCutoff))
-                filter->Process(channelDataLeft, stepSize);
+			if (filter->SetCutoff(combinedCutoff)) 
+			{
+				filter->Process(channelDataLeft, stepSize);
+			}
+                
 		}
 		else
 		{
@@ -787,14 +792,17 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
         channelDataLeft += stepSize;
     }
     
-    FloatType* dataLeftPass2 = buffer.getWritePointer(0);
+   /*
+	const FloatType* dataLeftPass2  = buffer.getReadPointer(0);
     FloatType* dataRightPass2 = buffer.getWritePointer(1);
     
     for (int i = 0; i < numSamples; i++)
     {
         dataRightPass2[i] = dataLeftPass2[i];
     }
-    
+
+	*/
+	buffer.copyFrom(1, 0, buffer, 0, 0, numSamples);
 }
 
 template <typename FloatType>
