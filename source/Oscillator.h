@@ -104,6 +104,7 @@ public:
             case OSCILLATOR_MODE_SAW:
                 value = naiveWaveFormForMode(mode, phase.get());
                 value -= poly_blep( t, phaseIncrement );
+                value *= -1.0;
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:

@@ -72,7 +72,7 @@ public:
 		for (uint32_t i = 0; i < n; i++)
 
 		{
-			samples[i] = doFilter(samples[i]);
+			samples[i] = doFilterLUT(samples[i]);
 		}
         
     }
@@ -81,7 +81,7 @@ public:
     {
 		for (uint32_t i = 0; i < n; i++)
 		{
-			samples[i] = doFilter(samples[i]);
+			samples[i] = doFilterLUT(samples[i]);
 		}
     }
     
@@ -169,16 +169,14 @@ private:
     {
         for (uint32_t i = 0; i < n; i++)
         {
-			samples[i] = doFilter(samples[i]);
+            samples[i] = doFilter(samples[i]);
         }
 
-		cutoffValues.clear;
     }
 
 	template <typename FloatType>
 	FloatType doFilter(FloatType sample)
 	{
-		//SetCutoff(cutoffValues[sample]);
 
 		FloatType dV0, dV1, dV2, dV3;
 
@@ -202,7 +200,7 @@ private:
 		dV[3] = dV3;
 		tV[3] = dsp::FastMathApproximations::tanh(V[3] / (2.0 * VT));
 
-		return V[3];
+        return V[3] * -1.0;
 	}
 
 	template <typename FloatType>
@@ -230,7 +228,7 @@ private:
 		dV[3] = dV3;
 		tV[3] = saturationLUT(V[3] / (2.0 * VT));
 
-		return V[3];
+		return V[3] * -1.0;
 	}
 
     
