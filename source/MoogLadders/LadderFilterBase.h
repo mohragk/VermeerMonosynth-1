@@ -52,7 +52,7 @@ public:
     virtual void AddModulationValue(double value, int parameter) { parameterValues[parameter].push_back(value); }
       
     enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
-    enum Parameter { CUTOFF, RESONANCE, DRIVE, numParams };
+    static enum Parameter { CUTOFF, RESONANCE, DRIVE, numParams };
     
     virtual double GetResonance() { return resonance.get(); }
     virtual double GetCutoff() { return cutoff.get(); }
