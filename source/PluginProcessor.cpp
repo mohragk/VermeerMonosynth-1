@@ -739,7 +739,6 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 {
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
-	FloatType* channelDataRight = buffer.getWritePointer(1);
     
     const int numSamples = buffer.getNumSamples();
 
@@ -755,7 +754,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     for (int step = 0; step < numSamples; step += stepSize)
     {
         
-        FloatType combinedCutoff = smoothing[CONTOUR_SMOOTHER]->processSmooth( cutoffFromEnvelope.getNextValue() )
+        FloatType combinedCutoff = smoothing[CONTOUR_SMOOTHER]->processSmooth( currentCutoff )
 								 + smoothing[CUTOFF_SMOOTHER]->processSmooth ( cutoff.getNextValue() ) ;
 
 		if (combinedCutoff > CUTOFF_MAX) combinedCutoff = CUTOFF_MAX;
@@ -775,13 +774,10 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 
 		if (prevCutoff == combinedCutoff)
 		{
-			//filter->SetCutoff(combinedCutoff);
-
 			if (filter->SetCutoff(combinedCutoff)) 
 			{
 				filter->Process(channelDataLeft, stepSize);
 			}
-                
 		}
 		else
 		{
