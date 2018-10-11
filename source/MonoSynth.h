@@ -364,10 +364,7 @@ private:
                 FloatType* dataLeft = outputBuffer.getWritePointer(0);
                 FloatType* dataRight = outputBuffer.getWritePointer(1);
                 
-                dataLeft[startSample] = sample;
-                dataRight[startSample] = sample;
-                
-                
+                dataLeft[startSample] = sample;                
                 
 				++startSample;
 			}
