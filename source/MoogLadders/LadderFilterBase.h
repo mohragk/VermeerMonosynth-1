@@ -52,6 +52,7 @@ public:
     virtual void AddModulationValue(double value) { cutoffValues.push_back(value); }
       
     enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
+    enum Parameter { CUTOFF, RESONANCE, DRIVE, numParams };
     
     virtual double GetResonance() { return resonance.get(); }
     virtual double GetCutoff() { return cutoff.get(); }
@@ -65,7 +66,7 @@ protected:
 	double drive;
 
 	dsp::LookupTableTransform<double> saturationLUT{ [](double x) { return std::tanh(x); }, double(-5), double(5), 256 };
-    std::vector<double> cutoffValues;
+    std::vector<double>[numParams] parameterValues;
 };
 
 #endif
