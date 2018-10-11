@@ -49,7 +49,7 @@ public:
     virtual void SetResonance(double r) = 0;
     virtual bool SetCutoff(double c) = 0;
     virtual void SetDrive(double d) = 0;
-    virtual void AddModulationValue(double value) { cutoffValues.push_back(value); }
+    virtual void AddModulationValue(double value, int parameter) { parameterValues[parameter].push_back(value); }
       
     enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
     enum Parameter { CUTOFF, RESONANCE, DRIVE, numParams };
