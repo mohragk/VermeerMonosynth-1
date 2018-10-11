@@ -275,7 +275,7 @@ private:
     void applyGain (AudioBuffer<FloatType>& buffer);
     
     template <typename FloatType>
-    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
+    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
 
     template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);

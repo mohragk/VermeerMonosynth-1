@@ -75,6 +75,8 @@ public:
 			samples[i] = doFilterLUT(samples[i]);
 		}
         
+        cutoffValues.clear();
+        
     }
     
     virtual void Process(double* samples, size_t n) noexcept override
@@ -82,7 +84,10 @@ public:
 		for (uint32_t i = 0; i < n; i++)
 		{
 			samples[i] = doFilterLUT(samples[i]);
+            
 		}
+        
+        cutoffValues.clear();
     }
     
     virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
@@ -206,6 +211,9 @@ private:
 	template <typename FloatType>
 	FloatType doFilterLUT(FloatType sample)
 	{
+        // set the cutoff from our array of stored cutoff values
+        SetCutoff(cutoffValues.at(sample));
+        
 		FloatType dV0, dV1, dV2, dV3;
 
 		dV0 = -g * (saturationLUT((drive * sample + resonance.get() * V[3]) / (2.0 * VT)) + tV[0]);

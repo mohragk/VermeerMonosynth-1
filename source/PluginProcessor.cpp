@@ -586,19 +586,21 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     
-    
+    LadderFilterBase* curFilter = filterA.get();
     // getting our filter envelope values
-    applyFilterEnvelope(osBuffer);
+    applyFilterEnvelope(osBuffer, curFilter);
     
     
 
-
     
+    applyFilter(osBuffer, curFilter);
+    
+    /*
     // applying filter
     if      (*filterSelectParam == 0)    { applyFilter(osBuffer, filterA.get()) ; }
     else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB.get()) ; }
     else                                 { applyFilter(osBuffer, filterC.get()) ; }
-    
+    */
     
     
 
@@ -668,7 +670,7 @@ void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter)
 {
 	//filterEnvelope->setSampleRate(sampleRate);
     
@@ -723,11 +725,18 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 		
 			
         
-        cutoff.setValue				(*filterCutoffParam);
-        cutoffFromEnvelope.setValue	(currentCutoff);
         resonance.setValue			(*filterQParam);
         drive.setValue				(*filterDriveParam);
        
+        FloatType combinedCutoff = smoothing[CONTOUR_SMOOTHER]->processSmooth( currentCutoff )
+        + smoothing[CUTOFF_SMOOTHER]->processSmooth ( *filterCutoffParam)  ;
+        
+        
+        
+        if (combinedCutoff > CUTOFF_MAX) combinedCutoff = CUTOFF_MAX;
+        if (combinedCutoff < CUTOFF_MIN) combinedCutoff = CUTOFF_MIN;
+        
+        filter->AddModulationValue(combinedCutoff);
 		
     }
     
@@ -739,60 +748,19 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 {
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
-	FloatType* channelDataRight = buffer.getWritePointer(1);
-    
     const int numSamples = buffer.getNumSamples();
+    
+    auto snapToLocalVal= [](double val) -> double { if (val < 0.0) val = 0.0; else if (val > 1.0) val = 1.0; return val;  };
+
+    FloatType newReso =  snapToLocalVal(resonance.getNextValue());
+
+    filter->SetResonance(newReso);
+    filter->SetDrive(drive.getNextValue());
+    
 
     
-    //
-    //  break buffer into chunks
-    //
-    int stepSize = jmin(16, numSamples);
-    
-    int samplesLeftOver = numSamples;
-    
-    
-    for (int step = 0; step < numSamples; step += stepSize)
-    {
-        
-        FloatType combinedCutoff = smoothing[CONTOUR_SMOOTHER]->processSmooth( cutoffFromEnvelope.getNextValue() )
-								 + smoothing[CUTOFF_SMOOTHER]->processSmooth ( cutoff.getNextValue() ) ;
-
-		if (combinedCutoff > CUTOFF_MAX) combinedCutoff = CUTOFF_MAX;
-		if (combinedCutoff < CUTOFF_MIN) combinedCutoff = CUTOFF_MIN;
-        
-        auto snapToLocalVal= [](double val) -> double { if (val < 0.0) val = 0.0; else if (val > 1.0) val = 1.0; return val;  };
-
-        FloatType newReso =  snapToLocalVal(resonance.getNextValue());
-
-        filter->SetResonance(newReso);
-        filter->SetDrive(drive.getNextValue());
-        
-
-        if (samplesLeftOver < stepSize)
-            stepSize = samplesLeftOver;
-        
-
-		if (prevCutoff == combinedCutoff)
-		{
-			//filter->SetCutoff(combinedCutoff);
-
-			if (filter->SetCutoff(combinedCutoff)) 
-			{
-				filter->Process(channelDataLeft, stepSize);
-			}
-                
-		}
-		else
-		{
-			filter->ProcessRamp(channelDataLeft, stepSize, prevCutoff, combinedCutoff);
-		}
-        
-        prevCutoff = combinedCutoff;
-        samplesLeftOver -= stepSize;
-        channelDataLeft += stepSize;
-    }
-    
+    filter->Process(channelDataLeft, numSamples);
+  
    /*
 	const FloatType* dataLeftPass2  = buffer.getReadPointer(0);
     FloatType* dataRightPass2 = buffer.getWritePointer(1);
