@@ -82,15 +82,19 @@ public:
     {
         for (uint32_t i = 0; i < n; i++)
         {
-            samples[i] = doFilter(samples[i]);
+            samples[i] = doFilter(samples[i], i);
         }
+        
+        clearParameterBuffers();
     }
 	virtual void Process(double* samples, size_t n) noexcept override
 	{
 		for (uint32_t i = 0; i < n; i++)
 		{
-			samples[i] = doFilter(samples[i]);
+			samples[i] = doFilter(samples[i], i);
 		}
+        
+        clearParameterBuffers();
 	}
     
     virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
@@ -100,9 +104,11 @@ public:
         for (uint32_t i = 0; i < n; i++)
         {
             SetCutoff(beginCutoff);
-            samples[i] = doFilter(samples[i]);
+            samples[i] = doFilter(samples[i], i);
             beginCutoff += increment;
         }
+        
+        clearParameterBuffers();
     }
     
     
@@ -113,22 +119,24 @@ public:
         for (uint32_t i = 0; i < n; i++)
         {
             SetCutoff(beginCutoff);
-            samples[i] = doFilter(samples[i]);
+            samples[i] = doFilter(samples[i], i);
             beginCutoff += increment;
         }
+        
+        clearParameterBuffers();
     }
     
     
 	template <typename FloatType>
-	FloatType doFilter(FloatType sample )
+	FloatType doFilter(FloatType sample, size_t pos )
     {
-		
+        UpdateParameters(pos);
 
 		FloatType y = 0.0;
 		
 		if (type == LPF2)
 		{
-			FloatType y1 = va_LPF1.doFilter(sample);
+			FloatType y1 = va_LPF1.doFilter(sample, pos);
 
 			FloatType S35 = va_HPF1.getFeedbackOutput() +
 				va_LPF2.getFeedbackOutput();
@@ -137,13 +145,13 @@ public:
 
 			u = saturationLUT(drive * u);
 
-			y = resonance.get() * va_LPF2.doFilter(u);
+			y = resonance.get() * va_LPF2.doFilter(u, pos);
 
-			va_HPF1.doFilter(y);
+			va_HPF1.doFilter(y, pos);
 		}
 		else
 		{
-			FloatType y1 = va_HPF1.doFilter(sample);
+			FloatType y1 = va_HPF1.doFilter(sample, pos);
 
 			FloatType S35 = va_HPF2.getFeedbackOutput() +
 				va_LPF1.getFeedbackOutput();
@@ -154,7 +162,7 @@ public:
 
 			y = saturationLUT(drive * y);
 
-			va_LPF1.doFilter(va_HPF2.doFilter(y));
+			va_LPF1.doFilter(va_HPF2.doFilter(y, pos), pos);
 		}
 
 		if (resonance.get() > 0)

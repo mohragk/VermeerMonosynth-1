@@ -298,7 +298,8 @@ glideTimeParam(nullptr)
     filterA = std::unique_ptr<LadderFilterBase>( new ImprovedMoog );
     filterB = std::unique_ptr<LadderFilterBase>( new ThreeFiveModel );
     filterC = std::unique_ptr<LadderFilterBase>( new DiodeLadderModel );
-   
+    
+
     
     
     // Oversampling 2 times with FIR filtering
@@ -375,20 +376,11 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
 
     
         
-    filterA->SetResonance(0.1);
-    filterA->SetCutoff(12000.0);
-    filterA->SetDrive(1.0);
+    filterA->Prepare(newSampleRate, samplesPerBlock);
+    filterB->Prepare(newSampleRate, samplesPerBlock);
+    filterC->Prepare(newSampleRate, samplesPerBlock);
+   
     
-    
-    filterB->SetResonance(0.1);
-    filterB->SetCutoff(12000.0);
-    filterB->SetDrive(1.0);
-    
-    
-    filterC->SetResonance(0.1);
-    filterC->SetCutoff(12000.0);
-    filterC->SetDrive(1.0);
-
 	
     
 }
@@ -585,13 +577,17 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBuffer.getNumSamples() ) );
     
     
+    //
+    // TEST TEST TEST
+    //
     
-    LadderFilterBase* curFilter = filterA.get();
-    // getting our filter envelope values
+    LadderFilterBase* curFilter;
+    if      (*filterSelectParam == 0) curFilter = filterA.get();
+    else if (*filterSelectParam == 1) curFilter = filterB.get();
+    else                              curFilter = filterC.get();
+  
+    
     applyFilterEnvelope(osBuffer, curFilter);
-    
-    
-
     
     applyFilter(osBuffer, curFilter);
     
@@ -736,7 +732,15 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         if (combinedCutoff > CUTOFF_MAX) combinedCutoff = CUTOFF_MAX;
         if (combinedCutoff < CUTOFF_MIN) combinedCutoff = CUTOFF_MIN;
         
-        filter->AddModulationValue(combinedCutoff);
+        
+        
+        auto snapToLocalVal= [](double val) -> double { if (val < 0.0) val = 0.0; else if (val > 1.0) val = 1.0; return val;  };
+        
+        FloatType newReso =  snapToLocalVal(resonance.getNextValue());
+        
+        filter->AddModulationValueForParameter(combinedCutoff, LadderFilterBase::CUTOFF, i);
+        filter->AddModulationValueForParameter(newReso, LadderFilterBase::RESONANCE, i);
+        filter->AddModulationValueForParameter(drive.getNextValue(), LadderFilterBase::DRIVE, i);
 		
     }
     
@@ -749,28 +753,11 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
     const int numSamples = buffer.getNumSamples();
-    
-    auto snapToLocalVal= [](double val) -> double { if (val < 0.0) val = 0.0; else if (val > 1.0) val = 1.0; return val;  };
-
-    FloatType newReso =  snapToLocalVal(resonance.getNextValue());
-
-    filter->SetResonance(newReso);
-    filter->SetDrive(drive.getNextValue());
-    
 
     
     filter->Process(channelDataLeft, numSamples);
   
-   /*
-	const FloatType* dataLeftPass2  = buffer.getReadPointer(0);
-    FloatType* dataRightPass2 = buffer.getWritePointer(1);
-    
-    for (int i = 0; i < numSamples; i++)
-    {
-        dataRightPass2[i] = dataLeftPass2[i];
-    }
-
-	*/
+   
 	buffer.copyFrom(1, 0, buffer, 0, 0, numSamples);
 }
 

@@ -111,9 +111,10 @@ class DiodeLadderModel : public LadderFilterBase
     }
     
 	template <typename FloatType>
-    FloatType doFilter( FloatType sample )
+    FloatType doFilter( FloatType sample, int pos )
     {
 	
+        UpdateParameters(pos);
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
         va_LPF2.setFeedback( va_LPF3.getFeedbackOutput() );
@@ -128,23 +129,25 @@ class DiodeLadderModel : public LadderFilterBase
         
         U = saturationLUT(drive * U);
         
-        return 2.0 * va_LPF4.doFilter( va_LPF3.doFilter( va_LPF2.doFilter( va_LPF1.doFilter( U ) ) ) ) ;
+        return 2.0 * va_LPF4.doFilter( va_LPF3.doFilter( va_LPF2.doFilter( va_LPF1.doFilter( U, pos ), pos ), pos ), pos ) ;
     }
     
     virtual void Process(float* samples, size_t n) noexcept override
     {
         for (uint32_t i = 0; i < n; i++)
         {
-            samples[i] = doFilter(samples[i]);
+            samples[i] = doFilter(samples[i], i);
         }
+        clearParameterBuffers();
     }
 
 	virtual void Process(double* samples, size_t n) noexcept override
 	{
 		for (uint32_t i = 0; i < n; i++)
 		{
-			samples[i] = doFilter(samples[i]);
+			samples[i] = doFilter(samples[i], i);
 		}
+        clearParameterBuffers();
 	}
     
     virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
@@ -154,9 +157,10 @@ class DiodeLadderModel : public LadderFilterBase
         for (uint32_t i = 0; i < n; i++)
         {
             SetCutoff(beginCutoff);
-            samples[i] = doFilter(samples[i]);
+            samples[i] = doFilter(samples[i], i);
             beginCutoff += increment;
         }
+        clearParameterBuffers();
     }
     
     virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
@@ -166,9 +170,10 @@ class DiodeLadderModel : public LadderFilterBase
         for (uint32_t i = 0; i < n; i++)
         {
             SetCutoff(beginCutoff);
-            samples[i] = doFilter(samples[i]);
+            samples[i] = doFilter(samples[i], i);
             beginCutoff += increment;
         }
+        clearParameterBuffers();
     }
     
     virtual void SetSampleRate (double sr) override
@@ -196,15 +201,6 @@ class DiodeLadderModel : public LadderFilterBase
     virtual bool SetCutoff(double c) override
     {
 
-		if (isnan(c))
-			c = 1000.0;
-        
-        
-        if (c > 20000.0)
-            c = 20000.0;
-        
-        if (c < 40.0)
-            c = 40.0;
 
         jassert (c > 0 && c <= (sampleRate * 0.5));
         

@@ -37,6 +37,15 @@ public:
 	
     LadderFilterBase() { }
     virtual ~LadderFilterBase() { }
+    
+    virtual void Prepare(double sr, int samplesPerBlock) {
+        sampleRate =  sr; numSamples = samplesPerBlock;
+        clearParameterBuffers();
+        
+    }
+    
+    enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
+    enum Parameter { CUTOFF, RESONANCE, DRIVE, numParams };
 	
     virtual void Process(float * samples, size_t n) noexcept = 0;
     virtual void Process(double * samples, size_t n) noexcept = 0;
@@ -49,10 +58,45 @@ public:
     virtual void SetResonance(double r) = 0;
     virtual bool SetCutoff(double c) = 0;
     virtual void SetDrive(double d) = 0;
-    virtual void AddModulationValue(double value, int parameter) { parameterValues[parameter].push_back(value); }
+    virtual void AddModulationValueForParameter(double value, Parameter param, int bufferPos = 0) {
+        
+        switch (param)
+        {
+            case CUTOFF :
+                cutoffValues.at(bufferPos) = value;
+                break;
+            case RESONANCE :
+                resonanceValues.at(bufferPos) = value;
+                break;
+            case DRIVE :
+                driveValues.at(bufferPos) = value;
+                break;
+            default:
+                break;
+        }
+        
+    }
       
-    enum FilterType {LPF1,HPF1,LPF2,HPF2,BPF2,BSF2,LPF4,HPF4,BPF4};
-    static enum Parameter { CUTOFF, RESONANCE, DRIVE, numParams };
+    virtual void clearParameterBuffers()
+    {
+        cutoffValues.resize(numSamples);
+        std::fill_n(cutoffValues.begin(), numSamples, 1000.0);
+        
+        resonanceValues.resize(numSamples);
+        std::fill_n(resonanceValues.begin(), numSamples, 0.0);
+        
+        driveValues.resize(numSamples);
+        std::fill_n(driveValues.begin(), numSamples, 0.0);
+        
+        
+    }
+    
+    virtual void UpdateParameters(int pos)
+    {
+        SetCutoff   ( cutoffValues.at(pos)    );
+        SetResonance( resonanceValues.at(pos) );
+        SetDrive    ( driveValues.at(pos)     );
+    }
     
     virtual double GetResonance() { return resonance.get(); }
     virtual double GetCutoff() { return cutoff.get(); }
@@ -61,12 +105,15 @@ public:
 protected:
 	
 	double sampleRate;
+    int numSamples = 2048;
 	Atomic<double> cutoff;
 	Atomic<double> resonance;
 	double drive;
 
 	dsp::LookupTableTransform<double> saturationLUT{ [](double x) { return std::tanh(x); }, double(-5), double(5), 256 };
-    std::vector<double>[numParams] parameterValues;
+    std::vector<double> cutoffValues;
+    std::vector<double> resonanceValues;
+    std::vector<double> driveValues;
 };
 
 #endif
