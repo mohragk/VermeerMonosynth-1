@@ -55,6 +55,7 @@ public:
 	virtual void Update() = 0;
     virtual void Reset() = 0;
     virtual void SetSampleRate(double sr) = 0;
+    virtual void UpdateBufferSize(int size) { numSamples = size; clearParameterBuffers();}
     virtual void SetResonance(double r) = 0;
     virtual bool SetCutoff(double c) = 0;
     virtual void SetDrive(double d) = 0;
@@ -63,13 +64,13 @@ public:
         switch (param)
         {
             case CUTOFF :
-                cutoffValues.at(bufferPos) = value;
+                cutoffValues[bufferPos] = value;
                 break;
             case RESONANCE :
-                resonanceValues.at(bufferPos) = value;
+                resonanceValues[bufferPos] = value;
                 break;
             case DRIVE :
-                driveValues.at(bufferPos) = value;
+                driveValues[bufferPos] = value;
                 break;
             default:
                 break;

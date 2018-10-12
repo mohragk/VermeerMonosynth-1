@@ -307,7 +307,7 @@ private:
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
-    void resetSamplerates(double sr);
+    void resetSamplerates(double sr, int bufferSize);
     void setOversampleQuality(int q);
     
    

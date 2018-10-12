@@ -370,19 +370,15 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     oversamplingFloatHQ->initProcessing(samplesPerBlock);
     oversamplingDoubleHQ->initProcessing(samplesPerBlock);
     
-    resetSamplerates(newSampleRate);
+    int newBlockSize = (int)oversamplingFloat->getOversamplingFactor() * samplesPerBlock;
+    filterA->Prepare(newSampleRate, newBlockSize);
+    filterB->Prepare(newSampleRate, newBlockSize);
+    filterC->Prepare(newSampleRate, newBlockSize);
+    
+    resetSamplerates(newSampleRate, samplesPerBlock);
     
     keyboardState.reset();
 
-    
-        
-    filterA->Prepare(newSampleRate, samplesPerBlock);
-    filterB->Prepare(newSampleRate, samplesPerBlock);
-    filterC->Prepare(newSampleRate, samplesPerBlock);
-   
-    
-	
-    
 }
 
 void MonosynthPluginAudioProcessor::releaseResources()
@@ -462,23 +458,26 @@ void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiCh
 
 
 
-void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
+void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int bufferSize)
 {
     double newsr = sr;
-    
+    int newBufferSize = bufferSize;
     
     if(*useHQOversamplingParam)
     {
         newsr *= oversamplingDoubleHQ->getOversamplingFactor();
+        newBufferSize *= oversamplingDoubleHQ->getOversamplingFactor();
         if ( isUsingDoublePrecision() ) { setLatencySamples(roundToInt(oversamplingDoubleHQ->getLatencyInSamples())); }
         else                            { setLatencySamples(roundToInt(oversamplingFloatHQ->getLatencyInSamples())); }
     }
     else
     {
         newsr *= oversamplingDouble->getOversamplingFactor();
+        newBufferSize *= oversamplingDoubleHQ->getOversamplingFactor();
         if ( isUsingDoublePrecision() ) { setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
         else                            { setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
     }
+    
     
     
     synth.setCurrentPlaybackSampleRate (newsr);
@@ -492,6 +491,9 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr)
     filterB->SetSampleRate(newsr);
     filterC->SetSampleRate(newsr);
    
+    filterA->UpdateBufferSize(newBufferSize);
+    filterB->UpdateBufferSize(newBufferSize);
+    filterC->UpdateBufferSize(newBufferSize);
     
     lfo.setSampleRate(newsr);
     
@@ -531,7 +533,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
    
     if (prevHqOversampling != hqOn)
     {
-        resetSamplerates( getSampleRate() );
+        resetSamplerates( getSampleRate(), buffer.getNumSamples() );
         prevHqOversampling = hqOn;
     }
 
