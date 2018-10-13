@@ -85,25 +85,25 @@ Sequencer::Sequencer (MonosynthPluginAudioProcessor& p, SequencerState& st) : pr
 {
     typedef StepSlider::style knobStyle;
 
-    globalNoteLengthSlider = std::unique_ptr<ParameterSlider> (new ParameterSlider( *processor.stepNoteLengthParam, knobStyle(ROTARY) ));
+    globalNoteLengthSlider.reset (new ParameterSlider( *processor.stepNoteLengthParam, knobStyle(ROTARY) ));
     addAndMakeVisible (globalNoteLengthSlider.get());
    
     for (int i = 0; i < numSteps; i++)
     {
-        pitchSlider[i] = std::unique_ptr<ParameterSlider> ( new ParameterSlider (  *processor.stepPitchParam[i], knobStyle(LINEARVERTICAL) ) );
+        pitchSlider[i].reset ( new ParameterSlider (  *processor.stepPitchParam[i], knobStyle(LINEARVERTICAL) ) );
         addAndMakeVisible (pitchSlider[i].get());
         
-        skipStepButton[i] = std::unique_ptr<ParamToggleButton> ( new ParamToggleButton( *processor.stepPlayParam[i]));
+        skipStepButton[i].reset ( new ParamToggleButton( *processor.stepPlayParam[i]));
         addAndMakeVisible (skipStepButton[i].get());
     }
     
-	stepDivision = std::unique_ptr<ParameterSlider>(new ParameterSlider(  *processor.stepDivisionFloatParam, knobStyle(ROTARY)));
+	stepDivision.reset(new ParameterSlider(  *processor.stepDivisionFloatParam, knobStyle(ROTARY)));
 	addAndMakeVisible(stepDivision.get());
     
-    maxStepsSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider (*processor.maxStepsParam, knobStyle(LINEARHORIZONTAL)));
+    maxStepsSlider.reset ( new ParameterSlider (*processor.maxStepsParam, knobStyle(LINEARHORIZONTAL)));
     addAndMakeVisible(maxStepsSlider.get());
     
-	swingAmountSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.swingParam, knobStyle(ROTARY)));
+	swingAmountSlider.reset(new ParameterSlider(*processor.swingParam, knobStyle(ROTARY)));
 	addAndMakeVisible(swingAmountSlider.get());
     
     setSize (890, SEQUENCER_HEIGHT);

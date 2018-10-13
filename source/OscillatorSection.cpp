@@ -30,8 +30,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     // OSCILLATORS
     //
     
-    oscillatorsLabel = std::unique_ptr<Label>  (new Label ("Oscillators",
-                                                           TRANS("Oscillators")));
+    oscillatorsLabel.reset  (new Label ("Oscillators", TRANS("Oscillators")));
     addAndMakeVisible (oscillatorsLabel.get());        //
     oscillatorsLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     oscillatorsLabel->setJustificationType (Justification::centred);
@@ -43,48 +42,48 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     // OSC 1
     for (int osc = 0; osc < 3; osc++)
     {
-        oscGainSlider[osc] = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.oscGainParam[osc], knobStyle(ROTARY)) );
+        oscGainSlider[osc].reset( new ParameterSlider(*processor.oscGainParam[osc], knobStyle(ROTARY)) );
         addAndMakeVisible (oscGainSlider[osc].get()); //
         
-        oscGainLabel[osc] = std::unique_ptr<Label> (new Label("OSC"+std::to_string(osc)+" Gain Label", TRANS("Gain")));
+        oscGainLabel[osc].reset (new Label("OSC"+std::to_string(osc)+" Gain Label", TRANS("Gain")));
         addAndMakeVisible(oscGainLabel[osc].get());
         setLabelStyle(*oscGainLabel[osc].get(), font);
         
-        oscWaveformSlider[osc] = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.oscModeParam[osc], knobStyle(LINEARHORIZONTAL)) );
+        oscWaveformSlider[osc].reset( new ParameterSlider(*processor.oscModeParam[osc], knobStyle(LINEARHORIZONTAL)) );
         addAndMakeVisible (oscWaveformSlider[osc].get()); //no label but graphics
         
-        oscWaveformLabel[osc] = std::unique_ptr<Label>(new Label ("OSC"+std::to_string(osc)+" Waveform Label", TRANS("Shape")));
+        oscWaveformLabel[osc].reset(new Label ("OSC"+std::to_string(osc)+" Waveform Label", TRANS("Shape")));
         addAndMakeVisible (oscWaveformLabel[osc].get());
         setLabelStyle(*oscWaveformLabel[osc].get(), font);
         
-        oscTuneSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscDetuneAmountParam[osc], knobStyle(ROTARY)));
+        oscTuneSlider[osc].reset(new ParameterSlider(*processor.oscDetuneAmountParam[osc], knobStyle(ROTARY)));
         addAndMakeVisible(oscTuneSlider[osc].get()); //
         oscTuneSlider[osc]->setDoubleClickReturnValue(true, 0.5);
         
-        oscTuneLabel[osc] = std::unique_ptr<Label> (new Label ("OSC"+std::to_string(osc)+" Tune Label", TRANS("Tune")));
+        oscTuneLabel[osc].reset (new Label ("OSC"+std::to_string(osc)+" Tune Label", TRANS("Tune")));
         addAndMakeVisible (oscTuneLabel[osc].get());
         setLabelStyle(*oscTuneLabel[osc].get(), font);
         
         
-        oscOffsetSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscOffsetParam[osc], knobStyle(ROTARY)));
+        oscOffsetSlider[osc].reset(new ParameterSlider(*processor.oscOffsetParam[osc], knobStyle(ROTARY)));
         addAndMakeVisible (oscOffsetSlider[osc].get()); //
         oscOffsetSlider[osc]->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
         oscOffsetSlider[osc]->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
         oscOffsetSlider[osc]->setDoubleClickReturnValue(true, 0.5);
         
         
-        oscOffsetLabel[osc] = std::unique_ptr<Label> (new Label ("oscOffsetLabel"+std::to_string(osc), TRANS("Offset")));          //
+        oscOffsetLabel[osc].reset (new Label ("oscOffsetLabel"+std::to_string(osc), TRANS("Offset")));          //
         addAndMakeVisible (oscOffsetLabel[osc].get());
         setLabelStyle(*oscOffsetLabel[osc].get(), font);
         
         
         // PWM
-        pulsewidthSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthParam[osc], LINEARHORIZONTAL));
+        pulsewidthSlider[osc].reset(new ParameterSlider(*processor.pulsewidthParam[osc], LINEARHORIZONTAL));
         addAndMakeVisible(pulsewidthSlider[osc].get());
         pulsewidthSlider[osc]->setDoubleClickReturnValue(true, 0.5);
         pulsewidthSlider[osc].get()->setTooltip("Adjust Pulsewidth: 0.5 -> 1.0");
         
-        pulsewidthAmountSlider[osc] = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pulsewidthAmountParam[osc], LINEARHORIZONTAL));
+        pulsewidthAmountSlider[osc].reset(new ParameterSlider(*processor.pulsewidthAmountParam[osc], LINEARHORIZONTAL));
         addAndMakeVisible(pulsewidthAmountSlider[osc].get());  //
         pulsewidthAmountSlider[osc].get()->setTooltip("Set pulsewidth modulation amount from LFO");
         
@@ -95,44 +94,44 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
    
     //GLIDE
     
-    glideLabel = std::unique_ptr<Label> (new Label("glideTimeLabel", TRANS("Glide")));
+    glideLabel.reset (new Label("glideTimeLabel", TRANS("Glide")));
     addAndMakeVisible(glideLabel.get());
     setLabelStyle(*glideLabel.get(), font);
     
     
-    glideTimeSlider = std::unique_ptr<ParameterSlider> ( new ParameterSlider(*processor.glideTimeParam, knobStyle(ROTARY) ) );
+    glideTimeSlider.reset( new ParameterSlider(*processor.glideTimeParam, knobStyle(ROTARY) ) );
     addAndMakeVisible(glideTimeSlider.get());
     glideTimeSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
     glideTimeSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     glideTimeSlider->setDoubleClickReturnValue(true, 0.5);
     glideTimeSlider->setTooltip("Glide Time (ms)");
     
-	oscSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.oscSyncParam, knobStyle(LINEARVERTICAL)));
+	oscSyncSlider.reset(new ParameterSlider(*processor.oscSyncParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (oscSyncSlider.get());
     oscSyncSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     //oscSyncSlider->setDoubleClickReturnValue(true, 0.5);
    
-    oscSyncLabel = std::unique_ptr<Label> (new Label ("oscSyncLabel", TRANS("Sync")));                 //
+    oscSyncLabel.reset (new Label ("oscSyncLabel", TRANS("Sync")));                 //
     addAndMakeVisible (oscSyncLabel.get());
     setLabelStyle(*oscSyncLabel.get(), font);
     
     
-    oscSyncONLabel = std::unique_ptr<Label> (new Label ("oscSyncONLabel",TRANS("-on")));
+    oscSyncONLabel.reset (new Label ("oscSyncONLabel",TRANS("-on")));
     addAndMakeVisible (oscSyncONLabel.get());
     setLabelStyle(*oscSyncONLabel.get(), font);
     
-    oscSyncOFFLabel = std::unique_ptr<Label> (new Label ("oscSyncOFFLabel", TRANS("-off")));
+    oscSyncOFFLabel.reset (new Label ("oscSyncOFFLabel", TRANS("-off")));
     addAndMakeVisible (oscSyncOFFLabel.get());
     setLabelStyle(*oscSyncOFFLabel.get(), font);
     
     
     
     //Pitch MODULATION SLIDER
-	pitchModSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.pitchModParam, knobStyle(ROTARY)));
+	pitchModSlider.reset(new ParameterSlider(*processor.pitchModParam, knobStyle(ROTARY)));
     addAndMakeVisible (pitchModSlider.get());        //
     pitchModSlider->setDoubleClickReturnValue(true, 0.0);
     
-    pitchModLabel = std::unique_ptr<Label> (new Label ("OSC2 Gain Label", TRANS("Pitch Mod")));                     //
+    pitchModLabel.reset (new Label ("OSC2 Gain Label", TRANS("Pitch Mod")));                     //
     addAndMakeVisible (pitchModLabel.get());
     setLabelStyle(*pitchModLabel.get(), font);
     
@@ -143,20 +142,20 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     // Drawables for symbols/icons
     //
     
-    drawable25 = std::unique_ptr<Drawable>( Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize));
-    drawable1 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
-    drawable2 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
-    drawable3 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
+    drawable25.reset( Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize));
+    drawable1.reset(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
+    drawable2.reset(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
+    drawable3.reset(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
     
-    drawable26 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize));
-    drawable4 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
-    drawable5 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
-    drawable6 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
+    drawable26.reset(Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize));
+    drawable4.reset(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
+    drawable5.reset(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
+    drawable6.reset(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
     
-    drawable27 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize));
-    drawable7 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
-    drawable8 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
-    drawable9 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
+    drawable27.reset(Drawable::createFromImageData (oscNoiseWaveSymbol_svg, oscNoiseWaveSymbol_svgSize));
+    drawable7.reset(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
+    drawable8.reset(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
+    drawable9.reset(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
 
     
     

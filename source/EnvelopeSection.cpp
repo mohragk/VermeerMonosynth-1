@@ -21,7 +21,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
 
 	typedef ParameterSlider::style knobStyle;
     
-    envelopesLabel = std::unique_ptr<Label> ( new Label ("Envelopes", TRANS("Envelopes")));
+    envelopesLabel.reset ( new Label ("Envelopes", TRANS("Envelopes")));
     addAndMakeVisible (envelopesLabel.get());
     envelopesLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     envelopesLabel->setJustificationType (Justification::centredTop);
@@ -29,7 +29,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     envelopesLabel->setColour (TextEditor::textColourId, Colours::black);
     envelopesLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    envAmpLabel = std::unique_ptr<Label> (new Label ("Envelope Amp Label", TRANS("Amplitude")));
+    envAmpLabel.reset (new Label ("Envelope Amp Label", TRANS("Amplitude")));
     addAndMakeVisible (envAmpLabel.get());
     envAmpLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     envAmpLabel->setJustificationType (Justification::centredBottom);
@@ -38,25 +38,25 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     envAmpLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     // Amplitude Envelope
-	attackSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackParam1, knobStyle(LINEARVERTICAL)));
+	attackSlider1.reset(new ParameterSlider(*processor.attackParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackSlider1.get());      //
    
     
-	decaySlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayParam1, knobStyle(LINEARVERTICAL)));
+	decaySlider1.reset(new ParameterSlider(*processor.decayParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decaySlider1.get());        //
    
     
-	sustainSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sustainParam1, knobStyle(LINEARVERTICAL)));
+	sustainSlider1.reset(new ParameterSlider(*processor.sustainParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(sustainSlider1.get());     //
    
     
-	releaseSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.releaseParam1, knobStyle(LINEARVERTICAL)));
+	releaseSlider1.reset(new ParameterSlider(*processor.releaseParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(releaseSlider1.get());     //
    
     
    
     
-    envFilterLabel = std::unique_ptr<Label> ( new Label ("Envelope Filter Label", TRANS("Filter Cutoff")));
+    envFilterLabel.reset ( new Label ("Envelope Filter Label", TRANS("Filter Cutoff")));
     addAndMakeVisible (envFilterLabel.get());
     envFilterLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     envFilterLabel->setJustificationType (Justification::centredBottom);
@@ -65,23 +65,23 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     envFilterLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     // Filter Cutoff Envelope
-	attackSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackParam3, knobStyle(LINEARVERTICAL)));
+	attackSlider2.reset(new ParameterSlider(*processor.attackParam3, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackSlider2.get());      //
    
     
-	decaySlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayParam3, knobStyle(LINEARVERTICAL)));
+	decaySlider2.reset(new ParameterSlider(*processor.decayParam3, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decaySlider2.get());        //
   
 
-	sustainSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sustainParam3, knobStyle(LINEARVERTICAL)));
+	sustainSlider2.reset(new ParameterSlider(*processor.sustainParam3, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(sustainSlider2.get());     //
     
     
-	releaseSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.releaseParam3, knobStyle(LINEARVERTICAL)));
+	releaseSlider2.reset(new ParameterSlider(*processor.releaseParam3, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(releaseSlider2.get());     //
    
     
-    envPitchLabel = std::unique_ptr<Label> ( new Label ("Envelope Pitch Label", TRANS("Pitch Mod.")));
+    envPitchLabel.reset ( new Label ("Envelope Pitch Label", TRANS("Pitch Mod.")));
     addAndMakeVisible (envPitchLabel.get());
     envPitchLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     envPitchLabel->setJustificationType (Justification::centredBottom);
@@ -91,52 +91,52 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     
     // Pitch Modulation Envelope
-	attackSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackParam2, knobStyle(LINEARVERTICAL)));
+	attackSlider3.reset(new ParameterSlider(*processor.attackParam2, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackSlider3.get());      //
    
     
-	decaySlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayParam2, knobStyle(LINEARVERTICAL)));
+	decaySlider3.reset(new ParameterSlider(*processor.decayParam2, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decaySlider3.get());        //
     
     
-	sustainSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.sustainParam2, knobStyle(LINEARVERTICAL)));
+	sustainSlider3.reset(new ParameterSlider(*processor.sustainParam2, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(sustainSlider3.get());     //
     
     
-	releaseSlider3 = std::unique_ptr <ParameterSlider>(new ParameterSlider(*processor.releaseParam2, knobStyle(LINEARVERTICAL)));
+	releaseSlider3.reset(new ParameterSlider(*processor.releaseParam2, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(releaseSlider3.get());     //
    
     
     
     
     
-	attackCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve1Param, knobStyle(LINEARVERTICAL)));
+	attackCurveSlider1.reset(new ParameterSlider(*processor.attackCurve1Param, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(attackCurveSlider1.get());//
     attackCurveSlider1->setTooltip (TRANS("set attack curve from exponential to linear"));
    
 	
-    decRelCurveSlider1 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve1Param, knobStyle(LINEARVERTICAL)));
+    decRelCurveSlider1.reset(new ParameterSlider(*processor.decayRelCurve1Param, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(decRelCurveSlider1.get());     //
     decRelCurveSlider1->setTooltip (TRANS("set decay and release curves from exponential to linear"));
    
 
     
-	attackCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve3Param, knobStyle(LINEARVERTICAL)));
+	attackCurveSlider2.reset(new ParameterSlider(*processor.attackCurve3Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackCurveSlider2.get());    //@TODO: add parameter in Processor
     attackCurveSlider2->setTooltip (TRANS("set attack curve from exponential to linear"));
    
 
-	decRelCurveSlider2 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve3Param, knobStyle(LINEARVERTICAL)));
+	decRelCurveSlider2.reset(new ParameterSlider(*processor.decayRelCurve3Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decRelCurveSlider2.get());  //
     decRelCurveSlider2->setTooltip (TRANS("set decay and release curves from exponential to linear"));//@TODO: add parameter in Processor
     
 
-	attackCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.attackCurve2Param, knobStyle(LINEARVERTICAL)));
+	attackCurveSlider3.reset(new ParameterSlider(*processor.attackCurve2Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackCurveSlider3.get());      //@TODO: add parameter in Processor
     attackCurveSlider3->setTooltip (TRANS("set attack curve from exponential to linear"));
    
 
-	decRelCurveSlider3 = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.decayRelCurve2Param, knobStyle(LINEARVERTICAL)));
+	decRelCurveSlider3.reset(new ParameterSlider(*processor.decayRelCurve2Param, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decRelCurveSlider3.get()); //@TODO: add parameter in Processor
     decRelCurveSlider3->setTooltip (TRANS("set decay and release curves from exponential to linear"));
     
