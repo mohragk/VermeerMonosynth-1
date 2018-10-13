@@ -99,32 +99,32 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     
     // OSCILLATOR SECTION
-    oscillatorSection = std::unique_ptr<OscillatorSection>(new OscillatorSection(owner));
+    oscillatorSection.reset(new OscillatorSection(owner));
     addAndMakeVisible(oscillatorSection.get());
     
     
     // FILTER SECTION
-    filterSection = std::unique_ptr<FilterSection> (new FilterSection(owner));
+    filterSection.reset(new FilterSection(owner));
     addAndMakeVisible(filterSection.get());
     
     
     //Envelope Section
-    envelopeSection = std::unique_ptr<EnvelopeSection> (new EnvelopeSection(owner));
+    envelopeSection.reset (new EnvelopeSection(owner));
     addAndMakeVisible(envelopeSection.get());
     
     
     //LFO Section
-    lfoSection = std::unique_ptr<LFOSection> (new LFOSection(owner));
+    lfoSection.reset (new LFOSection(owner));
     addAndMakeVisible(lfoSection.get());
     
     
     // MASTER SECTION
-    masterSection = std::unique_ptr<MasterSection> (new MasterSection(owner));
+    masterSection.reset (new MasterSection(owner));
     addAndMakeVisible(masterSection.get());
     
     
     //SEQUENCER SECTION
-    sequencerSection = std::unique_ptr<Sequencer> (new Sequencer(owner, *owner.seqState.get()));
+    sequencerSection.reset (new Sequencer(owner, *owner.seqState.get()));
     addAndMakeVisible(sequencerSection.get());
     sequencerSection->setVisible(false);
     Rectangle<int> seqBounds (0,0 , width, height);
@@ -135,7 +135,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     //
     // TITLE
     //
-    titleLabel = std::unique_ptr<Label> ( new Label ("Title", TRANS("Monosynth-1")));
+    titleLabel.reset ( new Label ("Title", TRANS("Monosynth-1")));
     addAndMakeVisible (titleLabel.get());
     titleLabel->setFont (Font (font, 22.00f, Font::plain).withExtraKerningFactor (0.150f));
     titleLabel->setJustificationType (Justification::centredBottom);
@@ -149,7 +149,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     
     //Oversample button
-    hqOversamplingButton = std::unique_ptr<ParamToggleButton> ( new ParamToggleButton (*owner.useHQOversamplingParam));
+    hqOversamplingButton.reset( new ParamToggleButton (*owner.useHQOversamplingParam));
     addAndMakeVisible (hqOversamplingButton.get());
     hqOversamplingButton->addListener (this);
 	hqOversamplingButton.get()->setTooltip("High Quality ON/OFF");
@@ -157,7 +157,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
     
     //Sequencer expansion Button
-    expandSequencerButton = std::unique_ptr<ParamToggleButton> (new ParamToggleButton(*owner.useSequencerParam));
+    expandSequencerButton.reset(new ParamToggleButton(*owner.useSequencerParam));
     addAndMakeVisible (expandSequencerButton.get());
     expandSequencerButton->addListener(this);
 	expandSequencerButton.get()->setTooltip("Expand and activate Sequencer");
@@ -183,33 +183,33 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     //
     
 	// SIGH.. swapped the graphics out
-    drawable11 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
-    drawable10 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
+    drawable11.reset(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
+    drawable10.reset(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
     
-	drawable13 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
-    drawable12 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
+	drawable13.reset(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
+    drawable12.reset(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
     
-	drawable15 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
-    drawable14 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
+	drawable15.reset(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
+    drawable14.reset(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
     
-	drawable17 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
-    drawable16 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
+	drawable17.reset(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
+    drawable16.reset(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
  
-	drawable19 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
-    drawable18 = std::unique_ptr<Drawable>(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
+	drawable19.reset(Drawable::createFromImageData (attackCurveLinear_symbol_svg, attackCurveLinear_symbol_svgSize));
+    drawable18.reset(Drawable::createFromImageData (attackCurveExponential_symbol_svg, attackCurveExponential_symbol_svgSize));
  
-	drawable21 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
-    drawable20 = std::unique_ptr<Drawable>(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
+	drawable21.reset(Drawable::createFromImageData (decayCurveLinear_symbol_svg, decayCurveLinear_symbol_svgSize));
+    drawable20.reset(Drawable::createFromImageData (decayCurveExponential_symbol_svg, decayCurveExponential_symbol_svgSize));
     
    
     
     // ANIMATOR
-    animator = std::unique_ptr<ComponentAnimator> (new ComponentAnimator);
+    animator.reset(new ComponentAnimator);
     
 
     
     //TOOLTIP WINDOW
-    tooltipWindow = std::unique_ptr<TooltipWindow> (new TooltipWindow(this, 700));
+    tooltipWindow.reset(new TooltipWindow(this, 700));
 
     // start a timer which will keep our timecode display updated
     startTimerHz (60);

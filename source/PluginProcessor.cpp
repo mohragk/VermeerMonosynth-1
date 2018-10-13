@@ -295,27 +295,27 @@ glideTimeParam(nullptr)
     
     
     
-    filterA = std::unique_ptr<LadderFilterBase>( new ImprovedMoog );
-    filterB = std::unique_ptr<LadderFilterBase>( new ThreeFiveModel );
-    filterC = std::unique_ptr<LadderFilterBase>( new DiodeLadderModel );
+    filterA.reset( new ImprovedMoog );
+    filterB.reset( new ThreeFiveModel );
+    filterC.reset( new DiodeLadderModel );
     
 
     
     
     // Oversampling 2 times with FIR filtering
-    oversamplingFloat  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 2, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
-    oversamplingDouble = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 2, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
+    oversamplingFloat.reset  ( new dsp::Oversampling<float>  ( 2, 1, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
+    oversamplingDouble.reset ( new dsp::Oversampling<double> ( 2, 1, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
     
     // HQ Oversampling 8 times with FIR filtering
-    oversamplingFloatHQ  = std::unique_ptr<dsp::Oversampling<float>>  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
-    oversamplingDoubleHQ = std::unique_ptr<dsp::Oversampling<double>> ( new dsp::Oversampling<double> ( 2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
+    oversamplingFloatHQ.reset  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
+    oversamplingDoubleHQ.reset ( new dsp::Oversampling<double> ( 2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
     
 
     for (int i = 0; i < numSmoothers; i++)
-        smoothing[i] = std::unique_ptr<ParamSmoother>(new ParamSmoother);
+        smoothing[i].reset(new ParamSmoother);
     
    // sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( keyboardState ) );
-	seqState = std::unique_ptr<SequencerState>(new SequencerState);
+	seqState.reset(new SequencerState);
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
