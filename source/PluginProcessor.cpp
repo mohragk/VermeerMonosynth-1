@@ -579,9 +579,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBuffer.getNumSamples() ) );
     
     
-    //
-    // TEST TEST TEST
-    //
+    
     
     LadderFilterBase* curFilter;
     if      (*filterSelectParam == 0) curFilter = filterA.get();
@@ -593,16 +591,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     applyFilter(osBuffer, curFilter);
     
-    /*
-    // applying filter
-    if      (*filterSelectParam == 0)    { applyFilter(osBuffer, filterA.get()) ; }
-    else if (*filterSelectParam == 1)    { applyFilter(osBuffer, filterB.get()) ; }
-    else                                 { applyFilter(osBuffer, filterC.get()) ; }
-    */
     
     
 
-    //APPLYING WAVESHAPER
+    // APPLYING WAVESHAPER
     if(*waveshapeSwitchParam == 1)
         applyWaveshaper(osBuffer);
  
@@ -629,11 +621,14 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         softClipBuffer(osBuffer);
 
 
-
-    //DOWNSAMPLING
+   
+ 
+    // DOWNSAMPLING
     oversampling->processSamplesDown(block);
     
     
+    // COPY LEFT DATA to RIGHT CHANNEL
+    buffer.copyFrom(1, 0, buffer, 0, 0, buffer.getNumSamples());
    
 
 
@@ -650,14 +645,12 @@ void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 
 	if (masterGain == masterGainPrev)
 	{
-		for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
-			buffer.applyGain(channel, 0, buffer.getNumSamples(), masterGain);
+        buffer.applyGain(0, 0, buffer.getNumSamples(), masterGain);
 
 	}
 	else
 	{
-		for (int channel = 0; channel < getTotalNumOutputChannels(); ++channel)
-			buffer.applyGainRamp(channel, 0, buffer.getNumSamples(), masterGainPrev, masterGain);
+        buffer.applyGainRamp(0, 0, buffer.getNumSamples(), masterGainPrev, masterGain);
 
 		masterGainPrev = masterGain;
 	}
@@ -760,7 +753,7 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     filter->Process(channelDataLeft, numSamples);
   
    
-	buffer.copyFrom(1, 0, buffer, 0, 0, numSamples);
+	
 }
 
 template <typename FloatType>
@@ -771,7 +764,6 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
     const FloatType* readLeft = buffer.getReadPointer(0);
     
 	FloatType* dataL = buffer.getWritePointer(0);
-	FloatType* dataR = buffer.getWritePointer(1);
 
 	
 
@@ -780,7 +772,6 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 	for (int i = 0; i < numSamples; i++)
 	{
 		dataL[i] = getWaveshaped(readLeft[i], saturation, *waveshapeModeParam);
-        dataR[i] = dataL[i];  
 	}
 }
 

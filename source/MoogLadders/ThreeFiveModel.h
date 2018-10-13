@@ -85,7 +85,6 @@ public:
             samples[i] = doFilter(samples[i], i);
         }
         
-        clearParameterBuffers();
     }
 	virtual void Process(double* samples, size_t n) noexcept override
 	{
@@ -94,7 +93,6 @@ public:
 			samples[i] = doFilter(samples[i], i);
 		}
         
-        clearParameterBuffers();
 	}
     
     virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
@@ -108,7 +106,6 @@ public:
             beginCutoff += increment;
         }
         
-        clearParameterBuffers();
     }
     
     
@@ -123,12 +120,11 @@ public:
             beginCutoff += increment;
         }
         
-        clearParameterBuffers();
     }
     
     
 	template <typename FloatType>
-	FloatType doFilter(FloatType sample, size_t pos )
+	FloatType doFilter(FloatType sample, int pos )
     {
         UpdateParameters(pos);
 

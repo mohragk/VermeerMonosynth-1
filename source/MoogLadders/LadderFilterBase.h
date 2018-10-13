@@ -53,7 +53,7 @@ public:
     virtual void ProcessRamp(double * samples, size_t n, double beginCutoff, double endCutoff) = 0;
 
 	virtual void Update() = 0;
-    virtual void Reset() = 0;
+    virtual void Reset() { clearParameterBuffers(); }
     virtual void SetSampleRate(double sr) = 0;
     virtual void UpdateBufferSize(int size) { numSamples = size; clearParameterBuffers();}
     virtual void SetResonance(double r) = 0;

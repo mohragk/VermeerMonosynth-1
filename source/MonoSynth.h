@@ -362,12 +362,7 @@ private:
                 sample *= ampEnvelope.get()->process();
                 
                 FloatType* dataLeft = outputBuffer.getWritePointer(0);
-                FloatType* dataRight = outputBuffer.getWritePointer(1);
-                
                 dataLeft[startSample] = sample;
-                dataRight[startSample] = sample;
-                
-                
                 
 				++startSample;
 			}

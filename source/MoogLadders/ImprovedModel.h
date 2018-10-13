@@ -74,9 +74,6 @@ public:
 		{
 			samples[i] = doFilter(samples[i], i);
 		}
-        
-        clearParameterBuffers();
-        
     }
     
     virtual void Process(double* samples, size_t n) noexcept override
@@ -86,8 +83,6 @@ public:
 			samples[i] = doFilter(samples[i], i);
             
 		}
-        
-        clearParameterBuffers();
     }
     
     virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
@@ -100,7 +95,6 @@ public:
             samples[i] = doFilter(samples[i], i);
             beginCutoff += increment;
         }
-        clearParameterBuffers();
     }
     
     virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
@@ -113,7 +107,6 @@ public:
             samples[i] = doFilter(samples[i], i);
             beginCutoff += increment;
         }
-        clearParameterBuffers();
     }
     
     virtual void SetSampleRate (double sr) override
