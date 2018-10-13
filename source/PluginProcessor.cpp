@@ -558,7 +558,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
 
 	// Clear the buffer of any samples
-	osBuffer.clear();
+	//osBuffer.clear();
     
     // PARAMETER UPDATE
     updateParameters(osBuffer);

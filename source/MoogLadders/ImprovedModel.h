@@ -169,7 +169,7 @@ private:
 	
 
 	template <typename FloatType>
-	FloatType doFilter(FloatType sample, int curPos)
+	inline FloatType doFilter(FloatType sample, int curPos)
 	{
         // set the cutoff from our array of stored cutoff values
         UpdateParameters(curPos);

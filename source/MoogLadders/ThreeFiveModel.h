@@ -124,7 +124,7 @@ public:
     
     
 	template <typename FloatType>
-	FloatType doFilter(FloatType sample, int pos )
+	inline FloatType doFilter(FloatType sample, int pos )
     {
         UpdateParameters(pos);
 

@@ -71,23 +71,20 @@ public:
         hardSync(false),
         lastNotePlayed(60)
     {
-        pitchEnvelope = std::unique_ptr<ADSR> ( new ADSR );
-        ampEnvelope   = std::unique_ptr<ADSR> ( new ADSR );
-        filterEnvelope   = std::unique_ptr<ADSR> ( new ADSR );
+        pitchEnvelope.reset ( new ADSR );
+        ampEnvelope.reset ( new ADSR );
+        filterEnvelope.reset ( new ADSR );
         
 		for (int n = 0; n < numOscillators; n++)
         {
             modAmountPW[n] = 0.0;
             oscDetuneAmount[n] = 0.0;
-			osc[n] = std::unique_ptr<Oscillator>( new Oscillator );
+			osc[n].reset( new Oscillator );
         }
     }
     
     ~MonosynthVoice()
     {
-        
-		for (int n = 0; n < numOscillators; n++)
-			osc[n] = nullptr;
     }
     
     bool canPlaySound (SynthesiserSound* sound) override
@@ -114,8 +111,9 @@ public:
     {
         double sr = getSampleRate();
         
-		// Might be abundant, but just to be safe
-        //pitchEnvelope->setSampleRate(sr);
+        ampEnvelope.get()->setSampleRate(sr);
+        pitchEnvelope.get()->setSampleRate(sr);
+        filterEnvelope.get()->setSampleRate(sr);
         
 		for (int n = 0; n < numOscillators; n++)
 		{
@@ -269,7 +267,6 @@ public:
                 {
                     idx = sampleCounter + 1;
                 }
-            
         }
         
         return idx;
@@ -294,11 +291,8 @@ public:
 	{
         double newPW = pw + ( modAmountPW[n] * ((lfoValue + 1.0) / 2.0) );
         
-        if (newPW > 1.0)
-            newPW = 1.0;
-        
-        if(newPW < 0.0)
-            newPW = 0.0;
+        if (newPW > 1.0) newPW = 1.0;
+        if(newPW < 0.0)  newPW = 0.0;
         
 		osc[n]->setPulsewidth( newPW  );
 	}
@@ -318,6 +312,7 @@ private:
         
         if (ampEnvelope.get()->getState() != ADSR::env_idle)
 		{
+            FloatType* dataLeft = outputBuffer.getWritePointer(0);
            
 			while (--numSamples >= 0)
 			{
@@ -361,8 +356,8 @@ private:
                 // get amplitude envelope
                 sample *= ampEnvelope.get()->process();
                 
-                FloatType* dataLeft = outputBuffer.getWritePointer(0);
-                dataLeft[startSample] = sample;
+                
+                dataLeft[startSample] += sample;
                 
 				++startSample;
 			}
