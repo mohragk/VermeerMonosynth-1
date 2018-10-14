@@ -119,8 +119,10 @@ public:
 		maxSteps = max;
 	}
     
+   
+    
     template <typename FloatType>
-	void processBuffer(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useSequencer)
+    void processBuffer(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useSequencer)
     {
         
         
@@ -169,21 +171,24 @@ public:
                 midi.clear();
             
 
-			double sd = sampleRate / speedInHz;
-            
-            sd = currentStep % 2 == 0 ? sd * 2.0 * swingOffset : sd * 2.0 * (1.0 - swingOffset);
-
-			auto nd = sd * noteLengthAmount;
-            
-            int stepDuration = std::round(sd);
-            int noteDuration = std::round(nd);
+			
             
             
-            int interval = jmin(128, numSamples);
+            int interval = jmin(256, numSamples);
             int samplesRemaining = numSamples;
+            int position = 0;
             
-            for (int position = 0; position < numSamples; position += interval)
+            while (position < numSamples)
             {
+                double sd = sampleRate / speedInHz;
+                
+                sd = currentStep % 2 == 0 ? sd * 2.0 * swingOffset : sd * 2.0 * (1.0 - swingOffset);
+                
+                auto nd = sd * noteLengthAmount;
+                
+                int stepDuration = std::round(sd);
+                int noteDuration = std::round(nd);
+                
                 if ( (time + interval) >= noteDuration)
                 {
                     auto offset =  jmin((noteDuration - time) + position, numSamples - 1) ;
@@ -192,6 +197,7 @@ public:
                     {
                         for (int i = 0; i < numSteps; i++)
                         {
+                            
                             if (steps[i].isActive)
                             {
                                 int note = steps[i].getPitchedNoteValue();
@@ -225,8 +231,17 @@ public:
                     }
                     
                 }
+                if (samplesRemaining >= interval)
+                {
+                    time = (time + interval) % stepDuration;
+                    position += interval;
+                }
+                else
+                {
+                    time = (time + samplesRemaining) % stepDuration;
+                    position += samplesRemaining;
+                }
                 
-                time = samplesRemaining >= interval ? (time + interval) % stepDuration : (time + samplesRemaining) % stepDuration;
                 samplesRemaining -= interval;
                 
                 
