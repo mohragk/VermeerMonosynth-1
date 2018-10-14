@@ -179,14 +179,14 @@ public:
             int noteDuration = std::round(nd);
             
             
-            int chunkSize = jmin(128, numSamples);
+            int interval = jmin(128, numSamples);
             int samplesRemaining = numSamples;
             
-            for (int pos = 0; pos < numSamples; pos += chunkSize)
+            for (int position = 0; position < numSamples; position += interval)
             {
-                if ( (time + chunkSize) >= noteDuration)
+                if ( (time + interval) >= noteDuration)
                 {
-                    auto offset =  jmin((noteDuration - time) + pos, numSamples - 1) ;
+                    auto offset =  jmin((noteDuration - time) + position, numSamples - 1) ;
                     
                     if (offset >= 0)
                     {
@@ -204,9 +204,9 @@ public:
                 }
                 
                 
-                if ( (time + chunkSize) >= stepDuration)
+                if ( (time + interval) >= stepDuration)
                 {
-                    auto offset =  jmax( 0, jmin((stepDuration - time) + pos, numSamples - 1) );
+                    auto offset =  jmax( 0, jmin((stepDuration - time) + position, numSamples - 1) );
                     
                     if (pressedKeys.size() > 0)
                     {
@@ -226,8 +226,8 @@ public:
                     
                 }
                 
-                time = samplesRemaining > chunkSize ? (time + chunkSize) % stepDuration : (time + samplesRemaining) % stepDuration;
-                samplesRemaining -= chunkSize;
+                time = samplesRemaining >= interval ? (time + interval) % stepDuration : (time + samplesRemaining) % stepDuration;
+                samplesRemaining -= interval;
                 
                 
             }
