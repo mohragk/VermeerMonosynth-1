@@ -409,14 +409,14 @@ void MonosynthPluginAudioProcessor::reset()
     // Use this method as the place to clear any delay lines, buffers, etc, as it
     // means there's been a break in the audio's continuity.
 
-    cutoff.reset            (sampleRate, cutoffRampTimeDefault);
-    cutoffFromEnvelope.reset(sampleRate, cutoffRampTimeDefault);
-    resonance.reset(sampleRate, 0.001);
-    drive.reset(sampleRate, 0.001);
-    pulsewidthSmooth1.reset(sampleRate, cutoffRampTimeDefault);
-    pulsewidthSmooth2.reset(sampleRate, cutoffRampTimeDefault);
-    pulsewidthSmooth3.reset(sampleRate, cutoffRampTimeDefault);
-	saturationAmount.reset(sampleRate, cutoffRampTimeDefault);
+    cutoff.reset             (sampleRate, cutoffRampTimeDefault);
+    cutoffFromEnvelope.reset (sampleRate, cutoffRampTimeDefault);
+    resonance.reset          (sampleRate, 0.001);
+    drive.reset              (sampleRate, 0.001);
+    pulsewidthSmooth1.reset  (sampleRate, cutoffRampTimeDefault);
+    pulsewidthSmooth2.reset  (sampleRate, cutoffRampTimeDefault);
+    pulsewidthSmooth3.reset  (sampleRate, cutoffRampTimeDefault);
+	saturationAmount.reset   (sampleRate, cutoffRampTimeDefault);
     
     oversamplingFloat->reset();
     oversamplingDouble->reset();
@@ -580,13 +580,13 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
     
-    
+    // APPLY FILTER
     LadderFilterBase* curFilter;
+    
     if      (*filterSelectParam == 0) curFilter = filterA.get();
     else if (*filterSelectParam == 1) curFilter = filterB.get();
     else                              curFilter = filterC.get();
   
-    
     applyFilterEnvelope(osBuffer, curFilter);
     
     applyFilter(osBuffer, curFilter);
@@ -639,7 +639,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 {
-	//masterGain.setValue(*gainParam);
 
     masterGain = dbToGain(*gainParam, MIN_INFINITY_DB);
 
@@ -667,8 +666,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
     
 	MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*> (synth.getVoice(0));
     
-    synthVoice->setFilterEnvelopeSampleRate(sampleRate);
-    synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *sustainParam3, *releaseParam3, *attackCurve3Param, *decayRelCurve3Param);
+  
     
     
     const int numSamples = buffer.getNumSamples();
@@ -760,12 +758,8 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buffer)
 {
 	const int numSamples = buffer.getNumSamples();
-
     const FloatType* readLeft = buffer.getReadPointer(0);
-    
 	FloatType* dataL = buffer.getWritePointer(0);
-
-	
 
 	auto saturation = saturationAmount.getNextValue();
 
@@ -875,9 +869,14 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buffer)
 {
     int numSamples = buffer.getNumSamples();
-    int stepSize = jmin(16, numSamples);
+    int stepSize = jmin(32, numSamples);
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+    
+    synthVoice->setFilterEnvelopeSampleRate(sampleRate);
+    synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *sustainParam3, *releaseParam3, *attackCurve3Param, *decayRelCurve3Param);
+    synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
+    synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve2Param, *decayRelCurve2Param);
     
     double osFactor = 1.0;
     
@@ -889,70 +888,75 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     
     for (int i = 0; i < numSamples; i++)
     {
-     
-        // SCOPE
-        double lowestFreq = synthVoice->getLowestPitchedOscFreq();
-        int note = log( lowestFreq / 440.0 ) / log(2) * 12 + 69;
-        
-        if (note < 0)
-            note = 0;
-        
-        if (note > 127)
-            note = 127;
-        
-        int newPos = synthVoice->getLowestOscillatorRephaseIndex();
-        
-        scope.setNewTriggerPoint(newPos);
-        scope.setNumSamplesPerPixel( ( 128 -  note ) * ( osFactor / 16 ) );
-      
-        
-        seqState.get()->setMaxSteps(*maxStepsParam);
-        
-        double speed = getLFOSyncedFreq(lastPosInfo, *stepDivisionFloatParam);
-        seqState.get()->setSpeedInHz(speed);
-        
-        for (int i = 0; i < 8; i++)
-        {
-            seqState.get()->setPitchAmountForStep(i, *stepPitchParam[i]);
-            seqState.get()->setShouldPlayForStep(i, *stepPlayParam[i]);
-        }
-        
-        seqState.get()->setNoteDuration(*stepNoteLengthParam);
-		seqState.get()->setSwingAmount(*swingParam);
-     
-        // set various parameters
-        for(int osc = 0; osc < 3; osc++)
-        {
-            synthVoice->setGainForOscillator( dbToGain(*oscGainParam[osc], MIN_INFINITY_DB), osc );
-            synthVoice->setModeForOscillator(*oscModeParam[osc], osc);
-            synthVoice->setDetuneAmountForOscillator(*oscDetuneAmountParam[osc], *oscOffsetParam[osc], osc);
-            synthVoice->setPulsewidthModAmountForOscillator(*pulsewidthAmountParam[osc], osc);
-        }
-        
-        pulsewidthSmooth1.setValue(*pulsewidthParam[0]);// FIXXX
-        pulsewidthSmooth2.setValue(*pulsewidthParam[1]);
-        pulsewidthSmooth3.setValue(*pulsewidthParam[2]);
         
         
         if (i % stepSize == 0)
         {
-            synthVoice->setPulsewidthForOscillator(smoothing[PW_1_SMOOTHER]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
-            synthVoice->setPulsewidthForOscillator(smoothing[PW_2_SMOOTHER]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
-            synthVoice->setPulsewidthForOscillator(smoothing[PW_3_SMOOTHER]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
+            // SCOPE
+            double lowestFreq = synthVoice->getLowestPitchedOscFreq();
+            int note = log( lowestFreq / 440.0 ) / log(2) * 12 + 69;
+            
+            if (note < 0)
+                note = 0;
+            
+            if (note > 127)
+                note = 127;
+            
+            int newPos = synthVoice->getLowestOscillatorRephaseIndex();
+            
+            scope.setNewTriggerPoint(newPos);
+            scope.setNumSamplesPerPixel( ( 128 -  note ) * ( osFactor / 16 ) );
+            
+            
+            
+            seqState.get()->setMaxSteps(*maxStepsParam);
+            
+            double speed = getLFOSyncedFreq(lastPosInfo, *stepDivisionFloatParam);
+            seqState.get()->setSpeedInHz(speed);
+            
+            for (int i = 0; i < 8; i++)
+            {
+                seqState.get()->setPitchAmountForStep(i, *stepPitchParam[i]);
+                seqState.get()->setShouldPlayForStep(i, *stepPlayParam[i]);
+            }
+            
+            seqState.get()->setNoteDuration(*stepNoteLengthParam);
+            seqState.get()->setSwingAmount(*swingParam);
+            
+            for(int osc = 0; osc < 3; osc++)
+            {
+                synthVoice->setGainForOscillator( dbToGain(*oscGainParam[osc], MIN_INFINITY_DB), osc );
+                synthVoice->setModeForOscillator(*oscModeParam[osc], osc);
+                synthVoice->setDetuneAmountForOscillator(*oscDetuneAmountParam[osc], *oscOffsetParam[osc], osc);
+                synthVoice->setPulsewidthModAmountForOscillator(*pulsewidthAmountParam[osc], osc);
+            }
+            
+            pulsewidthSmooth1.setValue(*pulsewidthParam[0]);
+            pulsewidthSmooth2.setValue(*pulsewidthParam[1]);
+            pulsewidthSmooth3.setValue(*pulsewidthParam[2]);
+            
+            
+            //if (i % stepSize == 0)
+            {
+                synthVoice->setPulsewidthForOscillator(smoothing[PW_1_SMOOTHER]->processSmooth(pulsewidthSmooth1.getNextValue()), 0);
+                synthVoice->setPulsewidthForOscillator(smoothing[PW_2_SMOOTHER]->processSmooth(pulsewidthSmooth2.getNextValue()), 1);
+                synthVoice->setPulsewidthForOscillator(smoothing[PW_3_SMOOTHER]->processSmooth(pulsewidthSmooth3.getNextValue()), 2);
+            }
+            
+            
+            synthVoice->setPitchEnvelopeAmount(*pitchModParam);
+            synthVoice->setHardSync(*oscSyncParam);
+            synthVoice->sendLFO(lfo);
+            synthVoice->setGlideTime(int(*glideTimeParam));
+            
+            saturationAmount.setValue(*saturationParam);
+            
+            //ARPEGGIATOR
+            double hertz = getLFOSyncedFreq(lastPosInfo, *arpeggioNoteLengthParam);
+            arp.setSpeedInHz(hertz);
         }
-      
-        synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
-        synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve2Param, *decayRelCurve2Param);
-		synthVoice->setPitchEnvelopeAmount(*pitchModParam);
-        synthVoice->setHardSync(*oscSyncParam);
-		synthVoice->sendLFO(lfo);
-        synthVoice->setGlideTime(int(*glideTimeParam));
+     
         
-		saturationAmount.setValue(*saturationParam);
-        
-		//ARPEGGIATOR
-		double hertz = getLFOSyncedFreq(lastPosInfo, *arpeggioNoteLengthParam);
-		arp.setSpeedInHz(hertz);
     }
 }
 
@@ -967,23 +971,16 @@ void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
     
     switch (t) {
         case modCutoff:
-            
             cutoffModulationAmt = amount;
-            
             dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
-            
             break;
         case modPitch: 
             dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(amount);
-            
             cutoffModulationAmt = 0.0;
-            
             break;
-            
         case off:
             dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
             cutoffModulationAmt = 0.0;
-            
             break;
         default:
             break;
