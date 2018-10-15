@@ -85,9 +85,8 @@ public:
 
     double nextSample()
     {
-        //const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;
-        double t = phase.get(); // normalize period
+        double t = phase.get();
         
         phaseIncrement = updatePhaseIncrement(frequency.get());
         
@@ -104,12 +103,11 @@ public:
             case OSCILLATOR_MODE_SAW:
                 value = naiveWaveFormForMode(mode, phase.get());
                 value -= poly_blep( t, phaseIncrement );
-                value *= -1.0;
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
                 value = naiveWaveFormForMode(mode, phase.get());
-                value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi); // hmm
+                value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi);
                 value += poly_blep( t, phaseIncrement );
                 value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
                 break;
@@ -153,13 +151,12 @@ private:
                 break;
                 
             case OSCILLATOR_MODE_SAW:
-                //value = tanh(3.0 * value);
-                value = (2.0 * phs ) - 1.0;
-                //value = tanh(2.0 * value);
+                value = ( 3.0 * phs ) ;
+                value = 2.0 * dsp::FastMathApproximations::tanh(value) - 1.0;
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
-                if (phs <=  pulsewidth) { // BUG!!! 0.5 should be pulsewidth
+                if (phs <=  pulsewidth) { 
                     value = 1.0 - (1.0 * phs);
                 } else {
                     value = (0.5 * (phs - pulsewidth) / 0.5 ) - 1.0;

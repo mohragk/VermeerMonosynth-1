@@ -274,7 +274,7 @@ glideTimeParam(nullptr)
         
     };
     
-	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.10f, 0.95f, 0.5f));
+	addParameter(stepNoteLengthParam = new AudioParameterFloat("stepNoteLengthParam", "Seq. Note Length" , 0.05f, 0.95f, 0.5f));
     addParameter(stepDivisionFloatParam   = new AudioParameterFloat("stepDivisionFloatParam", "Seq. Rate", NormalisableRange<float>(2.0, 64.0, linToPow, powToLin) , 16.0));
     
     addParameter(maxStepsParam = new AudioParameterInt ("maxStepsParam", "Max. Steps", 0, 7, 7 ));
@@ -717,8 +717,8 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         resonance.setValue			(*filterQParam);
         drive.setValue				(*filterDriveParam);
        
-        FloatType combinedCutoff = smoothing[CONTOUR_SMOOTHER]->processSmooth( currentCutoff )
-        + smoothing[CUTOFF_SMOOTHER]->processSmooth ( *filterCutoffParam)  ;
+        FloatType combinedCutoff =    currentCutoff         //smoothing[CONTOUR_SMOOTHER]->processSmooth( currentCutoff )
+                                    + smoothing[CUTOFF_SMOOTHER]->processSmooth ( *filterCutoffParam)  ;
         
         
         
