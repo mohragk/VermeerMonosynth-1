@@ -28,7 +28,6 @@
 #include "PluginEditor.h"
 
 #include "adsr/ADSR.h"
-#include "MonoSynth.h"
 #include <math.h>
 #include <iostream>
 
@@ -300,7 +299,8 @@ glideTimeParam(nullptr)
     filterC.reset( new DiodeLadderModel );
     
 
-    
+    for( int i = 0; i < 3; i++)
+        envelopeGenerator[i].reset(new ADSR);
     
     // Oversampling 2 times with FIR filtering
     oversamplingFloat.reset  ( new dsp::Oversampling<float>  ( 2, 1, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
@@ -378,6 +378,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     resetSamplerates(newSampleRate, samplesPerBlock);
     
     keyboardState.reset();
+    
+    
 
 }
 
@@ -495,6 +497,10 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int buffer
     filterB->UpdateBufferSize(newBufferSize);
     filterC->UpdateBufferSize(newBufferSize);
     
+    
+    for (int i = 0; i < 3; i++)
+        envelopeGenerator[i].get()->setSampleRate(newsr);
+    
     lfo.setSampleRate(newsr);
     
     
@@ -578,6 +584,20 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // GET SYNTHDATA
     synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBuffer.getNumSamples() ) );
     
+    
+    // TESTING AMP ENVELOPE
+    {
+        MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*> (synth.getVoice(0));
+        
+        for (int pos = 0; pos < osBuffer.getNumSamples(); pos++)
+        {
+            FloatType* dataLeft = osBuffer.getWritePointer(0);
+            
+            envelopeGenerator[0].get()->gate(synthVoice->isPlaying);
+            
+            dataLeft[pos] = dataLeft[pos] * envelopeGenerator[0].get()->process();
+        }
+    }
     
     
     // APPLY FILTER
@@ -877,6 +897,32 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *sustainParam3, *releaseParam3, *attackCurve3Param, *decayRelCurve3Param);
     synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
     synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve2Param, *decayRelCurve2Param);
+    
+    
+    // AMPLITUDE
+    envelopeGenerator[0].get()->setAttackRate( *attackParam1 );
+    envelopeGenerator[0].get()->setDecayRate( *decayParam1 );
+    envelopeGenerator[0].get()->setSustainLevel( dbToGain(*sustainParam1, MIN_INFINITY_DB) );
+    envelopeGenerator[0].get()->setReleaseRate( *releaseParam1 );
+    envelopeGenerator[0].get()->setTargetRatioA( *attackCurve1Param );
+    envelopeGenerator[0].get()->setTargetRatioDR( *decayRelCurve1Param );
+    
+    // FILTER ENVELOPE
+    envelopeGenerator[1].get()->setAttackRate( *attackParam3 );
+    envelopeGenerator[1].get()->setDecayRate( *decayParam3 );
+    envelopeGenerator[1].get()->setSustainLevel( dbToGain( *sustainParam3, MIN_INFINITY_DB ) );
+    envelopeGenerator[1].get()->setReleaseRate( *releaseParam3 );
+    envelopeGenerator[1].get()->setTargetRatioA( *attackCurve3Param );
+    envelopeGenerator[1].get()->setTargetRatioDR( *decayRelCurve3Param );
+    
+    
+    // PITCH ENVELOPE
+    envelopeGenerator[2].get()->setAttackRate( *attackParam2 );
+    envelopeGenerator[2].get()->setDecayRate( *decayParam2 );
+    envelopeGenerator[2].get()->setSustainLevel( *sustainParam2 );
+    envelopeGenerator[2].get()->setReleaseRate( *releaseParam2 );
+    envelopeGenerator[2].get()->setTargetRatioA( *attackCurve2Param );
+    envelopeGenerator[2].get()->setTargetRatioDR( *decayRelCurve2Param );
     
     double osFactor = 1.0;
     

@@ -34,6 +34,8 @@ DISCLAIMED.
 #define NUM_OSCILLATORS 3
 
 
+
+
 /** A demo synth sound that's just a basic sine wave.. */
 class MonosynthSound : public SynthesiserSound
 {
@@ -44,6 +46,7 @@ public:
     bool appliesToChannel (int /*midiChannel*/) override  { return true; }
     
 };
+
 
 
 //==============================================================================
@@ -93,6 +96,11 @@ public:
     }
     
     
+    void setEnvelopeGeneratorGate(ADSR* eg)
+    {
+        
+    }
+    
     void setEnvelopeSampleRate( double sr )
     {
         pitchEnvelope.get()->setSampleRate(sr);
@@ -129,8 +137,10 @@ public:
 
 		lastNotePlayed = midiNoteNumber;
         
-       
         
+        isPlaying = true;
+       
+  
     }
     
     void stopNote (float /*velocity*/, bool allowTailOff) override
@@ -138,7 +148,15 @@ public:
         pitchEnvelope.get()->gate(false);
         ampEnvelope.get()->gate(false);
         filterEnvelope.get()->gate(false);
+        
+        
+        isPlaying = false;
+        
+        
         clearCurrentNote();
+        
+        
+    
     }
     
     void pitchWheelMoved (const int newValue) override
@@ -297,6 +315,11 @@ public:
 		osc[n]->setPulsewidth( newPW  );
 	}
 
+    bool isPlaying = false;
+    
+    
+ 
+    
 private:
     
     
@@ -326,23 +349,13 @@ private:
                 FloatType newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
-				FloatType osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreq);
-				FloatType osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreq);
-				FloatType osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreq);
-
-                targetFrequency[0] = osc1Detuned;
-                targetFrequency[1] = osc2Detuned;
-                targetFrequency[2] = osc3Detuned;
-                
-             
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < numOscillators; i++)
                 {
+                    targetFrequency[i] = semitoneOffsetToFreq(oscDetuneAmount[i] + pitchModulation + pitchBendOffset, newFreq);
                     updateGlidedFrequency(targetFrequency[i], currentFrequency[i], glideTimeMillis);
                     osc[i]->setFrequency(currentFrequency[i]);
                 }
             
-               
-                
                                
                 if (osc[0]->isRephase() && hardSync)
                     osc[1]->setPhase(0.0);
@@ -354,7 +367,7 @@ private:
 				sample /= numOscillators;
 
                 // get amplitude envelope
-                sample *= ampEnvelope.get()->process();
+                //sample *= ampEnvelope.get()->process();
                 
                 
                 dataLeft[startSample] += sample;
@@ -457,6 +470,7 @@ private:
     std::unique_ptr<ADSR> pitchEnvelope;
     std::unique_ptr<ADSR> ampEnvelope;
     std::unique_ptr<ADSR> filterEnvelope;
+    
     
     std::unique_ptr<Oscillator> osc[3];
         

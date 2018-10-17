@@ -30,6 +30,9 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+#include "MonoSynth.h"
+
+
 #include "adsr/ADSR.h"
 #include "lfo.h"
 #include "SequencerState.h"
@@ -115,6 +118,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 	bool isSequencerPlaying();
+    
     
     //==============================================================================
     // These properties are public so that our editor component can access them
@@ -387,7 +391,7 @@ private:
     
     std::unique_ptr<LadderFilterBase> filterA, filterB, filterC;
     
-   
+    std::unique_ptr<ADSR> envelopeGenerator[3];
     
     
     static BusesProperties getBusesProperties();

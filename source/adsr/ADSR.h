@@ -68,7 +68,7 @@ protected:
     double attackBase;
     double decayBase;
     double releaseBase;
-    bool gateOn;
+    bool gateOn = false;
     
     double calcCoef(double rate, double targetRatio);
 };
@@ -141,13 +141,19 @@ inline void ADSR::processSample(double *sample, int numSamples)
 inline void ADSR::gate(int gate) {
     if (gate)
     {
-        state = env_attack;
-        gateOn = true;
+        if (gateOn == false)
+        {
+            state = env_attack;
+            gateOn = true;
+        }
     }
     else if (state != env_idle)
     {
-        state = env_release;
-        gateOn = false;
+        if (gateOn == true)
+        {
+            state = env_release;
+            gateOn = false;
+        }
     }
 }
 
