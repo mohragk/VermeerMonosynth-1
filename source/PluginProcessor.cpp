@@ -291,6 +291,7 @@ glideTimeParam(nullptr)
     initialiseSynth();
     
     keyboardState.addListener(this);
+    synth.addListener(this);
     
     
     
@@ -321,6 +322,7 @@ glideTimeParam(nullptr)
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
 {
     keyboardState.removeListener(this);
+    synth.removeListener(this);
     synth.clearSounds();
     synth.clearVoices();
     
@@ -334,7 +336,11 @@ void MonosynthPluginAudioProcessor::initialiseSynth()
 }
 
 
-
+void MonosynthPluginAudioProcessor::isSynthesiserPlaying(Monosynthesiser* source, bool isPlaying)
+{
+    for (int i = 0; i < 3; i++)
+        envelopeGenerator[i].get()->gate(isPlaying);
+}
 
 //==============================================================================
 bool MonosynthPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -587,13 +593,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     // TESTING AMP ENVELOPE
     {
-        MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*> (synth.getVoice(0));
         
         for (int pos = 0; pos < osBuffer.getNumSamples(); pos++)
         {
             FloatType* dataLeft = osBuffer.getWritePointer(0);
-            
-            envelopeGenerator[0].get()->gate(synthVoice->isPlaying);
             
             dataLeft[pos] = dataLeft[pos] * envelopeGenerator[0].get()->process();
         }
@@ -723,9 +726,6 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         const double lfoFilterRange = 6000.0;
         const double contourRange = *filterContourParam;
         
-        envelopeGenerator[1].get()->gate(synthVoice->isPlaying);
-        
-        //const double filterEnvelopeVal = synthVoice->getFilterEnvelopeValue();
         const double filterEnvelopeVal = envelopeGenerator[1].get()->process();
         
 		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);

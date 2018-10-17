@@ -55,6 +55,7 @@
 */
 class MonosynthPluginAudioProcessor  : public AudioProcessor,
                                         private MidiKeyboardStateListener,
+                                        public MonosynthListener,
                                         private Timer
 {
 public:
@@ -119,7 +120,7 @@ public:
 
 	bool isSequencerPlaying();
     
-    
+    void isSynthesiserPlaying(Monosynthesiser* source, bool isPlaying) override;
     //==============================================================================
     // These properties are public so that our editor component can access them
     // A bit of a hacky way to do it, but it's only a demo! Obviously in your own
@@ -326,7 +327,7 @@ private:
     bool prevHqOversampling = false;
 	bool filterKeyFollow = true; //TEST
 
-    Synthesiser synth;
+    Monosynthesiser synth;
     
     
     enum modTarget {

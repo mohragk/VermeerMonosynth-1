@@ -33,6 +33,59 @@ DISCLAIMED.
 
 #define NUM_OSCILLATORS 3
 
+class Monosynthesiser;
+
+class MonosynthListener
+{
+public:
+    MonosynthListener() noexcept {}
+    virtual ~MonosynthListener()   {}
+    
+    
+    
+    virtual void isSynthesiserPlaying(Monosynthesiser* source, bool isPlaying) = 0;
+};
+
+
+class Monosynthesiser : public Synthesiser
+{
+public:
+    
+    Monosynthesiser() {}
+    ~Monosynthesiser() {}
+    
+    virtual void noteOn (int midiChannel, int midiNoteNumber, float velocity)
+    {
+        Synthesiser::noteOn(midiChannel, midiNoteNumber, velocity);
+        
+        for (int i = listeners.size(); --i >= 0;)
+            listeners.getUnchecked(i)->isSynthesiserPlaying(this, true);
+    }
+    
+    virtual void noteOff (int midiChannel, int midiNoteNumber, float velocity, bool allowTailOff)
+    {
+        Synthesiser::noteOff(midiChannel, midiNoteNumber, velocity, allowTailOff);
+        
+        for (int i = listeners.size(); --i >= 0;)
+            listeners.getUnchecked(i)->isSynthesiserPlaying(this, false);
+    }
+    
+    void addListener(MonosynthListener* listener)
+    {
+        listeners.addIfNotAlreadyThere(listener);
+    }
+    
+    void removeListener(MonosynthListener* listener)
+    {
+        listeners.removeFirstMatchingValue(listener);
+    }
+private:
+    Array<MonosynthListener*> listeners;
+};
+
+
+
+
 
 
 
@@ -140,7 +193,6 @@ public:
         
         isPlaying = true;
        
-  
     }
     
     void stopNote (float /*velocity*/, bool allowTailOff) override
