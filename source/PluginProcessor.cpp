@@ -722,8 +722,12 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
         const double contourRange = *filterContourParam;
-        const double filterEnvelopeVal = synthVoice->getFilterEnvelopeValue();
-		
+        
+        envelopeGenerator[1].get()->gate(synthVoice->isPlaying);
+        
+        //const double filterEnvelopeVal = synthVoice->getFilterEnvelopeValue();
+        const double filterEnvelopeVal = envelopeGenerator[1].get()->process();
+        
 		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
 
 		if (*useFilterKeyFollowParam)
@@ -910,20 +914,21 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     // FILTER ENVELOPE
     envelopeGenerator[1].get()->setAttackRate( *attackParam3 );
     envelopeGenerator[1].get()->setDecayRate( *decayParam3 );
-    envelopeGenerator[1].get()->setSustainLevel( dbToGain( *sustainParam3, MIN_INFINITY_DB ) );
+    envelopeGenerator[1].get()->setSustainLevel( *sustainParam3 );
     envelopeGenerator[1].get()->setReleaseRate( *releaseParam3 );
     envelopeGenerator[1].get()->setTargetRatioA( *attackCurve3Param );
     envelopeGenerator[1].get()->setTargetRatioDR( *decayRelCurve3Param );
     
     
     // PITCH ENVELOPE
+    /*
     envelopeGenerator[2].get()->setAttackRate( *attackParam2 );
     envelopeGenerator[2].get()->setDecayRate( *decayParam2 );
     envelopeGenerator[2].get()->setSustainLevel( *sustainParam2 );
     envelopeGenerator[2].get()->setReleaseRate( *releaseParam2 );
     envelopeGenerator[2].get()->setTargetRatioA( *attackCurve2Param );
     envelopeGenerator[2].get()->setTargetRatioDR( *decayRelCurve2Param );
-    
+    */
     double osFactor = 1.0;
     
     if(*useHQOversamplingParam)
