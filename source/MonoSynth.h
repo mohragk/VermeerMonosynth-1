@@ -128,8 +128,7 @@ public:
         lastNotePlayed(60)
     {
         pitchEnvelope.reset ( new ADSR );
-        ampEnvelope.reset ( new ADSR );
-        filterEnvelope.reset ( new ADSR );
+        
         
 		for (int n = 0; n < numOscillators; n++)
         {
@@ -157,13 +156,11 @@ public:
     void setEnvelopeSampleRate( double sr )
     {
         pitchEnvelope.get()->setSampleRate(sr);
-        ampEnvelope.get()->setSampleRate(sr);
 
     }
     
     void setFilterEnvelopeSampleRate(double sr)
     {
-        filterEnvelope.get()->setSampleRate(sr);
     }
     
     void startNote (int midiNoteNumber, float velocity,
@@ -172,9 +169,7 @@ public:
     {
         double sr = getSampleRate();
         
-        ampEnvelope.get()->setSampleRate(sr);
-        pitchEnvelope.get()->setSampleRate(sr);
-        filterEnvelope.get()->setSampleRate(sr);
+        //ampEnvelope.get()->setSampleRate(sr);
         
 		for (int n = 0; n < numOscillators; n++)
 		{
@@ -185,8 +180,7 @@ public:
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         
         pitchEnvelope.get()->gate(true);
-        ampEnvelope.get()->gate(true);
-        filterEnvelope.get()->gate(true);
+       
 
 		lastNotePlayed = midiNoteNumber;
         
@@ -198,8 +192,7 @@ public:
     void stopNote (float /*velocity*/, bool allowTailOff) override
     {
         pitchEnvelope.get()->gate(false);
-        ampEnvelope.get()->gate(false);
-        filterEnvelope.get()->gate(false);
+       
         
         
         isPlaying = false;
@@ -259,28 +252,18 @@ public:
     
     void setAmpEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
     {
-        ampEnvelope.get()->setAttackRate(attack);
-        ampEnvelope.get()->setDecayRate(decay);
-        ampEnvelope.get()->setSustainLevel(sustain);
-        ampEnvelope.get()->setReleaseRate(release);
-        ampEnvelope.get()->setTargetRatioA(attackCurve);
-        ampEnvelope.get()->setTargetRatioDR(decRelCurve);
+        
     }
     
     void filterAmpEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
     {
-        filterEnvelope.get()->setAttackRate(attack);
-        filterEnvelope.get()->setDecayRate(decay);
-        filterEnvelope.get()->setSustainLevel(sustain);
-        filterEnvelope.get()->setReleaseRate(release);
-        filterEnvelope.get()->setTargetRatioA(attackCurve);
-        filterEnvelope.get()->setTargetRatioDR(decRelCurve);
+        
     }
     
     
     double getFilterEnvelopeValue()
     {
-        return filterEnvelope.get()->process();
+        return 1.0;
     }
     
     void setGlideTime(int timeInMillis)
@@ -378,14 +361,18 @@ private:
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
+        //REPLACE!!
         
+        /*
         if (ampEnvelope.get()->getState() == ADSR::env_idle)
         {
 			for (int n = 0; n < numOscillators; n++)
 				osc[n]->setPhase(0.0);
         }
+        */
         
-        if (ampEnvelope.get()->getState() != ADSR::env_idle)
+        // REPLACE!!
+        //if (ampEnvelope.get()->getState() != ADSR::env_idle)
 		{
             FloatType* dataLeft = outputBuffer.getWritePointer(0);
            
@@ -520,8 +507,7 @@ private:
     Random rand;
     
     std::unique_ptr<ADSR> pitchEnvelope;
-    std::unique_ptr<ADSR> ampEnvelope;
-    std::unique_ptr<ADSR> filterEnvelope;
+  
     
     
     std::unique_ptr<Oscillator> osc[3];
