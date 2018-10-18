@@ -121,6 +121,9 @@ public:
 	bool isSequencerPlaying();
     
     void isSynthesiserPlaying(Monosynthesiser* source, bool isPlaying) override;
+    void handleSynthNoteOn   (Monosynthesiser* source, int midiChannel, int midiNoteNumber) override;
+    void handleSynthNoteOff  (Monosynthesiser* source, int midiChannel, int midiNoteNumber) override;
+    
     //==============================================================================
     // These properties are public so that our editor component can access them
     // A bit of a hacky way to do it, but it's only a demo! Obviously in your own

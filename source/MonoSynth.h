@@ -44,6 +44,9 @@ public:
     
     
     virtual void isSynthesiserPlaying(Monosynthesiser* source, bool isPlaying) = 0;
+    
+    virtual void handleSynthNoteOn  (Monosynthesiser* source, int midiChannel, int midiNoteNumber) = 0;
+    virtual void handleSynthNoteOff (Monosynthesiser* source, int midiChannel, int midiNoteNumber) = 0;
 };
 
 
@@ -59,7 +62,7 @@ public:
         Synthesiser::noteOn(midiChannel, midiNoteNumber, velocity);
         
         for (int i = listeners.size(); --i >= 0;)
-            listeners.getUnchecked(i)->isSynthesiserPlaying(this, true);
+            listeners.getUnchecked(i)->handleSynthNoteOn(this, midiChannel, midiNoteNumber);
     }
     
     virtual void noteOff (int midiChannel, int midiNoteNumber, float velocity, bool allowTailOff)
@@ -67,7 +70,7 @@ public:
         Synthesiser::noteOff(midiChannel, midiNoteNumber, velocity, allowTailOff);
         
         for (int i = listeners.size(); --i >= 0;)
-            listeners.getUnchecked(i)->isSynthesiserPlaying(this, false);
+            listeners.getUnchecked(i)->handleSynthNoteOff(this, midiChannel, midiNoteNumber);
     }
     
     void addListener(MonosynthListener* listener)

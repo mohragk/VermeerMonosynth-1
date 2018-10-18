@@ -338,8 +338,23 @@ void MonosynthPluginAudioProcessor::initialiseSynth()
 
 void MonosynthPluginAudioProcessor::isSynthesiserPlaying(Monosynthesiser* source, bool isPlaying)
 {
+    
+}
+
+void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source, int midiChannel, int midiNoteNumber)
+{
     for (int i = 0; i < 3; i++)
-        envelopeGenerator[i].get()->gate(isPlaying);
+        envelopeGenerator[i].get()->gate(true);
+    
+    lfo.setPhase(0.0);
+    
+    lastNotePlayed = midiNoteNumber;
+}
+
+void MonosynthPluginAudioProcessor::handleSynthNoteOff   (Monosynthesiser* source, int midiChannel, int midiNoteNumber)
+{
+    for (int i = 0; i < 3; i++)
+        envelopeGenerator[i].get()->gate(false);
 }
 
 //==============================================================================
@@ -447,13 +462,10 @@ void MonosynthPluginAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiCha
 {
    
     
-    lfo.setPhase(0.0);
+    
     
     contourVelocity = velocity;
     
-    
-    lastNotePlayed = midiNoteNumber;
-	curMidiChannel = midiChannel;
 }
 
 void MonosynthPluginAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
@@ -685,13 +697,7 @@ void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter)
 {
-	//filterEnvelope->setSampleRate(sampleRate);
-    
-	MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*> (synth.getVoice(0));
-    
-  
-    
-    
+	
     const int numSamples = buffer.getNumSamples();
     
     for (int i = 0; i < numSamples; i++)
@@ -732,7 +738,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 
 		if (*useFilterKeyFollowParam)
         {
-            const double keyFollowCutoff =  MidiMessage::getMidiNoteInHertz ( synthVoice->getLastNotePlayed() );
+            const double keyFollowCutoff =  MidiMessage::getMidiNoteInHertz ( lastNotePlayed );
 			currentCutoff += smoothing[KEY_CUTOFF_SMOOTHER].get()->processSmooth( keyFollowCutoff - CUTOFF_MIN);
         }
 		
@@ -959,7 +965,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             scope.setNumSamplesPerPixel( ( 128 -  note ) * ( osFactor / 16 ) );
             
             
-            
+            // SEQUENCER
             seqState.get()->setMaxSteps(*maxStepsParam);
             
             double speed = getLFOSyncedFreq(lastPosInfo, *stepDivisionFloatParam);
@@ -1059,6 +1065,23 @@ FloatType MonosynthPluginAudioProcessor::softClip(FloatType s)
 }
 
 
+#ifndef M_PI_4
+#define M_PI_4 (3.1415926535897932384626433832795/4.0)
+#endif
+
+
+
+#define A 0.0776509570923569
+#define B -0.287434475393028
+#define C (M_PI_4 - A - B)
+#define FMT "% 16.8f"
+
+double FastArcTan(double x)
+{
+    double xx = x * x;
+    return ((A*xx + B)*xx + C)*x;
+}
+
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<FloatType>& buffer)
 {
@@ -1074,7 +1097,7 @@ void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<FloatType>& buffe
     
     auto softClipLambda = [](auto sample)
     {
-        return std::atan(sample) * ( 2 / FloatType(double_Pi) );
+        return FastArcTan(sample) * ( 2 / FloatType(double_Pi) );
     };
     
     for (int i = 0; i < numSamples; i++)
