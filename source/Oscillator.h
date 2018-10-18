@@ -103,7 +103,7 @@ public:
 		}
 		else
 		{
-			phaseIncrement = getTargetPhaseincrement(phaseRemaining);
+			phaseIncrement = getTargetPhaseIncrement(phaseRemaining);
 		}
 
         
