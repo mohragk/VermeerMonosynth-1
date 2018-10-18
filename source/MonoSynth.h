@@ -178,6 +178,7 @@ public:
 		{
 			osc[n]->setSampleRate(sr);
 			osc[n]->setVelocityFactor(velocity);
+			osc[n]->resetPhaseInterpolated();
 		}
         
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
@@ -293,9 +294,9 @@ public:
         osc[o]->setGain(g);
     }
     
-    void setDetuneAmountForOscillator(const double fine, int coarse, int osc)
+    void setDetuneAmountForOscillator(const double fine, int coarse, int oscillator)
     {
-        oscDetuneAmount[osc] = fine + (double) coarse;
+        oscDetuneAmount[oscillator] = fine + (double) coarse;
     }
     
     

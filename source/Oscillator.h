@@ -46,6 +46,13 @@ public:
     {
         phase.set(ph);
     }
+
+	
+	void resetPhaseInterpolated()
+	{
+		phaseRemaining = 1.0 - phase.get();
+		targetReached = false;
+	}
     
     void setGain(const double g)
     {
@@ -87,8 +94,19 @@ public:
     {
         double value = 0.0;
         double t = phase.get();
+
+		if (phase.get() == 0.0) targetReached = true;
+
+		if (targetReached)
+		{
+			phaseIncrement = updatePhaseIncrement(frequency.get());
+		}
+		else
+		{
+			phaseIncrement = getTargetPhaseincrement(phaseRemaining);
+		}
+
         
-        phaseIncrement = updatePhaseIncrement(frequency.get());
         
         
 		if (phaseIncrement == 0.0)
@@ -198,14 +216,23 @@ private:
         return ( nyFreq ) / sampleRate;
     }
     
-   
+	double getTargetPhaseIncrement(double phaseLeft)
+	{
+		double timeSamples = sampleRate / (1000.0 / phaseInterpolationTime); 
+		return phaseLeft / timeSamples;
+	}
     
 
     double sampleRate,  phaseIncrement;
 	double velocityFactor;
 	Atomic<double> frequency, phase, gain;
+
     double level;
 	double pulsewidth;
+
+	double phaseRemaining = 0.0;
+	double phaseInterpolationTime = 5.0;
+	bool targetReached = true;
     
     OscillatorMode mode;
     Random random;
