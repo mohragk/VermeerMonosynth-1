@@ -326,6 +326,8 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     synth.clearSounds();
     synth.clearVoices();
     
+    currentPlayedNotes.clear();
+    
 }
 
 
@@ -349,12 +351,21 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source
     lfo.setPhase(0.0);
     
     lastNotePlayed = midiNoteNumber;
+    
+    currentPlayedNotes.add(midiNoteNumber);
+    
 }
 
 void MonosynthPluginAudioProcessor::handleSynthNoteOff   (Monosynthesiser* source, int midiChannel, int midiNoteNumber)
 {
-    for (int i = 0; i < 3; i++)
-        envelopeGenerator[i].get()->gate(false);
+    if (currentPlayedNotes.size() == 1)
+        for (int i = 0; i < 3; i++)
+            envelopeGenerator[i].get()->gate(false);
+    
+    currentPlayedNotes.removeFirstMatchingValue(midiNoteNumber);
+    
+    
+    
 }
 
 //==============================================================================
@@ -906,9 +917,9 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
     
-    synthVoice->setFilterEnvelopeSampleRate(sampleRate);
-    synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *sustainParam3, *releaseParam3, *attackCurve3Param, *decayRelCurve3Param);
-    synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
+    //synthVoice->setFilterEnvelopeSampleRate(sampleRate);
+   // synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *sustainParam3, *releaseParam3, *attackCurve3Param, *decayRelCurve3Param);
+   // synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
     synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve2Param, *decayRelCurve2Param);
     
     

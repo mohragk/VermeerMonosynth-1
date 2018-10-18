@@ -397,6 +397,8 @@ private:
     
     std::unique_ptr<ADSR> envelopeGenerator[3];
     
+    Array<int> currentPlayedNotes;
+    
     
     static BusesProperties getBusesProperties();
    

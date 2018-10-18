@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(44100.0), phaseIncrement(0.0), level(1.0), pulsewidth(0.5), deviation(0.0), rephase(false)
+    Oscillator() : sampleRate(44100.0), phaseIncrement(0.0), level(1.0), pulsewidth(0.5), rephase(false)
     {
 		frequency.set(0.0);
 		phase.set(0.0);
@@ -34,7 +34,7 @@ public:
     
     void setFrequency(const double f)
     {
-        frequency.set(f + deviation);
+        frequency.set(f);
     }
     
     double getFrequency()
@@ -54,6 +54,8 @@ public:
 		targetReached = false;
 	}
     
+    
+    
     void setGain(const double g)
     {
         gain.set(g);
@@ -67,7 +69,14 @@ public:
         else             mode = OSCILLATOR_MODE_NOISE;
     }
     
-	
+    void setDetuneAmount(double fine, int coarse)
+    {
+        detuneAmount = fine + (double)coarse;
+ 
+        oldDetuneAmount = detuneAmount;
+    }
+    
+   
 
     void setPulsewidth(double pw)
     {
@@ -96,7 +105,13 @@ public:
         double t = phase.get();
 
 		if (phase.get() == 0.0) targetReached = true;
+        
+        double newFreq = calculateDetunedFrequency(detuneAmount, frequency.get());
+        frequency.set(newFreq);
 
+        phaseIncrement = updatePhaseIncrement(frequency.get());
+        
+        /*
 		if (targetReached)
 		{
 			phaseIncrement = updatePhaseIncrement(frequency.get());
@@ -105,7 +120,7 @@ public:
 		{
 			phaseIncrement = getTargetPhaseIncrement(phaseRemaining);
 		}
-
+         */
         
         
         
@@ -155,7 +170,14 @@ public:
         return value * level * gain.get();
     }
     
+    
 private:
+    
+    double inline calculateDetunedFrequency(const double semitones, const double freq)
+    {
+        double power = semitones / 12.0;
+        return pow(2.0, power) * freq;
+    }
     
     double naiveWaveFormForMode(const OscillatorMode m, double phs)
     {
@@ -226,6 +248,8 @@ private:
     double sampleRate,  phaseIncrement;
 	double velocityFactor;
 	Atomic<double> frequency, phase, gain;
+    double detuneAmount = 0.0;
+    double oldDetuneAmount = 0.0;
 
     double level;
 	double pulsewidth;
@@ -236,7 +260,6 @@ private:
     
     OscillatorMode mode;
     Random random;
-    double deviation;
     
     bool rephase;
     

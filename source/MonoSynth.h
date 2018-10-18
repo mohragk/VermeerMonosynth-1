@@ -151,10 +151,6 @@ public:
     }
     
     
-    void setEnvelopeGeneratorGate(ADSR* eg)
-    {
-        
-    }
     
     void setEnvelopeSampleRate( double sr )
     {
@@ -162,9 +158,7 @@ public:
 
     }
     
-    void setFilterEnvelopeSampleRate(double sr)
-    {
-    }
+   
     
     void startNote (int midiNoteNumber, float velocity,
                     SynthesiserSound* /*sound*/,
@@ -201,16 +195,10 @@ public:
     void stopNote (float /*velocity*/, bool allowTailOff) override
     {
         pitchEnvelope.get()->gate(false);
-       
-        
         
         isPlaying = false;
         
-        
         clearCurrentNote();
-        
-        
-    
     }
     
     void pitchWheelMoved (const int newValue) override
@@ -259,21 +247,9 @@ public:
         pitchEnvelope.get()->setTargetRatioDR(decRelCurve);
     }
     
-    void setAmpEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
-    {
-        
-    }
-    
-    void filterAmpEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
-    {
-        
-    }
     
     
-    double getFilterEnvelopeValue()
-    {
-        return 1.0;
-    }
+    
     
     void setGlideTime(int timeInMillis)
     {
@@ -301,7 +277,7 @@ public:
     
     void setDetuneAmountForOscillator(const double fine, int coarse, int oscillator)
     {
-        oscDetuneAmount[oscillator] = fine + (double) coarse;
+        osc[oscillator].get()->setDetuneAmount(fine , coarse);
     }
     
     
@@ -316,6 +292,17 @@ public:
     {
         return jmin( osc[0].get()->getFrequency(), osc[1].get()->getFrequency(), osc[2].get()->getFrequency() );
 
+    }
+    
+    int getLowestPitchedOscillatorIdx()
+    {
+        double lowest = getLowestPitchedOscFreq();
+        
+        for (int i = 0; i < numOscillators; i++ )
+            if ( osc[i].get()->getFrequency() == lowest ) return i;
+        
+        return 0;
+        
     }
     
     int getLowestOscillatorRephaseIndex()
@@ -404,6 +391,7 @@ private:
                     osc[i]->setFrequency(currentFrequency[i]);
                 }
             
+                
                                
                 if (osc[0]->isRephase() && hardSync)
                     osc[1]->setPhase(0.0);
