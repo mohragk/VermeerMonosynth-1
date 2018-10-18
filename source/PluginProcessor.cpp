@@ -400,7 +400,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     
     keyboardState.reset();
     
-    
+	lastNotePlayed = 20;
 
 }
 
@@ -453,6 +453,9 @@ void MonosynthPluginAudioProcessor::reset()
 	
     for (int i = 0; i < numSmoothers; i++)
         smoothing[i]->reset();
+
+
+	lastNotePlayed = 20;
 }
 
 

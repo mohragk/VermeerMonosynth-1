@@ -178,7 +178,12 @@ public:
 		{
 			osc[n]->setSampleRate(sr);
 			osc[n]->setVelocityFactor(velocity);
-			osc[n]->resetPhaseInterpolated();
+			
+
+			// MAKE GUI FOR SETTING RETRIGGERING
+			auto retrigger = false;
+			if (retrigger)
+				osc[n]->resetPhaseInterpolated();
 		}
         
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
