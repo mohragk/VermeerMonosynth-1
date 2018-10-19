@@ -376,6 +376,7 @@ private:
     
     int lastNotePlayed;
 	int curMidiChannel;
+    int overrideGlideTime;
     
     double masterGain = 0.0, masterGainPrev = 0.0;
     

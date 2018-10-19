@@ -348,12 +348,20 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source
     for (int i = 0; i < 3; i++)
         envelopeGenerator[i].get()->gate(true);
     
+   
+    
     lfo.setPhase(0.0);
     
     lastNotePlayed = midiNoteNumber;
     
     if(*useSequencerParam == false)
+    {
         currentPlayedNotes.add(midiNoteNumber);
+       // lastNotePlayed = currentPlayedNotes.getLast();
+        
+    }
+    
+    
     
 }
 
@@ -424,6 +432,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     keyboardState.reset();
     currentPlayedNotes.clear();
 
+    lastNotePlayed = 60;
 }
 
 void MonosynthPluginAudioProcessor::releaseResources()
@@ -681,7 +690,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         softClipBuffer(osBuffer);
 
 
-   
  
     // DOWNSAMPLING
     oversampling->processSamplesDown(block);
@@ -1036,7 +1044,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             synthVoice->setPitchEnvelopeAmount(*pitchModParam);
             synthVoice->setHardSync(*oscSyncParam);
             synthVoice->sendLFO(lfo);
-            synthVoice->setGlideTime(int(*glideTimeParam));
+            synthVoice->setGlideTime(int(*glideTimeParam) + overrideGlideTime);
             
             saturationAmount.setValue(*saturationParam);
             
