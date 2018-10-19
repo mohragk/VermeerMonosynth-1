@@ -329,6 +329,7 @@ private:
     bool hqOversampling = false;
     bool prevHqOversampling = false;
 	bool filterKeyFollow = true; //TEST
+    bool lastSequencerOnOffState = false;
 
     Monosynthesiser synth;
     

@@ -352,17 +352,29 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source
     
     lastNotePlayed = midiNoteNumber;
     
-    currentPlayedNotes.add(midiNoteNumber);
+    if(*useSequencerParam == false)
+        currentPlayedNotes.add(midiNoteNumber);
     
 }
 
 void MonosynthPluginAudioProcessor::handleSynthNoteOff   (Monosynthesiser* source, int midiChannel, int midiNoteNumber)
 {
-    if (currentPlayedNotes.size() == 1)
+    if(*useSequencerParam == false)
+    {
+        if (currentPlayedNotes.size() == 1)
+            for (int i = 0; i < 3; i++)
+                envelopeGenerator[i].get()->gate(false);
+        
+        currentPlayedNotes.removeFirstMatchingValue(midiNoteNumber);
+       
+    }
+    else
+    {
         for (int i = 0; i < 3; i++)
             envelopeGenerator[i].get()->gate(false);
+    }
     
-    currentPlayedNotes.removeFirstMatchingValue(midiNoteNumber);
+    
     
     
     
@@ -410,8 +422,7 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     resetSamplerates(newSampleRate, samplesPerBlock);
     
     keyboardState.reset();
-    
-	lastNotePlayed = 20;
+    currentPlayedNotes.clear();
 
 }
 
@@ -466,7 +477,7 @@ void MonosynthPluginAudioProcessor::reset()
         smoothing[i]->reset();
 
 
-	lastNotePlayed = 20;
+    currentPlayedNotes.clear();
 }
 
 
@@ -980,6 +991,13 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             
             
             // SEQUENCER
+            
+            if (lastSequencerOnOffState != *useSequencerParam)
+            {
+                currentPlayedNotes.clear();
+                lastSequencerOnOffState = *useSequencerParam;
+            }
+            
             seqState.get()->setMaxSteps(*maxStepsParam);
             
             double speed = getLFOSyncedFreq(lastPosInfo, *stepDivisionFloatParam);
