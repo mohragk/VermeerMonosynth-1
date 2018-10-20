@@ -689,6 +689,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     if (*softClipSwitchParam == 1)
         softClipBuffer(osBuffer);
 
+	osBuffer.copyFrom(1, 0, osBuffer, 0, 0, osBuffer.getNumSamples());
 
  
     // DOWNSAMPLING
@@ -698,7 +699,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // COPY LEFT DATA to RIGHT CHANNEL
     buffer.copyFrom(1, 0, buffer, 0, 0, buffer.getNumSamples());
    
-
+	
 
     // Now ask the host for the current time so we can store it to be displayed later...
     updateCurrentTimeInfoFromHost();
@@ -708,18 +709,16 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 {
 
-    masterGain = dbToGain(*gainParam, MIN_INFINITY_DB);
+  masterGain = dbToGain(*gainParam, MIN_INFINITY_DB);
 
 	if (masterGain == masterGainPrev)
 	{
-        buffer.applyGain(0, 0, buffer.getNumSamples(), masterGain);
-
+      buffer.applyGain(0, 0, buffer.getNumSamples(), masterGain);
 	}
 	else
 	{
-        buffer.applyGainRamp(0, 0, buffer.getNumSamples(), masterGainPrev, masterGain);
-
-		masterGainPrev = masterGain;
+      buffer.applyGainRamp(0, 0, buffer.getNumSamples(), masterGainPrev, masterGain);
+		  masterGainPrev = masterGain;
 	}
 
 }
@@ -814,22 +813,24 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
     filter->Process(channelDataLeft, numSamples);
   
    
+
 	
 }
 
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buffer)
 {
-	const int numSamples = buffer.getNumSamples();
+    const int numSamples = buffer.getNumSamples();
     const FloatType* readLeft = buffer.getReadPointer(0);
-	FloatType* dataL = buffer.getWritePointer(0);
+	  FloatType* dataL = buffer.getWritePointer(0);
 
-	auto saturation = saturationAmount.getNextValue();
 
-	for (int i = 0; i < numSamples; i++)
-	{
-		dataL[i] = getWaveshaped(readLeft[i], saturation, *waveshapeModeParam);
-	}
+	  auto saturation = saturationAmount.getNextValue();
+
+	  for (int i = 0; i < numSamples; i++)
+	  {
+		    dataL[i] = getWaveshaped(readLeft[i], saturation, *waveshapeModeParam);
+	  }
 }
 
 template <typename FloatType>
@@ -1128,10 +1129,8 @@ void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<FloatType>& buffe
     const int numSamples = buffer.getNumSamples();
     
     const FloatType* readLeft = buffer.getReadPointer(0);
-    const FloatType* readRight = buffer.getReadPointer(1);
     
     FloatType* dataLeft = buffer.getWritePointer(0);
-    FloatType* dataRight = buffer.getWritePointer(1);
     
 
     
@@ -1144,7 +1143,6 @@ void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<FloatType>& buffe
     {
         
         dataLeft[i]  = softClipLambda(readLeft[i]);
-        dataRight[i] = softClipLambda(readRight[i]);
     }
     
     

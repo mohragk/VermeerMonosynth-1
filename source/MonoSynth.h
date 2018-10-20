@@ -403,10 +403,12 @@ private:
 				sample /= numOscillators;
 
                 // get amplitude envelope
+
                 //sample *= ampEnvelope.get()->process();
                 
                 
                 dataLeft[startSample] += sample;
+
                 
 				++startSample;
 			}
