@@ -613,7 +613,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     const int numSamples = osBuffer.getNumSamples();
 
-    
+    // Clear the buffer of any samples
+    //osBuffer.clear();
     
     int chunkSize = jmin(256, numSamples);
     int position = 0;
@@ -624,8 +625,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
     for ( ; position < numSamples; position += chunkSize )
     {
-       
-       // chunkBuffer.clear();
         
         AudioBuffer<FloatType> chunkBuffer (1, numSamplesChunk);
         MidiBuffer chunkMidi;
@@ -633,8 +632,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         chunkBuffer.copyFrom(0, 0, osBuffer, 0, position, numSamplesChunk);
         chunkMidi.addEvents(midiMessages, position, numSamplesChunk, 0);
         
-        // Clear the buffer of any samples
-        //osBuffer.clear();
         
         // PARAMETER UPDATE
         updateParameters(chunkBuffer);
@@ -660,9 +657,10 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
             
             for (int pos = 0; pos < numSamplesChunk; pos++)
             {
+                const FloatType* input    = chunkBuffer.getReadPointer(0);
                 FloatType* dataLeft = chunkBuffer.getWritePointer(0);
                 
-                dataLeft[pos] = dataLeft[pos] * envelopeGenerator[0].get()->process();
+                dataLeft[pos] = input[pos] * envelopeGenerator[0].get()->process();
             }
         }
     
@@ -1074,6 +1072,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             synthVoice->setPitchEnvelopeAmount(*pitchModParam);
             synthVoice->setHardSync(*oscSyncParam);
             synthVoice->sendLFO(lfo);
+            overrideGlideTime = 0;
             synthVoice->setGlideTime(int(*glideTimeParam) + overrideGlideTime);
             
             saturationAmount.setValue(*saturationParam);
