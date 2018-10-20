@@ -11,7 +11,7 @@
 class Oscillator
 {
 public:
-    Oscillator() : sampleRate(44100.0), phaseIncrement(0.0), level(1.0), pulsewidth(0.5), deviation(0.0), rephase(false)
+    Oscillator() : sampleRate(44100.0), phaseIncrement(0.0), level(1.0), pulsewidth(0.5), rephase(false)
     {
 		frequency.set(0.0);
 		phase.set(0.0);
@@ -34,7 +34,7 @@ public:
     
     void setFrequency(const double f)
     {
-        frequency.set(f + deviation);
+        frequency.set(f);
     }
     
     double getFrequency()
@@ -46,6 +46,15 @@ public:
     {
         phase.set(ph);
     }
+
+	
+	void resetPhaseInterpolated()
+	{
+		phaseRemaining = 1.0 - phase.get();
+		targetReached = false;
+	}
+    
+    
     
     void setGain(const double g)
     {
@@ -60,7 +69,14 @@ public:
         else             mode = OSCILLATOR_MODE_NOISE;
     }
     
-	
+    void setDetuneAmount(double fine, int coarse)
+    {
+        detuneAmount = fine + (double)coarse;
+ 
+        oldDetuneAmount = detuneAmount;
+    }
+    
+   
 
     void setPulsewidth(double pw)
     {
@@ -85,11 +101,27 @@ public:
 
     double nextSample()
     {
-        //const double two_Pi = 2.0 * double_Pi;
         double value = 0.0;
-        double t = phase.get(); // normalize period
+        double t = phase.get();
+
+		if (phase.get() == 0.0) targetReached = true;
         
+        double newFreq = calculateDetunedFrequency(detuneAmount, frequency.get());
+        frequency.set(newFreq);
+
         phaseIncrement = updatePhaseIncrement(frequency.get());
+        
+        /*
+		if (targetReached)
+		{
+			phaseIncrement = updatePhaseIncrement(frequency.get());
+		}
+		else
+		{
+			phaseIncrement = getTargetPhaseIncrement(phaseRemaining);
+		}
+         */
+        
         
         
 		if (phaseIncrement == 0.0)
@@ -104,12 +136,11 @@ public:
             case OSCILLATOR_MODE_SAW:
                 value = naiveWaveFormForMode(mode, phase.get());
                 value -= poly_blep( t, phaseIncrement );
-                value *= -1.0;
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
                 value = naiveWaveFormForMode(mode, phase.get());
-                value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi); // hmm
+                value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi);
                 value += poly_blep( t, phaseIncrement );
                 value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
                 break;
@@ -139,7 +170,14 @@ public:
         return value * level * gain.get();
     }
     
+    
 private:
+    
+    double inline calculateDetunedFrequency(const double semitones, const double freq)
+    {
+        double power = semitones / 12.0;
+        return pow(2.0, power) * freq;
+    }
     
     double naiveWaveFormForMode(const OscillatorMode m, double phs)
     {
@@ -153,13 +191,12 @@ private:
                 break;
                 
             case OSCILLATOR_MODE_SAW:
-                //value = tanh(3.0 * value);
-                value = (2.0 * phs ) - 1.0;
-                //value = tanh(2.0 * value);
+                value = ( 3.0 * phs ) ;
+                value = 2.0 * dsp::FastMathApproximations::tanh(value) - 1.0;
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
-                if (phs <=  pulsewidth) { // BUG!!! 0.5 should be pulsewidth
+                if (phs <=  pulsewidth) { 
                     value = 1.0 - (1.0 * phs);
                 } else {
                     value = (0.5 * (phs - pulsewidth) / 0.5 ) - 1.0;
@@ -201,18 +238,28 @@ private:
         return ( nyFreq ) / sampleRate;
     }
     
-   
+	double getTargetPhaseIncrement(double phaseLeft)
+	{
+		double timeSamples = sampleRate / (1000.0 / phaseInterpolationTime); 
+		return phaseLeft / timeSamples;
+	}
     
 
     double sampleRate,  phaseIncrement;
 	double velocityFactor;
 	Atomic<double> frequency, phase, gain;
+    double detuneAmount = 0.0;
+    double oldDetuneAmount = 0.0;
+
     double level;
 	double pulsewidth;
+
+	double phaseRemaining = 0.0;
+	double phaseInterpolationTime = 5.0;
+	bool targetReached = true;
     
     OscillatorMode mode;
     Random random;
-    double deviation;
     
     bool rephase;
     

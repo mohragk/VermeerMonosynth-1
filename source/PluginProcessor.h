@@ -30,6 +30,9 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+#include "MonoSynth.h"
+
+
 #include "adsr/ADSR.h"
 #include "lfo.h"
 #include "SequencerState.h"
@@ -52,6 +55,7 @@
 */
 class MonosynthPluginAudioProcessor  : public AudioProcessor,
                                         private MidiKeyboardStateListener,
+                                        public MonosynthListener,
                                         private Timer
 {
 public:
@@ -115,6 +119,10 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 	bool isSequencerPlaying();
+    
+    void isSynthesiserPlaying(Monosynthesiser* source, bool isPlaying) override;
+    void handleSynthNoteOn   (Monosynthesiser* source, int midiChannel, int midiNoteNumber) override;
+    void handleSynthNoteOff  (Monosynthesiser* source, int midiChannel, int midiNoteNumber) override;
     
     //==============================================================================
     // These properties are public so that our editor component can access them
@@ -275,7 +283,7 @@ private:
     void applyGain (AudioBuffer<FloatType>& buffer);
     
     template <typename FloatType>
-    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
+    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
 
     template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
@@ -307,7 +315,7 @@ private:
     
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
-    void resetSamplerates(double sr);
+    void resetSamplerates(double sr, int bufferSize);
     void setOversampleQuality(int q);
     
    
@@ -321,8 +329,9 @@ private:
     bool hqOversampling = false;
     bool prevHqOversampling = false;
 	bool filterKeyFollow = true; //TEST
+    bool lastSequencerOnOffState = false;
 
-    Synthesiser synth;
+    Monosynthesiser synth;
     
     
     enum modTarget {
@@ -367,6 +376,7 @@ private:
     
     int lastNotePlayed;
 	int curMidiChannel;
+    int overrideGlideTime;
     
     double masterGain = 0.0, masterGainPrev = 0.0;
     
@@ -387,7 +397,9 @@ private:
     
     std::unique_ptr<LadderFilterBase> filterA, filterB, filterC;
     
-   
+    std::unique_ptr<ADSR> envelopeGenerator[3];
+    
+    Array<int> currentPlayedNotes;
     
     
     static BusesProperties getBusesProperties();

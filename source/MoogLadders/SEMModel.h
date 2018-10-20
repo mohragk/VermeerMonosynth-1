@@ -61,7 +61,7 @@ class SEMModel : public LadderFilterBase
 		{
 			 for (uint32_t i = 0; i < n; i++)
 			{
-				 doFilter(samples[i]);
+				 doFilter(samples[i], i);
 			}
 		}
 
@@ -69,14 +69,14 @@ class SEMModel : public LadderFilterBase
 		{
 			for (uint32_t i = 0; i < n; i++)
 			{
-				doFilter(samples[i]);
+				doFilter(samples[i], i);
 			}
 		}
 
 		template <typename FloatType>
-		FloatType doFilter(FloatType sample)
+		FloatType doFilter(FloatType sample, int pos)
 		{
-			
+            UpdateParameters(pos);
 
 			// form the HPF output first
 			FloatType hpf = Alpha0 * (sample - Rho * Z11 - Z12);
@@ -146,15 +146,6 @@ class SEMModel : public LadderFilterBase
     
 		virtual bool SetCutoff(double c) override
 		{
-
-			if (isnan(c))
-				c = 1000.0;
-            
-            if (c > 20000.0)
-                c = 20000.0;
-                
-            if (c < 40.0)
-                c = 40.0;
 
 			cutoff.set(c);
             Update();

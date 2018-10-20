@@ -33,6 +33,64 @@ DISCLAIMED.
 
 #define NUM_OSCILLATORS 3
 
+class Monosynthesiser;
+
+class MonosynthListener
+{
+public:
+    MonosynthListener() noexcept {}
+    virtual ~MonosynthListener()   {}
+    
+    
+    
+    virtual void isSynthesiserPlaying(Monosynthesiser* source, bool isPlaying) = 0;
+    
+    virtual void handleSynthNoteOn  (Monosynthesiser* source, int midiChannel, int midiNoteNumber) = 0;
+    virtual void handleSynthNoteOff (Monosynthesiser* source, int midiChannel, int midiNoteNumber) = 0;
+};
+
+
+class Monosynthesiser : public Synthesiser
+{
+public:
+    
+    Monosynthesiser() {}
+    ~Monosynthesiser() {}
+    
+    virtual void noteOn (int midiChannel, int midiNoteNumber, float velocity)
+    {
+        Synthesiser::noteOn(midiChannel, midiNoteNumber, velocity);
+        
+        for (int i = listeners.size(); --i >= 0;)
+            listeners.getUnchecked(i)->handleSynthNoteOn(this, midiChannel, midiNoteNumber);
+    }
+    
+    virtual void noteOff (int midiChannel, int midiNoteNumber, float velocity, bool allowTailOff)
+    {
+        Synthesiser::noteOff(midiChannel, midiNoteNumber, velocity, allowTailOff);
+        
+        for (int i = listeners.size(); --i >= 0;)
+            listeners.getUnchecked(i)->handleSynthNoteOff(this, midiChannel, midiNoteNumber);
+    }
+    
+    void addListener(MonosynthListener* listener)
+    {
+        listeners.addIfNotAlreadyThere(listener);
+    }
+    
+    void removeListener(MonosynthListener* listener)
+    {
+        listeners.removeFirstMatchingValue(listener);
+    }
+private:
+    Array<MonosynthListener*> listeners;
+};
+
+
+
+
+
+
 
 /** A demo synth sound that's just a basic sine wave.. */
 class MonosynthSound : public SynthesiserSound
@@ -44,6 +102,7 @@ public:
     bool appliesToChannel (int /*midiChannel*/) override  { return true; }
     
 };
+
 
 
 //==============================================================================
@@ -71,23 +130,19 @@ public:
         hardSync(false),
         lastNotePlayed(60)
     {
-        pitchEnvelope = std::unique_ptr<ADSR> ( new ADSR );
-        ampEnvelope   = std::unique_ptr<ADSR> ( new ADSR );
-        filterEnvelope   = std::unique_ptr<ADSR> ( new ADSR );
+        pitchEnvelope.reset ( new ADSR );
+        
         
 		for (int n = 0; n < numOscillators; n++)
         {
             modAmountPW[n] = 0.0;
             oscDetuneAmount[n] = 0.0;
-			osc[n] = std::unique_ptr<Oscillator>( new Oscillator );
+			osc[n].reset( new Oscillator );
         }
     }
     
     ~MonosynthVoice()
     {
-        
-		for (int n = 0; n < numOscillators; n++)
-			osc[n] = nullptr;
     }
     
     bool canPlaySound (SynthesiserSound* sound) override
@@ -96,17 +151,14 @@ public:
     }
     
     
+    
     void setEnvelopeSampleRate( double sr )
     {
         pitchEnvelope.get()->setSampleRate(sr);
-        ampEnvelope.get()->setSampleRate(sr);
 
     }
     
-    void setFilterEnvelopeSampleRate(double sr)
-    {
-        filterEnvelope.get()->setSampleRate(sr);
-    }
+   
     
     void startNote (int midiNoteNumber, float velocity,
                     SynthesiserSound* /*sound*/,
@@ -114,32 +166,38 @@ public:
     {
         double sr = getSampleRate();
         
-		// Might be abundant, but just to be safe
-        //pitchEnvelope->setSampleRate(sr);
+        //ampEnvelope.get()->setSampleRate(sr);
         
 		for (int n = 0; n < numOscillators; n++)
 		{
 			osc[n]->setSampleRate(sr);
 			osc[n]->setVelocityFactor(velocity);
+			
+
+			// MAKE GUI FOR SETTING RETRIGGERING
+			auto retrigger = false;
+			if (retrigger)
+				osc[n]->resetPhaseInterpolated();
 		}
         
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         
         pitchEnvelope.get()->gate(true);
-        ampEnvelope.get()->gate(true);
-        filterEnvelope.get()->gate(true);
+       
 
 		lastNotePlayed = midiNoteNumber;
         
-       
         
+        isPlaying = true;
+       
     }
     
     void stopNote (float /*velocity*/, bool allowTailOff) override
     {
         pitchEnvelope.get()->gate(false);
-        ampEnvelope.get()->gate(false);
-        filterEnvelope.get()->gate(false);
+        
+        isPlaying = false;
+        
         clearCurrentNote();
     }
     
@@ -189,31 +247,9 @@ public:
         pitchEnvelope.get()->setTargetRatioDR(decRelCurve);
     }
     
-    void setAmpEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
-    {
-        ampEnvelope.get()->setAttackRate(attack);
-        ampEnvelope.get()->setDecayRate(decay);
-        ampEnvelope.get()->setSustainLevel(sustain);
-        ampEnvelope.get()->setReleaseRate(release);
-        ampEnvelope.get()->setTargetRatioA(attackCurve);
-        ampEnvelope.get()->setTargetRatioDR(decRelCurve);
-    }
-    
-    void filterAmpEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
-    {
-        filterEnvelope.get()->setAttackRate(attack);
-        filterEnvelope.get()->setDecayRate(decay);
-        filterEnvelope.get()->setSustainLevel(sustain);
-        filterEnvelope.get()->setReleaseRate(release);
-        filterEnvelope.get()->setTargetRatioA(attackCurve);
-        filterEnvelope.get()->setTargetRatioDR(decRelCurve);
-    }
     
     
-    double getFilterEnvelopeValue()
-    {
-        return filterEnvelope.get()->process();
-    }
+    
     
     void setGlideTime(int timeInMillis)
     {
@@ -239,9 +275,9 @@ public:
         osc[o]->setGain(g);
     }
     
-    void setDetuneAmountForOscillator(const double fine, int coarse, int osc)
+    void setDetuneAmountForOscillator(const double fine, int coarse, int oscillator)
     {
-        oscDetuneAmount[osc] = fine + (double) coarse;
+        osc[oscillator].get()->setDetuneAmount(fine , coarse);
     }
     
     
@@ -258,6 +294,17 @@ public:
 
     }
     
+    int getLowestPitchedOscillatorIdx()
+    {
+        double lowest = getLowestPitchedOscFreq();
+        
+        for (int i = 0; i < numOscillators; i++ )
+            if ( osc[i].get()->getFrequency() == lowest ) return i;
+        
+        return 0;
+        
+    }
+    
     int getLowestOscillatorRephaseIndex()
     {
         double lowest = getLowestPitchedOscFreq();
@@ -269,7 +316,6 @@ public:
                 {
                     idx = sampleCounter + 1;
                 }
-            
         }
         
         return idx;
@@ -294,30 +340,37 @@ public:
 	{
         double newPW = pw + ( modAmountPW[n] * ((lfoValue + 1.0) / 2.0) );
         
-        if (newPW > 1.0)
-            newPW = 1.0;
-        
-        if(newPW < 0.0)
-            newPW = 0.0;
+        if (newPW > 1.0) newPW = 1.0;
+        if(newPW < 0.0)  newPW = 0.0;
         
 		osc[n]->setPulsewidth( newPW  );
 	}
 
+    bool isPlaying = false;
+    
+    
+ 
+    
 private:
     
     
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
+        //REPLACE!!
         
+        /*
         if (ampEnvelope.get()->getState() == ADSR::env_idle)
         {
 			for (int n = 0; n < numOscillators; n++)
 				osc[n]->setPhase(0.0);
         }
+        */
         
-        if (ampEnvelope.get()->getState() != ADSR::env_idle)
+        // REPLACE!!
+        //if (ampEnvelope.get()->getState() != ADSR::env_idle)
 		{
+            FloatType* dataLeft = outputBuffer.getWritePointer(0);
            
 			while (--numSamples >= 0)
 			{
@@ -331,22 +384,13 @@ private:
                 FloatType newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
-				FloatType osc1Detuned = semitoneOffsetToFreq(oscDetuneAmount[0] + pitchModulation + pitchBendOffset, newFreq);
-				FloatType osc2Detuned = semitoneOffsetToFreq(oscDetuneAmount[1] + pitchModulation + pitchBendOffset, newFreq);
-				FloatType osc3Detuned = semitoneOffsetToFreq(oscDetuneAmount[2] + pitchModulation + pitchBendOffset, newFreq);
-
-                targetFrequency[0] = osc1Detuned;
-                targetFrequency[1] = osc2Detuned;
-                targetFrequency[2] = osc3Detuned;
-                
-             
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < numOscillators; i++)
                 {
+                    targetFrequency[i] = semitoneOffsetToFreq(oscDetuneAmount[i] + pitchModulation + pitchBendOffset, newFreq);
                     updateGlidedFrequency(targetFrequency[i], currentFrequency[i], glideTimeMillis);
                     osc[i]->setFrequency(currentFrequency[i]);
                 }
             
-               
                 
                                
                 if (osc[0]->isRephase() && hardSync)
@@ -359,12 +403,12 @@ private:
 				sample /= numOscillators;
 
                 // get amplitude envelope
-                sample *= ampEnvelope.get()->process();
+
+                //sample *= ampEnvelope.get()->process();
                 
-                FloatType* dataLeft = outputBuffer.getWritePointer(0);
-                FloatType* dataRight = outputBuffer.getWritePointer(1);
                 
-                dataLeft[startSample] = sample;                
+                dataLeft[startSample] += sample;
+
                 
 				++startSample;
 			}
@@ -462,8 +506,8 @@ private:
     Random rand;
     
     std::unique_ptr<ADSR> pitchEnvelope;
-    std::unique_ptr<ADSR> ampEnvelope;
-    std::unique_ptr<ADSR> filterEnvelope;
+  
+    
     
     std::unique_ptr<Oscillator> osc[3];
         

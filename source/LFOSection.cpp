@@ -20,7 +20,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     typedef ParameterSlider::style knobStyle;
 
     
-    lfoLabel = std::unique_ptr<Label>( new Label ("lfoLabel", TRANS("LFO")));
+    lfoLabel.reset( new Label ("lfoLabel", TRANS("LFO")));
     addAndMakeVisible (lfoLabel.get());                        //
     lfoLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     lfoLabel->setJustificationType (Justification::centredTop);
@@ -28,7 +28,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     lfoLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    lfoRateLabel = std::unique_ptr<Label> ( new Label ("lfoRateLabel", TRANS("Rate")));
+    lfoRateLabel.reset ( new Label ("lfoRateLabel", TRANS("Rate")));
     addAndMakeVisible (lfoRateLabel.get());          //
     lfoRateLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     lfoRateLabel->setJustificationType (Justification::centredBottom);
@@ -36,10 +36,10 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     lfoRateLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoRateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	lfoRateSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.lfoRateParam, knobStyle(ROTARY)));
+	lfoRateSlider.reset(new ParameterSlider(*processor.lfoRateParam, knobStyle(ROTARY)));
 	addAndMakeVisible(lfoRateSlider.get());  //
     
-    lfoModeLabel = std::unique_ptr<Label> ( new Label ("lfoModeLabel",TRANS("Shape")));
+    lfoModeLabel.reset ( new Label ("lfoModeLabel",TRANS("Shape")));
     addAndMakeVisible (lfoModeLabel.get());          //
     lfoModeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     lfoModeLabel->setJustificationType (Justification::centredBottom);
@@ -47,10 +47,10 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     lfoModeLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	lfoModeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.lfoModeParam, LINEARHORIZONTAL));
+	lfoModeSlider.reset(new ParameterSlider(*processor.lfoModeParam, LINEARHORIZONTAL));
 	addAndMakeVisible(lfoModeSlider.get());  //
 	
-    lfoIntensityLabel = std::unique_ptr<Label> ( new Label ("lfoIntensityLabel", TRANS("Mod Amt")));
+    lfoIntensityLabel.reset ( new Label ("lfoIntensityLabel", TRANS("Mod Amt")));
     addAndMakeVisible (lfoIntensityLabel.get());          //
     lfoIntensityLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     lfoIntensityLabel->setJustificationType (Justification::centredBottom);
@@ -58,13 +58,13 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     lfoIntensityLabel->setColour (TextEditor::textColourId, Colours::black);
     lfoIntensityLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-	lfoIntensitySlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.lfoIntensityParam, knobStyle(ROTARY)));
+	lfoIntensitySlider.reset(new ParameterSlider(*processor.lfoIntensityParam, knobStyle(ROTARY)));
     addAndMakeVisible(lfoIntensitySlider.get());  //
     
-	lfoSyncedFreqSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.lfoDivisionParam, knobStyle(ROTARY)));
+	lfoSyncedFreqSlider.reset(new ParameterSlider(*processor.lfoDivisionParam, knobStyle(ROTARY)));
     addAndMakeVisible(lfoSyncedFreqSlider.get());
 
-	lfoSyncSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.lfoSyncParam, LINEARVERTICAL));
+	lfoSyncSlider.reset(new ParameterSlider(*processor.lfoSyncParam, LINEARVERTICAL));
 	addAndMakeVisible(lfoSyncSlider.get());
     lfoSyncSlider.get()->setTooltip("Tempo sync ON/OFF");
 	
@@ -74,10 +74,10 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     //
     // Modulation Target
     //
-	modTargetSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.modTargetParam, knobStyle(LINEARVERTICAL)));
+	modTargetSlider.reset(new ParameterSlider(*processor.modTargetParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(modTargetSlider.get());  //
   
-    modTargetLabel = std::unique_ptr<Label> ( new Label ("modTargetLabel", TRANS("Target")));
+    modTargetLabel.reset ( new Label ("modTargetLabel", TRANS("Target")));
     addAndMakeVisible (modTargetLabel.get());          //
     modTargetLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     modTargetLabel->setJustificationType (Justification::centredBottom);
@@ -85,7 +85,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     modTargetLabel->setColour (TextEditor::textColourId, Colours::black);
     modTargetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    modTargetOffLabel = std::unique_ptr<Label> ( new Label ("modTargetOffLabel", TRANS("-off")));
+    modTargetOffLabel.reset ( new Label ("modTargetOffLabel", TRANS("-off")));
     addAndMakeVisible (modTargetOffLabel.get());          //
     modTargetOffLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
     modTargetOffLabel->setJustificationType (Justification::centredLeft);
@@ -94,7 +94,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     modTargetOffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     
-    modTargetPitchLabel = std::unique_ptr<Label> (new Label ("modTargetPitchLabel", TRANS("-pitch")));
+    modTargetPitchLabel.reset (new Label ("modTargetPitchLabel", TRANS("-pitch")));
     addAndMakeVisible (modTargetPitchLabel.get());
     modTargetPitchLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
     modTargetPitchLabel->setJustificationType (Justification::centredLeft);
@@ -102,7 +102,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     modTargetPitchLabel->setColour (TextEditor::textColourId, Colours::black);
     modTargetPitchLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    modTargetCutoffLabel = std::unique_ptr<Label> ( new Label ("modTargetCutoffLabel", TRANS("-cutoff")));
+    modTargetCutoffLabel.reset ( new Label ("modTargetCutoffLabel", TRANS("-cutoff")));
     addAndMakeVisible (modTargetCutoffLabel.get());         
     modTargetCutoffLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
     modTargetCutoffLabel->setJustificationType (Justification::centredLeft);
@@ -115,9 +115,9 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     // Drawables for symbols/icons
     //
     
-    drawable1 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
-    drawable2 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
-    drawable3 = std::unique_ptr<Drawable>(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
+    drawable1.reset(Drawable::createFromImageData (oscSquareWaveSymbol_svg2, oscSquareWaveSymbol_svg2Size));
+    drawable2.reset(Drawable::createFromImageData (oscSawWaveSymbol_svg, oscSawWaveSymbol_svgSize));
+    drawable3.reset(Drawable::createFromImageData (oscSineWaveSymbol_svg, oscSineWaveSymbol_svgSize));
 	
     
     startTimerHz (60);

@@ -32,7 +32,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     
     
-    filterLabel = std::unique_ptr<Label> (new Label ("Filter", TRANS("Filter")));
+    filterLabel.reset (new Label ("Filter", TRANS("Filter")));
     addAndMakeVisible (filterLabel.get());                          //
     filterLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     filterLabel->setJustificationType (Justification::centredTop);
@@ -40,10 +40,10 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filterLabel->setColour (TextEditor::textColourId, Colours::black);
     filterLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    filterCutoffSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.filterCutoffParam, knobStyle(ROTARY)));
+    filterCutoffSlider.reset(new ParameterSlider(*processor.filterCutoffParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterCutoffSlider.get());   //
     
-    filterCutoffLabel = std::unique_ptr<Label>(new Label ("Filter Cutoff Label", TRANS("Cutoff")));
+    filterCutoffLabel.reset(new Label ("Filter Cutoff Label", TRANS("Cutoff")));
     addAndMakeVisible (filterCutoffLabel.get());            //
     filterCutoffLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     filterCutoffLabel->setJustificationType (Justification::centredBottom);
@@ -51,15 +51,15 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filterCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
     filterCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-	filterKeyFollowSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.useFilterKeyFollowParam, knobStyle(LINEARVERTICAL)));
+	filterKeyFollowSlider.reset(new ParameterSlider(*processor.useFilterKeyFollowParam, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(filterKeyFollowSlider.get());
     filterKeyFollowSlider.get()->setTooltip("Key Follow ON/OFF");
 
-    filterResonanceSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.filterQParam, knobStyle(ROTARY)));
+    filterResonanceSlider.reset(new ParameterSlider(*processor.filterQParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterResonanceSlider.get());   //
     
     
-    filterResonanceLabel = std::unique_ptr<Label>( new Label ("Filter Resonance Label", TRANS("Resonance")));
+    filterResonanceLabel.reset( new Label ("Filter Resonance Label", TRANS("Resonance")));
     addAndMakeVisible (filterResonanceLabel.get());      //
     filterResonanceLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     filterResonanceLabel->setJustificationType (Justification::centredBottom);
@@ -67,13 +67,13 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filterResonanceLabel->setColour (TextEditor::textColourId, Colours::black);
     filterResonanceLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    filterContourSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.filterContourParam, knobStyle(ROTARY)));
+    filterContourSlider.reset(new ParameterSlider(*processor.filterContourParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterContourSlider.get());  //
     
-    filterSelectSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.filterSelectParam, knobStyle(LINEARVERTICAL)));
+    filterSelectSlider.reset(new ParameterSlider(*processor.filterSelectParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(filterSelectSlider.get());  //todo:
     
-    filterContourLabel = std::unique_ptr<Label>( new Label ("Filter Contour Label", TRANS("Contour")));
+    filterContourLabel.reset( new Label ("Filter Contour Label", TRANS("Contour")));
     
     addAndMakeVisible (filterContourLabel.get());              //
     filterContourLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
@@ -82,10 +82,10 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filterContourLabel->setColour (TextEditor::textColourId, Colours::black);
     filterContourLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    filterDriveSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.filterDriveParam, knobStyle(ROTARY)));
+    filterDriveSlider.reset(new ParameterSlider(*processor.filterDriveParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterDriveSlider.get());  //
     
-    filterDriveLabel = std::unique_ptr<Label> ( new Label ("Filter Drive Label", TRANS("Drive")));
+    filterDriveLabel.reset ( new Label ("Filter Drive Label", TRANS("Drive")));
     addAndMakeVisible (filterDriveLabel.get());                  //
     filterDriveLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     filterDriveLabel->setJustificationType (Justification::centredBottom);
@@ -94,7 +94,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filterDriveLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     
-    filterMoogLabel = std::unique_ptr<Label>( new Label ("filterMoogLabel", TRANS("MOOG")));
+    filterMoogLabel.reset( new Label ("filterMoogLabel", TRANS("MOOG")));
     addAndMakeVisible (filterMoogLabel.get());          //
     filterMoogLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
     filterMoogLabel->setJustificationType (Justification::centredLeft);
@@ -102,7 +102,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filterMoogLabel->setColour (TextEditor::textColourId, Colours::black);
     filterMoogLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    filterMS20Label = std::unique_ptr<Label> ( new Label ("filterMS20Label", TRANS("MS20")));
+    filterMS20Label.reset ( new Label ("filterMS20Label", TRANS("MS20")));
     addAndMakeVisible (filterMS20Label.get());          //
     filterMS20Label->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
     filterMS20Label->setJustificationType (Justification::centredLeft);
@@ -110,7 +110,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filterMS20Label->setColour (TextEditor::textColourId, Colours::black);
     filterMS20Label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
-    filter303Label = std::unique_ptr<Label> ( new Label ("filter303Label", TRANS("303")));
+    filter303Label.reset ( new Label ("filter303Label", TRANS("303")));
     addAndMakeVisible (filter303Label.get());          //
     filter303Label->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
     filter303Label->setJustificationType (Justification::centredLeft);

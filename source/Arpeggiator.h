@@ -76,37 +76,56 @@ class Arpeggiator
                     midi.addEvent(MidiMessage::allNotesOff(1), 0);
                 }
                 
-				if ((time + numSamples) >= noteDuration)
-				{
-					auto offset = jmax(0, jmin((int)(noteDuration - time), numSamples - 1));
+                int interval = jmin(256, numSamples);
+                int samplesRemaining = numSamples;
+                int position = 0;
+                
+                while (position < numSamples)
+                {
+                
+                    if ((time + interval) >= noteDuration)
+                    {
+                        auto offset = jmax(0, jmin((int)(noteDuration - time) + position, numSamples - 1));
 
-					if (lastNoteValue > 0)
-					{
-						midi.addEvent(MidiMessage::noteOff(1, lastNoteValue), offset);
-						lastNoteValue = -1;
-					}
+                        if (lastNoteValue > 0)
+                        {
+                            midi.addEvent(MidiMessage::noteOff(1, lastNoteValue), offset);
+                            lastNoteValue = -1;
+                        }
 
-					if (sortedNotes.size() > 0)
-					{
-						if(sorted)
-						{
-							currentNote = (currentNote + 1) % sortedNotes.size();
-							lastNoteValue = sortedNotes[currentNote];
-							midi.addEvent(MidiMessage::noteOn(1, lastNoteValue, (uint8)127), offset);
-						} 
-						else
-						{
-							currentNote = (currentNote + 1) % playedNotes.size();
-							lastNoteValue = playedNotes[currentNote];
-							midi.addEvent(MidiMessage::noteOn(1, lastNoteValue, (uint8)127), offset);
-						}
-						
-					}
+                        if (sortedNotes.size() > 0)
+                        {
+                            if(sorted)
+                            {
+                                currentNote = (currentNote + 1) % sortedNotes.size();
+                                lastNoteValue = sortedNotes[currentNote];
+                                midi.addEvent(MidiMessage::noteOn(1, lastNoteValue, (uint8)127), offset);
+                            }
+                            else
+                            {
+                                currentNote = (currentNote + 1) % playedNotes.size();
+                                lastNoteValue = playedNotes[currentNote];
+                                midi.addEvent(MidiMessage::noteOn(1, lastNoteValue, (uint8)127), offset);
+                            }
+                            
+                        }
 
-				}
+                    }
 
-				time = (time + numSamples) % noteDuration;
-                prevSpeedInHz = speedInHz;
+                    if (samplesRemaining >= interval)
+                    {
+                        time = (time + interval) % noteDuration;
+                        position += interval;
+                    }
+                    else
+                    {
+                        time = (time + samplesRemaining) % noteDuration;
+                        position += samplesRemaining;
+                    }
+                    
+                    samplesRemaining -= interval;
+                    prevSpeedInHz = speedInHz;
+                }
 			}
 		}
 

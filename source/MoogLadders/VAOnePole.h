@@ -52,7 +52,7 @@ class VAOnePole : public LadderFilterBase
 		{
             for (uint32_t i = 0; i < n; i++)
 			{
-                samples[i] = doFilter(samples[i]);
+                samples[i] = doFilter(samples[i], i);
 			}
 		}
 
@@ -60,7 +60,7 @@ class VAOnePole : public LadderFilterBase
 		{
 			for (uint32_t i = 0; i < n; i++)
 			{
-				samples[i] = doFilter(samples[i]);
+				samples[i] = doFilter(samples[i], i);
 			}
 		}
     
@@ -71,7 +71,7 @@ class VAOnePole : public LadderFilterBase
             for (uint32_t i = 0; i < n; i++)
             {
                 SetCutoff(beginCutoff);
-                samples[i] = doFilter(samples[i]);
+                samples[i] = doFilter(samples[i], i);
                 beginCutoff += increment;
             }
         }
@@ -83,14 +83,15 @@ class VAOnePole : public LadderFilterBase
             for (uint32_t i = 0; i < n; i++)
             {
                 SetCutoff(beginCutoff);
-                samples[i] = doFilter(samples[i]);
+                samples[i] = doFilter(samples[i], i);
                 beginCutoff += increment;
             }
         }
     
 		template <typename FloatType>
-        FloatType doFilter( FloatType sample )
+        inline FloatType doFilter( FloatType sample, int pos )
         {
+            //UpdateParameters(pos);
             
             sample = sample * Gamma + Feedback + Epsilon * getFeedbackOutput();
             
@@ -148,14 +149,6 @@ class VAOnePole : public LadderFilterBase
     
 		virtual bool SetCutoff(double c) override
 		{
-            if (isnan(c))
-                c = 1000.0;
-            
-            if (c > 20000.0)
-                c = 20000.0;
-            
-            if (c < 40.0)
-                c = 40.0;
             
 			cutoff.set(c);
             

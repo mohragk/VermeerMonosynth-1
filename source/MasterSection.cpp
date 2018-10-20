@@ -32,7 +32,7 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     
     typedef ParameterSlider::style knobStyle;
 
-    mainLabel = std::unique_ptr<Label> ( new Label("Main Label", TRANS("Main")));
+    mainLabel.reset ( new Label("Main Label", TRANS("Main")));
     addAndMakeVisible (mainLabel.get());
     mainLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
     mainLabel->setJustificationType (Justification::centredTop);
@@ -41,10 +41,10 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     mainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     
-    volumeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.gainParam, knobStyle(ROTARY)));
+    volumeSlider.reset(new ParameterSlider(*processor.gainParam, knobStyle(ROTARY)));
     addAndMakeVisible (volumeSlider.get());  //
     
-    volumeLabel = std::unique_ptr<Label> ( new Label ("Main Volume Label", TRANS("Volume")) );
+    volumeLabel.reset ( new Label ("Main Volume Label", TRANS("Volume")) );
     addAndMakeVisible (volumeLabel.get());  //
     volumeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     volumeLabel->setJustificationType (Justification::centredBottom);
@@ -53,25 +53,25 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     volumeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     //Softclip switch
-    softClipSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.softClipSwitchParam, knobStyle(LINEARVERTICAL)));
+    softClipSwitchSlider.reset(new ParameterSlider(*processor.softClipSwitchParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(softClipSwitchSlider.get());
     softClipSwitchSlider.get()->setTooltip("Soft Clip ON/OFF");
     
     
     //Saturation
-    saturationSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.saturationParam, knobStyle(ROTARY)));
+    saturationSlider.reset(new ParameterSlider(*processor.saturationParam, knobStyle(ROTARY)));
     addAndMakeVisible(saturationSlider.get());  //
     
     
-    saturationSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.waveshapeSwitchParam, knobStyle(LINEARVERTICAL)));
+    saturationSwitchSlider.reset(new ParameterSlider(*processor.waveshapeSwitchParam, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible(saturationSwitchSlider.get());
     saturationSwitchSlider.get()->setTooltip("Saturation ON/OFF");
     
     
-    saturationModeSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.waveshapeModeParam, knobStyle(LINEARHORIZONTAL)));
+    saturationModeSlider.reset(new ParameterSlider(*processor.waveshapeModeParam, knobStyle(LINEARHORIZONTAL)));
     addAndMakeVisible(saturationModeSlider.get());
     
-    saturationLabel = std::unique_ptr<Label> ( new Label ("saturationLabel", TRANS("Saturation")));
+    saturationLabel.reset ( new Label ("saturationLabel", TRANS("Saturation")));
     addAndMakeVisible (saturationLabel.get());        //
     saturationLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
     saturationLabel->setJustificationType (Justification::centredBottom);
@@ -81,11 +81,11 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     
 
 	//ARPEGGIATOR
-	arpeggiatorSpeedSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.arpeggioNoteLengthParam, knobStyle(ROTARY)));
+	arpeggiatorSpeedSlider.reset(new ParameterSlider(*processor.arpeggioNoteLengthParam, knobStyle(ROTARY)));
 	addAndMakeVisible(arpeggiatorSpeedSlider.get());
 	arpeggiatorSpeedSlider->setTooltip("Arpeggiator Speed");
 
-	arpeggioSwitchSlider = std::unique_ptr<ParameterSlider>(new ParameterSlider(*processor.arpeggioUseParam, knobStyle(LINEARVERTICAL)));
+	arpeggioSwitchSlider.reset(new ParameterSlider(*processor.arpeggioUseParam, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(arpeggioSwitchSlider.get());
 	arpeggioSwitchSlider->setTooltip("Arpeggio ON/OFF");
     

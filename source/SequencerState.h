@@ -119,14 +119,17 @@ public:
 		maxSteps = max;
 	}
     
+   
+    
     template <typename FloatType>
-	void processBuffer(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useSequencer)
+    void processBuffer(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useSequencer)
     {
+        
+        
+        
         if(useSequencer)
         {
             auto numSamples = buffer.getNumSamples();
-            
-            
             
             MidiMessage msg;
             int ignore;
@@ -142,6 +145,8 @@ public:
                     
                     pressedKeys.add(note);
                     
+                    
+                    // keep playing during sequence
                     if (pressedKeys.size() == 1)
                     {
                         currentStep = 0;
@@ -166,62 +171,83 @@ public:
                 midi.clear();
             
 
-			auto stepDuration = static_cast<int> (std::ceil(sampleRate / speedInHz));
-
-			if (currentStep % 2 == 0)
-				stepDuration = static_cast<int> (std::ceil((stepDuration * 2.0) * swingOffset));
-			else
-				stepDuration = static_cast<int> (std::ceil((stepDuration * 2.0) * (1.0 - swingOffset)));
-
-			auto noteDuration = static_cast<int> (std::ceil(stepDuration * noteLengthAmount));
-			auto difference = stepDuration - noteDuration;
+			
             
-
-            if ( (time + numSamples + difference) >= stepDuration)
+            
+            int interval = jmin(256, numSamples);
+            int samplesRemaining = numSamples;
+            int position = 0;
+            
+            while (position < numSamples)
             {
-                auto offset =  jmin((int)(noteDuration - time), numSamples - 1) ;
+                double sd = sampleRate / speedInHz;
                 
-                if (offset >= 0)
+                sd = currentStep % 2 == 0 ? sd * 2.0 * swingOffset : sd * 2.0 * (1.0 - swingOffset);
+                
+                auto nd = sd * noteLengthAmount;
+                
+                int stepDuration = std::round(sd);
+                int noteDuration = std::round(nd);
+                
+                if ( (time + interval) >= noteDuration)
                 {
-                    for (int i = 0; i < numSteps; i++)
+                    auto offset =  jmin((noteDuration - time) + position, numSamples - 1) ;
+                    
+                    if (offset >= 0)
                     {
-                        if (steps[i].isActive)
+                        for (int i = 0; i < numSteps; i++)
                         {
-                            int note = steps[i].getPitchedNoteValue();
-                            midi.addEvent(MidiMessage::noteOff(1, note), offset);
-                            steps[i].setActive(false);
+                            
+                            if (steps[i].isActive)
+                            {
+                                int note = steps[i].getPitchedNoteValue();
+                                midi.addEvent(MidiMessage::noteOff(1,note), offset);
+                                steps[i].setActive(false);
+                                
+                            }
                         }
                     }
                 }
-            }
-            
-            
-            if ( (time + numSamples) >= stepDuration )
-            {
-                auto offset =  jmax( 0, jmin((int)(stepDuration - time), numSamples - 1) );
-             
-                if (pressedKeys.size() > 0)
+                
+                
+                if ( (time + interval) >= stepDuration)
                 {
-                    int note = pressedKeys.getLast();
-                    for (int i = 0; i < numSteps; ++i)
-                        steps[i].setInitialNoteValue(note);
+                    auto offset =  jmax( 0, jmin((stepDuration - time) + position, numSamples - 1) );
                     
-					currentStep = (currentStep + 1) % (maxSteps + 1);
-
-                   
-                    
-                    if (steps[currentStep].shouldTrigger())
+                    if (pressedKeys.size() > 0)
                     {
-                        steps[currentStep].setActive(true);
-                        int pitchedNote = steps[currentStep].getPitchedNoteValue();
-                        midi.addEvent(MidiMessage::noteOn(1, pitchedNote, (uint8)127), offset);
+                        int note = pressedKeys.getLast();
+                        for (int i = 0; i < numSteps; ++i)
+                            steps[i].setInitialNoteValue(note);
+                        
+                        currentStep = (currentStep + 1) % (maxSteps + 1);
+                        
+                        if (steps[currentStep].shouldTrigger())
+                        {
+                            steps[currentStep].setActive(true);
+                            int pitchedNote = steps[currentStep].getPitchedNoteValue();
+                            midi.addEvent(MidiMessage::noteOn(1, pitchedNote, (uint8)127), offset);
+                        }
                     }
+                    
+                }
+                if (samplesRemaining >= interval)
+                {
+                    time = (time + interval) % stepDuration;
+                    position += interval;
+                }
+                else
+                {
+                    time = (time + samplesRemaining) % stepDuration;
+                    position += samplesRemaining;
                 }
                 
+                samplesRemaining -= interval;
+                
+                
             }
+           
             
-            
-            time = (time + numSamples) % stepDuration;
         }
     }
     
