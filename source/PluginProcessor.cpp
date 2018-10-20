@@ -369,7 +369,7 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOff   (Monosynthesiser* sourc
 {
     if(*useSequencerParam == false)
     {
-        if (currentPlayedNotes.size() == 1)
+        if (currentPlayedNotes.size() <= 1)
             for (int i = 0; i < 3; i++)
                 envelopeGenerator[i].get()->gate(false);
         
