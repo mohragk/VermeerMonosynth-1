@@ -362,7 +362,6 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source
     }
     
     
-    
 }
 
 void MonosynthPluginAudioProcessor::handleSynthNoteOff   (Monosynthesiser* source, int midiChannel, int midiNoteNumber)
@@ -614,82 +613,112 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     const int numSamples = osBuffer.getNumSamples();
 
+    
+    
+    int chunkSize = jmin(256, numSamples);
+    int position = 0;
+    int samplesRemaining = numSamples;
+    int numSamplesChunk = chunkSize;
+    
+    
 
-	// Clear the buffer of any samples
-	//osBuffer.clear();
-    
-    // PARAMETER UPDATE
-    updateParameters(osBuffer);
-
-   
-    // KEYBOARD
-    keyboardState.processNextMidiBuffer(midiMessages, 0, osBuffer.getNumSamples(), true);
-    
-    
-    // SEQUENCER
-    seqState.get()->processBuffer(osBuffer, midiMessages, bool(*useSequencerParam));
-  
-	//ARPEGGIATOR
-	arp.process(osBuffer, midiMessages, *arpeggioUseParam, false);
-
-    
-    // GET SYNTHDATA
-    synth.renderNextBlock (osBuffer, midiMessages, 0, static_cast<int> ( osBuffer.getNumSamples() ) );
-    
-    
-    // TESTING AMP ENVELOPE
+    for ( ; position < numSamples; position += chunkSize )
     {
+       
+       // chunkBuffer.clear();
         
-        for (int pos = 0; pos < osBuffer.getNumSamples(); pos++)
+        AudioBuffer<FloatType> chunkBuffer (1, numSamplesChunk);
+        MidiBuffer chunkMidi;
+        
+        chunkBuffer.copyFrom(0, 0, osBuffer, 0, position, numSamplesChunk);
+        chunkMidi.addEvents(midiMessages, position, numSamplesChunk, 0);
+        
+        // Clear the buffer of any samples
+        //osBuffer.clear();
+        
+        // PARAMETER UPDATE
+        updateParameters(chunkBuffer);
+
+    
+        // KEYBOARD
+        keyboardState.processNextMidiBuffer(chunkMidi, 0, numSamplesChunk, true);
+    
+    
+        // SEQUENCER
+        seqState.get()->processBuffer(chunkBuffer, chunkMidi, bool(*useSequencerParam));
+    
+        //ARPEGGIATOR
+        arp.process(chunkBuffer, chunkMidi, *arpeggioUseParam, false);
+
+    
+        // GET SYNTHDATA
+        synth.renderNextBlock (chunkBuffer, chunkMidi, 0, numSamplesChunk);
+    
+    
+        // TESTING AMP ENVELOPE
         {
-            FloatType* dataLeft = osBuffer.getWritePointer(0);
             
-            dataLeft[pos] = dataLeft[pos] * envelopeGenerator[0].get()->process();
+            for (int pos = 0; pos < numSamplesChunk; pos++)
+            {
+                FloatType* dataLeft = chunkBuffer.getWritePointer(0);
+                
+                dataLeft[pos] = dataLeft[pos] * envelopeGenerator[0].get()->process();
+            }
         }
+    
+    
+        // APPLY FILTER
+        LadderFilterBase* curFilter;
+    
+        if      (*filterSelectParam == 0) curFilter = filterA.get();
+        else if (*filterSelectParam == 1) curFilter = filterB.get();
+        else                              curFilter = filterC.get();
+    
+        applyFilterEnvelope(chunkBuffer, curFilter);
+    
+        applyFilter(chunkBuffer, curFilter);
+    
+    
+    
+
+        // APPLYING WAVESHAPER
+        if(*waveshapeSwitchParam == 1)
+            applyWaveshaper(chunkBuffer);
+    
+    
+        // In case we have more outputs than inputs, we'll clear any output
+        // channels that didn't contain input data, (because these aren't
+        // guaranteed to be empty - they may contain garbage).
+        for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
+            chunkBuffer.clear (i, 0, numSamplesChunk);
+    
+
+        // Update oscilloscope data
+        updateOscilloscope(chunkBuffer);
+    
+
+
+
+        // APPLY VOLUME
+        applyGain(chunkBuffer); // apply our gain-change to the outgoing data..
+
+
+        // APPLY SOFTCLIP
+        if (*softClipSwitchParam == 1)
+            softClipBuffer(chunkBuffer);
+        
+        
+        osBuffer.copyFrom(0, position, chunkBuffer, 0, 0, numSamplesChunk);
+        
+        samplesRemaining -= chunkSize;
+        
+        if (samplesRemaining < chunkSize)
+            numSamplesChunk = samplesRemaining > 0 ? samplesRemaining : chunkSize;
+        
+        
     }
-    
-    
-    // APPLY FILTER
-    LadderFilterBase* curFilter;
-    
-    if      (*filterSelectParam == 0) curFilter = filterA.get();
-    else if (*filterSelectParam == 1) curFilter = filterB.get();
-    else                              curFilter = filterC.get();
-  
-    applyFilterEnvelope(osBuffer, curFilter);
-    
-    applyFilter(osBuffer, curFilter);
-    
-    
-    
 
-    // APPLYING WAVESHAPER
-    if(*waveshapeSwitchParam == 1)
-        applyWaveshaper(osBuffer);
- 
-    
-    // In case we have more outputs than inputs, we'll clear any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
-        osBuffer.clear (i, 0, numSamples);
-    
-
-    // Update oscilloscope data
-    updateOscilloscope(osBuffer);
-    
-
-
-
-    // APPLY VOLUME
-    applyGain(osBuffer); // apply our gain-change to the outgoing data..
-
-
-    // APPLY SOFTCLIP
-    if (*softClipSwitchParam == 1)
-        softClipBuffer(osBuffer);
-
-	osBuffer.copyFrom(1, 0, osBuffer, 0, 0, osBuffer.getNumSamples());
+	//osBuffer.copyFrom(1, 0, osBuffer, 0, 0, osBuffer.getNumSamples());
 
  
     // DOWNSAMPLING
