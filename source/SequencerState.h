@@ -89,32 +89,32 @@ public:
 		swingOffset = 0.5;
     }
 	
-    void setSpeedInHz (double hz)
+    inline void setSpeedInHz (double hz)
     {
         speedInHz = hz;
     }
     
-	void setSwingAmount(int amountPerc)
+	inline void setSwingAmount(int amountPerc)
 	{
 		swingOffset = (double)amountPerc / 100;
 	}
 
-    void setNoteDuration(double amt)
+    inline void setNoteDuration(double amt)
     {
         noteLengthAmount = amt;
     }
 
-    void setPitchAmountForStep(int step, int p)
+    inline void setPitchAmountForStep(int step, int p)
     {
         steps[step].setPitch(p);
     }
 	
-	void setShouldPlayForStep(int step, bool choice)
+	inline void setShouldPlayForStep(int step, bool choice)
 	{
 		steps[step].setPlayable(choice);
 	}
     
-	void setMaxSteps(int max)
+	inline void setMaxSteps(int max)
 	{
 		maxSteps = max;
 	}
@@ -124,9 +124,6 @@ public:
     template <typename FloatType>
     void processBuffer(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useSequencer)
     {
-        
-        
-        
         if(useSequencer)
         {
             auto numSamples = buffer.getNumSamples();
@@ -165,13 +162,9 @@ public:
                 
             }
             
-            
 
             if (steps[currentStep].shouldTrigger() == false)
                 midi.clear();
-            
-
-			
             
             
             int interval = jmin(256, numSamples);
@@ -243,11 +236,7 @@ public:
                 }
                 
                 samplesRemaining -= interval;
-                
-                
             }
-           
-            
         }
     }
     

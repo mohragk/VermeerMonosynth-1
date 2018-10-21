@@ -152,7 +152,7 @@ public:
     
     
     
-    void setEnvelopeSampleRate( double sr )
+    inline void setEnvelopeSampleRate( double sr )
     {
         pitchEnvelope.get()->setSampleRate(sr);
 
@@ -232,7 +232,7 @@ public:
     }
     
 
-	int getLastNotePlayed()
+	inline int getLastNotePlayed()
 	{
 		return lastNotePlayed;
 	}
@@ -252,50 +252,50 @@ public:
     
     
     
-    void setGlideTime(int timeInMillis)
+    inline void setGlideTime(int timeInMillis)
     {
         glideTimeMillis = timeInMillis;
     }
     
     // Pretty dumb name, but this influences the amount of pitch deviation generated from the envelope.
-    void setPitchEnvelopeAmount (const float pitchMod )
+    inline void setPitchEnvelopeAmount (const float pitchMod )
     {
         pitchModAmount = pitchMod;
     }
 
     
-    void setPitchModulation(const double amt)
+    inline void setPitchModulation(const double amt)
     {
         const double rangeSemitones = 24.0;
         
         pitchModulation = amt * rangeSemitones;
     }
     
-    void setGainForOscillator(const float g, const int o)
+    inline void setGainForOscillator(const float g, const int o)
     {
         osc[o]->setGain(g);
     }
     
-    void setDetuneAmountForOscillator(const double fine, int coarse, int oscillator)
+    inline void setDetuneAmountForOscillator(const double fine, int coarse, int oscillator)
     {
         osc[oscillator].get()->setDetuneAmount(fine , coarse);
     }
     
     
     
-    void setModeForOscillator(const int mode, const int o)
+    inline void setModeForOscillator(const int mode, const int o)
     {
         osc[o]->setMode(mode);
     }
 
 
-    double getLowestPitchedOscFreq()
+    inline double getLowestPitchedOscFreq()
     {
         return jmin( osc[0].get()->getFrequency(), osc[1].get()->getFrequency(), osc[2].get()->getFrequency() );
 
     }
     
-    int getLowestPitchedOscillatorIdx()
+    inline int getLowestPitchedOscillatorIdx()
     {
         double lowest = getLowestPitchedOscFreq();
         
@@ -306,7 +306,7 @@ public:
         
     }
     
-    int getLowestOscillatorRephaseIndex()
+    inline int getLowestOscillatorRephaseIndex()
     {
         double lowest = getLowestPitchedOscFreq();
         int idx = 0;
@@ -327,17 +327,17 @@ public:
         lfoValue = lfo.nextSample();
     }
     
-    void setHardSync(bool sync)
+    inline void setHardSync(bool sync)
     {
         hardSync = sync;
     }
     
-    void setPulsewidthModAmountForOscillator(double amt, int n)
+    inline void setPulsewidthModAmountForOscillator(double amt, int n)
     {
         modAmountPW[n] = amt;
     }
   
-	void setPulsewidthForOscillator(double pw, int n)
+	inline void setPulsewidthForOscillator(double pw, int n)
 	{
         double newPW = pw + ( modAmountPW[n] * ((lfoValue + 1.0) / 2.0) );
         
@@ -417,7 +417,7 @@ private:
     }
     
     
-    void updateGlidedFrequency (double targetFreq, double& currentFreq,  int glideT)
+    inline void updateGlidedFrequency (double targetFreq, double& currentFreq,  int glideT)
     {
         if (glideTimeMillis > 0)
         {
@@ -431,7 +431,7 @@ private:
     }
     
     
-    double softClip(double s)
+    inline double softClip(double s)
     {
 		double localSample = s;
         if (localSample > 1.0f)
@@ -450,7 +450,7 @@ private:
         return localSample;
     }
     
-    double softClipParam(double val)
+    inline double softClipParam(double val)
     {
         double localVal = val;
         
@@ -464,7 +464,7 @@ private:
         return localVal;
     }
     
-    double inline semitoneOffsetToFreq(const double semitones, const double freq)
+    inline double semitoneOffsetToFreq(const double semitones, const double freq)
     {
         double power = semitones / 12.0;
         return pow(2.0, power) * freq;
