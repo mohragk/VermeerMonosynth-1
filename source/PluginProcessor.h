@@ -401,6 +401,7 @@ private:
     
     Array<int> currentPlayedNotes;
     
+    bool reTriggerEnvelopes = false;
     
     static BusesProperties getBusesProperties();
    

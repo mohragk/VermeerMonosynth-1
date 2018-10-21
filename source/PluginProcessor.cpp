@@ -346,7 +346,15 @@ void MonosynthPluginAudioProcessor::isSynthesiserPlaying(Monosynthesiser* source
 void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source, int midiChannel, int midiNoteNumber)
 {
     for (int i = 0; i < 3; i++)
+    {
         envelopeGenerator[i].get()->gate(true);
+        
+        
+         reTriggerEnvelopes = true;
+        
+        if (reTriggerEnvelopes)
+            envelopeGenerator[i].get()->resetToAttack();
+    }
     
    
     
@@ -354,13 +362,12 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source
     
     lastNotePlayed = midiNoteNumber;
     
+   
+    
     if(*useSequencerParam == false)
     {
         currentPlayedNotes.add(midiNoteNumber);
-       // lastNotePlayed = currentPlayedNotes.getLast();
-        
     }
-    
     
 }
 
@@ -373,18 +380,12 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOff   (Monosynthesiser* sourc
                 envelopeGenerator[i].get()->gate(false);
         
         currentPlayedNotes.removeFirstMatchingValue(midiNoteNumber);
-       
     }
     else
     {
         for (int i = 0; i < 3; i++)
             envelopeGenerator[i].get()->gate(false);
     }
-    
-    
-    
-    
-    
 }
 
 //==============================================================================

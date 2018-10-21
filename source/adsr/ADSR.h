@@ -33,7 +33,7 @@ public:
     };
 
     double process(void);
-    void processSample(double* samples, int numSamples);
+    void processSamples(double* samples, int numSamples);
     double getOutput(void);
     int getState(void);
     void gate(int on);
@@ -103,7 +103,7 @@ inline double ADSR::process() {
     return output;
 }
 
-inline void ADSR::processSample(double *sample, int numSamples)
+inline void ADSR::processSamples(double *sample, int numSamples)
 {
     for(int i = 0; i < numSamples; i++)
     {
@@ -179,5 +179,6 @@ inline void ADSR::resetToAttack() {
 inline double ADSR::getOutput() {
     return output;
 }
+
 
 #endif
