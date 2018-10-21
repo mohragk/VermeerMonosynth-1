@@ -35,6 +35,7 @@ DISCLAIMED.
 
 class Monosynthesiser;
 
+//=======================================================================================
 class MonosynthListener
 {
 public:
@@ -50,6 +51,7 @@ public:
 };
 
 
+//=======================================================================================
 class Monosynthesiser : public Synthesiser
 {
 public:
@@ -91,8 +93,7 @@ private:
 
 
 
-
-/** A demo synth sound that's just a basic sine wave.. */
+//=======================================================================================
 class MonosynthSound : public SynthesiserSound
 {
 public:
@@ -105,9 +106,7 @@ public:
 
 
 
-//==============================================================================
-/** A simple demo synth voice that just plays a sine wave.. */
-
+//=======================================================================================
 class MonosynthVoice  : public SynthesiserVoice
 {
 public:
@@ -150,14 +149,6 @@ public:
         return dynamic_cast<MonosynthSound*> (sound) != nullptr;
     }
     
-    
-    
-    inline void setEnvelopeSampleRate( double sr )
-    {
-        pitchEnvelope.get()->setSampleRate(sr);
-
-    }
-    
    
     
     void startNote (int midiNoteNumber, float velocity,
@@ -165,8 +156,6 @@ public:
                     int /*currentPitchWheelPosition*/) override
     {
         double sr = getSampleRate();
-        
-        //ampEnvelope.get()->setSampleRate(sr);
         
 		for (int n = 0; n < numOscillators; n++)
 		{
@@ -180,17 +169,13 @@ public:
 				osc[n]->resetPhaseInterpolated();
 		}
         
-        
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         
         pitchEnvelope.get()->gate(true);
-       
 
 		lastNotePlayed = midiNoteNumber;
-        
-        
+    
         isPlaying = true;
-       
     }
     
     void stopNote (float /*velocity*/, bool allowTailOff) override
@@ -208,7 +193,6 @@ public:
         const float v = newValue - 8192.0;
         
         pitchBendOffset =  range * (v / 8192.0);
-		//pitchBendOffset = 0;
     }
     
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override
@@ -226,150 +210,31 @@ public:
         processBlock (outputBuffer, startSample, numSamples);
     }
     
-    int getNumOscillators()
-    {
-        return numOscillators;
-    }
-    
+    int getNumOscillators();
+    int getLastNotePlayed();
+    int getLowestPitchedOscillatorIdx();
+    int getLowestOscillatorRephaseIndex();
+    double getLowestPitchedOscFreq();
 
-	inline int getLastNotePlayed()
-	{
-		return lastNotePlayed;
-	}
+    void setEnvelopeSampleRate( double sr );
+    void setPitchEnvelopeParameters (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve);
+    void sendLFO(LFO& lfo);
+    void setGlideTime(int timeInMillis);
+    void setPitchEnvelopeAmount (const float pitchMod );
+    void setPitchModulation(const double amt);
+    void setGainForOscillator(const float g, const int oscillator);
+    void setDetuneAmountForOscillator(const double fine, int coarse, int oscillator);
+    void setModeForOscillator(const int mode, const int oscillator);
+    void setHardSync(bool sync);
+    void setPulsewidthModAmountForOscillator(double amt, int n);
+    void setPulsewidthForOscillator(double pw, int n);
     
-    // Set pitch envelope parameters.
-    void setPitchEnvelope (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
-    {
-        pitchEnvelope.get()->setAttackRate(attack);
-        pitchEnvelope.get()->setDecayRate(decay);
-        pitchEnvelope.get()->setSustainLevel(sustain);
-        pitchEnvelope.get()->setReleaseRate(release);
-        pitchEnvelope.get()->setTargetRatioA(attackCurve);
-        pitchEnvelope.get()->setTargetRatioDR(decRelCurve);
-    }
-    
-    
-    
-    
-    
-    inline void setGlideTime(int timeInMillis)
-    {
-        glideTimeMillis = timeInMillis;
-    }
-    
-    // Pretty dumb name, but this influences the amount of pitch deviation generated from the envelope.
-    inline void setPitchEnvelopeAmount (const float pitchMod )
-    {
-        pitchModAmount = pitchMod;
-    }
-
-    
-    inline void setPitchModulation(const double amt)
-    {
-        const double rangeSemitones = 24.0;
-        
-        pitchModulation = amt * rangeSemitones;
-    }
-    
-    inline void setGainForOscillator(const float g, const int o)
-    {
-        osc[o]->setGain(g);
-    }
-    
-    inline void setDetuneAmountForOscillator(const double fine, int coarse, int oscillator)
-    {
-        osc[oscillator].get()->setDetuneAmount(fine , coarse);
-    }
-    
-    
-    
-    inline void setModeForOscillator(const int mode, const int o)
-    {
-        osc[o]->setMode(mode);
-    }
-
-
-    inline double getLowestPitchedOscFreq()
-    {
-        return jmin( osc[0].get()->getFrequency(), osc[1].get()->getFrequency(), osc[2].get()->getFrequency() );
-
-    }
-    
-    inline int getLowestPitchedOscillatorIdx()
-    {
-        double lowest = getLowestPitchedOscFreq();
-        
-        for (int i = 0; i < numOscillators; i++ )
-            if ( osc[i].get()->getFrequency() == lowest ) return i;
-        
-        return 0;
-        
-    }
-    
-    inline int getLowestOscillatorRephaseIndex()
-    {
-        double lowest = getLowestPitchedOscFreq();
-        int idx = 0;
-        for (int i = 0; i < 3; i++)
-        {
-            if ( osc[i].get()->getFrequency() == lowest )
-                if (osc[i].get()->isRephase())
-                {
-                    idx = sampleCounter + 1;
-                }
-        }
-        
-        return idx;
-    }
-    
-    void sendLFO(LFO& lfo)
-    {
-        lfoValue = lfo.nextSample();
-    }
-    
-    inline void setHardSync(bool sync)
-    {
-        hardSync = sync;
-    }
-    
-    inline void setPulsewidthModAmountForOscillator(double amt, int n)
-    {
-        modAmountPW[n] = amt;
-    }
-  
-	inline void setPulsewidthForOscillator(double pw, int n)
-	{
-        double newPW = pw + ( modAmountPW[n] * ((lfoValue + 1.0) / 2.0) );
-        
-        if (newPW > 1.0) newPW = 1.0;
-        if(newPW < 0.0)  newPW = 0.0;
-        
-		osc[n]->setPulsewidth( newPW  );
-	}
-
     bool isPlaying = false;
     
-    
- 
-    
 private:
-    
-    
     template <typename FloatType>
     void processBlock (AudioBuffer<FloatType>& outputBuffer, int startSample, int numSamples)
     {
-        //REPLACE!!
-        
-        /*
-        if (ampEnvelope.get()->getState() == ADSR::env_idle)
-        {
-			for (int n = 0; n < numOscillators; n++)
-				osc[n]->setPhase(0.0);
-        }
-        */
-        
-        // REPLACE!!
-        //if (ampEnvelope.get()->getState() != ADSR::env_idle)
 		{
             FloatType* dataLeft = outputBuffer.getWritePointer(0);
            
@@ -391,8 +256,6 @@ private:
                     updateGlidedFrequency(targetFrequency[i], currentFrequency[i], glideTimeMillis);
                     osc[i]->setFrequency(currentFrequency[i]);
                 }
-            
-                
                                
                 if (osc[0]->isRephase() && hardSync)
                     osc[1]->setPhase(0.0);
@@ -410,65 +273,18 @@ private:
                 
                 dataLeft[startSample] += sample;
 
-                
 				++startSample;
 			}
 		}
     }
     
     
-    inline void updateGlidedFrequency (double targetFreq, double& currentFreq,  int glideT)
-    {
-        if (glideTimeMillis > 0)
-        {
-            auto increment = ( targetFreq - currentFreq) / ((static_cast<double>(glideT) / 1000.0) * sampleRate);
-            currentFreq = currentFreq + increment;
-        }
-        else
-        {
-            currentFreq = targetFreq;
-        }
-    }
+    void updateGlidedFrequency (double targetFreq, double& currentFreq,  int glideT);
     
     
-    inline double softClip(double s)
-    {
-		double localSample = s;
-        if (localSample > 1.0f)
-        {
-            localSample = 0.75f;
-        }
-        else if (localSample < -1.0f)
-        {
-            localSample = -0.75f;
-            
-        }
-        else
-        {
-            localSample = localSample - ( ( localSample * localSample * localSample) * 0.25f );
-        }
-        return localSample;
-    }
-    
-    inline double softClipParam(double val)
-    {
-        double localVal = val;
-        
-        if (localVal > 1.0)
-            localVal = 1.0;
-        else if (localVal < 0.0)
-            localVal = 0.0;
-        else
-            localVal = localVal - (localVal * localVal * localVal);
-        
-        return localVal;
-    }
-    
-    inline double semitoneOffsetToFreq(const double semitones, const double freq)
-    {
-        double power = semitones / 12.0;
-        return pow(2.0, power) * freq;
-    }
+    double softClip(double s);
+    double softClipParam(double val);
+    double semitoneOffsetToFreq(const double semitones, const double freq);
 
     double sampleRate;
 
@@ -507,10 +323,198 @@ private:
     Random rand;
     
     std::unique_ptr<ADSR> pitchEnvelope;
-
     std::unique_ptr<Oscillator> osc[3];
     
     JUCE_LEAK_DETECTOR (MonosynthVoice)
 };
+
+
+//=======================================================================================
+inline int MonosynthVoice::getNumOscillators()
+{
+    return numOscillators;
+}
+
+
+inline int MonosynthVoice::getLastNotePlayed()
+{
+    return lastNotePlayed;
+}
+
+
+inline int MonosynthVoice::getLowestPitchedOscillatorIdx()
+{
+    double lowest = getLowestPitchedOscFreq();
+    
+    for (int i = 0; i < numOscillators; i++ )
+        if ( osc[i].get()->getFrequency() == lowest ) return i;
+    
+    return 0;
+    
+}
+
+
+inline int MonosynthVoice::getLowestOscillatorRephaseIndex()
+{
+    double lowest = getLowestPitchedOscFreq();
+    int idx = 0;
+    for (int i = 0; i < 3; i++)
+    {
+        if ( osc[i].get()->getFrequency() == lowest )
+            if (osc[i].get()->isRephase())
+            {
+                idx = sampleCounter + 1;
+            }
+    }
+    
+    return idx;
+}
+
+
+inline void MonosynthVoice::setEnvelopeSampleRate( double sr )
+{
+    pitchEnvelope.get()->setSampleRate(sr);
+    
+}
+
+
+inline void MonosynthVoice::setPitchEnvelopeParameters (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve)
+{
+    pitchEnvelope.get()->setAttackRate(attack);
+    pitchEnvelope.get()->setDecayRate(decay);
+    pitchEnvelope.get()->setSustainLevel(sustain);
+    pitchEnvelope.get()->setReleaseRate(release);
+    pitchEnvelope.get()->setTargetRatioA(attackCurve);
+    pitchEnvelope.get()->setTargetRatioDR(decRelCurve);
+}
+
+
+inline double MonosynthVoice::getLowestPitchedOscFreq()
+{
+    return jmin( osc[0].get()->getFrequency(), osc[1].get()->getFrequency(), osc[2].get()->getFrequency() );
+}
+
+
+inline void MonosynthVoice::sendLFO(LFO& lfo)
+{
+    lfoValue = lfo.nextSample();
+}
+
+
+inline void MonosynthVoice::setGlideTime(int timeInMillis)
+{
+    glideTimeMillis = timeInMillis;
+}
+
+
+inline void MonosynthVoice::setPitchEnvelopeAmount (const float pitchMod )
+{
+    pitchModAmount = pitchMod;
+}
+
+
+inline void MonosynthVoice::setPitchModulation(const double amt)
+{
+    const double rangeSemitones = 24.0;
+    
+    pitchModulation = amt * rangeSemitones;
+}
+
+
+inline void MonosynthVoice::setGainForOscillator(const float gain, const int oscillator)
+{
+    osc[oscillator]->setGain(gain);
+}
+
+
+inline void MonosynthVoice::setDetuneAmountForOscillator(const double fine, int coarse, int oscillator)
+{
+    osc[oscillator].get()->setDetuneAmount(fine , coarse);
+}
+
+
+inline void MonosynthVoice::setModeForOscillator(const int mode, const int oscillator)
+{
+    osc[oscillator]->setMode(mode);
+}
+
+
+inline void MonosynthVoice::setHardSync(bool sync)
+{
+    hardSync = sync;
+}
+
+
+inline void MonosynthVoice::setPulsewidthModAmountForOscillator(double amt, int oscillator)
+{
+    modAmountPW[oscillator] = amt;
+}
+
+
+inline void MonosynthVoice::setPulsewidthForOscillator(double pw, int n)
+{
+    double newPW = pw + ( modAmountPW[n] * ((lfoValue + 1.0) / 2.0) );
+    
+    if (newPW > 1.0) newPW = 1.0;
+    if(newPW < 0.0)  newPW = 0.0;
+    
+    osc[n]->setPulsewidth( newPW  );
+}
+
+
+inline void MonosynthVoice::updateGlidedFrequency (double targetFreq, double& currentFreq,  int glideT)
+{
+    if (glideTimeMillis > 0)
+    {
+        auto increment = ( targetFreq - currentFreq) / ((static_cast<double>(glideT) / 1000.0) * sampleRate);
+        currentFreq = currentFreq + increment;
+    }
+    else
+    {
+        currentFreq = targetFreq;
+    }
+}
+
+
+inline double MonosynthVoice::semitoneOffsetToFreq(const double semitones, const double freq)
+{
+    double power = semitones / 12.0;
+    return pow(2.0, power) * freq;
+}
+
+
+inline double MonosynthVoice::softClip(double s)
+{
+    double localSample = s;
+    if (localSample > 1.0f)
+    {
+        localSample = 0.75f;
+    }
+    else if (localSample < -1.0f)
+    {
+        localSample = -0.75f;
+        
+    }
+    else
+    {
+        localSample = localSample - ( ( localSample * localSample * localSample) * 0.25f );
+    }
+    return localSample;
+}
+
+
+inline double MonosynthVoice::softClipParam(double val)
+{
+    double localVal = val;
+    
+    if (localVal > 1.0)
+        localVal = 1.0;
+    else if (localVal < 0.0)
+        localVal = 0.0;
+    else
+        localVal = localVal - (localVal * localVal * localVal);
+    
+    return localVal;
+}
 
 #endif // MONOSYNTH_H

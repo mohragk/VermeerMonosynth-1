@@ -89,37 +89,13 @@ public:
 		swingOffset = 0.5;
     }
 	
-    inline void setSpeedInHz (double hz)
-    {
-        speedInHz = hz;
-    }
-    
-	inline void setSwingAmount(int amountPerc)
-	{
-		swingOffset = (double)amountPerc / 100;
-	}
-
-    inline void setNoteDuration(double amt)
-    {
-        noteLengthAmount = amt;
-    }
-
-    inline void setPitchAmountForStep(int step, int p)
-    {
-        steps[step].setPitch(p);
-    }
-	
-	inline void setShouldPlayForStep(int step, bool choice)
-	{
-		steps[step].setPlayable(choice);
-	}
-    
-	inline void setMaxSteps(int max)
-	{
-		maxSteps = max;
-	}
-    
-   
+ 
+    void setSpeedInHz (double hz);
+    void setSwingAmount(int amountPerc);
+    void setNoteDuration(double amt);
+    void setPitchAmountForStep(int step, int p);
+    void setShouldPlayForStep(int step, bool choice);
+    void setMaxSteps(int max);
     
     template <typename FloatType>
     void processBuffer(AudioBuffer<FloatType>& buffer, MidiBuffer& midi, bool useSequencer)
@@ -259,6 +235,36 @@ private:
     JUCE_LEAK_DETECTOR (SequencerState)
 };
 
+
+inline void SequencerState::setSpeedInHz (double hz)
+{
+    speedInHz = hz;
+}
+
+inline void SequencerState::setSwingAmount(int amountPerc)
+{
+    swingOffset = (double)amountPerc / 100;
+}
+
+inline void SequencerState::setNoteDuration(double amt)
+{
+    noteLengthAmount = amt;
+}
+
+inline void SequencerState::setPitchAmountForStep(int step, int p)
+{
+    steps[step].setPitch(p);
+}
+
+inline void SequencerState::setShouldPlayForStep(int step, bool choice)
+{
+    steps[step].setPlayable(choice);
+}
+
+inline void SequencerState::setMaxSteps(int max)
+{
+    maxSteps = max;
+}
 
 
 #endif // SEQUENCER_STATE_H

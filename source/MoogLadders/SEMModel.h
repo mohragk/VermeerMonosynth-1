@@ -91,9 +91,9 @@ class SEMModel : public LadderFilterBase
 			// LPF
 			FloatType lpf = Alpha * bpf + Z12;
 
-			FloatType R = 1.0 / (2.0 * resonance.get());
+			//FloatType R = 1.0 / (2.0 * resonance.get());
 
-			FloatType bsf = sample - 2.0 * R * bpf;
+			//FloatType bsf = sample - 2.0 * R * bpf;
 
 			// update memory
 			Z11 = Alpha * hpf + bpf;

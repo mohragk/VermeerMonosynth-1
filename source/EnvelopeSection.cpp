@@ -181,10 +181,10 @@ void EnvelopeSection::resized()
     int labelHeight = 24;
     int envelopeWidth = 72;
     int envelopeHeight = 96;
-    int envMargin = 0;
+    //int envMargin = 0;
     int sliderWidth = 18;
     int sliderMargin = 2;
-    int rotarySize = 48;
+    //int rotarySize = 48;
     
     {
         Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));

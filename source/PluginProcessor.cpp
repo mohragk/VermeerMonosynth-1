@@ -966,7 +966,7 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     //synthVoice->setFilterEnvelopeSampleRate(sampleRate);
    // synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *sustainParam3, *releaseParam3, *attackCurve3Param, *decayRelCurve3Param);
    // synthVoice->setAmpEnvelope   (*attackParam1, *decayParam1, dbToGain(*sustainParam1, MIN_INFINITY_DB), *releaseParam1, *attackCurve1Param, *decayRelCurve1Param);
-    synthVoice->setPitchEnvelope (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve2Param, *decayRelCurve2Param);
+    synthVoice->setPitchEnvelopeParameters (*attackParam2, *decayParam2, *sustainParam2, *releaseParam2, *attackCurve2Param, *decayRelCurve2Param);
     
     
     // AMPLITUDE

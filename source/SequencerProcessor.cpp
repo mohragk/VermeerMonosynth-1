@@ -112,7 +112,7 @@ void SequencerProcessor::playStep(MidiBuffer& midBuf, int currentStep, int curSa
     step[currentStep].stepNumber = currentStep;
     step[currentStep].noteNumber = newNote;
     step[currentStep].noteLengthTicks = releaseTime;
-    step[currentStep].timeStamp = globalSampleCount;
+    step[currentStep].timeStamp = (uint32)globalSampleCount;
     step[currentStep].isReleased = false;
     step[currentStep].isActive = true;
     

@@ -157,10 +157,10 @@ void FilterSection::resized()
     int stripWith = area.getWidth();
     int labelHeight = 24;
     int rotaryHeight = 60;
-    int rotaryTextHeight = 10;
-    int vertSliderHeight = 24;
-    int marginX = 8;
-    int marginY = 4;
+    //int rotaryTextHeight = 10;
+    //int vertSliderHeight = 24;
+    //int marginX = 8;
+    //int marginY = 4;
     {
         
         Rectangle<int> stripArea (area.removeFromLeft((stripWith)));
