@@ -306,8 +306,8 @@ glideTimeParam(nullptr)
         envelopeGenerator[i].reset(new ADSR);
     
     // Oversampling 2 times with FIR filtering
-    oversamplingFloat.reset  ( new dsp::Oversampling<float>  ( 2, 1, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
-    oversamplingDouble.reset ( new dsp::Oversampling<double> ( 2, 1, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
+    oversamplingFloat.reset  ( new dsp::Oversampling<float>    ( 2, 1, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
+    oversamplingDouble.reset ( new dsp::Oversampling<double>   ( 2, 1, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
     
     // HQ Oversampling 8 times with FIR filtering
     oversamplingFloatHQ.reset  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
@@ -1099,7 +1099,7 @@ void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
             cutoffModulationAmt = amount;
             dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
             break;
-        case modPitch: 
+        case modPitch:
             dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(amount);
             cutoffModulationAmt = 0.0;
             break;
@@ -1177,39 +1177,4 @@ void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<FloatType>& buffe
 }
 
 
-
-double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division )
-{
-    const double beats_per_minute = posInfo.bpm;
-    const double seconds_per_beat = 60.0 / beats_per_minute;
-    const double seconds_per_note = seconds_per_beat * lastPosInfo.timeSigDenominator / division;
-    
-    // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
-    
-    return 1.0 / seconds_per_note;
-}
-
-
-
-bool MonosynthPluginAudioProcessor::saturationOn()
-{
-    return *waveshapeSwitchParam == 1;
-}
-
-bool MonosynthPluginAudioProcessor::noteIsBeingPlayed()
-{
-    return true;
-}
-
-bool MonosynthPluginAudioProcessor::lfoSynced()
-{
-    return (*lfoSyncParam == 1);
-    
-}
-
-
-bool MonosynthPluginAudioProcessor::isSequencerPlaying()
-{
-	return *useSequencerParam;
-}
 

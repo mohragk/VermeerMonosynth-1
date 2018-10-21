@@ -159,9 +159,7 @@ public:
     bool lastSequencerChoice = false;
     
 	bool noteIsBeingPlayed();
-    
     bool saturationOn();
-
 	bool lfoSynced();
     
 
@@ -272,11 +270,11 @@ private:
 	
     Arpeggiator arp;
     
-	float linToLog(float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
-	float logToLin(float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
+    float linToLog(float start, float end, float linVal);
+    float logToLin(float start, float end, float logVal);
 
-    inline float gainToDb(float gain, float min)    { return gain > 0.0f ? 20.0f * std::log10(gain) : min; };
-    inline float dbToGain(float dB, float min)      { return dB > min ? std::pow(10.0f, dB * 0.05f) : 0.0; }
+    float gainToDb(float gain, float min);
+    float dbToGain(float dB, float min);
 
 	template <typename FloatType>
     void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);
@@ -301,20 +299,7 @@ private:
     dsp::LookupTableTransform<double> arrayaLUT { [](double x) { return (3.0 * x / 2.0) * (1 - x * x / 3.0); }, double(-5), double(5), 256 };
     
 
-	double getWaveshaped(double sample, double overdrive, int mode)
-    {
-        
-        // tanh
-        if (mode == 0)
-            return tanhLUT(overdrive * sample);
-        
-        
-        //Arraya
-        return arrayaLUT(overdrive * sample);
-        
-    };
-
-    
+    double getWaveshaped(double sample, double overdrive, int mode);
 	double getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division );
     
     void resetSamplerates(double sr, int bufferSize);
@@ -409,5 +394,45 @@ private:
    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthPluginAudioProcessor)
 };
+
+
+
+
+inline bool MonosynthPluginAudioProcessor::saturationOn() { return *waveshapeSwitchParam == 1; }
+inline bool MonosynthPluginAudioProcessor::noteIsBeingPlayed() {   return true; }
+inline bool MonosynthPluginAudioProcessor::lfoSynced() { return (*lfoSyncParam == 1); }
+inline bool MonosynthPluginAudioProcessor::isSequencerPlaying() { return *useSequencerParam; }
+
+
+inline float MonosynthPluginAudioProcessor::linToLog(float start, float end, float linVal) { return std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start))); };
+inline float MonosynthPluginAudioProcessor::logToLin(float start, float end, float logVal) { return (std::log10(logVal / start) / std::log10(end / start)); };
+
+inline float MonosynthPluginAudioProcessor::gainToDb(float gain, float min)    { return gain > 0.0f ? 20.0f * std::log10(gain) : min; };
+inline float MonosynthPluginAudioProcessor::dbToGain(float dB, float min)      { return dB > min ? std::pow(10.0f, dB * 0.05f) : 0.0; }
+
+inline double MonosynthPluginAudioProcessor::getWaveshaped(double sample, double overdrive, int mode)
+{
+    
+    // tanh
+    if (mode == 0)
+        return tanhLUT(overdrive * sample);
+    
+    
+    //Arraya
+    return arrayaLUT(overdrive * sample);
+    
+};
+
+inline double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::CurrentPositionInfo posInfo, double division )
+{
+    const double beats_per_minute = posInfo.bpm;
+    const double seconds_per_beat = 60.0 / beats_per_minute;
+    const double seconds_per_note = seconds_per_beat * lastPosInfo.timeSigDenominator / division;
+    
+    // double seconds_per_measure = seconds_per_beat * lastPosInfo.timeSigNumerator;
+    
+    return 1.0 / seconds_per_note;
+}
+
 
 #endif // PLUGIN_PROCESSOR_H
