@@ -216,6 +216,8 @@ public:
     AudioParameterFloat* releaseParam3;
     AudioParameterFloat* attackCurve3Param;
     AudioParameterFloat* decayRelCurve3Param;
+    
+    AudioParameterBool* envelopeRetriggerParam;
 
     AudioParameterInt*   modTargetParam;
 

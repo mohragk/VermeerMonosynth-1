@@ -221,6 +221,8 @@ glideTimeParam(nullptr)
     addParameter(decayRelCurve3Param = new AudioParameterFloat("decRelCurve3", "Decay-Release Curve", NormalisableRange<float>(0.00001f, 1.0f, 0.0f, 0.5f, false), 0.00001f));
     
     
+    addParameter(envelopeRetriggerParam = new AudioParameterBool("envelopeRetrigger", "Retrigger Envelopes", false));
+    
     // Modulation
     addParameter(modTargetParam = new AudioParameterInt("modTarget", "Modulation Target", 0, 2, 2));
     
@@ -349,14 +351,10 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source
     {
         envelopeGenerator[i].get()->gate(true);
         
-        
-         reTriggerEnvelopes = true;
-        
-        if (reTriggerEnvelopes)
+        if (*envelopeRetriggerParam)
             envelopeGenerator[i].get()->resetToAttack();
     }
     
-   
     
     lfo.setPhase(0.0);
     
@@ -366,7 +364,7 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source
     
     if(*useSequencerParam == false)
     {
-        currentPlayedNotes.add(midiNoteNumber);
+        currentPlayedNotes.addIfNotAlreadyThere(midiNoteNumber);
     }
     
 }

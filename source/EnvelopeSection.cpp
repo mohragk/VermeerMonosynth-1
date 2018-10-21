@@ -140,6 +140,10 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     addAndMakeVisible (decRelCurveSlider3.get()); //@TODO: add parameter in Processor
     decRelCurveSlider3->setTooltip (TRANS("set decay and release curves from exponential to linear"));
     
+    
+    retriggerButton.reset(new ParamToggleButton(*processor.envelopeRetriggerParam));
+    addAndMakeVisible(retriggerButton.get());
+    
     setSize(300,300); //Gets reset by plugineditor
     
 
@@ -224,9 +228,9 @@ void EnvelopeSection::resized()
         
     }
     {
-        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight * 2).reduced(16, 0));
+        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
         
-        envPitchLabel->setBounds(envArea.removeFromTop(labelHeight * 2));
+        envPitchLabel->setBounds(envArea.removeFromTop(labelHeight));
         envPitchLabel->setJustificationType(Justification::centredBottom);
         
         attackSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
@@ -240,5 +244,12 @@ void EnvelopeSection::resized()
         
         
         
+    }
+    
+    {
+        Rectangle<int> buttonArea (area.removeFromTop(labelHeight * 4));
+        
+        retriggerButton->setBounds(buttonArea.removeFromLeft(area.getWidth()).reduced(12,0));
+        retriggerButton->setButtonText("");
     }
 }

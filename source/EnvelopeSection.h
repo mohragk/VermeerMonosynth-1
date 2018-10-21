@@ -14,6 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
+#include "ParamToggleButton.h"
 
 //==============================================================================
 /*
@@ -64,6 +65,10 @@ public:
         releaseSlider3,
         attackCurveSlider3,
         decRelCurveSlider3
+    ;
+    
+    std::unique_ptr<ParamToggleButton>
+        retriggerButton
     ;
 
     void paint (Graphics&) override;

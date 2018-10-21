@@ -56,7 +56,7 @@ class Arpeggiator
 					if (msg.isNoteOn())  
 					{
 						sortedNotes.add(msg.getNoteNumber());
-						playedNotes.add(msg.getNoteNumber());
+						playedNotes.addIfNotAlreadyThere(msg.getNoteNumber());
                         
                         if(sortedNotes.size() == 1)
                             time=0;

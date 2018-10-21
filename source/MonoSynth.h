@@ -180,6 +180,7 @@ public:
 				osc[n]->resetPhaseInterpolated();
 		}
         
+        
         midiFrequency = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         
         pitchEnvelope.get()->gate(true);
@@ -197,7 +198,7 @@ public:
         pitchEnvelope.get()->gate(false);
         
         isPlaying = false;
-        
+                
         clearCurrentNote();
     }
     
@@ -506,11 +507,9 @@ private:
     Random rand;
     
     std::unique_ptr<ADSR> pitchEnvelope;
-  
-    
-    
+
     std::unique_ptr<Oscillator> osc[3];
-        
+    
     JUCE_LEAK_DETECTOR (MonosynthVoice)
 };
 
