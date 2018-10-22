@@ -352,7 +352,7 @@ void MonosynthPluginAudioProcessor::handleSynthNoteOn   (Monosynthesiser* source
         envelopeGenerator[i].get()->gate(true);
         
         if (*envelopeRetriggerParam)
-            envelopeGenerator[i].get()->resetToAttack();
+            envelopeGenerator[i].get()->reTrigger();
     }
     
     

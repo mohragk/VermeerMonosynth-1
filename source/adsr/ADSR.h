@@ -16,15 +16,17 @@
 //  You may modify and use this source code to create binary code for your own purposes, free or commercial.
 //
 
-#ifndef ADRS_h
-#define ADRS_h
+#ifndef ADSR_H
+#define ADSR_H
 
 
 class ADSR {
 public:
     ADSR(void);
     ~ADSR(void);
-    enum envState {
+
+    enum envState 
+    {
         env_idle = 0,
         env_attack,
         env_decay,
@@ -46,7 +48,7 @@ public:
     void setTargetRatioDR(double targetRatio);
     void setState(envState newState);
     void reset(void);
-    void resetToAttack(void);
+    void reTrigger(void);
     bool isGateOn(){ return gateOn;};
 
     
@@ -79,14 +81,16 @@ inline double ADSR::process() {
             break;
         case env_attack:
             output = attackBase + output * attackCoef;
-            if (output >= 1.0) {
+            if (output >= 1.0) 
+            {
                 output = 1.0;
                 state = env_decay;
             }
             break;
         case env_decay:
             output = decayBase + output * decayCoef;
-            if (output <= sustainLevel) {
+            if (output <= sustainLevel) 
+            {
                 output = sustainLevel;
                 state = env_sustain;
             }
@@ -95,7 +99,8 @@ inline double ADSR::process() {
             break;
         case env_release:
             output = releaseBase + output * releaseCoef;
-            if (output <= 0.0) {
+            if (output <= 0.0) 
+            {
                 output = 0.0;
                 state = env_idle;
             }
@@ -113,14 +118,16 @@ inline void ADSR::processSamples(double *sample, int numSamples)
                 break;
             case env_attack:
                 sample[i] = attackBase + sample[i] * attackCoef;
-                if (sample[i] >= 1.0) {
+                if (sample[i] >= 1.0) 
+                {
                     sample[i] = 1.0;
                     state = env_decay;
                 }
                 break;
             case env_decay:
                 sample[i] = decayBase + sample[i] * decayCoef;
-                if (sample[i] <= sustainLevel) {
+                if (sample[i] <= sustainLevel) 
+                {
                     output = sustainLevel;
                     state = env_sustain;
                 }
@@ -129,7 +136,8 @@ inline void ADSR::processSamples(double *sample, int numSamples)
                 break;
             case env_release:
                 sample[i] = releaseBase + sample[i] * releaseCoef;
-                if (output <= 0.0) {
+                if (output <= 0.0) 
+                {
                     output = 0.0;
                     state = env_idle;
                 }
@@ -138,7 +146,8 @@ inline void ADSR::processSamples(double *sample, int numSamples)
 
 }
 
-inline void ADSR::gate(int gate) {
+inline void ADSR::gate(int gate) 
+{
     if (gate)
     {
         if (gateOn == false)
@@ -162,23 +171,27 @@ inline void ADSR::setState(envState newState)
     state = newState;
 }
 
-inline int ADSR::getState() {
+inline int ADSR::getState() 
+{
     return state;
 }
 
-inline void ADSR::reset() {
+inline void ADSR::reset() 
+{
     state = env_idle;
     output = 0.0;
 }
 
-inline void ADSR::resetToAttack() {
+inline void ADSR::reTrigger() 
+{
     output = 0.0;
     state = env_attack;
 }
 
-inline double ADSR::getOutput() {
+inline double ADSR::getOutput() 
+{
     return output;
 }
 
 
-#endif
+#endif //ADSR_H
