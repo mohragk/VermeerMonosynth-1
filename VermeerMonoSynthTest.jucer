@@ -83,8 +83,6 @@
           file="source/SequencerProcessor.h"/>
     <FILE id="fswhRw" name="SequencerState.h" compile="0" resource="0"
           file="source/SequencerState.h"/>
-    <FILE id="oeEMbt" name="SequencerState.cpp" compile="1" resource="0"
-          file="source/SequencerState.cpp"/>
     <FILE id="uGPIXG" name="EditorDefines.h" compile="0" resource="0" file="source/EditorDefines.h"/>
     <FILE id="RMtzUq" name="colorcheck.cpp" compile="1" resource="0" file="source/colorcheck.cpp"/>
     <FILE id="gLySbD" name="colorcheck.h" compile="0" resource="0" file="source/colorcheck.h"/>
@@ -142,7 +140,7 @@
           file="Source/PluginProcessor.h"/>
     <FILE id="gFFr0hbSp" name="PluginProcessor.cpp" compile="1" resource="0"
           file="Source/PluginProcessor.cpp"/>
-    <FILE id="upR4CX" name="MonoSynth.h" compile="0" resource="0" file="source/MonoSynth.h"/>
+    <FILE id="upR4CX" name="MonoSynth.h" compile="1" resource="0" file="source/MonoSynth.h"/>
     <FILE id="BU8U7s" name="Oscillator.h" compile="0" resource="0" file="source/Oscillator.h"/>
     <FILE id="yf17tA" name="lfo.h" compile="0" resource="0" file="source/lfo.h"/>
     <FILE id="EHurt1" name="PulseClock.h" compile="0" resource="0" file="source/PulseClock.h"/>
