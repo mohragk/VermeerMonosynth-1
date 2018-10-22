@@ -837,10 +837,37 @@ void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer,
 
     
     filter->Process(channelDataLeft, numSamples);
-  
-   
+}
 
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::applyFilterFadeInFadeOut(AudioBuffer<FloatType> buffer, LadderFilterBase* filterOld, LadderFilterBase* filterNew)
+{
+	const int numSamples = buffer.getNumSamples();
+
+	AudioBuffer<FloatType> tempPre;
+	AudioBuffer<FloatType> tempPost;
+
+	tempPre.copyFrom(0, 0, buffer, numSamples);
+	tempPost.copyFrom(0, 0, buffer, numSamples);
+
+	FloatType* preData = tempPre.getWritePointer(0);
+	FloatType* postData = tempPost.getWritePointer(0);
 	
+
+	filterOld->Process(preData, numSamples);
+	filterNew->Process(postData, numSamples);
+
+	// Fade out pre, fade in post
+	tempPre.applyGainRamp(0, 0, numSamples, 1.0, 0.0);
+	tempPost.applyGainRamp(0, 0, numSamples, 0.0, 1.0);
+
+
+	tempPre.addFrom(0, 0, tempPost, numSamples);
+
+	buffer.copyFrom(0, 0, tempPre, numSamples);
+	
+
+
 }
 
 template <typename FloatType>

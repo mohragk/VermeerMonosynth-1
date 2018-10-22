@@ -289,6 +289,9 @@ private:
     void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
 
 	template <typename FloatType>
+	void applyFilterFadeInFadeOut(AudioBuffer<FloatType> buffer, LadderFilterBase* filterOld, LadderFilterBase* filterNew);
+
+	template <typename FloatType>
 	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
 
     template <typename FloatType>
@@ -352,6 +355,8 @@ private:
 	double cutoffModulationAmt; 
     
     double currentCutoff = 40.0, prevCutoff = 40.0;
+	bool filterOn = true;
+	int lastFilterChoice;
     
     double sampleRate;
     
@@ -367,7 +372,7 @@ private:
     
     double masterGain = 0.0, masterGainPrev = 0.0;
     
-    bool filterOn = true;
+   
     
 	enum smootherForParam {
 		CUTOFF_SMOOTHER,
