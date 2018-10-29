@@ -43,6 +43,7 @@
 #include "TriggeredScope.h"
 
 #include "ParamToggleButton.h"
+#include "MonosynthLookAndFeel.h"
 
 
 //==============================================================================
@@ -89,7 +90,7 @@ public:
     
 private:
     
-    //class ParamToggleButton;
+	MonosynthLookAndFeel customLook;
     
     enum style
 	{
