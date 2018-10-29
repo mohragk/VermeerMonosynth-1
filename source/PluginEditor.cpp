@@ -222,7 +222,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     setSize (owner.lastUIWidth, owner.lastUIHeight);
     
 
+
     setLookAndFeel(&customLook);
+
 
    
 }

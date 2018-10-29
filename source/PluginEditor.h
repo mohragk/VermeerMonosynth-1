@@ -92,6 +92,7 @@ public:
     
 private:
 
+
     CustomLookAndFeel customLook2;
 
 	MonosynthLookAndFeel customLook;
