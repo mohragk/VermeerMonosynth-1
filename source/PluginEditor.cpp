@@ -358,8 +358,9 @@ void MonosynthPluginAudioProcessorEditor::showSequencer(bool shouldShow)
         if(sequencerSection.get()->isActivated() == true)
             return;
         
+		int sequencerMargin = 10;
         int width = (STRIP_WIDTH * 8) + ( MODULE_MARGIN * 10);
-        int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT;
+        int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT + SEQUENCER_HEIGHT + sequencerMargin;
         setSize (width, height);
         
         
