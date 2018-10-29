@@ -70,6 +70,8 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="EP3OMO" name="CustomLookAndFeel.h" compile="0" resource="0" file="source/CustomLookAndFeel.h"/>
+    <FILE id="qFpYKb" name="MonosynthLookAndFeel.h" compile="0" resource="0" file="source/MonosynthLookAndFeel.h"/>
     <FILE id="ktVWLL" name="Arpeggiator.h" compile="0" resource="0" file="source/Arpeggiator.h"/>
     <FILE id="XBw4Lp" name="FifoBuffer.h" compile="0" resource="0" file="source/FifoBuffer.h"/>
     <FILE id="d37YSU" name="TriggeredScope.cpp" compile="1" resource="0"

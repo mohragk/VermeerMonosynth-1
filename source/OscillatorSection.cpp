@@ -166,7 +166,6 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     setSize (305, 620);
     
     
-    
 }
 
 OscillatorSection::~OscillatorSection()

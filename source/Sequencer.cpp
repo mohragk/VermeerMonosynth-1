@@ -187,13 +187,6 @@ void Sequencer::resized()
 		swingAmountSlider->setColour(Slider::textBoxOutlineColourId, Colour(0x008e989b));
 	}
     
-    Rectangle<int> stripBottom ( area.removeFromTop(horSliderSize).reduced(24, 0) );
-    
-    {
-        Rectangle<int> block (stripBottom.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
-        maxStepsSlider->setBounds(block.removeFromLeft(vertSliderSize * numSteps).reduced(8, 0));
-    }
-    
     Rectangle<int> stripButtons ( area.removeFromTop(toggleButtonSize).reduced(24, 0) );
     {
         Rectangle<int> block (stripButtons.removeFromLeft(vertSliderSize * numSteps));
@@ -203,6 +196,15 @@ void Sequencer::resized()
             skipStepButton[i]->setButtonText("");
         }
     }
+    
+    Rectangle<int> stripBottom ( area.removeFromTop(horSliderSize).reduced(24, 0) );
+    
+    {
+        Rectangle<int> block (stripBottom.removeFromLeft((vertSliderSize * numSteps) + marginX * 2) );
+        maxStepsSlider->setBounds(block.removeFromLeft(vertSliderSize * numSteps).reduced(8, 0));
+    }
+    
+    
 }
 
 void Sequencer::parentSizeChanged()

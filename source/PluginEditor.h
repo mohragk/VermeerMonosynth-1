@@ -33,6 +33,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 
+#include "CustomLookAndFeel.h"
+
 
 #include "OscillatorSection.h"
 #include "FilterSection.h"
@@ -43,6 +45,7 @@
 #include "TriggeredScope.h"
 
 #include "ParamToggleButton.h"
+#include "MonosynthLookAndFeel.h"
 
 
 //==============================================================================
@@ -88,8 +91,11 @@ public:
     
     
 private:
-    
-    //class ParamToggleButton;
+
+    CustomLookAndFeel customLook2;
+
+	MonosynthLookAndFeel customLook;
+
     
     enum style
 	{

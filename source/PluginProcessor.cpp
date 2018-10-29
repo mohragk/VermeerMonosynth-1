@@ -788,8 +788,8 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
-        const double contourRange = *filterContourParam;
         
+        const double contourRange = *filterContourParam;
         const double filterEnvelopeVal = envelopeGenerator[1].get()->process();
         
 		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
@@ -1092,20 +1092,20 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
 
 void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
 {
+    MonosynthVoice* voice =  dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
     modTarget t = (modTarget) target;
+    
+    voice->setPitchModulation(0.0);
+    cutoffModulationAmt = 0.0;
     
     switch (t) {
         case modCutoff:
             cutoffModulationAmt = amount;
-            dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
             break;
         case modPitch:
-            dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(amount);
-            cutoffModulationAmt = 0.0;
+            voice->setPitchModulation(amount);
             break;
         case off:
-            dynamic_cast<MonosynthVoice*>(synth.getVoice(0))->setPitchModulation(0.0);
-            cutoffModulationAmt = 0.0;
             break;
         default:
             break;

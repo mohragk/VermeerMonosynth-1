@@ -17,6 +17,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
+#include "CustomLookAndFeel.h"
 
 //==============================================================================
 /*
@@ -47,6 +48,8 @@ public:
 
 private:
     MonosynthPluginAudioProcessor& processor;
+    
+    CustomLookAndFeel customLook;
 
     enum style
 	{
