@@ -18,8 +18,9 @@ class MonosynthLookAndFeel : public LookAndFeel_V4
 public:
 	MonosynthLookAndFeel() 
 	{
+        defaultOutlineCol = Colours::darkgrey;
+        defaultFillCol = Colours::black;
         setColour(ToggleButton::tickColourId, darkThumb);
-        setColour(ToggleButton::tickDisabledColourId, Colours::darkgrey);
 	}
 
 
@@ -27,23 +28,34 @@ public:
     
     void drawTickBox (Graphics &g, Component &c, float x, float y, float w, float h, bool ticked, bool isEnabled, bool isMouseOverButton, bool isButtonDown) override
     {
-        ignoreUnused(isEnabled, isMouseOverButton, isButtonDown);
+        ignoreUnused(isEnabled, isMouseOverButton);
         
-        Rectangle<float> tickBounds (x, y, w, h / 2.0f);
+        Rectangle<float> tickBounds (x, y, w, h);
+        Rectangle<float> inner = tickBounds.reduced(0, h / 4.0f);
+        auto lineW = 1.8f;
+       
+        Path backGround;
+        backGround.addRoundedRectangle(inner, w / 4.0f);
         
-        g.setColour(c.findColour (ToggleButton::tickDisabledColourId));
-        g.drawRoundedRectangle (tickBounds, w / 4.0f, 1.8f);
+        g.setColour(defaultFillCol);
+        g.fillPath(backGround);
+        
+        g.setColour(defaultOutlineCol);
+        g.strokePath(backGround, PathStrokeType(lineW, PathStrokeType::curved, PathStrokeType::butt));
+        
         
         if(ticked)
         {
-            g.setColour (lightThumb);
-            g.fillEllipse(x + w / 2.0f,y, w / 2.0f, h / 2.0f);
+            //Thumb
+            g.setColour (isButtonDown ? c.findColour (ToggleButton::tickColourId): lightThumb);
+            g.fillEllipse(inner.getX() + w / 2.0f, inner.getY(), w / 2.0f, h / 2.0f);
             
         }
         else
         {
-            g.setColour (c.findColour (ToggleButton::tickColourId));
-            g.fillEllipse(x,y, w / 2.0f, h / 2.0f);
+            // Thumb
+            g.setColour (isButtonDown ? lightThumb : c.findColour (ToggleButton::tickColourId));
+            g.fillEllipse(inner.getX(),inner.getY(), w / 2.0f, h / 2.0f);
         }
     }
 
@@ -53,6 +65,9 @@ public:
 		auto outline = slider.findColour(Slider::rotarySliderOutlineColourId);
 		auto fill = slider.findColour(Slider::rotarySliderFillColourId);
 		auto thumbCol = slider.findColour(Slider::thumbColourId);
+        
+        defaultOutlineCol = outline;
+        defaultFillCol = fill;
 
 		auto bounds = Rectangle<int>(x, y, width, height).toFloat().reduced(10);
 		
@@ -144,6 +159,9 @@ public:
 private:
     Colour lightThumb = Colour(0xffdee5fc);
     Colour darkThumb = Colour(0xff3e7db3);
+    
+    Colour defaultOutlineCol;
+    Colour defaultFillCol;
 
 };
 
