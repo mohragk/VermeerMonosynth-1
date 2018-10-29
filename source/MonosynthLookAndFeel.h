@@ -18,11 +18,34 @@ class MonosynthLookAndFeel : public LookAndFeel_V4
 public:
 	MonosynthLookAndFeel() 
 	{
-		//setColour(Slider::rotarySliderFillColourId, Colours::aquamarine);
+        setColour(ToggleButton::tickColourId, darkThumb);
+        setColour(ToggleButton::tickDisabledColourId, Colours::darkgrey);
 	}
 
 
 	virtual ~MonosynthLookAndFeel() {}
+    
+    void drawTickBox (Graphics &g, Component &c, float x, float y, float w, float h, bool ticked, bool isEnabled, bool isMouseOverButton, bool isButtonDown) override
+    {
+        ignoreUnused(isEnabled, isMouseOverButton, isButtonDown);
+        
+        Rectangle<float> tickBounds (x, y, w, h / 2.0f);
+        
+        g.setColour(c.findColour (ToggleButton::tickDisabledColourId));
+        g.drawRoundedRectangle (tickBounds, w / 4.0f, 1.8f);
+        
+        if(ticked)
+        {
+            g.setColour (lightThumb);
+            g.fillEllipse(x + w / 2.0f,y, w / 2.0f, h / 2.0f);
+            
+        }
+        else
+        {
+            g.setColour (c.findColour (ToggleButton::tickColourId));
+            g.fillEllipse(x,y, w / 2.0f, h / 2.0f);
+        }
+    }
 
 	void drawRotarySlider(Graphics& g, int x, int y, int width, int height, float sliderPos,
 		const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider) override
@@ -108,16 +131,19 @@ public:
 
 			
 		}
-
-		/*
-		auto thumbWidth = lineW * 2.0f;
-		Point<float> thumbPoint(bounds.getCentreX() + arcRadius * std::cos(toAngle - MathConstants<float>::halfPi),
-			bounds.getCentreY() + arcRadius * std::sin(toAngle - MathConstants<float>::halfPi));
-
-		g.setColour(slider.findColour(Slider::thumbColourId));
-		g.fillEllipse(Rectangle<float>(thumbWidth, thumbWidth).withCentre(thumbPoint));
-		*/
 	}
+    
+    /** deprecated */
+    Path getCircleShape(float radius)
+    {
+        Path p;
+        p.addEllipse(0, 0, radius, radius);
+        return p;
+    }
+    
+private:
+    Colour lightThumb = Colour(0xffdee5fc);
+    Colour darkThumb = Colour(0xff3e7db3);
 
 };
 
