@@ -225,6 +225,9 @@ void TriggeredScope::renderImage()
     float currentX = 0;
     float oldX = 0;
     float oldY = 0;
+
+	Path oscilloLine;
+	oscilloLine.startNewSubPath(0, h / 2.0f);
     
     while (currentX < w)
     {
@@ -262,12 +265,16 @@ void TriggeredScope::renderImage()
         
         line.setStart(oldX, oldY);
         line.setEnd(currentX, top);
-        g.drawLine(line, 2.0f);
+       // g.drawLine(line, 2.0f);
+		oscilloLine.lineTo(currentX, top);
         ++currentX;
         
         oldX = currentX;
         oldY = top;
     }
     
+	g.setColour(Colours::white);
+	g.strokePath(oscilloLine, PathStrokeType(1.5f, PathStrokeType::mitered, PathStrokeType::butt));
+
     needToRepaint = true;
 }
