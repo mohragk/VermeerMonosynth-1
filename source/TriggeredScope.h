@@ -98,6 +98,7 @@ private:
     bool needToUpdate;
 
     Image image;
+
     bool needToRepaint;
     CriticalSection imageLock;
     

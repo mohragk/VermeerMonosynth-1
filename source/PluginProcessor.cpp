@@ -806,7 +806,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         drive.setValue				(*filterDriveParam);
        
         FloatType combinedCutoff =    currentCutoff         //smoothing[CONTOUR_SMOOTHER]->processSmooth( currentCutoff )
-                                    + smoothing[CUTOFF_SMOOTHER]->processSmooth ( *filterCutoffParam)  ;
+                                    + smoothing[CUTOFF_SMOOTHER]->processSmooth ( cutoff.getNextValue() )  ;
         
         
         
@@ -1005,7 +1005,9 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     
     for (int i = 0; i < numSamples; i++)
     {
-        
+        //FILTER
+
+		cutoff.setValue(*filterCutoffParam);
         
         if (i % stepSize == 0)
         {
