@@ -229,7 +229,7 @@ void TriggeredScope::renderImage()
 
 
 	Path oscilloLine;
-	float lineW = 2.f;
+	float lineW = 1.7f;
 
 	oscilloLine.startNewSubPath(0, h / 2.0f);
     
@@ -246,7 +246,7 @@ void TriggeredScope::renderImage()
     }
 
 	g.setColour(Colours::white);
-	g.strokePath(oscilloLine, PathStrokeType(lineW, PathStrokeType::mitered, PathStrokeType::butt));
+	g.strokePath(oscilloLine, PathStrokeType(lineW, PathStrokeType::curved, PathStrokeType::butt));
 
 	Colour fade = backGroundColour.withAlpha(1.0f);
 	Colour unfade = backGroundColour.withAlpha(0.0f);
