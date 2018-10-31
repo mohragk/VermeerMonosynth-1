@@ -803,7 +803,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
         
-        const double contourRange = *filterContourParam;
+        const double contourRange = contour.getNextValue();
         const double filterEnvelopeVal = envelopeGenerator[1].get()->process();
         
 		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
