@@ -30,7 +30,7 @@ public :
 
 	void setLevel(double level);
 
-	void setOrientation(orientation or ) { currentOrientation = or ; };
+	void setOrientation( orientation o ) { currentOrientation = o ; };
 
 	void setBackgroundColour(Colour col) { backgroundColour = col; };
 	void setAboveZeroColour(Colour col) { aboveZeroLevelColour = col; };
