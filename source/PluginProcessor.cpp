@@ -739,7 +739,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // COPY LEFT DATA to RIGHT CHANNEL
     buffer.copyFrom(1, 0, buffer, 0, 0, buffer.getNumSamples());
    
-	
+	meter.setLevel(buffer.getMagnitude(0, 0, buffer.getNumSamples()));
 
     // Now ask the host for the current time so we can store it to be displayed later...
     updateCurrentTimeInfoFromHost();

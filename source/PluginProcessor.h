@@ -40,6 +40,7 @@
 #include "ParamSmoother.h"
 #include "TriggeredScope.h"
 #include "Arpeggiator.h"
+#include "LevelMeter.h"
 
 
 #include "MoogLadders/ImprovedModel.h"
@@ -137,6 +138,8 @@ public:
     std::unique_ptr<SequencerState> seqState;
     
 	TriggeredScope scope;
+
+	LevelMeter meter;
 
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;

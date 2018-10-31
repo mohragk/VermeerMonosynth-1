@@ -70,6 +70,8 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="XjLRpQ" name="LevelMeter.cpp" compile="1" resource="0" file="source/LevelMeter.cpp"/>
+    <FILE id="k9Ewz2" name="LevelMeter.h" compile="0" resource="0" file="source/LevelMeter.h"/>
     <FILE id="EP3OMO" name="CustomLookAndFeel.h" compile="0" resource="0"
           file="source/CustomLookAndFeel.h"/>
     <FILE id="qFpYKb" name="MonosynthLookAndFeel.h" compile="0" resource="0"
