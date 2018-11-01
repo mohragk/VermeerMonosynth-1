@@ -50,6 +50,7 @@ private :
     
 	double currentLevel;
 	double skew;
+	float scale;
 
 	orientation currentOrientation;
 
@@ -66,6 +67,8 @@ private :
 	ColourGradient horizontalGradient;
 
 	void renderImage();
+
+	int iec_scale(const float dB);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelMeter)
 };

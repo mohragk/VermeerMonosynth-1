@@ -49,10 +49,18 @@ void LevelMeter::resized()
 {
 	image = Image(Image::ARGB, jmax(1, getWidth()), jmax(1, getHeight()), true);
 
+	
+
 	if (getWidth() > getHeight())
+	{
 		currentOrientation = HORIZONTAL;
+		scale = 0.85f * getWidth();
+	}
 	else
+	{
 		currentOrientation = VERTICAL;
+		scale = 0.85f * getHeight();
+	}
 
 	Graphics g(image);
 
@@ -79,9 +87,16 @@ void LevelMeter::renderImage()
 
 	Rectangle<float> bounds = image.getBounds().toFloat();
 
-	const float infinity = -30.0f;
-	const float levelDb = Decibels::gainToDecibels((float)currentLevel, infinity);
+	const float infinity = -70.0f;
+	float levelDb = Decibels::gainToDecibels((float)currentLevel, infinity);
 	//const float peakDb = juce::Decibels::gainToDecibels(peak, infinity);
+
+	if (levelDb < infinity)
+		levelDb = infinity;
+	else if (levelDb > 4.0)
+		levelDb = 4.0;
+
+
 
     const juce::Rectangle<float> floored (ceilf (bounds.getX()) + 1.0f, ceilf (bounds.getY()) + 1.0f,
                                           floorf (bounds.getRight()) - (ceilf (bounds.getX() + 2.0f)),
@@ -91,6 +106,13 @@ void LevelMeter::renderImage()
   
 	if (currentOrientation == HORIZONTAL)
 	{
+		int x;
+		int x_over = 0;
+		int x_curr = 0;
+
+		x = iec_scale(levelDb);
+
+
 		/*
 		if (horizontalGradient.getNumColours() < 2) {
 			horizontalGradient = ColourGradient(lowLevelColour,
@@ -105,6 +127,7 @@ void LevelMeter::renderImage()
 		g.fillRect(floored.withRight(floored.getRight() - levelDb * floored.getWidth() / infinity));
         */
      
+		/*
 		if (levelDb > -1.0)
 		{
 			Rectangle<float> safeBar(floored.withRight(floored.getRight() - (-1.0f * floored.getWidth() / infinity)));
@@ -125,6 +148,9 @@ void LevelMeter::renderImage()
 			g.setColour(lowLevelColour);
 			g.fillRect(safeBar);
 		}
+		*/
+
+
 		
 	}
 	else if (currentOrientation == VERTICAL)
@@ -135,5 +161,25 @@ void LevelMeter::renderImage()
 	needToRepaint = true;
 }
 
+int LevelMeter::iec_scale(const float dB)
+{
+	float def = 1.0f;
 
+	if (dB < -70.0f)
+		def = 0.0;
+	else if (dB < -60.0f)
+		def = (dB + 70.0) * 0.0025;
+	else if (dB < -50.0f)
+		def = (dB + 60.0) * 0.005 + 0.025;
+	else if (dB < -40.0f)
+		def = (dB + 50.0) * 0.0075 + 0.075;
+	else if (dB < -30.0f)
+		def = (dB + 40.0) * 0.015 + 0.015;
+	else if (dB < -20.0f)
+		def = (dB + 30.0) * 0.02 + 0.3;
+	else
+		def = (dB + 20.0) * 0.025 + 0.5;
+
+	return std::round(def * scale);
+}
 
