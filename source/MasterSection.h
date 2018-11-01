@@ -28,6 +28,7 @@ public:
     void resized() override;
     void timerCallback() override;
 
+    LevelMeter* meter_ptr;
 
 private:
     MonosynthPluginAudioProcessor& processor;

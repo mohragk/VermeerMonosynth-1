@@ -62,7 +62,7 @@ private :
 	Colour backgroundColour = Colours::black;
 	Colour lowLevelColour = Colours::white;
 	Colour midLevelColour = Colours::orange;
-	Colour maxLevelColour = Colours::red;
+    Colour maxLevelColour = Colours::red;
 
 	ColourGradient horizontalGradient;
 

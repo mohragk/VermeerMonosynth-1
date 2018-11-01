@@ -177,9 +177,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	addAndMakeVisible(oscilloscope_ptr);
     
 
-	// Level Meter
-	meter_ptr = &owner.meter;
-	addAndMakeVisible(meter_ptr);
+	
     
     
     //
@@ -273,12 +271,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
 	oscilloscope_ptr->setBounds(oscilloArea.removeFromTop(TITLE_HEIGHT).reduced( (getWidth() / 2) - 128, 6));
     oscilloscope_ptr->setBackgroundColour(Colour (0xff0e0e0e));
     
-	// LEVEL METER
-	Rectangle<int> meterArea(getLocalBounds());
-	meter_ptr->setBounds(titleLabel->getBounds().removeFromTop(12).removeFromLeft(100));
-	meter_ptr->setLowLevelColour(Colours::white);
-	meter_ptr->setBackgroundColour(Colour(0xff0e0e0e));
-   
+
     
     //
     // MODULES

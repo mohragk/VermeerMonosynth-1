@@ -89,67 +89,59 @@ void LevelMeter::renderImage()
 
 	const float infinity = -70.0f;
 	float levelDb = Decibels::gainToDecibels((float)currentLevel, infinity);
-	//const float peakDb = juce::Decibels::gainToDecibels(peak, infinity);
 
 	if (levelDb < infinity)
 		levelDb = infinity;
-	else if (levelDb > 4.0)
-		levelDb = 4.0;
+	else if (levelDb > 6.0)
+		levelDb = 6.0;
 
 
-
+    /*
     const juce::Rectangle<float> floored (ceilf (bounds.getX()) + 1.0f, ceilf (bounds.getY()) + 1.0f,
                                           floorf (bounds.getRight()) - (ceilf (bounds.getX() + 2.0f)),
                                           floorf (bounds.getBottom()) - (ceilf (bounds.getY()) + 2.0f));
 
+     */
+    const Rectangle<float> floored ( image.getBounds().toFloat().reduced(1,1) );
    
+    Colour bg = Colours::darkgrey.darker().darker();
+    g.setColour(bg);
+    g.fillRect(floored);
+
   
 	if (currentOrientation == HORIZONTAL)
 	{
-		int x;
-		int x_over = 0;
-		int x_curr = 0;
-
-		x = iec_scale(levelDb);
-
-
-		/*
-		if (horizontalGradient.getNumColours() < 2) {
-			horizontalGradient = ColourGradient(lowLevelColour,
-				floored.getX(), floored.getY(),
-				maxLevelColour,
-				floored.getRight(), floored.getY(), false);
-			horizontalGradient.addColour(0.5, lowLevelColour);
-			horizontalGradient.addColour(0.75, midLevelColour);
-		}
+        scale = 0.85f * floored.getWidth();
+        auto safeWidth = iec_scale(0.0f);
+		auto levelWidth = iec_scale(levelDb);
         
-		g.setGradientFill(horizontalGradient);
-		g.fillRect(floored.withRight(floored.getRight() - levelDb * floored.getWidth() / infinity));
-        */
-     
-		/*
-		if (levelDb > -1.0)
-		{
-			Rectangle<float> safeBar(floored.withRight(floored.getRight() - (-1.0f * floored.getWidth() / infinity)));
-			g.setColour(lowLevelColour);
-			g.fillRect(safeBar);
+        
+        
+        if (levelWidth > safeWidth)
+        {
+            int restWidth = floored.getWidth() - levelWidth;
+            
 
-			Rectangle<float> overBar(
-				floored
-				.withLeft(floored.getX() + (-1.0f * floored.getWidth() / infinity))
-				//.withRight(floored.getRight() - (levelDb * floored.getWidth() / infinity))
-			);
-			g.setColour(maxLevelColour);
-			g.fillRect(overBar);
-		}
-		else
-		{
-			Rectangle<float> safeBar(floored.withRight(floored.getRight() - (levelDb * floored.getWidth() / infinity)));
-			g.setColour(lowLevelColour);
-			g.fillRect(safeBar);
-		}
-		*/
+            Rectangle<float> safeBounds (floored.withRight(floored.getX() + safeWidth));
+            
+            g.setColour(lowLevelColour.darker());
+            g.fillRect(safeBounds);
+            
+            Rectangle<float> restBounds (floored.withLeft(floored.getX() + safeWidth));
+           // restBounds = restBounds.withRight(restBounds.getRight() - restWidth);
+            g.setColour(maxLevelColour);
+            g.fillRect(restBounds);
+            
+        }
+        else
+        {
+            Rectangle<float> levelBounds (floored.withRight(floored.getX() + levelWidth));
+            
+            g.setColour(lowLevelColour.darker());
+            g.fillRect(levelBounds);
+        }
 
+		
 
 		
 	}

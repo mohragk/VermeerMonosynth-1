@@ -89,7 +89,7 @@ public:
     std::unique_ptr<Sequencer> sequencerSection;
 
     TriggeredScope* oscilloscope_ptr;
-	LevelMeter* meter_ptr;
+	
     
 private:
 
