@@ -16,19 +16,26 @@ LevelMeter::LevelMeter() :
 {
 	image = Image(Image::ARGB, jmax(1, getWidth()), jmax(1, getHeight()), true);
 
+    
 	startTimerHz(30);
 }
 
 LevelMeter::~LevelMeter() 
 {
 	stopTimer();
+    
+    
 }
 
 void LevelMeter::setLevel(double level)
 {
-	
+    
 	// TODO: make it logarithmic in response
-	currentLevel = jmin(jmax(0.0, level), 1.0);
+    
+  
+    currentLevel = level;
+    
+    
 }
 
 void LevelMeter::paint(Graphics& g)
@@ -56,33 +63,61 @@ void LevelMeter::resized()
 
 void LevelMeter::timerCallback()
 {
-	renderImage();
 
+    renderImage();
 	if (needToRepaint)
 		repaint();
 }
+
+
 
 void LevelMeter::renderImage()
 {
 	Graphics g(image);
 
-	g.fillAll(backgroundColour);
+    g.fillAll(backgroundColour);
 
 
-	auto h = image.getHeight();
-	auto w = image.getWidth();
-
-
+    float db = Decibels::gainToDecibels(currentLevel);
+   
+  
 	if (currentOrientation == HORIZONTAL)
 	{
-		Rectangle<float> levelBar ( getBounds().toFloat().reduced(4) );
+		Rectangle<float> levelBar ( getBounds().toFloat() );
+        
+        float maxWidth = levelBar.getWidth();
+        
+        
+        float levelWidth = maxWidth * currentLevel;
+        float safeZone = maxWidth * 0.5;
+        
+       if (db > 0)
+       {
+          
+           auto maxDb = 6.0;
+           
+           auto difference = maxDb - db;
+           auto proportion = Decibels::decibelsToGain(difference);
+           
+           auto rest = safeZone * proportion;
+           
+           Rectangle<float> safeBar (levelBar.removeFromLeft(safeZone));
+           g.setColour(underZeroLevelColour);
+           g.fillRect(safeBar);
+           
+           Rectangle<float> overBar (levelBar.removeFromLeft(rest));
+           g.setColour(Colours::red);
+           g.fillRect(overBar);
+       }
+       else
+       {
+           Rectangle<float> filledBar(levelBar.removeFromLeft(levelWidth));
+           
+           g.setColour(underZeroLevelColour);
+           g.fillRect(filledBar);
+       }
 
-		float proportion = levelBar.getWidth() * currentLevel;
-
-		Rectangle<float> filledBar(levelBar.removeFromLeft(proportion));
-
-		g.setColour(underZeroLevelColour);
-		g.fillRect(filledBar);
+		
 	}
 	else if (currentOrientation == VERTICAL)
 	{
@@ -97,3 +132,6 @@ void LevelMeter::renderImage()
 
 	needToRepaint = true;
 }
+
+
+

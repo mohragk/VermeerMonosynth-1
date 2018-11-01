@@ -326,6 +326,8 @@ glideTimeParam(nullptr)
         LinearSmoothedValue<double> smval;
         gainSmoothed.push_back(smval);
     }
+    
+    
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
@@ -337,6 +339,7 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     
     currentPlayedNotes.clear();
     gainSmoothed.clear();
+    
     
 }
 

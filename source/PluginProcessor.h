@@ -139,7 +139,7 @@ public:
     
 	TriggeredScope scope;
 
-	LevelMeter meter;
+    LevelMeter meter;
 
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;

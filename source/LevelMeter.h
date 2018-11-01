@@ -36,19 +36,24 @@ public :
 	void setAboveZeroColour(Colour col) { aboveZeroLevelColour = col; };
 	void setUnderZeroColour(Colour col) { underZeroLevelColour = col; };
 
+    
+    
 	void paint(Graphics& g) override;
 	void resized() override;
 
 	void timerCallback() override;
+    
 
 private :
 
+    
 	double currentLevel;
 	double skew;
 
 	orientation currentOrientation;
 
 	bool needToRepaint;
+    bool needToUpdate;
 
 	Image image;
 

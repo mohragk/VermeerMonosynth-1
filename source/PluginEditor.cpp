@@ -265,7 +265,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     //oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36); // TODO
     
     Rectangle<int> buttonArea (titleLabel->getBounds());
-    hqOversamplingButton->setBounds(buttonArea.removeFromLeft(48));
+    hqOversamplingButton->setBounds(buttonArea.removeFromRight(48));
     hqOversamplingButton->setButtonText("");
 
 	// OSCILLOSCOPE
@@ -274,8 +274,8 @@ void MonosynthPluginAudioProcessorEditor::resized()
     oscilloscope_ptr->setBackgroundColour(Colour (0xff0e0e0e));
     
 	// LEVEL METER
-	Rectangle<int> meterArea(getLocalBounds());
-	meter_ptr->setBounds(meterArea.removeFromTop(12).removeFromLeft(80));
+	//Rectangle<int> meterArea(getLocalBounds());
+	meter_ptr->setBounds(titleLabel->getBounds().removeFromTop(12).removeFromLeft(100));
 	meter_ptr->setUnderZeroColour(Colours::white);
 	meter_ptr->setBackgroundColour(Colour(0xff0e0e0e));
    
