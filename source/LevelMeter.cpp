@@ -112,7 +112,7 @@ void LevelMeter::renderImage()
 	if (currentOrientation == HORIZONTAL)
 	{
         scale = 0.85f * floored.getWidth();
-        auto safeWidth = iec_scale(0.0f);
+        auto safeWidth = iec_scale(-0.4f);
 		auto levelWidth = iec_scale(levelDb);
         
         
