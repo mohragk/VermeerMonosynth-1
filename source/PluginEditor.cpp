@@ -176,6 +176,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	oscilloscope_ptr = &owner.scope;
 	addAndMakeVisible(oscilloscope_ptr);
     
+
+	
     
     
     //
@@ -256,8 +258,6 @@ void MonosynthPluginAudioProcessorEditor::resized()
 {
     Rectangle<int> area(getLocalBounds());
     // TITLE
-    
-    
     titleLabel->setBounds (area.removeFromTop(TITLE_HEIGHT).reduced(12,0));
     titleLabel->setJustificationType(Justification::centredLeft);
     //oversampleSwitchSlider->setBounds(getWidth() - 24 - 24, 8, 36, 36); // TODO
@@ -266,13 +266,12 @@ void MonosynthPluginAudioProcessorEditor::resized()
     hqOversamplingButton->setBounds(buttonArea.removeFromRight(48));
     hqOversamplingButton->setButtonText("");
 
-
+	// OSCILLOSCOPE
 	Rectangle<int> oscilloArea(getLocalBounds());
 	oscilloscope_ptr->setBounds(oscilloArea.removeFromTop(TITLE_HEIGHT).reduced( (getWidth() / 2) - 128, 6));
     oscilloscope_ptr->setBackgroundColour(Colour (0xff0e0e0e));
     
-    
-   
+
     
     //
     // MODULES

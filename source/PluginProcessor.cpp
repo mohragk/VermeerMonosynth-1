@@ -157,7 +157,8 @@ glideTimeParam(nullptr)
     
     for (int osc = 0; osc < 3; osc++)
     {
-        addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
+        //addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
+        addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 1.0f));
         addParameter (oscDetuneAmountParam[osc] = new AudioParameterFloat("oscDetuneAmount" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
         addParameter (oscModeParam[osc] = new AudioParameterInt("oscModeChoice" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Waveform", 0, 3, 2));
         addParameter (oscOffsetParam[osc] = new AudioParameterInt("oscOffset" + std::to_string(osc), "OSC"+std::to_string(osc + 1)+" Offset", -24, 24, 0));
@@ -319,6 +320,14 @@ glideTimeParam(nullptr)
     
    // sequencerProcessor = std::unique_ptr<SequencerProcessor> ( new SequencerProcessor( keyboardState ) );
 	seqState.reset(new SequencerState);
+    
+    for(int i = 0; i < 3; i++)
+    {
+        LinearSmoothedValue<double> smval;
+        gainSmoothed.push_back(smval);
+    }
+    
+    
 }
 
 MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
@@ -329,6 +338,8 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     synth.clearVoices();
     
     currentPlayedNotes.clear();
+    gainSmoothed.clear();
+    
     
 }
 
@@ -553,16 +564,22 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int buffer
     
     lfo.setSampleRate(newsr);
     
+    float rampTime = (float)newBufferSize / newsr; // set time to buffersize time
     
-    cutoff.reset(newsr, cutoffRampTimeDefault);
-    cutoffFromEnvelope.reset(newsr, cutoffRampTimeDefault);
-    resonance.reset(newsr, 0.001);
-    drive.reset(newsr, 0.001);
+    cutoff.reset(newsr, rampTime);
+    contour.reset(newsr, rampTime);
+    cutoffFromEnvelope.reset(newsr, rampTime);
+    resonance.reset(newsr, rampTime);
+    drive.reset(newsr, rampTime);
     
-    pulsewidthSmooth1.reset(newsr, cutoffRampTimeDefault);
-    pulsewidthSmooth2.reset(newsr, cutoffRampTimeDefault);
-    pulsewidthSmooth3.reset(newsr, cutoffRampTimeDefault);
+    pulsewidthSmooth1.reset(newsr, rampTime);
+    pulsewidthSmooth2.reset(newsr, rampTime);
+    pulsewidthSmooth3.reset(newsr, rampTime);
     
+    for(int i = 0; i < 3; i++)
+    {
+        gainSmoothed[i].reset(newsr, rampTime);
+    }
 
    
     
@@ -725,7 +742,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     // COPY LEFT DATA to RIGHT CHANNEL
     buffer.copyFrom(1, 0, buffer, 0, 0, buffer.getNumSamples());
    
-	
+	meter.setLevel( buffer.getMagnitude( 0, 0, buffer.getNumSamples() ) );
+    
 
     // Now ask the host for the current time so we can store it to be displayed later...
     updateCurrentTimeInfoFromHost();
@@ -789,7 +807,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         // Modulation by envelope and LFO (if set)
         const double lfoFilterRange = 6000.0;
         
-        const double contourRange = *filterContourParam;
+        const double contourRange = contour.getNextValue();
         const double filterEnvelopeVal = envelopeGenerator[1].get()->process();
         
 		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
@@ -801,12 +819,9 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         }
 		
 			
-        
-        resonance.setValue			(*filterQParam);
-        drive.setValue				(*filterDriveParam);
        
         FloatType combinedCutoff =    currentCutoff         //smoothing[CONTOUR_SMOOTHER]->processSmooth( currentCutoff )
-                                    + smoothing[CUTOFF_SMOOTHER]->processSmooth ( *filterCutoffParam)  ;
+                                    + smoothing[CUTOFF_SMOOTHER]->processSmooth ( cutoff.getNextValue() )  ;
         
         
         
@@ -959,7 +974,7 @@ template <typename FloatType>
 void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buffer)
 {
     int numSamples = buffer.getNumSamples();
-    int stepSize = jmin(32, numSamples);
+    int stepSize = jmin(1, numSamples);
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
     
@@ -1002,6 +1017,19 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     else
         osFactor = oversamplingDouble->getOversamplingFactor();
     
+    
+    cutoff.setValue(*filterCutoffParam);
+    contour.setValue(*filterContourParam);
+    drive.setValue(*filterDriveParam);
+    resonance.setValue(*filterQParam);
+    
+    
+    pulsewidthSmooth1.setValue(*pulsewidthParam[0]);
+    pulsewidthSmooth2.setValue(*pulsewidthParam[1]);
+    pulsewidthSmooth3.setValue(*pulsewidthParam[2]);
+    
+    for (int i = 0; i < 3; i++)
+        gainSmoothed[i].setValue(*oscGainParam[i]);
     
     for (int i = 0; i < numSamples; i++)
     {
@@ -1049,15 +1077,15 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             
             for(int osc = 0; osc < 3; osc++)
             {
-                synthVoice->setGainForOscillator( dbToGain(*oscGainParam[osc], MIN_INFINITY_DB), osc );
+                double dbGain = gainSmoothed[osc].getNextValue();
+                double gain = dbGain;
+                synthVoice->setGainForOscillator( gain, osc );
                 synthVoice->setModeForOscillator(*oscModeParam[osc], osc);
                 synthVoice->setDetuneAmountForOscillator(*oscDetuneAmountParam[osc], *oscOffsetParam[osc], osc);
                 synthVoice->setPulsewidthModAmountForOscillator(*pulsewidthAmountParam[osc], osc);
             }
             
-            pulsewidthSmooth1.setValue(*pulsewidthParam[0]);
-            pulsewidthSmooth2.setValue(*pulsewidthParam[1]);
-            pulsewidthSmooth3.setValue(*pulsewidthParam[2]);
+            
             
             
             //if (i % stepSize == 0)

@@ -24,7 +24,7 @@ TriggeredScope::TriggeredScope (TimeSliceThread* backgroundThreadToUse_)
       needToRepaint (true)
 {
     const ScopedLock sl (imageLock);
-    image = Image (Image::RGB, jmax (1, getWidth()), jmax (1, getHeight()), false);
+    image = Image (Image::ARGB, jmax (1, getWidth()), jmax (1, getHeight()), true);
     Graphics g (image);
     g.fillAll (Colours::black);
     
@@ -45,7 +45,7 @@ TriggeredScope::TriggeredScope (TimeSliceThread* backgroundThreadToUse_)
 
 TriggeredScope::~TriggeredScope()
 {
-     const ScopedLock sl (imageLock);
+    const ScopedLock sl (imageLock);
 
     stopTimer();
     
@@ -88,7 +88,8 @@ void TriggeredScope::resized()
 {
     const ScopedLock sl (imageLock);
 
-    image = Image (Image::RGB, jmax (1, getWidth()*2), jmax (1, getHeight()*2), false);
+    image = Image (Image::ARGB, jmax (1, getWidth()*2), jmax (1, getHeight()*2), false);
+
     Graphics g (image);
     
     g.fillAll (backGroundColour);
@@ -99,8 +100,8 @@ void TriggeredScope::resized()
 void TriggeredScope::paint (Graphics& g)
 {
     const ScopedLock sl (imageLock);
-
-    //g.setImageResamplingQuality(Graphics::ResamplingQuality::highResamplingQuality);
+	
+    g.setImageResamplingQuality(Graphics::ResamplingQuality::highResamplingQuality);
     g.drawImageWithin(image, 0, 0, getWidth(), getHeight(), RectanglePlacement::stretchToFit);
     //g.drawImageAt (image, 0, 0);
 }
@@ -161,7 +162,9 @@ void TriggeredScope::processPendingSamples()
         }
     }
 }
+
 int val = 0;
+
 void TriggeredScope::mouseDown (const MouseEvent &event)
 {
     val++;
@@ -223,8 +226,12 @@ void TriggeredScope::renderImage()
     }
     
     float currentX = 0;
-    float oldX = 0;
-    float oldY = 0;
+
+
+	Path oscilloLine;
+	float lineW = 1.7f;
+
+	oscilloLine.startNewSubPath(0, h / 2.0f);
     
     while (currentX < w)
     {
@@ -232,42 +239,31 @@ void TriggeredScope::renderImage()
         if (bufferReadPos == bufferSize)
             bufferReadPos = 0;
         
-        const float top = (1.0f - (0.5f + (0.5f * verticalZoomFactor * maxBuffer[bufferReadPos]))) * h;
-        //const float bottom = (1.0f - (0.5f + (0.5f * verticalZoomFactor * minBuffer[bufferReadPos]))) * h;
+        const float currentY = (1.0f - (0.5f + (0.5f * verticalZoomFactor * maxBuffer[bufferReadPos]))) * h;
 
-        
-        
-        
-        uint8 val = 255;
-        float range = image.getWidth() / 4;
-        
-        
-        float blendFactor = 1.0f;
-        
-        if (currentX <= range)
-            blendFactor = currentX/range;
-        
-        if (currentX >= image.getWidth() - range )
-        {
-            float rangeStart = (float)image.getWidth() - range;
-            float newX = (float)currentX - rangeStart; //set x to 0
-            float divisor = range / (range - newX) ;
-            
-            blendFactor = 1.0f / divisor;
-        }
-        
-        
-        Colour newCol = Colour(val, val, val, blendFactor);
-        g.setColour (newCol);
-        
-        line.setStart(oldX, oldY);
-        line.setEnd(currentX, top);
-        g.drawLine(line, 2.0f);
+		oscilloLine.lineTo(currentX, currentY);
         ++currentX;
-        
-        oldX = currentX;
-        oldY = top;
     }
-    
+
+	g.setColour(Colours::white);
+	g.strokePath(oscilloLine, PathStrokeType(lineW, PathStrokeType::curved, PathStrokeType::butt));
+
+	Colour fade = backGroundColour.withAlpha(1.0f);
+	Colour unfade = backGroundColour.withAlpha(0.0f);
+
+	int proportion = 4;
+	Rectangle<int> fadeInBounds = image.getBounds().removeFromLeft(w / proportion);
+	Rectangle<int> fadeOutBounds = image.getBounds().removeFromRight(w / proportion);
+
+	ColourGradient fadeIn = ColourGradient::horizontal(fade, unfade,fadeInBounds );
+
+	g.setGradientFill(fadeIn);
+	g.fillAll();
+
+	ColourGradient fadeOut = ColourGradient::horizontal(unfade, fade, fadeOutBounds);
+	g.setGradientFill(fadeOut);
+	g.fillAll();
+	
+
     needToRepaint = true;
 }

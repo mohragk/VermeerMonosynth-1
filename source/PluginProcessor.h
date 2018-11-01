@@ -40,6 +40,7 @@
 #include "ParamSmoother.h"
 #include "TriggeredScope.h"
 #include "Arpeggiator.h"
+#include "LevelMeter.h"
 
 
 #include "MoogLadders/ImprovedModel.h"
@@ -137,6 +138,8 @@ public:
     std::unique_ptr<SequencerState> seqState;
     
 	TriggeredScope scope;
+
+    LevelMeter meter;
 
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
@@ -355,10 +358,12 @@ private:
     
     double sampleRate;
     
-	LinearSmoothedValue<double> cutoff, resonance, drive, envGain, switchGain, pulsewidthSmooth1, pulsewidthSmooth2, pulsewidthSmooth3;
+	LinearSmoothedValue<double> cutoff, resonance, contour, drive, envGain, switchGain, pulsewidthSmooth1, pulsewidthSmooth2, pulsewidthSmooth3;
 	LinearSmoothedValue<double> cutoffFromEnvelope, saturationAmount;
+    
+    std::vector<LinearSmoothedValue<double>> gainSmoothed;
 	
-	double cutoffRampTimeDefault = 0.0002, cutoffRampTime;
+	double cutoffRampTimeDefault = 0.2, cutoffRampTime;
 	
     
     int lastNotePlayed;

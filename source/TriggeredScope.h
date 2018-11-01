@@ -79,6 +79,8 @@ public:
     void setNewTriggerPoint(double newPos);
     
     void mouseDown (const MouseEvent &event) override;
+    
+    TimeSliceThread* getCurrentThread() { return backgroundThreadToUse; };
 
 private:
     OptionalScopedPointer<TimeSliceThread> backgroundThreadToUse; //MIGHT MAKE THIS std
@@ -98,6 +100,7 @@ private:
     bool needToUpdate;
 
     Image image;
+
     bool needToRepaint;
     CriticalSection imageLock;
     

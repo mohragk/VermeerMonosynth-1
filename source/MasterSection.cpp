@@ -89,7 +89,9 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
 	addAndMakeVisible(arpeggioSwitchSlider.get());
 	arpeggioSwitchSlider->setTooltip("Arpeggio ON/OFF");
     
-    
+    // Level Meter
+    meter_ptr = &processor.meter;
+    addAndMakeVisible(meter_ptr);
     
     
     startTimerHz(60);
@@ -145,9 +147,18 @@ void MasterSection::resized()
         volumeLabel->setJustificationType(Justification::centredBottom);
         volumeSlider->setBounds (strip.removeFromTop(rotaryHeight));
         
+        // LEVEL METER
+        
+       
+        
         
         Rectangle<int> mini (volumeSlider->getBounds());
         softClipSwitchSlider->setBounds(mini.removeFromRight(12).reduced(0, 8));
+        
+        Rectangle<int> meterbounds (strip.removeFromTop(12));
+        meter_ptr->setBounds(meterbounds.reduced(18, 4));
+        meter_ptr->setLowLevelColour(Colours::white);
+        meter_ptr->setBackgroundColour(Colour(0xff0e0e0e));
         
         saturationLabel->setBounds (strip.removeFromTop(labelHeight));
         saturationLabel->setJustificationType(Justification::centredBottom);

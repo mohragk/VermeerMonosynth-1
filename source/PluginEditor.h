@@ -43,6 +43,7 @@
 #include "MasterSection.h"
 #include "Sequencer.h"
 #include "TriggeredScope.h"
+#include "LevelMeter.h"
 
 #include "ParamToggleButton.h"
 #include "MonosynthLookAndFeel.h"
@@ -88,9 +89,10 @@ public:
     std::unique_ptr<Sequencer> sequencerSection;
 
     TriggeredScope* oscilloscope_ptr;
-    
+	
     
 private:
+
 
 
     CustomLookAndFeel customLook2;

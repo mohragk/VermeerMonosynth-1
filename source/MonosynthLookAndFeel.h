@@ -137,12 +137,10 @@ public:
 			auto rx = innerBounds.getCentreX() - knobRadius;
 			auto ry = innerBounds.getCentreY() - knobRadius;
 			auto rw = knobRadius * 2.0f;
-			auto knobAngle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
 
 			g.setColour(outline);
 			g.fillEllipse(rx, ry, rw, rw);
-			//g.setColour(Colour(0xff0e0e0e));
-			//g.drawEllipse(rx, ry, rw, rw, 2.0f);
+			
 
 			
 		}
