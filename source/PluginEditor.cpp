@@ -274,9 +274,9 @@ void MonosynthPluginAudioProcessorEditor::resized()
     oscilloscope_ptr->setBackgroundColour(Colour (0xff0e0e0e));
     
 	// LEVEL METER
-	//Rectangle<int> meterArea(getLocalBounds());
+	Rectangle<int> meterArea(getLocalBounds());
 	meter_ptr->setBounds(titleLabel->getBounds().removeFromTop(12).removeFromLeft(100));
-	meter_ptr->setUnderZeroColour(Colours::white);
+	meter_ptr->setLowLevelColour(Colours::white);
 	meter_ptr->setBackgroundColour(Colour(0xff0e0e0e));
    
     

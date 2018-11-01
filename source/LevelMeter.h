@@ -33,8 +33,9 @@ public :
 	void setOrientation( orientation o ) { currentOrientation = o ; };
 
 	void setBackgroundColour(Colour col) { backgroundColour = col; };
-	void setAboveZeroColour(Colour col) { aboveZeroLevelColour = col; };
-	void setUnderZeroColour(Colour col) { underZeroLevelColour = col; };
+	void setLowLevelColour(Colour col) { lowLevelColour = col; };
+	void setMidLevelColour(Colour col) { midLevelColour = col; };
+	void setMaxLevelColour(Colour col) { maxLevelColour = col; };
 
     
     
@@ -58,8 +59,11 @@ private :
 	Image image;
 
 	Colour backgroundColour = Colours::black;
-	Colour underZeroLevelColour = Colours::white;
-	Colour aboveZeroLevelColour;
+	Colour lowLevelColour = Colours::white;
+	Colour midLevelColour = Colours::orange;
+	Colour maxLevelColour = Colours::red;
+
+	ColourGradient horizontalGradient;
 
 	void renderImage();
 

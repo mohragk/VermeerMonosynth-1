@@ -41,7 +41,7 @@ void LevelMeter::setLevel(double level)
 void LevelMeter::paint(Graphics& g)
 {
 	
-	g.setImageResamplingQuality(Graphics::ResamplingQuality::highResamplingQuality);
+	//g.setImageResamplingQuality(Graphics::ResamplingQuality::highResamplingQuality);
 	g.drawImageWithin(image, 0, 0, getWidth(), getHeight(), RectanglePlacement::stretchToFit);
 }
 
@@ -77,57 +77,59 @@ void LevelMeter::renderImage()
 
     g.fillAll(backgroundColour);
 
+	Rectangle<float> bounds = image.getBounds().toFloat();
 
-    float db = Decibels::gainToDecibels(currentLevel);
+	const float infinity = -30.0f;
+	const float levelDb = Decibels::gainToDecibels((float)currentLevel, infinity);
+	//const float peakDb = juce::Decibels::gainToDecibels(peak, infinity);
+
+    const juce::Rectangle<float> floored (ceilf (bounds.getX()) + 1.0f, ceilf (bounds.getY()) + 1.0f,
+                                          floorf (bounds.getRight()) - (ceilf (bounds.getX() + 2.0f)),
+                                          floorf (bounds.getBottom()) - (ceilf (bounds.getY()) + 2.0f));
+
    
   
 	if (currentOrientation == HORIZONTAL)
 	{
-		Rectangle<float> levelBar ( getBounds().toFloat() );
+		/*
+		if (horizontalGradient.getNumColours() < 2) {
+			horizontalGradient = ColourGradient(lowLevelColour,
+				floored.getX(), floored.getY(),
+				maxLevelColour,
+				floored.getRight(), floored.getY(), false);
+			horizontalGradient.addColour(0.5, lowLevelColour);
+			horizontalGradient.addColour(0.75, midLevelColour);
+		}
         
-        float maxWidth = levelBar.getWidth();
-        
-        
-        float levelWidth = maxWidth * currentLevel;
-        float safeZone = maxWidth * 0.5;
-        
-       if (db > 0)
-       {
-          
-           auto maxDb = 6.0;
-           
-           auto difference = maxDb - db;
-           auto proportion = Decibels::decibelsToGain(difference);
-           
-           auto rest = safeZone * proportion;
-           
-           Rectangle<float> safeBar (levelBar.removeFromLeft(safeZone));
-           g.setColour(underZeroLevelColour);
-           g.fillRect(safeBar);
-           
-           Rectangle<float> overBar (levelBar.removeFromLeft(rest));
-           g.setColour(Colours::red);
-           g.fillRect(overBar);
-       }
-       else
-       {
-           Rectangle<float> filledBar(levelBar.removeFromLeft(levelWidth));
-           
-           g.setColour(underZeroLevelColour);
-           g.fillRect(filledBar);
-       }
+		g.setGradientFill(horizontalGradient);
+		g.fillRect(floored.withRight(floored.getRight() - levelDb * floored.getWidth() / infinity));
+        */
+     
+		if (levelDb > -1.0)
+		{
+			Rectangle<float> safeBar(floored.withRight(floored.getRight() - (-1.0f * floored.getWidth() / infinity)));
+			g.setColour(lowLevelColour);
+			g.fillRect(safeBar);
 
+			Rectangle<float> overBar(
+				floored
+				.withLeft(floored.getX() + (-1.0f * floored.getWidth() / infinity))
+				//.withRight(floored.getRight() - (levelDb * floored.getWidth() / infinity))
+			);
+			g.setColour(maxLevelColour);
+			g.fillRect(overBar);
+		}
+		else
+		{
+			Rectangle<float> safeBar(floored.withRight(floored.getRight() - (levelDb * floored.getWidth() / infinity)));
+			g.setColour(lowLevelColour);
+			g.fillRect(safeBar);
+		}
 		
 	}
 	else if (currentOrientation == VERTICAL)
 	{
-		Rectangle<float> levelBar(getBounds().toFloat().reduced(4));
-		float proportion = levelBar.getHeight() * currentLevel;
-
-		Rectangle<float> filledBar(levelBar.removeFromBottom(proportion));
-
-		g.setColour(underZeroLevelColour);
-		g.fillRect(filledBar);
+		//TODO
 	}
 
 	needToRepaint = true;
