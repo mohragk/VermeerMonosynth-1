@@ -112,16 +112,11 @@ void LevelMeter::renderImage()
 	if (currentOrientation == HORIZONTAL)
 	{
         scale = 0.85f * floored.getWidth();
-        auto safeWidth = iec_scale(-0.4f);
+        auto safeWidth = iec_scale(-0.3f);
 		auto levelWidth = iec_scale(levelDb);
-        
-        
-        
+
         if (levelWidth > safeWidth)
         {
-            int restWidth = floored.getWidth() - levelWidth;
-            
-
             Rectangle<float> safeBounds (floored.withRight(floored.getX() + safeWidth));
             
             g.setColour(lowLevelColour.darker());
