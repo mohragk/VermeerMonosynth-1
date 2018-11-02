@@ -34,7 +34,7 @@ public :
 
 	void setBackgroundColour(Colour col) { backgroundColour = col; };
 	void setLowLevelColour(Colour col) { lowLevelColour = col; };
-	void setMidLevelColour(Colour col) { midLevelColour = col; };
+	void setMidLevelColour(Colour col) { midLevelColour = col; }; // unused
 	void setMaxLevelColour(Colour col) { maxLevelColour = col; };
 
     
@@ -49,8 +49,12 @@ private :
 
     
 	double currentLevel;
-	double skew;
 	float scale;
+    
+    int maxLevel = 0;
+    uint64 prevTime;
+    int decayRateMillis = 500;
+    int countDownTimer = decayRateMillis;
 
 	orientation currentOrientation;
 
@@ -64,7 +68,6 @@ private :
 	Colour midLevelColour = Colours::orange;
     Colour maxLevelColour = Colours::red;
 
-	ColourGradient horizontalGradient;
 
 	void renderImage();
 

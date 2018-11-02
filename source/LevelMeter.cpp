@@ -41,7 +41,6 @@ void LevelMeter::setLevel(double level)
 void LevelMeter::paint(Graphics& g)
 {
 	
-	//g.setImageResamplingQuality(Graphics::ResamplingQuality::highResamplingQuality);
 	g.drawImageWithin(image, 0, 0, getWidth(), getHeight(), RectanglePlacement::stretchToFit);
 }
 
@@ -49,17 +48,17 @@ void LevelMeter::resized()
 {
 	image = Image(Image::ARGB, jmax(1, getWidth()), jmax(1, getHeight()), true);
 
-	
+    float scaler = 0.8;
 
 	if (getWidth() > getHeight())
 	{
 		currentOrientation = HORIZONTAL;
-		scale = 0.85f * getWidth();
+		scale = scaler * getWidth();
 	}
 	else
 	{
 		currentOrientation = VERTICAL;
-		scale = 0.85f * getHeight();
+		scale = scaler * getHeight();
 	}
 
 	Graphics g(image);
@@ -87,22 +86,8 @@ void LevelMeter::renderImage()
 
 	Rectangle<float> bounds = image.getBounds().toFloat();
 
-	const float infinity = -70.0f;
-	float levelDb = Decibels::gainToDecibels((float)currentLevel, infinity);
 
-	if (levelDb < infinity)
-		levelDb = infinity;
-	else if (levelDb > 6.0)
-		levelDb = 6.0;
-
-
-    /*
-    const juce::Rectangle<float> floored (ceilf (bounds.getX()) + 1.0f, ceilf (bounds.getY()) + 1.0f,
-                                          floorf (bounds.getRight()) - (ceilf (bounds.getX() + 2.0f)),
-                                          floorf (bounds.getBottom()) - (ceilf (bounds.getY()) + 2.0f));
-
-     */
-    const Rectangle<float> floored ( image.getBounds().toFloat().reduced(1,1) );
+    const Rectangle<float> floored ( bounds.reduced(1,1) );
    
     Colour bg = Colours::darkgrey.darker().darker();
     g.setColour(bg);
@@ -111,10 +96,9 @@ void LevelMeter::renderImage()
   
 	if (currentOrientation == HORIZONTAL)
 	{
-        scale = 0.85f * floored.getWidth();
-        auto safeWidth = iec_scale(-0.3f);
-		auto levelWidth = iec_scale(levelDb);
-
+        auto safeWidth = scale; //iec_scale(-0.3f);
+        auto levelWidth = currentLevel * scale;//iec_scale(levelDb);
+        
         if (levelWidth > safeWidth)
         {
             Rectangle<float> safeBounds (floored.withRight(floored.getX() + safeWidth));
@@ -126,7 +110,6 @@ void LevelMeter::renderImage()
            // restBounds = restBounds.withRight(restBounds.getRight() - restWidth);
             g.setColour(maxLevelColour);
             g.fillRect(restBounds);
-            
         }
         else
         {
@@ -135,19 +118,37 @@ void LevelMeter::renderImage()
             g.setColour(lowLevelColour.darker());
             g.fillRect(levelBounds);
         }
-
-		
-
-		
 	}
 	else if (currentOrientation == VERTICAL)
 	{
-		//TODO
+        auto safeHeight = scale; //iec_scale(-0.3f);
+        auto levelHeight = currentLevel * scale;//iec_scale(levelDb);
+        
+        if (levelHeight > safeHeight)
+        {
+            Rectangle<float> safeBounds (floored.withTop(floored.getY() + safeHeight));
+            
+            g.setColour(lowLevelColour.darker());
+            g.fillRect(safeBounds);
+            
+            Rectangle<float> restBounds (floored.withBottom(floored.getY() + floored.getHeight() - safeHeight));
+            // restBounds = restBounds.withRight(restBounds.getRight() - restWidth);
+            g.setColour(maxLevelColour);
+            g.fillRect(restBounds);
+        }
+        else
+        {
+            Rectangle<float> levelBounds (floored.withTop(floored.getY() + levelHeight));
+            
+            g.setColour(lowLevelColour.darker());
+            g.fillRect(levelBounds);
+        }
 	}
 
 	needToRepaint = true;
 }
 
+// UNUSED
 int LevelMeter::iec_scale(const float dB)
 {
 	float def = 1.0f;
