@@ -16,36 +16,26 @@ LevelMeter::LevelMeter() :
 {
 	image = Image(Image::ARGB, jmax(1, getWidth()), jmax(1, getHeight()), true);
 
-    
 	startTimerHz(30);
 }
 
 LevelMeter::~LevelMeter() 
 {
 	stopTimer();
-    
-    
 }
 
-void LevelMeter::setLevel(double level)
-{
-    
-	// TODO: make it logarithmic in response
-    
-  
-    currentLevel = level;
-    
-    
-}
+
 
 void LevelMeter::paint(Graphics& g)
 {
-	
+    const ScopedLock sl (imageLock);
 	g.drawImageWithin(image, 0, 0, getWidth(), getHeight(), RectanglePlacement::stretchToFit);
 }
 
 void LevelMeter::resized()
 {
+    const ScopedLock sl (imageLock);
+    
 	image = Image(Image::ARGB, jmax(1, getWidth()), jmax(1, getHeight()), true);
 
     float scaler = 0.8;
@@ -80,94 +70,92 @@ void LevelMeter::timerCallback()
 
 void LevelMeter::renderImage()
 {
+    const ScopedLock sl (imageLock);
+    
 	Graphics g(image);
 
     g.fillAll(backgroundColour);
 
 	Rectangle<float> bounds = image.getBounds().toFloat();
-
-
-    const Rectangle<float> floored ( bounds.reduced(1,1) );
+    const Rectangle<float> innerBounds ( bounds );
+    
+    auto lineW = 4.0;
+    auto lineCentreY = innerBounds.getCentreY() - (lineW / 2.0f);
+    auto lineCentreX = innerBounds.getCentreX() - (lineW / 2.0f);
    
-    Colour bg = Colours::darkgrey.darker().darker();
-    g.setColour(bg);
-    g.fillRect(floored);
+    
 
   
 	if (currentOrientation == HORIZONTAL)
 	{
-        auto safeWidth = scale; //iec_scale(-0.3f);
-        auto levelWidth = currentLevel * scale;//iec_scale(levelDb);
+        Colour bg = Colours::darkgrey.darker().darker();
+        g.setColour(bg);
+        
+        Line<float> fullLine (innerBounds.getX(), lineCentreY, innerBounds.getRight(), lineCentreY);
+        
+        g.drawLine(fullLine, lineW);
+        
+        auto safeWidth  = scale;
+        auto levelWidth = currentLevel * scale;
         
         if (levelWidth > safeWidth)
         {
-            Rectangle<float> safeBounds (floored.withRight(floored.getX() + safeWidth));
+            Line<float> safeLine (fullLine.withShortenedEnd(innerBounds.getWidth() - safeWidth));
             
             g.setColour(lowLevelColour.darker());
-            g.fillRect(safeBounds);
+            g.drawLine(safeLine, lineW);
             
-            Rectangle<float> restBounds (floored.withLeft(floored.getX() + safeWidth));
-           // restBounds = restBounds.withRight(restBounds.getRight() - restWidth);
+            Line<float> overLine (fullLine.withShortenedStart(safeWidth));
             g.setColour(maxLevelColour);
-            g.fillRect(restBounds);
+            g.drawLine(overLine, lineW);
         }
         else
         {
-            Rectangle<float> levelBounds (floored.withRight(floored.getX() + levelWidth));
+            Line<float> levelLine (fullLine.withShortenedEnd(innerBounds.getWidth() - levelWidth));
             
             g.setColour(lowLevelColour.darker());
-            g.fillRect(levelBounds);
+            g.drawLine(levelLine, lineW);
         }
 	}
 	else if (currentOrientation == VERTICAL)
 	{
+        //
+        // UNTESTED
+        //
+        
+        
+        Colour bg = Colours::darkgrey.darker().darker();
+        g.setColour(bg);
+        
+        Line<float> fullLine (lineCentreX, innerBounds.getBottom(), lineCentreX, innerBounds.getY());
+        
+        g.drawLine(fullLine, lineW);
+        
         auto safeHeight = scale; //iec_scale(-0.3f);
         auto levelHeight = currentLevel * scale;//iec_scale(levelDb);
         
         if (levelHeight > safeHeight)
         {
-            Rectangle<float> safeBounds (floored.withTop(floored.getY() + safeHeight));
+            Line<float> safeLine (fullLine.withShortenedEnd(innerBounds.getHeight() - safeHeight));
             
             g.setColour(lowLevelColour.darker());
-            g.fillRect(safeBounds);
+            g.drawLine(safeLine, lineW);
             
-            Rectangle<float> restBounds (floored.withBottom(floored.getY() + floored.getHeight() - safeHeight));
-            // restBounds = restBounds.withRight(restBounds.getRight() - restWidth);
+            Line<float> overLine (fullLine.withShortenedStart(safeHeight));
             g.setColour(maxLevelColour);
-            g.fillRect(restBounds);
+            g.drawLine(overLine, lineW);
         }
         else
         {
-            Rectangle<float> levelBounds (floored.withTop(floored.getY() + levelHeight));
+            Line<float> levelLine (fullLine.withShortenedEnd(innerBounds.getHeight() - levelHeight));
             
             g.setColour(lowLevelColour.darker());
-            g.fillRect(levelBounds);
+            g.drawLine(levelLine, lineW);
         }
 	}
 
 	needToRepaint = true;
 }
 
-// UNUSED
-int LevelMeter::iec_scale(const float dB)
-{
-	float def = 1.0f;
 
-	if (dB < -70.0f)
-		def = 0.0;
-	else if (dB < -60.0f)
-		def = (dB + 70.0) * 0.0025;
-	else if (dB < -50.0f)
-		def = (dB + 60.0) * 0.005 + 0.025;
-	else if (dB < -40.0f)
-		def = (dB + 50.0) * 0.0075 + 0.075;
-	else if (dB < -30.0f)
-		def = (dB + 40.0) * 0.015 + 0.015;
-	else if (dB < -20.0f)
-		def = (dB + 30.0) * 0.02 + 0.3;
-	else
-		def = (dB + 20.0) * 0.025 + 0.5;
-
-	return std::round(def * scale);
-}
 

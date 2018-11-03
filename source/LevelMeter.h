@@ -47,15 +47,11 @@ public :
 
 private :
 
+    CriticalSection imageLock;
     
 	double currentLevel;
 	float scale;
     
-    int maxLevel = 0;
-    uint64 prevTime;
-    int decayRateMillis = 500;
-    int countDownTimer = decayRateMillis;
-
 	orientation currentOrientation;
 
 	bool needToRepaint;
@@ -68,12 +64,15 @@ private :
 	Colour midLevelColour = Colours::orange;
     Colour maxLevelColour = Colours::red;
 
-
 	void renderImage();
 
-	int iec_scale(const float dB);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelMeter)
 };
+
+inline void LevelMeter::setLevel(double level)
+{
+    currentLevel = level;
+}
 
 #endif // LEVEL_METER_H

@@ -155,8 +155,8 @@ void MasterSection::resized()
         Rectangle<int> mini (volumeSlider->getBounds());
         softClipSwitchSlider->setBounds(mini.removeFromRight(12).reduced(0, 8));
         
-        Rectangle<int> meterbounds (strip.removeFromTop(12));
-        meter_ptr->setBounds(meterbounds.reduced(18, 4));
+        Rectangle<int> meterbounds (strip.removeFromTop(labelHeight));
+        meter_ptr->setBounds(meterbounds.reduced(18, 0));
         meter_ptr->setLowLevelColour(Colours::white);
         meter_ptr->setBackgroundColour(Colour(0xff0e0e0e));
         
