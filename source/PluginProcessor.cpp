@@ -599,7 +599,7 @@ void MonosynthPluginAudioProcessor::setOversampleQuality(int q = 0)
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& oversampling)
+void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, dsp::Oversampling<FloatType>* oversampling)
 {
     
     bool hqOn = bool(*useHQOversamplingParam);

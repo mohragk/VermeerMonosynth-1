@@ -77,9 +77,9 @@ public:
 
         jassert (! isUsingDoublePrecision());
         if (*useHQOversamplingParam)
-            process (buffer, midiMessages, oversamplingFloatHQ);
+            process (buffer, midiMessages, oversamplingFloatHQ.get());
         else
-            process (buffer, midiMessages, oversamplingFloat);
+            process (buffer, midiMessages, oversamplingFloat.get());
     }
     
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
@@ -280,7 +280,7 @@ private:
     float dbToGain(float dB, float min);
 
 	template <typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, std::unique_ptr<dsp::Oversampling<FloatType>>& os);
+    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, dsp::Oversampling<FloatType>* os);
 
     template <typename FloatType>
     void applyGain (AudioBuffer<FloatType>& buffer);
