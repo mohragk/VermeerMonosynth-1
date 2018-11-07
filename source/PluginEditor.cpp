@@ -88,7 +88,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 {
     // add all the sliders..
     
-    font = "Futura";
+    font = "Futura Std Medium";
     
 
 	typedef ParameterSlider::style knobStyle;

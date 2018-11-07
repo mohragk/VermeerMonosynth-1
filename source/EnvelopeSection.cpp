@@ -16,10 +16,12 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
                                                 :
                                                 processor(p)
 {
-    font = "Futura";
+    font = Font::getDefaultSansSerifFontName();
     
 
 	typedef ParameterSlider::style knobStyle;
+
+	//Font f = Font(Font::getDefaultSansSerifFontName(), 22.0f, Font::plain);
     
     envelopesLabel.reset ( new Label ("Envelopes", TRANS("Envelopes")));
     addAndMakeVisible (envelopesLabel.get());

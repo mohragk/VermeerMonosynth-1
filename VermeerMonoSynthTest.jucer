@@ -70,6 +70,8 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
+    <FILE id="b4fOgi" name="FuturaStd-Medium.otf" compile="1" resource="1"
+          file="Fonts/FuturaStd-Medium.otf"/>
     <FILE id="GBUZI2" name="LevelMeterProcessor.h" compile="0" resource="0"
           file="source/LevelMeterProcessor.h"/>
     <FILE id="XjLRpQ" name="LevelMeter.cpp" compile="1" resource="0" file="source/LevelMeter.cpp"/>
@@ -172,6 +174,6 @@
   </MODULES>
   <LIVE_SETTINGS>
     <OSX buildEnabled="0"/>
-    <WINDOWS buildEnabled="0"/>
+    <WINDOWS buildEnabled="1"/>
   </LIVE_SETTINGS>
 </JUCERPROJECT>

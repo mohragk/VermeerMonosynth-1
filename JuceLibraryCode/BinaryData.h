@@ -8,6 +8,9 @@
 
 namespace BinaryData
 {
+    extern const char*   FuturaStdMedium_otf;
+    const int            FuturaStdMedium_otfSize = 26892;
+
     extern const char*   OscNoiseWaveSymbol_svg;
     const int            OscNoiseWaveSymbol_svgSize = 650;
 
@@ -18,7 +21,7 @@ namespace BinaryData
     const int            MonoSynthIconSmall_pngSize = 1273;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 3;
+    const int namedResourceListSize = 4;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];
