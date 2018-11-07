@@ -41,6 +41,7 @@
 #include "TriggeredScope.h"
 #include "Arpeggiator.h"
 #include "LevelMeter.h"
+#include "LEDProcessor.h"
 
 
 #include "MoogLadders/ImprovedModel.h"
@@ -140,6 +141,7 @@ public:
 	TriggeredScope scope;
 
     LevelMeter meter;
+	LEDProcessor envelopeLED1;
 
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;

@@ -145,6 +145,9 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     retriggerButton.reset(new ParamToggleButton(*processor.envelopeRetriggerParam));
     addAndMakeVisible(retriggerButton.get());
+
+	envelopeLEDComp1.reset(new LED(processor.envelopeLED1));
+	addAndMakeVisible(envelopeLEDComp1.get());
     
     setSize(300,300); //Gets reset by plugineditor
     
@@ -171,87 +174,93 @@ void EnvelopeSection::paint (Graphics& g)
 
 void EnvelopeSection::resized()
 {
-    Rectangle<int> area (getLocalBounds());
-    
-    int headerHeight = 48;
-    
-    //Rectangle<int> headerArea (area.removeFromTop (headerHeight));
-    envelopesLabel->setBounds (area.removeFromTop(headerHeight));
-    envelopesLabel->setJustificationType(Justification::centred);
-    
-    
-    int labelHeight = 24;
-    int envelopeWidth = 72;
-    int envelopeHeight = 96;
-    //int envMargin = 0;
-    int sliderWidth = 18;
-    int sliderMargin = 2;
-    //int rotarySize = 48;
-    
-    {
-        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
-        
-        envAmpLabel->setBounds(envArea.removeFromTop(labelHeight));
-        envAmpLabel->setJustificationType(Justification::centredBottom);
-        
-        Rectangle<int> envBlock (envArea.removeFromLeft(sliderWidth * 4 ));
-    
-        attackSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        decaySlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        sustainSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        releaseSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        
-        Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth));
-        attackCurveSlider1->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
-        decRelCurveSlider1->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
-        
-        
-        
-    }
-    
-    {
-        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
-        
-        envFilterLabel->setBounds(envArea.removeFromTop(labelHeight));
-        envFilterLabel->setJustificationType(Justification::centredBottom);
-        
-        Rectangle<int> envBlock (envArea.removeFromLeft(sliderWidth * 4 ));
-        
-        attackSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        decaySlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        sustainSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        releaseSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        
-        Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth));
-        attackCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
-        decRelCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
-        
-        
-        
-    }
-    {
-        Rectangle<int> envArea (area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
-        
-        envPitchLabel->setBounds(envArea.removeFromTop(labelHeight));
-        envPitchLabel->setJustificationType(Justification::centredBottom);
-        
-        attackSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        decaySlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        sustainSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        releaseSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
-        
-        Rectangle<int> tweakArea (envArea.removeFromLeft(envelopeWidth));
-        attackCurveSlider3->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
-        decRelCurveSlider3->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
-        
-        
-        
-    }
-    
-    {
-        Rectangle<int> buttonArea (area.removeFromTop(labelHeight * 4));
-        
-        retriggerButton->setBounds(buttonArea.removeFromLeft(area.getWidth()).reduced(12,0));
-        retriggerButton->setButtonText("");
-    }
+	Rectangle<int> area(getLocalBounds());
+
+	int headerHeight = 48;
+
+	//Rectangle<int> headerArea (area.removeFromTop (headerHeight));
+	envelopesLabel->setBounds(area.removeFromTop(headerHeight));
+	envelopesLabel->setJustificationType(Justification::centred);
+
+
+	int labelHeight = 24;
+	int envelopeWidth = 72;
+	int envelopeHeight = 96;
+	//int envMargin = 0;
+	int sliderWidth = 18;
+	int sliderMargin = 2;
+	//int rotarySize = 48;
+
+	{
+		Rectangle<int> envArea(area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
+
+		envAmpLabel->setBounds(envArea.removeFromTop(labelHeight));
+		envAmpLabel->setJustificationType(Justification::centredBottom);
+
+		Rectangle<int> ledArea(envAmpLabel.get()->getBounds());
+		envelopeLEDComp1->setBounds(ledArea.removeFromLeft(40).reduced(12));
+		envelopeLEDComp1->setBackgroundColour(Colour(0xff0e0e0e));
+
+		Rectangle<int> envBlock(envArea.removeFromLeft(sliderWidth * 4));
+
+		attackSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+		decaySlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+		sustainSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+		releaseSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+
+		Rectangle<int> tweakArea(envArea.removeFromLeft(envelopeWidth));
+		attackCurveSlider1->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+		decRelCurveSlider1->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+
+
+
+	}
+
+	{
+		Rectangle<int> envArea(area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
+
+		envFilterLabel->setBounds(envArea.removeFromTop(labelHeight));
+		envFilterLabel->setJustificationType(Justification::centredBottom);
+
+		Rectangle<int> envBlock(envArea.removeFromLeft(sliderWidth * 4));
+
+		attackSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+		decaySlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+		sustainSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+		releaseSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+
+		Rectangle<int> tweakArea(envArea.removeFromLeft(envelopeWidth));
+		attackCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+		decRelCurveSlider2->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+
+
+
+	}
+	{
+		Rectangle<int> envArea(area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
+
+		envPitchLabel->setBounds(envArea.removeFromTop(labelHeight));
+		envPitchLabel->setJustificationType(Justification::centredBottom);
+
+		attackSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+		decaySlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+		sustainSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+		releaseSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
+
+		Rectangle<int> tweakArea(envArea.removeFromLeft(envelopeWidth));
+		attackCurveSlider3->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+		decRelCurveSlider3->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+
+
+
+	}
+
+	{
+		Rectangle<int> buttonArea(area.removeFromTop(labelHeight));
+
+		retriggerButton->setBounds(buttonArea.removeFromLeft(area.getWidth()).reduced(12, 0));
+		retriggerButton->setButtonText("");
+	}
+
 }
+	

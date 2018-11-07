@@ -327,6 +327,8 @@ glideTimeParam(nullptr)
         gainSmoothed.push_back(smval);
     }
     
+
+	
     
 }
 
@@ -676,7 +678,11 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
                 const FloatType* input    = chunkBuffer.getReadPointer(0);
                 FloatType* dataLeft = chunkBuffer.getWritePointer(0);
                 
-                dataLeft[pos] = input[pos] * envelopeGenerator[0].get()->process();
+				FloatType gain = envelopeGenerator[0].get()->process();
+
+				envelopeLED1.setBrightness((float)gain);
+
+                dataLeft[pos] = input[pos] * gain;
             }
         }
     

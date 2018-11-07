@@ -15,6 +15,7 @@
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
 #include "ParamToggleButton.h"
+#include "LEDComponent.h"
 
 //==============================================================================
 /*
@@ -77,6 +78,7 @@ public:
 private:
    MonosynthPluginAudioProcessor& processor;
 
+   std::unique_ptr<LED> envelopeLEDComp1;
 
     enum style
 	{
