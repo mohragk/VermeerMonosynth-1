@@ -198,7 +198,7 @@ void EnvelopeSection::resized()
 		envAmpLabel->setJustificationType(Justification::centredBottom);
 
 		Rectangle<int> ledArea(envAmpLabel.get()->getBounds());
-		envelopeLEDComp1->setBounds(ledArea.removeFromLeft(40).reduced(12));
+		envelopeLEDComp1->setBounds(ledArea.removeFromLeft(40).reduced(12,6));
 		envelopeLEDComp1->setBackgroundColour(Colour(0xff0e0e0e));
 
 		Rectangle<int> envBlock(envArea.removeFromLeft(sliderWidth * 4));
