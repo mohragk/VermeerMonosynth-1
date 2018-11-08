@@ -16,26 +16,28 @@
 class MonosynthLookAndFeel : public LookAndFeel_V4
 {
 public:
-	MonosynthLookAndFeel() 
+	MonosynthLookAndFeel()
 	{
-        defaultOutlineCol = Colours::darkgrey;
-        defaultFillCol = Colours::black;
-        setColour(ToggleButton::tickColourId, darkThumb);
+		defaultOutlineCol = Colours::darkgrey;
+		defaultFillCol = Colours::black;
+		setColour(ToggleButton::tickColourId, darkThumb);
 
+		//static Typeface::Ptr customTypeface = Typeface::createSystemTypefaceFor(BinaryData::NowBlack_ttf, BinaryData::NowBlack_ttfSize);
+		//setDefaultSansSerifTypeface(customTypeface);
 	}
 
 
 	virtual ~MonosynthLookAndFeel() {}
 	
 	
-    /*
+    
 	Typeface::Ptr getTypefaceForFont(const Font& f) override
 	{
-		static Typeface::Ptr myFont = Typeface::createSystemTypefaceFor(BinaryData::FuturaStdMedium_otf,
-			BinaryData::FuturaStdMedium_otfSize);
+		static Typeface::Ptr myFont = Typeface::createSystemTypefaceFor(BinaryData::HKSuperMedium_ttf,
+			BinaryData::HKSuperMedium_ttfSize);
 		return myFont;
 	}
-    */
+    
     
     
     void drawTickBox (Graphics &g, Component &c, float x, float y, float w, float h, bool ticked, bool isEnabled, bool isMouseOverButton, bool isButtonDown) override

@@ -95,7 +95,7 @@ private:
 
 
 
-    CustomLookAndFeel customLook2;
+    //CustomLookAndFeel customLook2;
 
 	MonosynthLookAndFeel customLook;
 

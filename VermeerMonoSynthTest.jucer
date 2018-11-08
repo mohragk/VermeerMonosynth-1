@@ -70,43 +70,52 @@
     </VS2017>
   </EXPORTFORMATS>
   <MAINGROUP id="dYAMo6Ykd" name="Vermeer Monosynth">
-    <FILE id="nzNwdh" name="LEDComponent.cpp" compile="1" resource="0"
-          file="source/LEDComponent.cpp"/>
-    <FILE id="t6nBsB" name="LEDComponent.h" compile="0" resource="0" file="source/LEDComponent.h"/>
-    <FILE id="ztPLjV" name="LEDProcessor.h" compile="0" resource="0" file="source/LEDProcessor.h"/>
-    <FILE id="GBUZI2" name="LevelMeterProcessor.h" compile="0" resource="0"
-          file="source/LevelMeterProcessor.h"/>
-    <FILE id="XjLRpQ" name="LevelMeter.cpp" compile="1" resource="0" file="source/LevelMeter.cpp"/>
-    <FILE id="k9Ewz2" name="LevelMeter.h" compile="0" resource="0" file="source/LevelMeter.h"/>
-    <FILE id="EP3OMO" name="CustomLookAndFeel.h" compile="0" resource="0"
-          file="source/CustomLookAndFeel.h"/>
-    <FILE id="qFpYKb" name="MonosynthLookAndFeel.h" compile="0" resource="0"
-          file="source/MonosynthLookAndFeel.h"/>
-    <FILE id="ktVWLL" name="Arpeggiator.h" compile="0" resource="0" file="source/Arpeggiator.h"/>
-    <FILE id="XBw4Lp" name="FifoBuffer.h" compile="0" resource="0" file="source/FifoBuffer.h"/>
-    <FILE id="d37YSU" name="TriggeredScope.cpp" compile="1" resource="0"
-          file="source/TriggeredScope.cpp"/>
-    <FILE id="IxoIMm" name="TriggeredScope.h" compile="0" resource="0"
-          file="source/TriggeredScope.h"/>
-    <FILE id="UCRHL7" name="ParamSmoother.h" compile="0" resource="0" file="source/ParamSmoother.h"/>
-    <FILE id="L5yrsA" name="SequencerProcessor.cpp" compile="1" resource="0"
-          file="source/SequencerProcessor.cpp"/>
-    <FILE id="epB0jA" name="SequencerProcessor.h" compile="0" resource="0"
-          file="source/SequencerProcessor.h"/>
-    <FILE id="fswhRw" name="SequencerState.h" compile="0" resource="0"
-          file="source/SequencerState.h"/>
-    <FILE id="uGPIXG" name="EditorDefines.h" compile="0" resource="0" file="source/EditorDefines.h"/>
-    <FILE id="RMtzUq" name="colorcheck.cpp" compile="1" resource="0" file="source/colorcheck.cpp"/>
-    <FILE id="gLySbD" name="colorcheck.h" compile="0" resource="0" file="source/colorcheck.h"/>
-    <FILE id="a3uziP" name="ParamToggleButton.h" compile="0" resource="0"
-          file="source/ParamToggleButton.h"/>
-    <FILE id="OuARf9" name="OscNoiseWaveSymbol.svg" compile="0" resource="1"
-          file="Resources/OscNoiseWaveSymbol.svg"/>
-    <FILE id="IbiCwm" name="MonoSynthIconLarge.png" compile="0" resource="1"
-          file="Resources/MonoSynthIconLarge.png"/>
-    <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"
-          file="Resources/MonoSynthIconSmall.png"/>
+    <GROUP id="{3FD414D8-3BE8-12B8-6293-5467370E5C40}" name="MIDI">
+      <FILE id="ktVWLL" name="Arpeggiator.h" compile="0" resource="0" file="source/Arpeggiator.h"/>
+      <FILE id="L5yrsA" name="SequencerProcessor.cpp" compile="1" resource="0"
+            file="source/SequencerProcessor.cpp"/>
+      <FILE id="epB0jA" name="SequencerProcessor.h" compile="0" resource="0"
+            file="source/SequencerProcessor.h"/>
+      <FILE id="fswhRw" name="SequencerState.h" compile="0" resource="0"
+            file="source/SequencerState.h"/>
+    </GROUP>
+    <GROUP id="{6E5D7BB0-43A4-E7AE-96AE-D81915F1192D}" name="Icons">
+      <FILE id="OuARf9" name="OscNoiseWaveSymbol.svg" compile="0" resource="1"
+            file="Resources/OscNoiseWaveSymbol.svg"/>
+      <FILE id="IbiCwm" name="MonoSynthIconLarge.png" compile="0" resource="1"
+            file="Resources/MonoSynthIconLarge.png"/>
+      <FILE id="aJR5EJ" name="MonoSynthIconSmall.png" compile="0" resource="1"
+            file="Resources/MonoSynthIconSmall.png"/>
+    </GROUP>
+    <GROUP id="{5F6A0058-164E-5398-05C2-A1F840D98FC0}" name="Fonts">
+      <FILE id="gRmuiT" name="HKSuper-Medium.ttf" compile="0" resource="1"
+            file="Resources/HKSuper-Medium.ttf"/>
+      <FILE id="mqouDK" name="Now-Black.ttf" compile="0" resource="1" file="Resources/Now-Black.ttf"/>
+      <FILE id="pMk1xf" name="Now-Thin.otf" compile="0" resource="1" file="Resources/Now-Thin.otf"/>
+      <FILE id="RKlUSg" name="Now-Medium.otf" compile="0" resource="1" file="Resources/Now-Medium.otf"/>
+    </GROUP>
     <GROUP id="{2228E79D-0248-DE30-0778-4EACA13EF67E}" name="GUI">
+      <FILE id="XBw4Lp" name="FifoBuffer.h" compile="0" resource="0" file="source/FifoBuffer.h"/>
+      <FILE id="d37YSU" name="TriggeredScope.cpp" compile="1" resource="0"
+            file="source/TriggeredScope.cpp"/>
+      <FILE id="IxoIMm" name="TriggeredScope.h" compile="0" resource="0"
+            file="source/TriggeredScope.h"/>
+      <FILE id="nzNwdh" name="LEDComponent.cpp" compile="1" resource="0"
+            file="source/LEDComponent.cpp"/>
+      <FILE id="t6nBsB" name="LEDComponent.h" compile="0" resource="0" file="source/LEDComponent.h"/>
+      <FILE id="ztPLjV" name="LEDProcessor.h" compile="0" resource="0" file="source/LEDProcessor.h"/>
+      <FILE id="GBUZI2" name="LevelMeterProcessor.h" compile="0" resource="0"
+            file="source/LevelMeterProcessor.h"/>
+      <FILE id="XjLRpQ" name="LevelMeter.cpp" compile="1" resource="0" file="source/LevelMeter.cpp"/>
+      <FILE id="k9Ewz2" name="LevelMeter.h" compile="0" resource="0" file="source/LevelMeter.h"/>
+      <FILE id="EP3OMO" name="CustomLookAndFeel.h" compile="0" resource="0"
+            file="source/CustomLookAndFeel.h"/>
+      <FILE id="qFpYKb" name="MonosynthLookAndFeel.h" compile="0" resource="0"
+            file="source/MonosynthLookAndFeel.h"/>
+      <FILE id="RMtzUq" name="colorcheck.cpp" compile="1" resource="0" file="source/colorcheck.cpp"/>
+      <FILE id="gLySbD" name="colorcheck.h" compile="0" resource="0" file="source/colorcheck.h"/>
+      <FILE id="a3uziP" name="ParamToggleButton.h" compile="0" resource="0"
+            file="source/ParamToggleButton.h"/>
       <FILE id="SDib0U" name="OscillatorSection.cpp" compile="1" resource="0"
             file="source/OscillatorSection.cpp"/>
       <FILE id="x0XULL" name="OscillatorSection.h" compile="0" resource="0"
@@ -156,6 +165,7 @@
     <FILE id="BU8U7s" name="Oscillator.h" compile="0" resource="0" file="source/Oscillator.h"/>
     <FILE id="yf17tA" name="lfo.h" compile="0" resource="0" file="source/lfo.h"/>
     <FILE id="EHurt1" name="PulseClock.h" compile="0" resource="0" file="source/PulseClock.h"/>
+    <FILE id="UCRHL7" name="ParamSmoother.h" compile="0" resource="0" file="source/ParamSmoother.h"/>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
   <MODULES>
