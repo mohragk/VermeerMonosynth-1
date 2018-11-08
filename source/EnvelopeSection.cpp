@@ -145,6 +145,9 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     retriggerButton.reset(new ParamToggleButton(*processor.envelopeRetriggerParam));
     addAndMakeVisible(retriggerButton.get());
+    
+   
+    
 
 	led1.reset(new LED(processor.envelopeLED1));
 	addAndMakeVisible(led1.get());
@@ -274,10 +277,10 @@ void EnvelopeSection::resized()
 	}
 
 	{
-		Rectangle<int> buttonArea(area.removeFromTop(labelHeight));
+		Rectangle<int> buttonArea(area.removeFromTop(labelHeight * 4));
 
 		retriggerButton->setBounds(buttonArea.removeFromLeft(area.getWidth()).reduced(12, 0));
-		retriggerButton->setButtonText("");
+		retriggerButton->setButtonText("Retrigger");
 	}
 
 }

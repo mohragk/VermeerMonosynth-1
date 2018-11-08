@@ -35,7 +35,7 @@ public:
 			BinaryData::FuturaStdMedium_otfSize);
 		return myFont;
 	}
-     */
+    */
     
     
     void drawTickBox (Graphics &g, Component &c, float x, float y, float w, float h, bool ticked, bool isEnabled, bool isMouseOverButton, bool isButtonDown) override

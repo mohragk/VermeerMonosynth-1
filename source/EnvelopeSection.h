@@ -41,7 +41,8 @@ public:
 	    envelopesLabel,
         envAmpLabel,
         envFilterLabel,
-        envPitchLabel
+        envPitchLabel,
+        retriggerLabel
     ;
     
     std::unique_ptr<ParameterSlider>

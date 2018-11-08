@@ -79,7 +79,7 @@ void LevelMeter::renderImage()
 	Rectangle<float> bounds = image.getBounds().toFloat();
     const Rectangle<float> innerBounds ( bounds );
     
-    auto lineW = 4.0;
+    auto lineW = 2.0;
     auto lineCentreY = innerBounds.getCentreY() - (lineW / 2.0f);
     auto lineCentreX = innerBounds.getCentreX() - (lineW / 2.0f);
    
