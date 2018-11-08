@@ -42,6 +42,35 @@ public:
         return customFont;
     }
     
+    void drawToggleButton (Graphics& g, ToggleButton& button,
+                      bool isMouseOverButton, bool isButtonDown) override
+    {
+        auto fontSize = jmin (15.0f, button.getHeight() * 0.75f);
+        auto tickWidth = fontSize * 1.1f;
+        
+        
+        
+        drawTickBox (g, button, 4.0f, (button.getHeight() - tickWidth) * 0.5f,
+                     tickWidth, tickWidth,
+                     button.getToggleState(),
+                     button.isEnabled(),
+                     isMouseOverButton,
+                     isButtonDown);
+        
+        //g.setColour (button.findColour (ToggleButton::textColourId));
+       // g.setFont (fontSize);
+        
+        if (! button.isEnabled())
+            g.setOpacity (0.5f);
+        
+        /*
+        g.drawFittedText (button.getButtonText(),
+                          button.getLocalBounds().withTrimmedLeft (roundToInt (tickWidth) + 10)
+                          .withTrimmedRight (2),
+                          Justification::centredLeft, 10);
+         */
+    }
+    
     void drawTickBox (Graphics &g, Component &c, float x, float y, float w, float h, bool ticked, bool isEnabled, bool isMouseOverButton, bool isButtonDown) override
     {
         ignoreUnused(isEnabled, isMouseOverButton);

@@ -67,7 +67,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
         
         oscOffsetSlider[osc].reset(new ParameterSlider(*processor.oscOffsetParam[osc], knobStyle(ROTARY)));
         addAndMakeVisible (oscOffsetSlider[osc].get()); //
-        oscOffsetSlider[osc]->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
+        oscOffsetSlider[osc]->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 12);
         oscOffsetSlider[osc]->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
         oscOffsetSlider[osc]->setDoubleClickReturnValue(true, 0.5);
         
@@ -101,7 +101,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     
     glideTimeSlider.reset( new ParameterSlider(*processor.glideTimeParam, knobStyle(ROTARY) ) );
     addAndMakeVisible(glideTimeSlider.get());
-    glideTimeSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 10);
+    glideTimeSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 12);
     glideTimeSlider->setColour (Slider::textBoxOutlineColourId, Colour (0x008e989b));
     glideTimeSlider->setDoubleClickReturnValue(true, 0.5);
     glideTimeSlider->setTooltip("Glide Time (ms)");
