@@ -16,7 +16,8 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
                                                 :
                                                 processor(p)
 {
-    font = "Futura";
+    font = Font::getDefaultSansSerifFontName();
+    
     
 
 	typedef ParameterSlider::style knobStyle;

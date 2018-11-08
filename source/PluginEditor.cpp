@@ -88,7 +88,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 {
     // add all the sliders..
     
-    font = Font::getDefaultSansSerifFontName();
+    font = "Futura";
     
 
 	typedef ParameterSlider::style knobStyle;
@@ -137,7 +137,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     //
     titleLabel.reset ( new Label ("Title", TRANS("Monosynth-1")));
     addAndMakeVisible (titleLabel.get());
-    titleLabel->setFont (Font (font, 22.00f, Font::plain).withExtraKerningFactor (0.150f));
+    titleLabel->setFont (MonosynthLookAndFeel::getCustomFont().withExtraKerningFactor (0.150f).withHeight(22.0f));
     titleLabel->setJustificationType (Justification::centredBottom);
     titleLabel->setEditable (false, false, false);
     titleLabel->setColour (Label::textColourId, Colours::white);

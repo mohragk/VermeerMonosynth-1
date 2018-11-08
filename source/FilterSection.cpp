@@ -25,7 +25,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
                                                                 filter303Label(nullptr)
 {
     
-    font = "Futura";
+    font = Font::getDefaultSansSerifFontName();
     
     
     typedef ParameterSlider::style knobStyle;

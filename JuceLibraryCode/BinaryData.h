@@ -9,7 +9,7 @@
 namespace BinaryData
 {
     extern const char*   OscNoiseWaveSymbol_svg;
-    const int            OscNoiseWaveSymbol_svgSize = 650;
+    const int            OscNoiseWaveSymbol_svgSize = 638;
 
     extern const char*   MonoSynthIconLarge_png;
     const int            MonoSynthIconLarge_pngSize = 29576;
@@ -17,20 +17,17 @@ namespace BinaryData
     extern const char*   MonoSynthIconSmall_png;
     const int            MonoSynthIconSmall_pngSize = 1273;
 
+    extern const char*   NowMedium_ttf;
+    const int            NowMedium_ttfSize = 49004;
+
     extern const char*   HKSuperMedium_ttf;
     const int            HKSuperMedium_ttfSize = 78588;
 
     extern const char*   NowBlack_ttf;
     const int            NowBlack_ttfSize = 49224;
 
-    extern const char*   NowThin_otf;
-    const int            NowThin_otfSize = 29764;
-
-    extern const char*   NowMedium_otf;
-    const int            NowMedium_otfSize = 30544;
-
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 7;
+    const int namedResourceListSize = 6;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

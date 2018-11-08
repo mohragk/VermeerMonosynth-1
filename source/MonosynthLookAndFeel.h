@@ -13,6 +13,8 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+
+
 class MonosynthLookAndFeel : public LookAndFeel_V4
 {
 public:
@@ -22,8 +24,10 @@ public:
 		defaultFillCol = Colours::black;
 		setColour(ToggleButton::tickColourId, darkThumb);
 
-		//static Typeface::Ptr customTypeface = Typeface::createSystemTypefaceFor(BinaryData::NowBlack_ttf, BinaryData::NowBlack_ttfSize);
+        static Typeface::Ptr customTypeface = Typeface::createSystemTypefaceFor(BinaryData::NowMedium_ttf, BinaryData::NowMedium_ttfSize);
 		//setDefaultSansSerifTypeface(customTypeface);
+        
+        LookAndFeel::getDefaultLookAndFeel().setDefaultSansSerifTypeface(customTypeface);
 	}
 
 
@@ -31,14 +35,12 @@ public:
 	
 	
     
-	Typeface::Ptr getTypefaceForFont(const Font& f) override
-	{
-		static Typeface::Ptr myFont = Typeface::createSystemTypefaceFor(BinaryData::HKSuperMedium_ttf,
-			BinaryData::HKSuperMedium_ttfSize);
-		return myFont;
-	}
-    
-    
+    static const Font& getCustomFont()
+    {
+        static Font customFont (Font (Typeface::createSystemTypefaceFor (BinaryData::NowBlack_ttf,
+                                                                    BinaryData::NowBlack_ttfSize)));
+        return customFont;
+    }
     
     void drawTickBox (Graphics &g, Component &c, float x, float y, float w, float h, bool ticked, bool isEnabled, bool isMouseOverButton, bool isButtonDown) override
     {

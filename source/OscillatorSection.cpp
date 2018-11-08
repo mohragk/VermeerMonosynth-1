@@ -22,7 +22,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
 	oscSyncONLabel(nullptr),
 	oscSyncOFFLabel(nullptr)
 {
-    font = "Futura";
+    font = Font::getDefaultSansSerifFontName();
     
 
 	typedef ParameterSlider::style knobStyle;

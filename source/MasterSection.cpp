@@ -27,7 +27,7 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
 
 
 {
-    font = "Futura";
+   font = Font::getDefaultSansSerifFontName();
     
     
     typedef ParameterSlider::style knobStyle;

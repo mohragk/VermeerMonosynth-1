@@ -88,11 +88,10 @@
             file="Resources/MonoSynthIconSmall.png"/>
     </GROUP>
     <GROUP id="{5F6A0058-164E-5398-05C2-A1F840D98FC0}" name="Fonts">
+      <FILE id="ojHRUA" name="Now-Medium.ttf" compile="0" resource="1" file="Resources/Now-Medium.ttf"/>
       <FILE id="gRmuiT" name="HKSuper-Medium.ttf" compile="0" resource="1"
             file="Resources/HKSuper-Medium.ttf"/>
       <FILE id="mqouDK" name="Now-Black.ttf" compile="0" resource="1" file="Resources/Now-Black.ttf"/>
-      <FILE id="pMk1xf" name="Now-Thin.otf" compile="0" resource="1" file="Resources/Now-Thin.otf"/>
-      <FILE id="RKlUSg" name="Now-Medium.otf" compile="0" resource="1" file="Resources/Now-Medium.otf"/>
     </GROUP>
     <GROUP id="{2228E79D-0248-DE30-0778-4EACA13EF67E}" name="GUI">
       <FILE id="XBw4Lp" name="FifoBuffer.h" compile="0" resource="0" file="source/FifoBuffer.h"/>
