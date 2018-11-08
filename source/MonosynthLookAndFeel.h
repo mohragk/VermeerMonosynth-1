@@ -28,12 +28,14 @@ public:
 	virtual ~MonosynthLookAndFeel() {}
 	
 	
+    /*
 	Typeface::Ptr getTypefaceForFont(const Font& f) override
 	{
 		static Typeface::Ptr myFont = Typeface::createSystemTypefaceFor(BinaryData::FuturaStdMedium_otf,
 			BinaryData::FuturaStdMedium_otfSize);
 		return myFont;
 	}
+     */
     
     
     void drawTickBox (Graphics &g, Component &c, float x, float y, float w, float h, bool ticked, bool isEnabled, bool isMouseOverButton, bool isButtonDown) override

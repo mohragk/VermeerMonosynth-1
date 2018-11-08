@@ -78,7 +78,7 @@ public:
 private:
    MonosynthPluginAudioProcessor& processor;
 
-   std::unique_ptr<LED> envelopeLEDComp1;
+   std::unique_ptr<LED> led1, led2, led3;
 
     enum style
 	{

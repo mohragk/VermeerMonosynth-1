@@ -678,9 +678,12 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
                 const FloatType* input    = chunkBuffer.getReadPointer(0);
                 FloatType* dataLeft = chunkBuffer.getWritePointer(0);
                 
+                MonosynthVoice* voice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+                
 				FloatType gain = envelopeGenerator[0].get()->process();
 
 				envelopeLED1.setBrightness((float)gain);
+                envelopeLED3.setBrightness((float)voice->getPitchEnvelopeValue());
 
                 dataLeft[pos] = input[pos] * gain;
             }
@@ -815,6 +818,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         
         const double contourRange = contour.getNextValue();
         const double filterEnvelopeVal = envelopeGenerator[1].get()->process();
+        envelopeLED2.setBrightness((float)filterEnvelopeVal);
         
 		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
 

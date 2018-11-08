@@ -16,7 +16,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
                                                 :
                                                 processor(p)
 {
-    font = Font::getDefaultSansSerifFontName();
+    font = "Futura";
     
 
 	typedef ParameterSlider::style knobStyle;
@@ -146,8 +146,15 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     retriggerButton.reset(new ParamToggleButton(*processor.envelopeRetriggerParam));
     addAndMakeVisible(retriggerButton.get());
 
-	envelopeLEDComp1.reset(new LED(processor.envelopeLED1));
-	addAndMakeVisible(envelopeLEDComp1.get());
+	led1.reset(new LED(processor.envelopeLED1));
+	addAndMakeVisible(led1.get());
+    
+    led2.reset(new LED(processor.envelopeLED2));
+    addAndMakeVisible(led2.get());
+    
+    led3.reset(new LED(processor.envelopeLED3));
+    addAndMakeVisible(led3.get());
+    
     
     setSize(300,300); //Gets reset by plugineditor
     
@@ -197,10 +204,11 @@ void EnvelopeSection::resized()
 		envAmpLabel->setBounds(envArea.removeFromTop(labelHeight));
 		envAmpLabel->setJustificationType(Justification::centredBottom);
 
-		Rectangle<int> ledArea(envAmpLabel.get()->getBounds());
-		envelopeLEDComp1->setBounds(ledArea.removeFromLeft(40).reduced(12,6));
-		envelopeLEDComp1->setBackgroundColour(Colour(0xff0e0e0e));
-
+        Rectangle<int> ledArea(envArea);
+        led1->setBounds(ledArea.removeFromRight(16));
+        led1->setBackgroundColour(Colour(0xff0e0e0e));
+        
+        
 		Rectangle<int> envBlock(envArea.removeFromLeft(sliderWidth * 4));
 
 		attackSlider1->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
@@ -222,7 +230,11 @@ void EnvelopeSection::resized()
 		envFilterLabel->setBounds(envArea.removeFromTop(labelHeight));
 		envFilterLabel->setJustificationType(Justification::centredBottom);
 
-		Rectangle<int> envBlock(envArea.removeFromLeft(sliderWidth * 4));
+        Rectangle<int> ledArea(envArea);
+        led2->setBounds(ledArea.removeFromRight(16));
+        led2->setBackgroundColour(Colour(0xff0e0e0e));
+        
+        Rectangle<int> envBlock(envArea.removeFromLeft(sliderWidth * 4));
 
 		attackSlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
 		decaySlider2->setBounds(envBlock.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
@@ -242,6 +254,10 @@ void EnvelopeSection::resized()
 		envPitchLabel->setBounds(envArea.removeFromTop(labelHeight));
 		envPitchLabel->setJustificationType(Justification::centredBottom);
 
+        Rectangle<int> ledArea(envArea);
+        led3->setBounds(ledArea.removeFromRight(16));
+        led3->setBackgroundColour(Colour(0xff0e0e0e));
+        
 		attackSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
 		decaySlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
 		sustainSlider3->setBounds(envArea.removeFromLeft(sliderWidth).reduced(sliderMargin, 0));
@@ -250,6 +266,8 @@ void EnvelopeSection::resized()
 		Rectangle<int> tweakArea(envArea.removeFromLeft(envelopeWidth));
 		attackCurveSlider3->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
 		decRelCurveSlider3->setBounds(tweakArea.removeFromTop(envelopeHeight / 2).reduced(25, 0));
+        
+        
 
 
 

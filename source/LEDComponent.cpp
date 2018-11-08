@@ -59,8 +59,8 @@ void LED::renderImage()
 	float w = image.getWidth();
 	float h = image.getHeight();
 
-	float maxRadius = jmin(w, h);
-	float innerRadius = maxRadius * 0.75;
+	float maxRadius = jmin(jmin(w, h), 8.0f);
+	float innerRadius = maxRadius;
 
 	float centreX = image.getBounds().getCentreX();
 	float centreY = image.getBounds().getCentreY();
@@ -68,9 +68,11 @@ void LED::renderImage()
 	Rectangle<float> outerBounds(centreX - maxRadius / 2.0f, centreY - maxRadius / 2.0f, maxRadius, maxRadius);
 	Rectangle<float> innerBounds (centreX - innerRadius / 2.0f, centreY - innerRadius / 2.0f, innerRadius, innerRadius );
 
-	//g.setColour(Colours::darkgrey);
-	//g.drawEllipse(outerBounds, 1.0f);
+	
 
+    g.setColour(Colours::white.withAlpha( 0.2f ) );
+    g.fillEllipse(innerBounds);
+    
 	g.setColour(Colours::white.withAlpha( source.getBrightness() ) );
 	g.fillEllipse(innerBounds);
 }

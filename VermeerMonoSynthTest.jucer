@@ -74,8 +74,6 @@
           file="source/LEDComponent.cpp"/>
     <FILE id="t6nBsB" name="LEDComponent.h" compile="0" resource="0" file="source/LEDComponent.h"/>
     <FILE id="ztPLjV" name="LEDProcessor.h" compile="0" resource="0" file="source/LEDProcessor.h"/>
-    <FILE id="b4fOgi" name="FuturaStd-Medium.otf" compile="1" resource="1"
-          file="Fonts/FuturaStd-Medium.otf"/>
     <FILE id="GBUZI2" name="LevelMeterProcessor.h" compile="0" resource="0"
           file="source/LevelMeterProcessor.h"/>
     <FILE id="XjLRpQ" name="LevelMeter.cpp" compile="1" resource="0" file="source/LevelMeter.cpp"/>

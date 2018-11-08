@@ -215,6 +215,7 @@ public:
     int getLowestPitchedOscillatorIdx();
     int getLowestOscillatorRephaseIndex();
     double getLowestPitchedOscFreq();
+    double getPitchEnvelopeValue();
 
     void setEnvelopeSampleRate( double sr );
     void setPitchEnvelopeParameters (const float attack, const float decay, const float sustain, const float release, const float attackCurve, const float decRelCurve);
@@ -244,10 +245,10 @@ private:
 				FloatType sample = 0.0;
 
 				//Get Pitch Envelope Amount
-				FloatType pitchEnvAmt = pitchEnvelope->process();
+				pitchEnvelopeVal = pitchEnvelope->process();
 
 				//Apply Pitch Envelope and PitchBend Amount, deviated from current pitch
-                FloatType newFreq = midiFrequency + (pitchEnvAmt * pitchModAmount);
+                FloatType newFreq = midiFrequency + (pitchEnvelopeVal * pitchModAmount);
 
 				//Calculate new frequencies after detuning by knob and/or LFO and/or pitchbend wheel
                 for (int i = 0; i < numOscillators; i++)
@@ -316,6 +317,7 @@ private:
     double midiFrequency;
     double maxFreq = 0, minFreq = 0;
     double pitchModAmount;
+    double pitchEnvelopeVal;
     
     bool hardSync = false;
 	int lastNotePlayed = 60;
@@ -370,6 +372,10 @@ inline int MonosynthVoice::getLowestOscillatorRephaseIndex()
     return idx;
 }
 
+inline double MonosynthVoice::getPitchEnvelopeValue()
+{
+    return pitchEnvelopeVal;
+}
 
 inline void MonosynthVoice::setEnvelopeSampleRate( double sr )
 {

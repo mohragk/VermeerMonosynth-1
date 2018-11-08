@@ -141,7 +141,7 @@ public:
 	TriggeredScope scope;
 
     LevelMeter meter;
-	LEDProcessor envelopeLED1;
+	LEDProcessor envelopeLED1, envelopeLED2, envelopeLED3;
 
     
     void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
