@@ -17,6 +17,9 @@ namespace BinaryData
     extern const char*   MonoSynthIconSmall_png;
     const int            MonoSynthIconSmall_pngSize = 1273;
 
+    extern const char*   HKNovaMedium_ttf;
+    const int            HKNovaMedium_ttfSize = 79744;
+
     extern const char*   NowMedium_ttf;
     const int            NowMedium_ttfSize = 49004;
 
@@ -27,7 +30,7 @@ namespace BinaryData
     const int            NowBlack_ttfSize = 49224;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 6;
+    const int namedResourceListSize = 7;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

@@ -18,6 +18,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
 {
     font = Font::getDefaultSansSerifFontName();
     
+	float kerning = 0.07f;
     
 
 	typedef ParameterSlider::style knobStyle;
@@ -25,7 +26,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     envelopesLabel.reset ( new Label ("Envelopes", TRANS("Envelopes")));
     addAndMakeVisible (envelopesLabel.get());
-    envelopesLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    envelopesLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (kerning));
     envelopesLabel->setJustificationType (Justification::centredTop);
     envelopesLabel->setEditable (false, false, false);
     envelopesLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -33,7 +34,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     envAmpLabel.reset (new Label ("Envelope Amp Label", TRANS("Amplitude")));
     addAndMakeVisible (envAmpLabel.get());
-    envAmpLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    envAmpLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     envAmpLabel->setJustificationType (Justification::centredBottom);
     envAmpLabel->setEditable (false, false, false);
     envAmpLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -60,7 +61,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     envFilterLabel.reset ( new Label ("Envelope Filter Label", TRANS("Filter Cutoff")));
     addAndMakeVisible (envFilterLabel.get());
-    envFilterLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    envFilterLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     envFilterLabel->setJustificationType (Justification::centredBottom);
     envFilterLabel->setEditable (false, false, false);
     envFilterLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -85,7 +86,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     envPitchLabel.reset ( new Label ("Envelope Pitch Label", TRANS("Pitch Mod.")));
     addAndMakeVisible (envPitchLabel.get());
-    envPitchLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    envPitchLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     envPitchLabel->setJustificationType (Justification::centredBottom);
     envPitchLabel->setEditable (false, false, false);
     envPitchLabel->setColour (TextEditor::textColourId, Colours::black);

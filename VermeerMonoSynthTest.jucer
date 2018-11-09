@@ -88,6 +88,8 @@
             file="Resources/MonoSynthIconSmall.png"/>
     </GROUP>
     <GROUP id="{5F6A0058-164E-5398-05C2-A1F840D98FC0}" name="Fonts">
+      <FILE id="BM78Y7" name="HKNova-Medium.ttf" compile="0" resource="1"
+            file="Resources/HKNova-Medium.ttf"/>
       <FILE id="ojHRUA" name="Now-Medium.ttf" compile="0" resource="1" file="Resources/Now-Medium.ttf"/>
       <FILE id="gRmuiT" name="HKSuper-Medium.ttf" compile="0" resource="1"
             file="Resources/HKSuper-Medium.ttf"/>

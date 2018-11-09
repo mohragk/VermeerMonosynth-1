@@ -242,6 +242,7 @@ MonosynthPluginAudioProcessorEditor::~MonosynthPluginAudioProcessorEditor()
 //==============================================================================
 void MonosynthPluginAudioProcessorEditor::paint (Graphics& g)
 {
+
     g.fillAll (Colour (0xff0e0e0e));
     
     {
