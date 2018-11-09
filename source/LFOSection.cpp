@@ -16,13 +16,15 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     processor(p)
 {
     font = Font::getDefaultSansSerifFontName();
+
+	float kerning = 0.05f;
     
     typedef ParameterSlider::style knobStyle;
 
     
     lfoLabel.reset( new Label ("lfoLabel", TRANS("LFO")));
     addAndMakeVisible (lfoLabel.get());                        //
-    lfoLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    lfoLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (kerning));
     lfoLabel->setJustificationType (Justification::centredTop);
     lfoLabel->setEditable (false, false, false);
     lfoLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -30,7 +32,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     
     lfoRateLabel.reset ( new Label ("lfoRateLabel", TRANS("Rate")));
     addAndMakeVisible (lfoRateLabel.get());          //
-    lfoRateLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    lfoRateLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     lfoRateLabel->setJustificationType (Justification::centredBottom);
     lfoRateLabel->setEditable (false, false, false);
     lfoRateLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -41,7 +43,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     
     lfoModeLabel.reset ( new Label ("lfoModeLabel",TRANS("Shape")));
     addAndMakeVisible (lfoModeLabel.get());          //
-    lfoModeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    lfoModeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     lfoModeLabel->setJustificationType (Justification::centredBottom);
     lfoModeLabel->setEditable (false, false, false);
     lfoModeLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -52,7 +54,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
 	
     lfoIntensityLabel.reset ( new Label ("lfoIntensityLabel", TRANS("Mod Amt")));
     addAndMakeVisible (lfoIntensityLabel.get());          //
-    lfoIntensityLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    lfoIntensityLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     lfoIntensityLabel->setJustificationType (Justification::centredBottom);
     lfoIntensityLabel->setEditable (false, false, false);
     lfoIntensityLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -79,7 +81,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
   
     modTargetLabel.reset ( new Label ("modTargetLabel", TRANS("Target")));
     addAndMakeVisible (modTargetLabel.get());          //
-    modTargetLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    modTargetLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     modTargetLabel->setJustificationType (Justification::centredBottom);
     modTargetLabel->setEditable (false, false, false);
     modTargetLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -87,7 +89,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     
     modTargetOffLabel.reset ( new Label ("modTargetOffLabel", TRANS("-off")));
     addAndMakeVisible (modTargetOffLabel.get());          //
-    modTargetOffLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    modTargetOffLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (kerning));
     modTargetOffLabel->setJustificationType (Justification::centredLeft);
     modTargetOffLabel->setEditable (false, false, false);
     modTargetOffLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -96,7 +98,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     
     modTargetPitchLabel.reset (new Label ("modTargetPitchLabel", TRANS("-pitch")));
     addAndMakeVisible (modTargetPitchLabel.get());
-    modTargetPitchLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    modTargetPitchLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (kerning));
     modTargetPitchLabel->setJustificationType (Justification::centredLeft);
     modTargetPitchLabel->setEditable (false, false, false);
     modTargetPitchLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -104,7 +106,7 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     
     modTargetCutoffLabel.reset ( new Label ("modTargetCutoffLabel", TRANS("-cutoff")));
     addAndMakeVisible (modTargetCutoffLabel.get());         
-    modTargetCutoffLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    modTargetCutoffLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (kerning));
     modTargetCutoffLabel->setJustificationType (Justification::centredLeft);
     modTargetCutoffLabel->setEditable (false, false, false);
     modTargetCutoffLabel->setColour (TextEditor::textColourId, Colours::black);

@@ -28,13 +28,13 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
 
 {
    font = Font::getDefaultSansSerifFontName();
-    
+   float kerning = 0.05f;
     
     typedef ParameterSlider::style knobStyle;
 
     mainLabel.reset ( new Label("Main Label", TRANS("Main")));
     addAndMakeVisible (mainLabel.get());
-    mainLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    mainLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (kerning));
     mainLabel->setJustificationType (Justification::centredTop);
     mainLabel->setEditable (false, false, false);
     mainLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -46,7 +46,7 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     
     volumeLabel.reset ( new Label ("Main Volume Label", TRANS("Volume")) );
     addAndMakeVisible (volumeLabel.get());  //
-    volumeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    volumeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     volumeLabel->setJustificationType (Justification::centredBottom);
     volumeLabel->setEditable (false, false, false);
     volumeLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -73,7 +73,7 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     
     saturationLabel.reset ( new Label ("saturationLabel", TRANS("Saturation")));
     addAndMakeVisible (saturationLabel.get());        //
-    saturationLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    saturationLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     saturationLabel->setJustificationType (Justification::centredBottom);
     saturationLabel->setEditable (false, false, false);
     saturationLabel->setColour (TextEditor::textColourId, Colours::black);

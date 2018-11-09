@@ -24,7 +24,7 @@ public:
 		defaultFillCol = Colours::black;
 		setColour(ToggleButton::tickColourId, darkThumb);
 
-        static Typeface::Ptr customTypeface = Typeface::createSystemTypefaceFor(BinaryData::HKNovaMedium_ttf, BinaryData::HKNovaMedium_ttfSize);
+        static Typeface::Ptr customTypeface = Typeface::createSystemTypefaceFor(BinaryData::NowMedium_ttf, BinaryData::NowMedium_ttfSize);
 		//setDefaultSansSerifTypeface(customTypeface);
         
         LookAndFeel::getDefaultLookAndFeel().setDefaultSansSerifTypeface(customTypeface);
@@ -59,7 +59,7 @@ public:
                      isMouseOverButton,
                      isButtonDown);
 
-		Font textFont = g.getCurrentFont().withExtraKerningFactor(0.05f).withHeight(fontSize).withStyle(Font::plain);
+		Font textFont = g.getCurrentFont().withExtraKerningFactor(0.15f).withHeight(13.0f).withStyle(Font::plain);
 		
         
         g.setColour (button.findColour (ToggleButton::textColourId));

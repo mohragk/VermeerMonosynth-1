@@ -23,7 +23,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
 	oscSyncOFFLabel(nullptr)
 {
     font = Font::getDefaultSansSerifFontName();
-    
+	float kerning = 0.05f;
 
 	typedef ParameterSlider::style knobStyle;
 	//
@@ -32,7 +32,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     
     oscillatorsLabel.reset  (new Label ("Oscillators", TRANS("Oscillators")));
     addAndMakeVisible (oscillatorsLabel.get());        //
-    oscillatorsLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    oscillatorsLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (kerning));
     oscillatorsLabel->setJustificationType (Justification::centred);
     oscillatorsLabel->setEditable (false, false, false);
     oscillatorsLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -174,7 +174,9 @@ OscillatorSection::~OscillatorSection()
 
 void OscillatorSection::setLabelStyle(Label& label, String f)
 {
-    label.setFont (Font (f, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+	float kerning = 0.05f;
+
+    label.setFont (Font (f, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     label.setJustificationType (Justification::centred);
     label.setEditable (false, false, false);
     label.setColour (TextEditor::textColourId, Colours::black);

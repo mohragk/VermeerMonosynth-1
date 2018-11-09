@@ -27,6 +27,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     font = Font::getDefaultSansSerifFontName();
     
+	float kerning = 0.050f;
     
     typedef ParameterSlider::style knobStyle;
     
@@ -34,7 +35,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     filterLabel.reset (new Label ("Filter", TRANS("Filter")));
     addAndMakeVisible (filterLabel.get());                          //
-    filterLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (0.108f));
+    filterLabel->setFont (Font (font, 20.00f, Font::plain).withExtraKerningFactor (kerning));
     filterLabel->setJustificationType (Justification::centredTop);
     filterLabel->setEditable (false, false, false);
     filterLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -45,7 +46,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     filterCutoffLabel.reset(new Label ("Filter Cutoff Label", TRANS("Cutoff")));
     addAndMakeVisible (filterCutoffLabel.get());            //
-    filterCutoffLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterCutoffLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     filterCutoffLabel->setJustificationType (Justification::centredBottom);
     filterCutoffLabel->setEditable (false, false, false);
     filterCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -61,7 +62,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     filterResonanceLabel.reset( new Label ("Filter Resonance Label", TRANS("Resonance")));
     addAndMakeVisible (filterResonanceLabel.get());      //
-    filterResonanceLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterResonanceLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     filterResonanceLabel->setJustificationType (Justification::centredBottom);
     filterResonanceLabel->setEditable (false, false, false);
     filterResonanceLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -76,7 +77,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     filterContourLabel.reset( new Label ("Filter Contour Label", TRANS("Contour")));
     
     addAndMakeVisible (filterContourLabel.get());              //
-    filterContourLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterContourLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     filterContourLabel->setJustificationType (Justification::centredBottom);
     filterContourLabel->setEditable (false, false, false);
     filterContourLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -87,7 +88,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     filterDriveLabel.reset ( new Label ("Filter Drive Label", TRANS("Drive")));
     addAndMakeVisible (filterDriveLabel.get());                  //
-    filterDriveLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterDriveLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
     filterDriveLabel->setJustificationType (Justification::centredBottom);
     filterDriveLabel->setEditable (false, false, false);
     filterDriveLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -96,7 +97,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     filterMoogLabel.reset( new Label ("filterMoogLabel", TRANS("MOOG")));
     addAndMakeVisible (filterMoogLabel.get());          //
-    filterMoogLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterMoogLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (kerning));
     filterMoogLabel->setJustificationType (Justification::centredLeft);
     filterMoogLabel->setEditable (false, false, false);
     filterMoogLabel->setColour (TextEditor::textColourId, Colours::black);
@@ -104,7 +105,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     filterMS20Label.reset ( new Label ("filterMS20Label", TRANS("MS20")));
     addAndMakeVisible (filterMS20Label.get());          //
-    filterMS20Label->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filterMS20Label->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (kerning));
     filterMS20Label->setJustificationType (Justification::centredLeft);
     filterMS20Label->setEditable (false, false, false);
     filterMS20Label->setColour (TextEditor::textColourId, Colours::black);
@@ -112,7 +113,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     filter303Label.reset ( new Label ("filter303Label", TRANS("303")));
     addAndMakeVisible (filter303Label.get());          //
-    filter303Label->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (0.150f));
+    filter303Label->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (kerning));
     filter303Label->setJustificationType (Justification::centredLeft);
     filter303Label->setEditable (false, false, false);
     filter303Label->setColour (TextEditor::textColourId, Colours::black);

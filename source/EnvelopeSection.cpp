@@ -18,7 +18,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
 {
     font = Font::getDefaultSansSerifFontName();
     
-	float kerning = 0.07f;
+	float kerning = 0.050f;
     
 
 	typedef ParameterSlider::style knobStyle;
