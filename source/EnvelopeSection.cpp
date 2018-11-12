@@ -43,7 +43,6 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     // Amplitude Envelope
 	attackSlider1.reset(new ParameterSlider(*processor.attackParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (attackSlider1.get());      //
-   
     
 	decaySlider1.reset(new ParameterSlider(*processor.decayParam1, knobStyle(LINEARVERTICAL)));
     addAndMakeVisible (decaySlider1.get());        //
