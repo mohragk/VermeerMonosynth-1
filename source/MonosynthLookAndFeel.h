@@ -25,11 +25,8 @@ public:
 		setColour(ToggleButton::tickColourId, darkThumb);
 
         static Typeface::Ptr customTypeface = Typeface::createSystemTypefaceFor(BinaryData::NowMedium_ttf, BinaryData::NowMedium_ttfSize);
-		//setDefaultSansSerifTypeface(customTypeface);
-        
         LookAndFeel::getDefaultLookAndFeel().setDefaultSansSerifTypeface(customTypeface);
 
-		
 	}
 
 
