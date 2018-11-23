@@ -15,6 +15,7 @@
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
 #include "OscillatorSection.h"
+#include "MonosynthLookAndFeel.h"
 
 //==============================================================================
 /*

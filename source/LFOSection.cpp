@@ -32,34 +32,22 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
     
     lfoRateLabel.reset ( new Label ("lfoRateLabel", TRANS("Rate")));
     addAndMakeVisible (lfoRateLabel.get());          //
-    lfoRateLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    lfoRateLabel->setJustificationType (Justification::centredBottom);
-    lfoRateLabel->setEditable (false, false, false);
-    lfoRateLabel->setColour (TextEditor::textColourId, Colours::black);
-    lfoRateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(lfoRateLabel.get());
     
 	lfoRateSlider.reset(new ParameterSlider(*processor.lfoRateParam, knobStyle(ROTARY)));
 	addAndMakeVisible(lfoRateSlider.get());  //
     
     lfoModeLabel.reset ( new Label ("lfoModeLabel",TRANS("Shape")));
     addAndMakeVisible (lfoModeLabel.get());          //
-    lfoModeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    lfoModeLabel->setJustificationType (Justification::centredBottom);
-    lfoModeLabel->setEditable (false, false, false);
-    lfoModeLabel->setColour (TextEditor::textColourId, Colours::black);
-    lfoModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(lfoModeLabel.get());
 
 	lfoModeSlider.reset(new ParameterSlider(*processor.lfoModeParam, LINEARHORIZONTAL));
 	addAndMakeVisible(lfoModeSlider.get());  //
 	
     lfoIntensityLabel.reset ( new Label ("lfoIntensityLabel", TRANS("Mod Amt")));
     addAndMakeVisible (lfoIntensityLabel.get());          //
-    lfoIntensityLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    lfoIntensityLabel->setJustificationType (Justification::centredBottom);
-    lfoIntensityLabel->setEditable (false, false, false);
-    lfoIntensityLabel->setColour (TextEditor::textColourId, Colours::black);
-    lfoIntensityLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
+	MonosynthLookAndFeel::setLabelStyle(lfoIntensityLabel.get());
+
 	lfoIntensitySlider.reset(new ParameterSlider(*processor.lfoIntensityParam, knobStyle(ROTARY)));
     addAndMakeVisible(lfoIntensitySlider.get());  //
     
@@ -81,12 +69,8 @@ LFOSection::LFOSection(MonosynthPluginAudioProcessor& p) :
   
     modTargetLabel.reset ( new Label ("modTargetLabel", TRANS("Target")));
     addAndMakeVisible (modTargetLabel.get());          //
-    modTargetLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    modTargetLabel->setJustificationType (Justification::centredBottom);
-    modTargetLabel->setEditable (false, false, false);
-    modTargetLabel->setColour (TextEditor::textColourId, Colours::black);
-    modTargetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
+	MonosynthLookAndFeel::setLabelStyle(modTargetLabel.get());	
+
     modTargetOffLabel.reset ( new Label ("modTargetOffLabel", TRANS("-off")));
     addAndMakeVisible (modTargetOffLabel.get());          //
     modTargetOffLabel->setFont (Font (font, 11.00f, Font::plain).withExtraKerningFactor (kerning));
@@ -224,12 +208,16 @@ void LFOSection::resized()
         
         
         lfoModeLabel->setBounds(strip.removeFromTop(labelHeight));
+		lfoModeLabel->setJustificationType(Justification::centredBottom);
         lfoModeSlider->setBounds(strip.removeFromTop(rotaryHeight).reduced(marginX, 0));
         
         lfoIntensityLabel->setBounds(strip.removeFromTop(labelHeight));
+		lfoIntensityLabel->setJustificationType(Justification::centredBottom);
+		//lfoIntensityLabel->setBounds(strip.removeFromTop(rotaryHeight).reduced(marginX, 0));
         lfoIntensitySlider->setBounds(strip.removeFromTop(rotaryHeight));
         
         modTargetLabel->setBounds(strip.removeFromTop(labelHeight));
+		modTargetLabel->setJustificationType(Justification::centredBottom);
         
         int selectSize = 48;
         Rectangle<int> selectArea (strip.removeFromTop(selectSize));

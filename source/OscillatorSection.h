@@ -17,7 +17,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
-#include "CustomLookAndFeel.h"
+#include "MonosynthLookAndFeel.h"
 
 //==============================================================================
 /*
@@ -28,7 +28,6 @@ public:
     OscillatorSection(MonosynthPluginAudioProcessor& p);
     ~OscillatorSection();
 
-    void setLabelStyle(Label& label, String f);
     
     void paint (Graphics&) override;
     void resized() override;
@@ -49,7 +48,7 @@ public:
 private:
     MonosynthPluginAudioProcessor& processor;
     
-    CustomLookAndFeel customLook;
+   // MonosynthLookAndFeel customLook;
 
     enum style
 	{

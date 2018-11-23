@@ -46,11 +46,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     filterCutoffLabel.reset(new Label ("Filter Cutoff Label", TRANS("Cutoff")));
     addAndMakeVisible (filterCutoffLabel.get());            //
-    filterCutoffLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    filterCutoffLabel->setJustificationType (Justification::centredBottom);
-    filterCutoffLabel->setEditable (false, false, false);
-    filterCutoffLabel->setColour (TextEditor::textColourId, Colours::black);
-    filterCutoffLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(filterCutoffLabel.get());
 
 	filterKeyFollowSlider.reset(new ParameterSlider(*processor.useFilterKeyFollowParam, knobStyle(LINEARVERTICAL)));
 	addAndMakeVisible(filterKeyFollowSlider.get());
@@ -62,11 +58,7 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     
     filterResonanceLabel.reset( new Label ("Filter Resonance Label", TRANS("Resonance")));
     addAndMakeVisible (filterResonanceLabel.get());      //
-    filterResonanceLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    filterResonanceLabel->setJustificationType (Justification::centredBottom);
-    filterResonanceLabel->setEditable (false, false, false);
-    filterResonanceLabel->setColour (TextEditor::textColourId, Colours::black);
-    filterResonanceLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(filterResonanceLabel.get());
     
     filterContourSlider.reset(new ParameterSlider(*processor.filterContourParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterContourSlider.get());  //
@@ -75,24 +67,15 @@ FilterSection::FilterSection(MonosynthPluginAudioProcessor& p) :
     addAndMakeVisible(filterSelectSlider.get());  //todo:
     
     filterContourLabel.reset( new Label ("Filter Contour Label", TRANS("Contour")));
-    
     addAndMakeVisible (filterContourLabel.get());              //
-    filterContourLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    filterContourLabel->setJustificationType (Justification::centredBottom);
-    filterContourLabel->setEditable (false, false, false);
-    filterContourLabel->setColour (TextEditor::textColourId, Colours::black);
-    filterContourLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(filterContourLabel.get());
     
     filterDriveSlider.reset(new ParameterSlider(*processor.filterDriveParam, knobStyle(ROTARY)));
     addAndMakeVisible (filterDriveSlider.get());  //
     
     filterDriveLabel.reset ( new Label ("Filter Drive Label", TRANS("Drive")));
     addAndMakeVisible (filterDriveLabel.get());                  //
-    filterDriveLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    filterDriveLabel->setJustificationType (Justification::centredBottom);
-    filterDriveLabel->setEditable (false, false, false);
-    filterDriveLabel->setColour (TextEditor::textColourId, Colours::black);
-    filterDriveLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(filterDriveLabel.get());
     
     
     filterMoogLabel.reset( new Label ("filterMoogLabel", TRANS("MOOG")));

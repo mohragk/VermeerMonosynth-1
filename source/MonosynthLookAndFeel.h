@@ -32,6 +32,21 @@ public:
 
 	virtual ~MonosynthLookAndFeel() {}
 	
+
+	static void setLabelStyle(Label* label)
+	{
+		if (label != nullptr)
+		{
+			float kerning = 0.07f;
+
+			label->setFont(getDefaultFont().withExtraKerningFactor(kerning).withHeight(13.0f));
+			label->setJustificationType(Justification::centredBottom);
+			label->setEditable(false, false, false);
+			label->setColour(TextEditor::textColourId, Colours::black);
+			label->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+		}
+		
+	}
 	
     
     static const Font& getCustomFont()
@@ -40,6 +55,12 @@ public:
                                                                     BinaryData::NowBlack_ttfSize)));
         return customFont;
     }
+
+	static const Font& getDefaultFont()
+	{
+		static Font defaultFont(Font(Typeface::createSystemTypefaceFor(BinaryData::NowMedium_ttf, BinaryData::NowMedium_ttfSize)));
+		return defaultFont;
+	}
     
     void drawToggleButton (Graphics& g, ToggleButton& button,
                       bool isMouseOverButton, bool isButtonDown) override

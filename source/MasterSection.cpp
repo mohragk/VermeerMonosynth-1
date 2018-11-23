@@ -27,8 +27,9 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
 
 
 {
-   font = Font::getDefaultSansSerifFontName();
-   float kerning = 0.05f;
+ 
+	float kerning = 0.05;
+	String font = Font::getDefaultSansSerifFontName();
     
     typedef ParameterSlider::style knobStyle;
 
@@ -46,11 +47,7 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     
     volumeLabel.reset ( new Label ("Main Volume Label", TRANS("Volume")) );
     addAndMakeVisible (volumeLabel.get());  //
-    volumeLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    volumeLabel->setJustificationType (Justification::centredBottom);
-    volumeLabel->setEditable (false, false, false);
-    volumeLabel->setColour (TextEditor::textColourId, Colours::black);
-    volumeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(volumeLabel.get());
     
     //Softclip switch
     softClipSwitchSlider.reset(new ParameterSlider(*processor.softClipSwitchParam, knobStyle(LINEARVERTICAL)));
@@ -73,11 +70,7 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     
     saturationLabel.reset ( new Label ("saturationLabel", TRANS("Saturation")));
     addAndMakeVisible (saturationLabel.get());        //
-    saturationLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    saturationLabel->setJustificationType (Justification::centredBottom);
-    saturationLabel->setEditable (false, false, false);
-    saturationLabel->setColour (TextEditor::textColourId, Colours::black);
-    saturationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(saturationLabel.get());
     
 
 	//ARPEGGIATOR

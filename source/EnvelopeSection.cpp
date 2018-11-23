@@ -34,11 +34,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     envAmpLabel.reset (new Label ("Envelope Amp Label", TRANS("Amplitude")));
     addAndMakeVisible (envAmpLabel.get());
-    envAmpLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    envAmpLabel->setJustificationType (Justification::centredBottom);
-    envAmpLabel->setEditable (false, false, false);
-    envAmpLabel->setColour (TextEditor::textColourId, Colours::black);
-    envAmpLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(envAmpLabel.get());
     
     // Amplitude Envelope
 	attackSlider1.reset(new ParameterSlider(*processor.attackParam1, knobStyle(LINEARVERTICAL)));
@@ -60,11 +56,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     envFilterLabel.reset ( new Label ("Envelope Filter Label", TRANS("Filter Cutoff")));
     addAndMakeVisible (envFilterLabel.get());
-    envFilterLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    envFilterLabel->setJustificationType (Justification::centredBottom);
-    envFilterLabel->setEditable (false, false, false);
-    envFilterLabel->setColour (TextEditor::textColourId, Colours::black);
-    envFilterLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(envFilterLabel.get());
     
     // Filter Cutoff Envelope
 	attackSlider2.reset(new ParameterSlider(*processor.attackParam3, knobStyle(LINEARVERTICAL)));
@@ -85,11 +77,7 @@ EnvelopeSection::EnvelopeSection(MonosynthPluginAudioProcessor& p)
     
     envPitchLabel.reset ( new Label ("Envelope Pitch Label", TRANS("Pitch Mod.")));
     addAndMakeVisible (envPitchLabel.get());
-    envPitchLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    envPitchLabel->setJustificationType (Justification::centredBottom);
-    envPitchLabel->setEditable (false, false, false);
-    envPitchLabel->setColour (TextEditor::textColourId, Colours::black);
-    envPitchLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	MonosynthLookAndFeel::setLabelStyle(envPitchLabel.get());
     
     
     // Pitch Modulation Envelope
@@ -231,7 +219,6 @@ void EnvelopeSection::resized()
 		Rectangle<int> envArea(area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
 
 		envFilterLabel->setBounds(envArea.removeFromTop(labelHeight));
-		envFilterLabel->setJustificationType(Justification::centredBottom);
 
         Rectangle<int> ledArea(envArea);
         led2->setBounds(ledArea.removeFromRight(16));
@@ -255,7 +242,6 @@ void EnvelopeSection::resized()
 		Rectangle<int> envArea(area.removeFromTop(envelopeHeight + labelHeight).reduced(16, 0));
 
 		envPitchLabel->setBounds(envArea.removeFromTop(labelHeight));
-		envPitchLabel->setJustificationType(Justification::centredBottom);
 
         Rectangle<int> ledArea(envArea);
         led3->setBounds(ledArea.removeFromRight(16));

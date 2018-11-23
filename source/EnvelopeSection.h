@@ -16,6 +16,7 @@
 #include "ParameterSlider.h"
 #include "ParamToggleButton.h"
 #include "LEDComponent.h"
+#include "MonosynthLookAndFeel.h"
 
 //==============================================================================
 /*

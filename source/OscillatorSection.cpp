@@ -11,6 +11,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "OscillatorSection.h"
 
+
 //==============================================================================
 OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     processor(p),
@@ -47,14 +48,14 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
         
         oscGainLabel[osc].reset (new Label("OSC"+std::to_string(osc)+" Gain Label", TRANS("Gain")));
         addAndMakeVisible(oscGainLabel[osc].get());
-        setLabelStyle(*oscGainLabel[osc].get(), font);
+		MonosynthLookAndFeel::setLabelStyle(oscGainLabel[osc].get());
         
         oscWaveformSlider[osc].reset( new ParameterSlider(*processor.oscModeParam[osc], knobStyle(LINEARHORIZONTAL)) );
         addAndMakeVisible (oscWaveformSlider[osc].get()); //no label but graphics
         
         oscWaveformLabel[osc].reset(new Label ("OSC"+std::to_string(osc)+" Waveform Label", TRANS("Shape")));
         addAndMakeVisible (oscWaveformLabel[osc].get());
-        setLabelStyle(*oscWaveformLabel[osc].get(), font);
+		MonosynthLookAndFeel::setLabelStyle(oscWaveformLabel[osc].get());
         
         oscTuneSlider[osc].reset(new ParameterSlider(*processor.oscDetuneAmountParam[osc], knobStyle(ROTARY)));
         addAndMakeVisible(oscTuneSlider[osc].get()); //
@@ -62,7 +63,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
         
         oscTuneLabel[osc].reset (new Label ("OSC"+std::to_string(osc)+" Tune Label", TRANS("Tune")));
         addAndMakeVisible (oscTuneLabel[osc].get());
-        setLabelStyle(*oscTuneLabel[osc].get(), font);
+		MonosynthLookAndFeel::setLabelStyle(oscTuneLabel[osc].get());
         
         
         oscOffsetSlider[osc].reset(new ParameterSlider(*processor.oscOffsetParam[osc], knobStyle(ROTARY)));
@@ -74,7 +75,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
         
         oscOffsetLabel[osc].reset (new Label ("oscOffsetLabel"+std::to_string(osc), TRANS("Offset")));          //
         addAndMakeVisible (oscOffsetLabel[osc].get());
-        setLabelStyle(*oscOffsetLabel[osc].get(), font);
+		MonosynthLookAndFeel::setLabelStyle(oscOffsetLabel[osc].get());
         
         
         // PWM
@@ -96,7 +97,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     
     glideLabel.reset (new Label("glideTimeLabel", TRANS("Glide")));
     addAndMakeVisible(glideLabel.get());
-    setLabelStyle(*glideLabel.get(), font);
+	MonosynthLookAndFeel::setLabelStyle(glideLabel.get());
     
     
     glideTimeSlider.reset( new ParameterSlider(*processor.glideTimeParam, knobStyle(ROTARY) ) );
@@ -113,16 +114,16 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
    
     oscSyncLabel.reset (new Label ("oscSyncLabel", TRANS("Sync")));                 //
     addAndMakeVisible (oscSyncLabel.get());
-    setLabelStyle(*oscSyncLabel.get(), font);
+	MonosynthLookAndFeel::setLabelStyle(oscSyncLabel.get());
     
     
     oscSyncONLabel.reset (new Label ("oscSyncONLabel",TRANS("-on")));
     addAndMakeVisible (oscSyncONLabel.get());
-    setLabelStyle(*oscSyncONLabel.get(), font);
+	MonosynthLookAndFeel::setLabelStyle(oscSyncONLabel.get());
     
     oscSyncOFFLabel.reset (new Label ("oscSyncOFFLabel", TRANS("-off")));
     addAndMakeVisible (oscSyncOFFLabel.get());
-    setLabelStyle(*oscSyncOFFLabel.get(), font);
+	MonosynthLookAndFeel::setLabelStyle(oscSyncOFFLabel.get());
     
     
     
@@ -133,7 +134,7 @@ OscillatorSection::OscillatorSection(MonosynthPluginAudioProcessor& p) :
     
     pitchModLabel.reset (new Label ("OSC2 Gain Label", TRANS("Pitch Mod")));                     //
     addAndMakeVisible (pitchModLabel.get());
-    setLabelStyle(*pitchModLabel.get(), font);
+	MonosynthLookAndFeel::setLabelStyle(pitchModLabel.get());
     
     
     
@@ -172,16 +173,7 @@ OscillatorSection::~OscillatorSection()
 {
 }
 
-void OscillatorSection::setLabelStyle(Label& label, String f)
-{
-	float kerning = 0.05f;
 
-    label.setFont (Font (f, 13.00f, Font::plain).withExtraKerningFactor (kerning));
-    label.setJustificationType (Justification::centred);
-    label.setEditable (false, false, false);
-    label.setColour (TextEditor::textColourId, Colours::black);
-    label.setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-}
 
 void OscillatorSection::paint (Graphics& g)
 {

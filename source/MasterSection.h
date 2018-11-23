@@ -14,6 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "ParameterSlider.h"
+#include "MonosynthLookAndFeel.h"
 
 //==============================================================================
 /*

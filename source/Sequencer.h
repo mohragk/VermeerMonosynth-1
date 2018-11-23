@@ -25,6 +25,7 @@
 #include "ParameterSlider.h"
 #include "ParamToggleButton.h"
 #include "SequencerState.h"
+#include "MonosynthLookAndFeel.h"
 
 
 
