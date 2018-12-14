@@ -81,6 +81,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
             timecodeDisplayLabel (String()),
 	
             titleLabel(nullptr),
+            hqLabel(nullptr),
             oversampleSwitchSlider(nullptr),
             hqOversamplingButton(nullptr),
             expandSequencerButton(nullptr)
@@ -88,7 +89,8 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 {
     // add all the sliders..
     
-    font = "Futura";
+    font = Font::getDefaultSansSerifFontName();
+    float kerning = 0.05f;
     
 
 	typedef ParameterSlider::style knobStyle;
@@ -146,7 +148,14 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 
 
 	
-
+    //HQ Label
+    hqLabel.reset(new Label ("hqLabel", TRANS("HQ")));
+    addAndMakeVisible(hqLabel.get());
+    hqLabel->setFont (Font (font, 13.00f, Font::plain).withExtraKerningFactor (kerning));
+    hqLabel->setEditable(false, false, false);
+    hqLabel->setColour (Label::textColourId, Colours::white);
+    hqLabel->setColour (TextEditor::textColourId, Colours::black);
+    hqLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
     //Oversample button
     hqOversamplingButton.reset( new ParamToggleButton (*owner.useHQOversamplingParam));
@@ -266,6 +275,10 @@ void MonosynthPluginAudioProcessorEditor::resized()
     Rectangle<int> buttonArea (titleLabel->getBounds());
     hqOversamplingButton->setBounds(buttonArea.removeFromRight(48));
     hqOversamplingButton->setButtonText("");
+    
+    hqLabel->setBounds(buttonArea.removeFromRight(32));
+    hqLabel->setJustificationType(Justification::verticallyCentred);
+    
 
 	// OSCILLOSCOPE
 	Rectangle<int> oscilloArea(getLocalBounds());

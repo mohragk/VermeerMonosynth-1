@@ -117,7 +117,8 @@ private:
 	Label timecodeDisplayLabel;
 	
     std::unique_ptr<Label>
-        titleLabel
+        titleLabel,
+        hqLabel
    ;
     
    std::unique_ptr<ParameterSlider>
