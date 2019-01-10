@@ -809,7 +809,8 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         
         
 		// Initial cutoff value mapped to linear space
-		double linearCutoffVal = logToLin(CUTOFF_MIN, CUTOFF_MAX, *filterCutoffParam);
+		double cutoffSmooth = smoothing[CUTOFF_SMOOTHER]->processSmooth(cutoff.getNextValue());
+		double linearCutoffVal = logToLin(CUTOFF_MIN, CUTOFF_MAX, cutoffSmooth);
 
 
 		// LFO modulation
@@ -845,8 +846,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 		
 		currentCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, linearCutoffVal);
        
-        FloatType combinedCutoff =    currentCutoff         //smoothing[CONTOUR_SMOOTHER]->processSmooth( currentCutoff )
-                                    + smoothing[CUTOFF_SMOOTHER]->processSmooth ( cutoff.getNextValue() )  ;
+		FloatType combinedCutoff = currentCutoff; // +smoothing[CUTOFF_SMOOTHER]->processSmooth(cutoff.getNextValue());
         
         
         
