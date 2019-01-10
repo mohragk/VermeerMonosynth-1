@@ -806,6 +806,8 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
                 lfo.setPhase(0.0);
         }
         
+
+		double linearCutoffVal = 0.0;
         
         const double lfoValue = lfo.nextSample();
         
@@ -815,8 +817,8 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 		// LFO modulation
 		double lfoMidPoint = logToLin(CUTOFF_MIN, CUTOFF_MAX, *filterCutoffParam);
 		double lfoMappedVal = (cutoffModulationAmt + lfoMidPoint); // map from [-1 , 1] tp [0 , 1]
-		double lfoCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, lfoMappedVal);
-		currentCutoff = lfoCutoff;
+		//double lfoCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, lfoMappedVal);
+		linearCutoffVal = lfoMappedVal;
         
 		// Envelope modulation
         const double contourRange = contour.getNextValue(); // LOG from 40 - 18000
@@ -824,17 +826,17 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         envelopeLED2.setBrightness((float)filterEnvelopeVal);
 
 		double contourLin = logToLin(CUTOFF_MIN, CUTOFF_MAX, contourRange);
-		double envCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, filterEnvelopeVal * contourLin);
-		currentCutoff += envCutoff; //(filterEnvelopeVal * contourRange);
+		double envCutoff = filterEnvelopeVal * contourLin;
+		linearCutoffVal += envCutoff; //(filterEnvelopeVal * contourRange);
 		
 
 		if (*useFilterKeyFollowParam)
         {
             const double keyFollowCutoff =  MidiMessage::getMidiNoteInHertz ( lastNotePlayed );
-			currentCutoff += smoothing[KEY_CUTOFF_SMOOTHER].get()->processSmooth( keyFollowCutoff - CUTOFF_MIN);
+			linearCutoffVal += smoothing[KEY_CUTOFF_SMOOTHER].get()->processSmooth( keyFollowCutoff - CUTOFF_MIN);
         }
 		
-			
+		currentCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, linearCutoffVal);
        
         FloatType combinedCutoff =    currentCutoff         //smoothing[CONTOUR_SMOOTHER]->processSmooth( currentCutoff )
                                     + smoothing[CUTOFF_SMOOTHER]->processSmooth ( cutoff.getNextValue() )  ;
