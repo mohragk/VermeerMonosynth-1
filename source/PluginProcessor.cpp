@@ -32,7 +32,7 @@
 #include <iostream>
 
 #define MIN_INFINITY_DB -96.0f
-#define CUTOFF_MIN 40.0f
+#define CUTOFF_MIN 20.0f
 #define CUTOFF_MAX 18000.0f
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
@@ -176,7 +176,8 @@ glideTimeParam(nullptr)
     
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, linToLogLambda, logToLinLambda);
 	//NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, 0.0f, 0.25f, false);
-	NormalisableRange<float> contourRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, linToLogLambda, logToLinLambda);
+	NormalisableRange<float> contourRange = NormalisableRange<float>(0.0f, 1.0f, 0.0f, 1.0f, false);
+	//NormalisableRange<float> contourRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, linToLogLambda, logToLinLambda);
 	//NormalisableRange<float> contourRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, 0.0f, 0.25f, false);
     
 	addParameter (filterCutoffParam = new AudioParameterFloat("filter", "Filter Cutoff", cutoffRange, CUTOFF_MAX));
@@ -806,34 +807,40 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
                 lfo.setPhase(0.0);
         }
         
+        
+		// Initial cutoff value mapped to linear space
+		double linearCutoffVal = logToLin(CUTOFF_MIN, CUTOFF_MAX, *filterCutoffParam);
 
-		double linearCutoffVal = 0.0;
-        
-        const double lfoValue = lfo.nextSample();
-        
-        modAmount = *lfoIntensityParam;                            // Make parameter
-        applyModToTarget(*modTargetParam, lfoValue * modAmount);
-        
+
 		// LFO modulation
-		double lfoMidPoint = logToLin(CUTOFF_MIN, CUTOFF_MAX, *filterCutoffParam);
-		double lfoMappedVal = (cutoffModulationAmt + lfoMidPoint); // map from [-1 , 1] tp [0 , 1]
-		//double lfoCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, lfoMappedVal);
-		linearCutoffVal = lfoMappedVal;
+		const double lfoValue = lfo.nextSample();
+		modAmount = *lfoIntensityParam;                            // Make parameter
+		const double lfoCutoffVal = (lfoValue * modAmount);
+		linearCutoffVal += lfoCutoffVal;
+
+		applyModToTarget(*modTargetParam, lfoValue * modAmount); //external
         
 		// Envelope modulation
-        const double contourRange = contour.getNextValue(); // LOG from 40 - 18000
+        const double filterEnvelopeAmt = contour.getNextValue(); // LOG from 40 - 18000
         const double filterEnvelopeVal = envelopeGenerator[1].get()->process();
-        envelopeLED2.setBrightness((float)filterEnvelopeVal);
+		const double envCutoff = filterEnvelopeVal * filterEnvelopeAmt;
+		linearCutoffVal += envCutoff; 
 
-		double contourLin = logToLin(CUTOFF_MIN, CUTOFF_MAX, contourRange);
-		double envCutoff = filterEnvelopeVal * contourLin;
-		linearCutoffVal += envCutoff; //(filterEnvelopeVal * contourRange);
+		// SHOULDN'T BE HERE BUT HEY..
+		envelopeLED2.setBrightness((float)filterEnvelopeVal);
 		
 
 		if (*useFilterKeyFollowParam)
         {
             const double keyFollowCutoff =  MidiMessage::getMidiNoteInHertz ( lastNotePlayed );
-			linearCutoffVal += smoothing[KEY_CUTOFF_SMOOTHER].get()->processSmooth( keyFollowCutoff - CUTOFF_MIN);
+			double keyFollowCutOffHz = smoothing[KEY_CUTOFF_SMOOTHER].get()->processSmooth(keyFollowCutoff - CUTOFF_MIN);
+			keyFollowCutOffHz = jmax((double)CUTOFF_MIN, jmin((double)CUTOFF_MAX, keyFollowCutOffHz));
+
+			linearCutoffVal += logToLin(
+								CUTOFF_MIN, 
+								CUTOFF_MAX, 
+								keyFollowCutOffHz
+								);
         }
 		
 		currentCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, linearCutoffVal);
