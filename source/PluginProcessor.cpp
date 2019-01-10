@@ -812,15 +812,18 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         modAmount = *lfoIntensityParam;                            // Make parameter
         applyModToTarget(*modTargetParam, lfoValue * modAmount);
         
+		// LFO modulation
+		float lfoMidPoint = logToLin(CUTOFF_MIN, CUTOFF_MAX, *filterCutoffParam);
+		float lfoMappedVal = (cutoffModulationAmt + lfoMidPoint); // map from [-1 , 1] tp [0 , 1]
+		float lfoCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, lfoMappedVal);
+		currentCutoff = lfoCutoff;
         
-        // Modulation by envelope and LFO (if set)
-        const double lfoFilterRange = 6000.0;
-        
+		// Envelope modulation
         const double contourRange = contour.getNextValue();
         const double filterEnvelopeVal = envelopeGenerator[1].get()->process();
         envelopeLED2.setBrightness((float)filterEnvelopeVal);
-        
-		currentCutoff = (filterEnvelopeVal * contourRange) + (lfoFilterRange * cutoffModulationAmt);
+		currentCutoff += (filterEnvelopeVal * contourRange);
+		
 
 		if (*useFilterKeyFollowParam)
         {
