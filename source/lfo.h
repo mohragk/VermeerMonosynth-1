@@ -24,7 +24,7 @@ class LFO
                 OSCILLATOR_MODE_SINE = 0,
                 OSCILLATOR_MODE_SAW,
                 OSCILLATOR_MODE_SQUARE,
-                OSCILLATOR_MODE_NOISE
+                OSCILLATOR_MODE_RAMP
          };
         
         void setSampleRate(const double sr)
@@ -53,7 +53,7 @@ class LFO
             else if (m == 2)
                 mode = OSCILLATOR_MODE_SQUARE;
             else
-                mode = OSCILLATOR_MODE_NOISE;
+                mode = OSCILLATOR_MODE_RAMP;
         }
             
         double nextSample()
@@ -78,8 +78,8 @@ class LFO
                         value = -1.0;
                     }
                     break;
-                case OSCILLATOR_MODE_NOISE:   
-                    value = r.nextDouble();
+                case OSCILLATOR_MODE_RAMP:
+                    value = phase;
                     break;
 
             }

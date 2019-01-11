@@ -33,7 +33,7 @@
 
 #define MIN_INFINITY_DB -96.0f
 #define CUTOFF_MIN 20.0f
-#define CUTOFF_MAX 18000.0f
+#define CUTOFF_MAX 12000.0f
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
