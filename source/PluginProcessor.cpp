@@ -263,15 +263,32 @@ glideTimeParam(nullptr)
         addParameter(stepPlayParam[i] = new AudioParameterBool("stepPlayParam" + std::to_string(i), "Seq. On " + std::to_string(i), true));
     }
     
+    auto Log2_int = [](unsigned int N)
+    {
+        unsigned int bits = sizeof(N) * 4;
+        unsigned int n = 0;
+        while (N > 1)
+        {
+            if (N >> bits)
+            {
+                N >>= bits;
+                n += bits;
+            }
+            bits >>= 1;
+        }
+        return n;
+    };
+    
     auto linToPow = [](float start, float end, float linVal) {
         double remapped = (6.0 - 1.0) * (linVal - 0.0) / (1.0 - 0.0) + 1.0 ; // remap
+        
         int newValue = std::round(remapped);
-        return std::pow(2, newValue);
+        return std::round( 1 << newValue );
         
     };
-    auto powToLin = [](float start, float end, float powVal) {
-        int newValue = std::round( powVal );
-        double invLog = std::log2( newValue );
+    auto powToLin = [&](float start, float end, float powVal) {
+        uint16 newValue = (int) powVal;
+        double invLog = Log2_int( newValue );
         return (1.0 - 0.0) * (invLog - 1.0) / (6.0 - 1.0) + 0.0; //remap
         
         

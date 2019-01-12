@@ -442,4 +442,6 @@ inline double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::Cur
 }
 
 
+
+
 #endif // PLUGIN_PROCESSOR_H
