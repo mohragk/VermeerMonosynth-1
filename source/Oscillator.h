@@ -224,7 +224,7 @@ private:
 			freq = 1;
 		// overall strength of the distortion based on frequency
 		// higher means less strength
-		double strength = 55 / freq;
+		double strength = 30 / freq;
 		double strength_sq = strength * strength * strength * strength;
 
 		double denom = (strength_sq * 100 * phase * phase * phase * phase * phase * phase) + 1;
