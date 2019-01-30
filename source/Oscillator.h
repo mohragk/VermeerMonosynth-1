@@ -193,6 +193,8 @@ private:
             case OSCILLATOR_MODE_SAW:
                 value = ( 3.0 * phs ) ;
                 value = 2.0 * dsp::FastMathApproximations::tanh(value) - 1.0;
+				value *= getTermForSaw(phs, frequency.get());
+				value *= -1;
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
@@ -213,6 +215,22 @@ private:
         return value;
     }
     
+	double getTermForSaw(double phase, double freq)
+	{
+		// see desmos for demo
+		// https://www.desmos.com/calculator/tok7j246bk
+
+		if (freq == 0)
+			freq = 1;
+		// overall strength of the distortion based on frequency
+		// higher means less strength
+		double strength = 55 / freq;
+		double strength_sq = strength * strength * strength * strength;
+
+		double denom = (strength_sq * 100 * phase * phase * phase * phase * phase * phase) + 1;
+		return 1 / denom;
+
+	}
     
     double poly_blep (double t, const double phaseInc)
     {
