@@ -173,9 +173,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     
     // Keyboard
     addAndMakeVisible(midiKeyboard);
-    midiKeyboard.setAvailableRange(12, 115);
-    midiKeyboard.setLowestVisibleKey(36);
-    midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.5);
+    midiKeyboard.setAvailableRange(41, 88);
+    midiKeyboard.setLowestVisibleKey(40);
+    midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.75);
     
     
     
