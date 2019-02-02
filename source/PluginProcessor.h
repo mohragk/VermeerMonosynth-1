@@ -272,6 +272,7 @@ public:
 	String debugInfo;
 private:
 	
+	void loadDefaultState();
 	
     Arpeggiator arp;
     

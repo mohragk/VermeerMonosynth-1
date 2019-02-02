@@ -37,7 +37,15 @@
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
+struct defaultValues {
+	// oscillators
+	double oscGain[3]     = { Decibels::decibelsToGain(-6.0), Decibels::decibelsToGain(-6.0),Decibels::decibelsToGain(-6.0) };
+	double oscDetune[3]   = { 0, -0.1, 0.1 };
+	int oscType[3]        = { 1, 1, 1 };
+	int oscOffset[3]      = { -24, -12, -8 };
 
+		
+};
 //==============================================================================
 MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
 : AudioProcessor ( getBusesProperties() ),
@@ -119,6 +127,8 @@ glideTimeParam(nullptr)
 {
     lastPosInfo.resetToDefault();
 
+
+	defaultValues defaultVals;
     
     // This creates our parameters. We'll keep some raw pointers to them in this class,
     // so that we can easily access them later, but the base class will take care of
@@ -158,13 +168,13 @@ glideTimeParam(nullptr)
     for (int osc = 0; osc < 3; osc++)
     {
         //addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
-        addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 1.0f));
-        addParameter (oscDetuneAmountParam[osc] = new AudioParameterFloat("oscDetuneAmount" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
-        addParameter (oscModeParam[osc] = new AudioParameterInt("oscModeChoice" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Waveform", 0, 3, 2));
-        addParameter (oscOffsetParam[osc] = new AudioParameterInt("oscOffset" + std::to_string(osc), "OSC"+std::to_string(osc + 1)+" Offset", -24, 24, 0));
+        addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), defaultVals.oscGain[osc]));
+        addParameter (oscDetuneAmountParam[osc] = new AudioParameterFloat("oscDetuneAmount" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), defaultVals.oscDetune[osc]));
+        addParameter (oscModeParam[osc] = new AudioParameterInt("oscModeChoice" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Waveform", 0, 3, defaultVals.oscType[osc]));
+        addParameter (oscOffsetParam[osc] = new AudioParameterInt("oscOffset" + std::to_string(osc), "OSC"+std::to_string(osc + 1)+" Offset", -24, 24, defaultVals.oscOffset[osc]));
         
         // PWM
-        addParameter(pulsewidthParam[osc] = new AudioParameterFloat("pulsewidthParam" + std::to_string(osc), "PW"+std::to_string(osc + 1), 0.0f, 1.0f, 0.0f));
+        addParameter(pulsewidthParam[osc] = new AudioParameterFloat("pulsewidthParam" + std::to_string(osc), "PW"+std::to_string(osc + 1), 0.1f, 1.0f, 0.1f));
         addParameter(pulsewidthAmountParam[osc] = new AudioParameterFloat("pulsewidthAmountParam" + std::to_string(osc), "PWM" +std::to_string(osc + 1)+" Amt", 0.0f, 1.0f, 0.0f));
     }
     
@@ -346,7 +356,7 @@ glideTimeParam(nullptr)
     }
     
 
-	
+	loadDefaultState();
     
 }
 
@@ -950,6 +960,49 @@ AudioProcessorEditor* MonosynthPluginAudioProcessor::createEditor()
     return new MonosynthPluginAudioProcessorEditor (*this) ;
 }
 
+
+void MonosynthPluginAudioProcessor::loadDefaultState()
+{
+//#if JUCE_MODAL_LOOPS_PERMITTED
+
+	File path ("C:/DEVELOPMENT/VermeerMonosynth-1/presets/default");
+	path.withFileExtension("");
+
+	MemoryBlock data;
+
+	//path.loadFileAsData(data);
+
+	if (path.exists())
+	{
+		FileInputStream inputStream(path);
+
+
+		if (inputStream.openedOk())
+		{
+			inputStream.readIntoMemoryBlock(data, -1);
+			setStateInformation(data.getData(), (int)data.getSize());
+		}
+		else
+		{
+			Result r = inputStream.getStatus();
+			String error = r.getErrorMessage();
+			AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
+				TRANS("Error whilst loading"),
+				TRANS(error));
+		}
+	}
+	else
+	{
+		AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
+			TRANS("Error whilst loading"),
+			TRANS("Cannot open file"));
+	}
+
+	
+//#else
+//	ignoreUnused(fileSuffix);
+//#endif
+}
 //==============================================================================
 void MonosynthPluginAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
@@ -982,6 +1035,7 @@ void MonosynthPluginAudioProcessor::setStateInformation (const void* data, int s
     
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
     ScopedPointer<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+	
     
     if (xmlState != nullptr)
     {
