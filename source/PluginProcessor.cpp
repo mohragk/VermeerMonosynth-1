@@ -965,9 +965,14 @@ void MonosynthPluginAudioProcessor::loadDefaultState()
 {
 //#if JUCE_MODAL_LOOPS_PERMITTED
 
-	File path ("C:/DEVELOPMENT/VermeerMonosynth-1/presets/default");
-	path.withFileExtension("");
+	//File path ("C:/DEVELOPMENT/VermeerMonosynth-1/presets/default");
+	//path.withFileExtension("");
 
+    File path (File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory). getChildFile("presets"). getChildFile("default"));
+    
+    
+    path.withFileExtension("");
+    
 	MemoryBlock data;
 
 	//path.loadFileAsData(data);
@@ -995,7 +1000,7 @@ void MonosynthPluginAudioProcessor::loadDefaultState()
 	{
 		AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
 			TRANS("Error whilst loading"),
-			TRANS("Cannot open file"));
+			TRANS("Default preset not found");
 	}
 
 	
