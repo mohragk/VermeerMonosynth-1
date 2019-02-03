@@ -267,6 +267,7 @@ void EnvelopeSection::resized()
 
 		retriggerButton->setBounds(buttonArea.removeFromLeft(area.getWidth()).reduced(12, 0));
 		retriggerButton->setButtonText("Retrigger");
+        retriggerButton->setWantsKeyboardFocus(false);
 	}
 
 }

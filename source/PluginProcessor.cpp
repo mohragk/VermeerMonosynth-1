@@ -1000,7 +1000,7 @@ void MonosynthPluginAudioProcessor::loadDefaultState()
 	{
 		AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
 			TRANS("Error whilst loading"),
-			TRANS("Default preset not found");
+			TRANS("Default preset not found"));
 	}
 
 	

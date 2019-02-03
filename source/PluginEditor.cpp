@@ -100,6 +100,13 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     int height= TITLE_HEIGHT + MODULE_HEIGHT + KEYBOARD_HEIGHT;
     
     
+    // Keyboard
+    addAndMakeVisible(midiKeyboard);
+    midiKeyboard.setAvailableRange(41, 88);
+    midiKeyboard.setLowestVisibleKey(40);
+    midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.75);
+    
+    
     // OSCILLATOR SECTION
     oscillatorSection.reset(new OscillatorSection(owner));
     addAndMakeVisible(oscillatorSection.get());
@@ -171,11 +178,7 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
     expandSequencerButton->addListener(this);
 	expandSequencerButton.get()->setTooltip("Expand and activate Sequencer");
     
-    // Keyboard
-    addAndMakeVisible(midiKeyboard);
-    midiKeyboard.setAvailableRange(41, 88);
-    midiKeyboard.setLowestVisibleKey(40);
-    midiKeyboard.setKeyWidth(midiKeyboard.getKeyWidth() * 1.75);
+    
     
     
     
@@ -302,6 +305,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
 	
     // ENVELOPES
     envelopeSection->setBounds(parameterArea.removeFromLeft((STRIP_WIDTH * 2) + MODULE_MARGIN));
+    envelopeSection->setFocusContainer(false);
     
     // LFO SECTION
     lfoSection->setBounds(parameterArea.removeFromLeft(STRIP_WIDTH + MODULE_MARGIN));
@@ -314,6 +318,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     seqButtonArea.translate(masterSection->getWidth() - 24, 0);
     expandSequencerButton->setBounds(seqButtonArea.removeFromBottom(48));
     expandSequencerButton->setButtonText("");
+    expandSequencerButton->setWantsKeyboardFocus(false);
     
     
     
@@ -322,6 +327,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     // KEYBOARD SECTION
     midiKeyboard.setBounds(area.removeFromBottom(KEYBOARD_HEIGHT).reduced(8));
     midiKeyboard.setAlwaysOnTop(true);
+    midiKeyboard.setFocusContainer(true);
     midiKeyboard.setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, Colour (0xffc8e6ff));
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     
@@ -340,7 +346,6 @@ void MonosynthPluginAudioProcessorEditor::timerCallback()
     updateTimecodeDisplay (getProcessor().lastPosInfo);
 
     updateStates();
-    
 }
 
 

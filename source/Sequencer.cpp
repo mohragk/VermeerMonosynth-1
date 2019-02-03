@@ -194,6 +194,7 @@ void Sequencer::resized()
         {
             skipStepButton[i]->setBounds(block.removeFromLeft(vertSliderSize).reduced(4,0));
             skipStepButton[i]->setButtonText("");
+            skipStepButton[i]->setWantsKeyboardFocus(false);
         }
     }
     
