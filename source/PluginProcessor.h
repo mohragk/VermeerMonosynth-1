@@ -272,6 +272,7 @@ public:
 	String debugInfo;
 private:
 	
+	void loadDefaultState();
 	
     Arpeggiator arp;
     
@@ -440,6 +441,8 @@ inline double MonosynthPluginAudioProcessor::getLFOSyncedFreq(AudioPlayHead::Cur
     
     return 1.0 / seconds_per_note;
 }
+
+
 
 
 #endif // PLUGIN_PROCESSOR_H

@@ -33,11 +33,19 @@
 
 #define MIN_INFINITY_DB -96.0f
 #define CUTOFF_MIN 40.0f
-#define CUTOFF_MAX 18000.0f
+#define CUTOFF_MAX 20000.0f
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
+struct defaultValues {
+	// oscillators
+	double oscGain[3]     = { Decibels::decibelsToGain(-6.0), Decibels::decibelsToGain(-6.0),Decibels::decibelsToGain(-6.0) };
+	double oscDetune[3]   = { 0, -0.1, 0.1 };
+	int oscType[3]        = { 1, 1, 1 };
+	int oscOffset[3]      = { -24, -12, -8 };
 
+		
+};
 //==============================================================================
 MonosynthPluginAudioProcessor::MonosynthPluginAudioProcessor()
 : AudioProcessor ( getBusesProperties() ),
@@ -119,6 +127,8 @@ glideTimeParam(nullptr)
 {
     lastPosInfo.resetToDefault();
 
+
+	defaultValues defaultVals;
     
     // This creates our parameters. We'll keep some raw pointers to them in this class,
     // so that we can easily access them later, but the base class will take care of
@@ -158,13 +168,13 @@ glideTimeParam(nullptr)
     for (int osc = 0; osc < 3; osc++)
     {
         //addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(MIN_INFINITY_DB, 0.0f, gainToDecibelLambda, decibelToGainLambda), -1.0f));
-        addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), 1.0f));
-        addParameter (oscDetuneAmountParam[osc] = new AudioParameterFloat("oscDetuneAmount" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), 0.0f));
-        addParameter (oscModeParam[osc] = new AudioParameterInt("oscModeChoice" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Waveform", 0, 3, 2));
-        addParameter (oscOffsetParam[osc] = new AudioParameterInt("oscOffset" + std::to_string(osc), "OSC"+std::to_string(osc + 1)+" Offset", -24, 24, 0));
+        addParameter (oscGainParam[osc]  = new AudioParameterFloat ("oscGain" + std::to_string(osc),  "OSC" + std::to_string(osc + 1) + " Gain", NormalisableRange<float>(0.0f, 1.0f, 0.0f, 0.5f, false), defaultVals.oscGain[osc]));
+        addParameter (oscDetuneAmountParam[osc] = new AudioParameterFloat("oscDetuneAmount" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Tune", NormalisableRange<float>(-0.5f, 0.5f, 0.0f), defaultVals.oscDetune[osc]));
+        addParameter (oscModeParam[osc] = new AudioParameterInt("oscModeChoice" + std::to_string(osc), "OSC" + std::to_string(osc + 1) + " Waveform", 0, 3, defaultVals.oscType[osc]));
+        addParameter (oscOffsetParam[osc] = new AudioParameterInt("oscOffset" + std::to_string(osc), "OSC"+std::to_string(osc + 1)+" Offset", -24, 24, defaultVals.oscOffset[osc]));
         
         // PWM
-        addParameter(pulsewidthParam[osc] = new AudioParameterFloat("pulsewidthParam" + std::to_string(osc), "PW"+std::to_string(osc + 1), 0.0f, 1.0f, 0.0f));
+        addParameter(pulsewidthParam[osc] = new AudioParameterFloat("pulsewidthParam" + std::to_string(osc), "PW"+std::to_string(osc + 1), 0.1f, 1.0f, 0.1f));
         addParameter(pulsewidthAmountParam[osc] = new AudioParameterFloat("pulsewidthAmountParam" + std::to_string(osc), "PWM" +std::to_string(osc + 1)+" Amt", 0.0f, 1.0f, 0.0f));
     }
     
@@ -176,7 +186,8 @@ glideTimeParam(nullptr)
     
 	NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, linToLogLambda, logToLinLambda);
 	//NormalisableRange<float> cutoffRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, 0.0f, 0.25f, false);
-	NormalisableRange<float> contourRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, linToLogLambda, logToLinLambda);
+	NormalisableRange<float> contourRange = NormalisableRange<float>(0.0f, 1.0f, 0.0f, 1.0f, false);
+	//NormalisableRange<float> contourRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, linToLogLambda, logToLinLambda);
 	//NormalisableRange<float> contourRange = NormalisableRange<float>(CUTOFF_MIN, CUTOFF_MAX, 0.0f, 0.25f, false);
     
 	addParameter (filterCutoffParam = new AudioParameterFloat("filter", "Filter Cutoff", cutoffRange, CUTOFF_MAX));
@@ -262,15 +273,32 @@ glideTimeParam(nullptr)
         addParameter(stepPlayParam[i] = new AudioParameterBool("stepPlayParam" + std::to_string(i), "Seq. On " + std::to_string(i), true));
     }
     
+    auto Log2_int = [](unsigned int N)
+    {
+        unsigned int bits = sizeof(N) * 4;
+        unsigned int n = 0;
+        while (N > 1)
+        {
+            if (N >> bits)
+            {
+                N >>= bits;
+                n += bits;
+            }
+            bits >>= 1;
+        }
+        return n;
+    };
+    
     auto linToPow = [](float start, float end, float linVal) {
         double remapped = (6.0 - 1.0) * (linVal - 0.0) / (1.0 - 0.0) + 1.0 ; // remap
+        
         int newValue = std::round(remapped);
-        return std::pow(2, newValue);
+        return std::round( 1 << newValue );
         
     };
-    auto powToLin = [](float start, float end, float powVal) {
-        int newValue = std::round( powVal );
-        double invLog = std::log2( newValue );
+    auto powToLin = [&](float start, float end, float powVal) {
+        uint16 newValue = (int) powVal;
+        double invLog = Log2_int( newValue );
         return (1.0 - 0.0) * (invLog - 1.0) / (6.0 - 1.0) + 0.0; //remap
         
         
@@ -328,7 +356,7 @@ glideTimeParam(nullptr)
     }
     
 
-	
+	loadDefaultState();
     
 }
 
@@ -807,34 +835,45 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         }
         
         
-        const double lfoValue = lfo.nextSample();
-        
-        modAmount = *lfoIntensityParam;                            // Make parameter
-        applyModToTarget(*modTargetParam, lfoValue * modAmount);
-        
+		// Initial cutoff value mapped to linear space
+		double cutoffSmooth = smoothing[CUTOFF_SMOOTHER]->processSmooth(cutoff.getNextValue());
+		double linearCutoffVal = logToLin(CUTOFF_MIN, CUTOFF_MAX, cutoffSmooth);
+
+
 		// LFO modulation
-		float lfoMidPoint = logToLin(CUTOFF_MIN, CUTOFF_MAX, *filterCutoffParam);
-		float lfoMappedVal = (cutoffModulationAmt + lfoMidPoint); // map from [-1 , 1] tp [0 , 1]
-		float lfoCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, lfoMappedVal);
-		currentCutoff = lfoCutoff;
+		const double lfoValue = lfo.nextSample();
+		modAmount = *lfoIntensityParam;                            // Make parameter
+		const double lfoCutoffVal = (lfoValue * modAmount);
+		linearCutoffVal += lfoCutoffVal;
+
+		applyModToTarget(*modTargetParam, lfoValue * modAmount); //external
         
 		// Envelope modulation
-        const double contourRange = contour.getNextValue();
+        const double filterEnvelopeAmt = contour.getNextValue(); // LOG from 40 - 18000
         const double filterEnvelopeVal = envelopeGenerator[1].get()->process();
-        envelopeLED2.setBrightness((float)filterEnvelopeVal);
-		currentCutoff += (filterEnvelopeVal * contourRange);
+		const double envCutoff = filterEnvelopeVal * filterEnvelopeAmt;
+		linearCutoffVal += envCutoff; 
+
+		// SHOULDN'T BE HERE BUT HEY..
+		envelopeLED2.setBrightness((float)filterEnvelopeVal);
 		
 
 		if (*useFilterKeyFollowParam)
         {
             const double keyFollowCutoff =  MidiMessage::getMidiNoteInHertz ( lastNotePlayed );
-			currentCutoff += smoothing[KEY_CUTOFF_SMOOTHER].get()->processSmooth( keyFollowCutoff - CUTOFF_MIN);
+			double keyFollowCutOffHz = smoothing[KEY_CUTOFF_SMOOTHER].get()->processSmooth(keyFollowCutoff - CUTOFF_MIN);
+			keyFollowCutOffHz = jmax((double)CUTOFF_MIN, jmin((double)CUTOFF_MAX, keyFollowCutOffHz));
+
+			linearCutoffVal += logToLin(
+								CUTOFF_MIN, 
+								CUTOFF_MAX, 
+								keyFollowCutOffHz
+								);
         }
 		
-			
+		currentCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, linearCutoffVal);
        
-        FloatType combinedCutoff =    currentCutoff         //smoothing[CONTOUR_SMOOTHER]->processSmooth( currentCutoff )
-                                    + smoothing[CUTOFF_SMOOTHER]->processSmooth ( cutoff.getNextValue() )  ;
+		FloatType combinedCutoff = currentCutoff; // +smoothing[CUTOFF_SMOOTHER]->processSmooth(cutoff.getNextValue());
         
         
         
@@ -921,6 +960,54 @@ AudioProcessorEditor* MonosynthPluginAudioProcessor::createEditor()
     return new MonosynthPluginAudioProcessorEditor (*this) ;
 }
 
+
+void MonosynthPluginAudioProcessor::loadDefaultState()
+{
+//#if JUCE_MODAL_LOOPS_PERMITTED
+
+	//File path ("C:/DEVELOPMENT/VermeerMonosynth-1/presets/default");
+	//path.withFileExtension("");
+
+    File path (File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory). getChildFile("presets"). getChildFile("default"));
+    
+    
+    path.withFileExtension("");
+    
+	MemoryBlock data;
+
+	//path.loadFileAsData(data);
+
+	if (path.exists())
+	{
+		FileInputStream inputStream(path);
+
+
+		if (inputStream.openedOk())
+		{
+			inputStream.readIntoMemoryBlock(data, -1);
+			setStateInformation(data.getData(), (int)data.getSize());
+		}
+		else
+		{
+			Result r = inputStream.getStatus();
+			String error = r.getErrorMessage();
+			AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
+				TRANS("Error whilst loading"),
+				TRANS(error));
+		}
+	}
+	else
+	{
+		AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
+			TRANS("Error whilst loading"),
+			TRANS("Default preset not found");
+	}
+
+	
+//#else
+//	ignoreUnused(fileSuffix);
+//#endif
+}
 //==============================================================================
 void MonosynthPluginAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
@@ -953,6 +1040,7 @@ void MonosynthPluginAudioProcessor::setStateInformation (const void* data, int s
     
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
     ScopedPointer<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+	
     
     if (xmlState != nullptr)
     {

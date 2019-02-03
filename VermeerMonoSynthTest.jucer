@@ -8,7 +8,7 @@
               pluginSilenceInIsSilenceOut="0" pluginTailLength="0" pluginEditorRequiresKeys="1"
               pluginAUExportPrefix="VermeerMonosynth" pluginAUViewClass="JuceDemoProjectAU_V1"
               pluginRTASCategory="" bundleIdentifier="com.vermeer.Monosynth"
-              jucerVersion="5.3.2" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
+              jucerVersion="5.4.1" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
               buildAAX="0" pluginAAXCategory="2" includeBinaryInAppConfig="1"
               buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
               companyWebsite="www.soundcloud.com/meneervermeer" companyEmail="meneervermeermusic@gmail.com"
@@ -18,8 +18,8 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn,pluginProducesMidiOut,pluginEditorRequiresKeys">
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="" rtasFolder="~/SDKs/PT_80_SDK"
-               objCExtraSuffix="JuceDemo" aaxFolder="" postbuildCommand="" vst3Folder=""
-               smallIcon="aJR5EJ" bigIcon="IbiCwm">
+               objCExtraSuffix="JuceDemo" postbuildCommand="" smallIcon="aJR5EJ"
+               bigIcon="IbiCwm">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="VermeerMonosynth"
                        osxArchitecture="64BitIntel" enablePluginBinaryCopyStep="1"/>
@@ -187,6 +187,6 @@
   </MODULES>
   <LIVE_SETTINGS>
     <OSX buildEnabled="0"/>
-    <WINDOWS buildEnabled="0"/>
+    <WINDOWS buildEnabled="1"/>
   </LIVE_SETTINGS>
 </JUCERPROJECT>
