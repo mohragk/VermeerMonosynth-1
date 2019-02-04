@@ -328,6 +328,7 @@ void MonosynthPluginAudioProcessorEditor::resized()
     midiKeyboard.setBounds(area.removeFromBottom(KEYBOARD_HEIGHT).reduced(8));
     midiKeyboard.setAlwaysOnTop(true);
     midiKeyboard.setFocusContainer(true);
+    midiKeyboard.setKeyPressBaseOctave(5);
     midiKeyboard.setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, Colour (0xffc8e6ff));
     midiKeyboard.setColour(MidiKeyboardComponent::keyDownOverlayColourId, Colour (0xff84a7c4));
     

@@ -968,7 +968,7 @@ void MonosynthPluginAudioProcessor::loadDefaultState()
 	//File path ("C:/DEVELOPMENT/VermeerMonosynth-1/presets/default");
 	//path.withFileExtension("");
 
-    File path (File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory). getChildFile("presets"). getChildFile("default"));
+    File path (File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory). getChildFile("MRVR"). getChildFile("Monosynth-1"). getChildFile("Presets"). getChildFile("default")  );
     
     
     path.withFileExtension("");
@@ -986,6 +986,9 @@ void MonosynthPluginAudioProcessor::loadDefaultState()
 		{
 			inputStream.readIntoMemoryBlock(data, -1);
 			setStateInformation(data.getData(), (int)data.getSize());
+            AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
+                                             TRANS("Default preset Loaded"),
+                                             TRANS("Click to continue"));
 		}
 		else
 		{
