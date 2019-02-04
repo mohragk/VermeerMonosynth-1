@@ -51,6 +51,15 @@
 #include "MoogLadders/ThreeFiveModel.h"
 
 
+static bool isWindows()
+{
+#if JUCE_WINDOWS
+	return true;
+#else 
+	return false;
+#endif
+}
+
 //==============================================================================
 /**
     As the name suggest, this class does the actual audio processing.

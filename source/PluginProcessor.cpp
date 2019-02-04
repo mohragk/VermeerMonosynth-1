@@ -968,7 +968,8 @@ void MonosynthPluginAudioProcessor::loadDefaultState()
 	//File path ("C:/DEVELOPMENT/VermeerMonosynth-1/presets/default");
 	//path.withFileExtension("");
 
-    File path (File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory). getChildFile("MRVR"). getChildFile("Monosynth-1"). getChildFile("Presets"). getChildFile("default")  );
+	File path;
+	path = (File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory). getChildFile("MRVR"). getChildFile("Monosynth-1"). getChildFile("Presets"). getChildFile("default")  );
     
     
     path.withFileExtension("");
@@ -987,22 +988,22 @@ void MonosynthPluginAudioProcessor::loadDefaultState()
 			inputStream.readIntoMemoryBlock(data, -1);
 			setStateInformation(data.getData(), (int)data.getSize());
             AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
-                                             TRANS("Default preset Loaded"),
-                                             TRANS("Click to continue"));
+                                             TRANS("Default preset loaded."),
+                                             TRANS("Click to OK continue"));
 		}
 		else
 		{
 			Result r = inputStream.getStatus();
 			String error = r.getErrorMessage();
 			AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
-				TRANS("Error whilst loading"),
+				TRANS("Error whilst loading:"),
 				TRANS(error));
 		}
 	}
 	else
 	{
 		AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
-			TRANS("Error whilst loading"),
+			TRANS("Error whilst loading:"),
 			TRANS("Default preset not found"));
 	}
 
