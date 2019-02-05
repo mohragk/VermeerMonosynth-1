@@ -189,7 +189,9 @@ MonosynthPluginAudioProcessorEditor::MonosynthPluginAudioProcessorEditor (Monosy
 	addAndMakeVisible(oscilloscope_ptr);
     
 
-	
+	shouldBlepButton.reset(new ParamToggleButton(*owner.shouldBlepParam));
+	//addAndMakeVisible(shouldBlepButton.get());
+	shouldBlepButton->addListener(this);
     
     
     //
@@ -281,6 +283,12 @@ void MonosynthPluginAudioProcessorEditor::resized()
     
     hqLabel->setBounds(buttonArea.removeFromRight(32));
     hqLabel->setJustificationType(Justification::verticallyCentred);
+
+
+	// TEST BLEP
+	Rectangle<int> blepArea(titleLabel->getBounds());
+	shouldBlepButton->setBounds(blepArea.removeFromRight(120));
+	shouldBlepButton->setButtonText("");
     
 
 	// OSCILLOSCOPE

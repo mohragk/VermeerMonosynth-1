@@ -231,6 +231,8 @@ public:
     void setPulsewidthForOscillator(double pw, int n);
     
     bool isPlaying = false;
+
+	bool shouldBlep = false;
     
 private:
     template <typename FloatType>
@@ -256,6 +258,11 @@ private:
                     targetFrequency[i] = semitoneOffsetToFreq(oscDetuneAmount[i] + pitchModulation + pitchBendOffset, newFreq);
                     updateGlidedFrequency(targetFrequency[i], currentFrequency[i], glideTimeMillis);
                     osc[i]->setFrequency(currentFrequency[i]);
+
+					//
+					// TEST
+					//
+					osc[i]->shouldBlep = shouldBlep;
                 }
                                
                 if (osc[0]->isRephase() && hardSync)

@@ -144,7 +144,7 @@ private:
         drawable24
     ;
     
-    std::unique_ptr<ParamToggleButton> hqOversamplingButton, expandSequencerButton;
+    std::unique_ptr<ParamToggleButton> hqOversamplingButton, expandSequencerButton, shouldBlepButton;
     
     std::unique_ptr<ComponentAnimator> animator;
    

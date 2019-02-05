@@ -8,6 +8,8 @@
 #ifndef Oscillator_h
 #define Oscillator_h
 
+
+
 class Oscillator
 {
 public:
@@ -135,15 +137,16 @@ public:
             
             case OSCILLATOR_MODE_SAW:
                 value = naiveWaveFormForMode(mode, phase.get());
-                value -= poly_blep( t, phaseIncrement );
+				value += poly_blep( t, phaseIncrement );
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
                 //value = naiveWaveFormForMode(mode, phase.get());
                 //value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi);
 				value = getAlternativeSquare(phase.get(), pulsewidth, frequency.get());
-                value += poly_blep( t, phaseIncrement );
-                value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
+				value += poly_blep( t, phaseIncrement );
+				value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
+
                 break;
                 
             case OSCILLATOR_MODE_NOISE:
@@ -171,6 +174,8 @@ public:
         return value * level * gain.get();
     }
     
+	// TEST
+	bool shouldBlep = false;
     
 private:
     
@@ -273,6 +278,7 @@ private:
     
     double poly_blep (double t, const double phaseInc)
     {
+	
         const double dt = phaseInc; // normalize phase increment
         
         if (t < dt)
@@ -319,6 +325,7 @@ private:
     Random random;
     
     bool rephase;
+	
     
 	JUCE_LEAK_DETECTOR(Oscillator);
 };

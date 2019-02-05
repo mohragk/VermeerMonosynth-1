@@ -277,6 +277,7 @@ public:
     
     AudioParameterFloat* glideTimeParam;
 
+	AudioParameterBool* shouldBlepParam;
 
 	String debugInfo;
 private:

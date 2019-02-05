@@ -335,8 +335,8 @@ glideTimeParam(nullptr)
         envelopeGenerator[i].reset(new ADSR);
     
     // Oversampling 2 times with FIR filtering
-    oversamplingFloat.reset  ( new dsp::Oversampling<float>    ( 2, 1, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
-    oversamplingDouble.reset ( new dsp::Oversampling<double>   ( 2, 1, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
+    oversamplingFloat.reset  ( new dsp::Oversampling<float>    ( 2, 0, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
+    oversamplingDouble.reset ( new dsp::Oversampling<double>   ( 2, 0, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
     
     // HQ Oversampling 8 times with FIR filtering
     oversamplingFloatHQ.reset  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
@@ -355,6 +355,8 @@ glideTimeParam(nullptr)
         gainSmoothed.push_back(smval);
     }
     
+
+	addParameter(shouldBlepParam = new AudioParameterBool("shouldBlepParam", "BLEP ON/OFF", false));
 
 	loadDefaultState();
     
@@ -1082,6 +1084,9 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     int stepSize = jmin(1, numSamples);
     
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+
+
+	synthVoice->shouldBlep = *shouldBlepParam;
     
     //synthVoice->setFilterEnvelopeSampleRate(sampleRate);
    // synthVoice->filterAmpEnvelope(*attackParam3, *decayParam3, *sustainParam3, *releaseParam3, *attackCurve3Param, *decayRelCurve3Param);
