@@ -989,9 +989,6 @@ void MonosynthPluginAudioProcessor::loadDefaultState()
 		{
 			inputStream.readIntoMemoryBlock(data, -1);
 			setStateInformation(data.getData(), (int)data.getSize());
-            AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
-                                             TRANS("Default preset loaded."),
-                                             TRANS("Click to OK continue"));
 		}
 		else
 		{

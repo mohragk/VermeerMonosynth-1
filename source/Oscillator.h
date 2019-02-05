@@ -137,15 +137,20 @@ public:
             
             case OSCILLATOR_MODE_SAW:
                 value = naiveWaveFormForMode(mode, phase.get());
-				value += poly_blep( t, phaseIncrement );
+				value -= poly_blep( t, phaseIncrement );
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
                 //value = naiveWaveFormForMode(mode, phase.get());
                 //value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi);
-				value = getAlternativeSquare(phase.get(), pulsewidth, frequency.get());
-				value += poly_blep( t, phaseIncrement );
-				value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
+
+				//value = getAlternativeSquare(phase.get(), pulsewidth, frequency.get());
+				//value += poly_blep(t, phaseIncrement);
+				//value -= poly_blep(fmod(t + (1.0 - pulsewidth), 1.0), phaseIncrement);
+
+				value = naiveWaveFormForMode(mode, phase.get());
+				value += poly_blep(t, phaseIncrement);
+				value -= poly_blep(fmod(t + (0.5), 1.0), phaseIncrement);
 
                 break;
                 
@@ -201,15 +206,20 @@ private:
 				// value = 2.0 * dsp::FastMathApproximations::tanh(value) - 1.0;
 				// value *= getTermForSaw(phs, frequency.get());
 				// value *= -1;
-				value = getAlternativeSaw(phs, frequency.get());
+
+				//value = getAlternativeSaw(phs, frequency.get());
+				value = getNaiveSaw(phs);
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
-                if (phs <=  pulsewidth) { 
+                
+				if (phs <=  pulsewidth) { 
                     value = 1.0 - (1.0 * phs);
                 } else {
                     value = (0.5 * (phs - pulsewidth) / 0.5 ) - 1.0;
                 }
+
+				value = getNaiveSquare(phs);
                 break;
                 
             case OSCILLATOR_MODE_NOISE:
@@ -221,6 +231,21 @@ private:
         }
         return value;
     }
+
+	inline double getNaiveSquare(double phase)
+	{
+		if (phase < 0.5)
+			return 1.0;
+		else
+			return -1.0;
+
+		return 0.0;
+	}
+
+	inline double getNaiveSaw(double phase)
+	{
+		return 2 * phase - 1.0;
+	}
 
 	inline double getAlternativeSaw(double phase, double freq)
 	{
