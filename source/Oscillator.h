@@ -141,7 +141,7 @@ public:
             case OSCILLATOR_MODE_SQUARE:
                 //value = naiveWaveFormForMode(mode, phase.get());
                 //value = dsp::FastMathApproximations::sinh(value * 3.0) / (3.0 * double_Pi);
-				value = getAlternativeSquare(phase.get(), pulsewidth, frequency.get());
+				value = naiveWaveFormForMode(mode, phase.get());
                 value += poly_blep( t, phaseIncrement );
                 value -= poly_blep( fmod( t + (1.0 - pulsewidth), 1.0 ), phaseIncrement );
                 break;
@@ -200,11 +200,15 @@ private:
                 break;
                 
             case OSCILLATOR_MODE_SQUARE:
-                if (phs <=  pulsewidth) { 
+                /*
+				if (phs <=  pulsewidth) { 
                     value = 1.0 - (1.0 * phs);
                 } else {
                     value = (0.5 * (phs - pulsewidth) / 0.5 ) - 1.0;
                 }
+				*/
+
+				value = getAlternativeSquare(phs, pulsewidth, frequency.get());
                 break;
                 
             case OSCILLATOR_MODE_NOISE:
@@ -235,10 +239,22 @@ private:
 			return 8;
 		};
 
+		auto getTermsForSaw = [](double phase, double freq) {
+			if (freq == 0)
+				freq = 1;
+			// overall strength of the distortion based on frequency
+			// higher means less strength
+			double strength = 50 / freq;
+			double strength_sq = strength * strength * strength * strength;
+
+			double denom = (strength_sq * 100 * phase * phase * phase * phase * phase * phase) + 1;
+			return 1 / denom;
+		}
+
 		int n = 4;// getNterms(freq);
 
 		double val = 2.0 * std::pow((phase - 1), double(n)) - 1.0;
-		val *= getTermForSaw(phase, freq);
+		val *= getTermsForSaw(phase, freq);
 
 		return val;
 	}
