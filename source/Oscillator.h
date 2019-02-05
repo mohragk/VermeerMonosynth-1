@@ -226,20 +226,8 @@ private:
 		// see desmos for waveform calculation
 		// https://www.desmos.com/calculator/l6cc64mqhk
 
-		auto getNterms = [](double f) { 
-			if (f > 440)
-				return 2;
-
-			if (f <= 440 && f > 220)
-				return 4;
-
-			if (f <= 220 && f > 110)
-				return 6;
-
-			return 8;
-		};
-
-		auto getTermsForSaw = [](double phase, double freq) {
+		
+		auto residual = [](double phase, double freq) {
 			if (freq == 0)
 				freq = 1;
 			// overall strength of the distortion based on frequency
@@ -249,32 +237,15 @@ private:
 
 			double denom = (strength_sq * 100 * phase * phase * phase * phase * phase * phase) + 1;
 			return 1 / denom;
-		}
+		};
 
-		int n = 4;// getNterms(freq);
-
-		double val = 2.0 * std::pow((phase - 1), double(n)) - 1.0;
-		val *= getTermsForSaw(phase, freq);
+		int n = 4;
+		double val = 2.0 * std::pow( (phase - 1), double(n) ) - 1.0;
+		val *= residual(phase, freq);
 
 		return val;
 	}
     
-	inline double getTermForSaw(double phase, double freq)
-	{
-		// see desmos for demo
-		// https://www.desmos.com/calculator/tok7j246bk
-
-		if (freq == 0)
-			freq = 1;
-		// overall strength of the distortion based on frequency
-		// higher means less strength
-		double strength = 50 / freq;
-		double strength_sq = strength * strength * strength * strength;
-
-		double denom = (strength_sq * 100 * phase * phase * phase * phase * phase * phase) + 1;
-		return 1 / denom;
-
-	}
 
 	inline double getAlternativeSquare(double phase, double pw, double freq)
 	{
