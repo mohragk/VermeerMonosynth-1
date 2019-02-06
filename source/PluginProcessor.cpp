@@ -698,25 +698,6 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         synth.renderNextBlock (chunkBuffer, chunkMidi, 0, numSamplesChunk);
     
     
-        // TESTING AMP ENVELOPE
-        {
-            
-            for (int pos = 0; pos < numSamplesChunk; pos++)
-            {
-                const FloatType* input    = chunkBuffer.getReadPointer(0);
-                FloatType* dataLeft = chunkBuffer.getWritePointer(0);
-                
-                MonosynthVoice* voice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
-                
-				FloatType gain = envelopeGenerator[0].get()->process();
-
-				envelopeLED1.setBrightness((float)gain);
-                envelopeLED3.setBrightness((float)voice->getPitchEnvelopeValue());
-
-                dataLeft[pos] = input[pos] * gain;
-            }
-        }
-    
     
         // APPLY FILTER
         LadderFilterBase* curFilter;
@@ -726,10 +707,11 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         else                              curFilter = filterC.get();
     
         applyFilterEnvelope(chunkBuffer, curFilter);
-    
         applyFilter(chunkBuffer, curFilter);
     
     
+		// APPLY AMP ENVELOPE
+		applyAmplitudeEnvelope(chunkBuffer);
     
 
         // APPLYING WAVESHAPER
@@ -802,6 +784,28 @@ void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 		  masterGainPrev = masterGain;
 	}
 
+}
+
+template<typename FloatType>
+void MonosynthPluginAudioProcessor::applyAmplitudeEnvelope(AudioBuffer<FloatType>& buffer)
+{
+
+	int numSamples = buffer.getNumSamples();
+
+	const FloatType* input = buffer.getReadPointer(0);
+	FloatType* dataLeft    = buffer.getWritePointer(0);
+
+	MonosynthVoice* voice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
+
+	for (int pos = 0; pos < numSamples; pos++)
+	{
+		FloatType gain = envelopeGenerator[0].get()->process();
+
+		envelopeLED1.setBrightness((float)gain);
+		envelopeLED3.setBrightness((float)voice->getPitchEnvelopeValue());
+
+		dataLeft[pos] = input[pos] * gain;
+	}
 }
 
 
