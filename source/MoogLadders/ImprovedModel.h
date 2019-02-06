@@ -130,7 +130,7 @@ public:
     virtual bool SetCutoff(double c) override
     {
   		
-		jassert(c > 0 && c <= (sampleRate * 0.5));
+		c = clamp(c, 40.0, 20000.0);
 
         cutoff.set(c);
 

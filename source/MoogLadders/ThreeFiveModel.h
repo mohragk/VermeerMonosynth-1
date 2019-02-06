@@ -186,7 +186,9 @@ public:
 
 		jassert(r >= 0 && r <= 1.0);
 
-        resonance.set( (2.0 - 0.01) * (r - 0.0) / (1.0 - 0.0) + 0.01 ); // remap
+		double remapped = map(r, 0.0, 1.0, 0.01, 2.0);
+
+        resonance.set( remapped ); // remap
     }
     
     virtual bool SetCutoff(double c) override
@@ -195,13 +197,8 @@ public:
         if (isnan(c))
             c = 1000.0;
         
-        if (c > 20000.0)
-            c = 20000.0;
-        
-        if (c < 40.0)
-            c = 40.0;
+		c = clamp(c, 40.0, 20000.0);
 
-        jassert(c > 0 && c <= (sampleRate * 0.5));
         
         cutoff.set(c);
 
@@ -217,7 +214,7 @@ public:
     
     virtual void SetDrive (double d ) override
     {
-        drive = d;
+        drive = map(d, 1.0, 5.0, 1.0, 2.0);
     }
   
     

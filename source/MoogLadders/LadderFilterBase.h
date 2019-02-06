@@ -115,6 +115,16 @@ protected:
     std::vector<double> cutoffValues;
     std::vector<double> resonanceValues;
     std::vector<double> driveValues;
+
+	inline double clamp(double val, double min, double max)
+	{
+		return jmax(min, jmin(val, max));
+	}
+
+	inline double map(double val, double iMin, double iMax, double oMin, double oMax)
+	{
+		return oMin + (oMax - oMin) * ((val - iMin) / (iMax - iMin));
+	}
 };
 
 #endif
