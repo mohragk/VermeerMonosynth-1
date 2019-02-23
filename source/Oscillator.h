@@ -110,19 +110,7 @@ public:
         frequency.set(newFreq);
 
         phaseIncrement = updatePhaseIncrement(frequency.get());
-        
-        /*
-		if (targetReached)
-		{
-			phaseIncrement = updatePhaseIncrement(frequency.get());
-		}
-		else
-		{
-			phaseIncrement = getTargetPhaseIncrement(phaseRemaining);
-		}
-         */
-        
-        
+    
         
 		if (phaseIncrement == 0.0)
 			return value;
@@ -168,7 +156,7 @@ public:
     
        
         
-        return value * level * gain.get();
+        return value * level * gain.get() * getGainFactor( frequency.get() );
     }
     
     
@@ -239,7 +227,7 @@ private:
 			return 1 / denom;
 		};
 
-		int n = 4;
+		int n = 2;
 		double val = 2.0 * std::pow( (phase - 1), double(n) ) - 1.0;
 		val *= residual(phase, freq);
 
@@ -275,6 +263,19 @@ private:
         else return 0.0;
     }
     
+    inline double getGainFactor(double frequency)
+    {
+        auto logToLin = [](float start, float end, float logVal) {
+            float result =  (std::log10(logVal / start) / std::log10(end / start));
+            if (result > 1.0)
+                result = 1.0;
+            if (result < 0.0)
+                result = 0.0;
+            return result;
+        };
+        
+        return 1.0 - (logToLin(80, 12000, frequency) * 1.0);
+    }
     
     double updatePhaseIncrement(const double freq)
     {
