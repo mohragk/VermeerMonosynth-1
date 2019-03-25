@@ -973,7 +973,7 @@ void MonosynthPluginAudioProcessor::loadDefaultState()
 	//path.withFileExtension("");
 
 	File path;
-	path = (File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory). getChildFile("MRVR"). getChildFile("Monosynth-1"). getChildFile("Presets"). getChildFile("default")  );
+	path = (File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory). getChildFile("MRVR"). getChildFile("Monosynth-1"). getChildFile("Presets"). getChildFile("default")  );
     
     
     path.withFileExtension("");
