@@ -201,7 +201,7 @@ class DiodeLadderModel : public LadderFilterBase
         
         cutoff.set(c);
 
-		if (oldCutoff != c)
+		if ( !approximatelyEqual(oldCutoff , c) )
 		{
 			Update();
 		}

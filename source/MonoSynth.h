@@ -347,9 +347,11 @@ inline int MonosynthVoice::getLastNotePlayed()
 inline int MonosynthVoice::getLowestPitchedOscillatorIdx()
 {
     double lowest = getLowestPitchedOscFreq();
-    
-    for (int i = 0; i < numOscillators; i++ )
-        if ( osc[i].get()->getFrequency() == lowest ) return i;
+
+	for (int i = 0; i < numOscillators; i++) {
+		
+		if (std::abs( osc[i].get()->getFrequency() - lowest) < DBL_EPSILON) return i;
+	}
     
     return 0;
     
@@ -362,7 +364,7 @@ inline int MonosynthVoice::getLowestOscillatorRephaseIndex()
     int idx = 0;
     for (int i = 0; i < 3; i++)
     {
-        if ( osc[i].get()->getFrequency() == lowest )
+        if (std::abs( osc[i].get()->getFrequency() - lowest) < DBL_EPSILON )
             if (osc[i].get()->isRephase())
             {
                 idx = sampleCounter + 1;
@@ -461,9 +463,8 @@ inline void MonosynthVoice::setPulsewidthForOscillator(double pw, int n)
 {
     double newPW = pw + ( modAmountPW[n] * ((lfoValue + 1.0) / 2.0) );
     
-    if (newPW > 1.0) newPW = 1.0;
-    if(newPW < 0.0)  newPW = 0.0;
-    
+	newPW = std::max(0.0, std::min(newPW, 1.0));
+
     osc[n]->setPulsewidth( newPW  );
 }
 

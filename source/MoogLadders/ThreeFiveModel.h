@@ -202,7 +202,7 @@ public:
         
         cutoff.set(c);
 
-		if (oldCutoff != c)
+		if ( !approximatelyEqual(oldCutoff, c) )
 		{
 			Update();
 		}

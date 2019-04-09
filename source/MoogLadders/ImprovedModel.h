@@ -134,7 +134,7 @@ public:
 
         cutoff.set(c);
 
-		if (oldCutoff != c)
+		if ( !approximatelyEqual(oldCutoff, c) )
 		{
 			Update();
 		}
@@ -155,7 +155,7 @@ public:
  
     
 private:
-    
+
     template <typename FloatType>
     void renderBlock(FloatType* samples, size_t n)
     {

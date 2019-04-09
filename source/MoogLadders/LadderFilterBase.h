@@ -125,6 +125,12 @@ protected:
 	{
 		return oMin + (oMax - oMin) * ((val - iMin) / (iMax - iMin));
 	}
+
+
+	bool approximatelyEqual(double a, double b, double epsilon = DBL_EPSILON) {
+		return std::abs(a - b) <= ((std::abs(a) < std::abs(b) ? std::abs(b) : std::abs(a)) * epsilon);
+	}
+
 };
 
 #endif

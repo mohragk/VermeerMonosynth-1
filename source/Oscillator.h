@@ -216,7 +216,7 @@ private:
 
 		
 		auto residual = [](double phase, double freq) {
-			if (freq == 0)
+			if (freq < DBL_EPSILON)
 				freq = 1;
 			// overall strength of the distortion based on frequency
 			// higher means less strength
