@@ -85,7 +85,7 @@ class Arpeggiator
                 
                     if ((time + interval) >= noteDuration)
                     {
-                        auto offset = jmax(0, jmin((int)(noteDuration - time) + position, numSamples - 1));
+                        auto offset = std::max(0, std::min((int)(noteDuration - time) + position, numSamples - 1));
 
                         if (lastNoteValue > 0)
                         {

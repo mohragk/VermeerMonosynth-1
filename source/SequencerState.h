@@ -181,7 +181,7 @@ public:
                 
                 if ( (time + interval) >= stepDuration)
                 {
-                    auto offset =  jmax( 0, jmin((stepDuration - time) + position, numSamples - 1) );
+                    auto offset =  std::max( 0, std::min((stepDuration - time) + position, numSamples - 1) );
                     
                     if (pressedKeys.size() > 0)
                     {
