@@ -776,7 +776,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
 
 	// CHORUS EFFECT
-	if ( (bool)skipChorusParam* )
+	if ( *skipChorusParam == 0 )
 		chorusEffect.processBlock(buffer);
     
 

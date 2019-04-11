@@ -19,7 +19,7 @@ public:
 	Chorus() : 
 		delayTime(30.0), 
 		width(30.0),
-		depth(30.0), 
+		depth(0.7), 
 		numVoices(3),
 		frequency(0.05)
 
@@ -68,11 +68,10 @@ public:
 		ScopedNoDenormals noDenormals;
 
 		const int numInputChannels = buffer.getNumChannels();
-		const int numOutputChannels = numInputChannels;
 		const int numSamples = buffer.getNumSamples();
 
-		FloatType currentDelay = delayTime;
-		FloatType currentWidth = width;
+		FloatType currentDelay = delayTime * 0.001;
+		FloatType currentWidth = width * 0.001;
 		FloatType currentDepth = depth;
 		FloatType currentFrequency = frequency;
 
@@ -81,8 +80,10 @@ public:
 
 		for (int channel = 0; channel < numInputChannels; ++channel) {
 			FloatType* channelData = buffer.getWritePointer(channel);
-			FloatType* delayData = delayBuffer.getWritePointer(channel); //hmmm
+			FloatType* delayData = delayBuffer.getWritePointer(channel); 
+
 			localWritePosition = delayWritePosition;
+			phase = lfoPhase;
 
 			for (int sample = 0; sample < numSamples; ++sample) {
 				const FloatType in = channelData[sample];
@@ -90,8 +91,8 @@ public:
 				FloatType phaseOffset = 0.0;
 				FloatType weight;
 
-				for (int voice = 0; voice < numVoices - 1; voice++) {
-					if (numVoices > 2) {
+				for (int voice = 0; voice < numVoices - 1; ++voice) {
+				if (numVoices > 2) {
 						weight = (FloatType)voice / (FloatType)(numVoices - 2);
 						if (channel != 0)
 							weight = 1.0 - weight;

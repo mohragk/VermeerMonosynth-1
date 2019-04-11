@@ -61,7 +61,7 @@ private:
 	   arpeggiatorSpeedSlider,
 	   arpeggioSwitchSlider,
     
-	   skipChorusSlider,
+	   skipChorusSlider
         
 
     ;

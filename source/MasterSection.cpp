@@ -13,17 +13,18 @@
 
 //==============================================================================
 MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
-                                                                processor(p),
-                                                                mainLabel(nullptr),
-                                                                volumeLabel(nullptr),
-                                                                saturationLabel(nullptr),
-                                                                volumeSlider(nullptr),
-                                                                softClipSwitchSlider(nullptr),
-                                                                filterOrderSlider(nullptr),
-                                                                saturationSlider(nullptr),
-                                                                saturationSwitchSlider(nullptr),
-																arpeggiatorSpeedSlider(nullptr),
-																arpeggioSwitchSlider(nullptr)
+	processor(p),
+	mainLabel(nullptr),
+	volumeLabel(nullptr),
+	saturationLabel(nullptr),
+	volumeSlider(nullptr),
+	softClipSwitchSlider(nullptr),
+	filterOrderSlider(nullptr),
+	saturationSlider(nullptr),
+	saturationSwitchSlider(nullptr),
+	arpeggiatorSpeedSlider(nullptr),
+	arpeggioSwitchSlider(nullptr),
+	skipChorusSlider(nullptr)
 
 
 {
@@ -86,6 +87,10 @@ MasterSection::MasterSection(MonosynthPluginAudioProcessor&p) :
     meter_ptr = &processor.meter;
     addAndMakeVisible(meter_ptr);
     
+
+	//CHORUS
+	skipChorusSlider.reset(new ParameterSlider(*processor.skipChorusParam, knobStyle(ROTARY)));
+	addAndMakeVisible(skipChorusSlider.get());
     
     startTimerHz(60);
 
@@ -166,6 +171,9 @@ void MasterSection::resized()
 		arpeggiatorSpeedSlider->setBounds(strip.removeFromTop(rotaryHeight));
 		Rectangle<int> mini3(arpeggiatorSpeedSlider->getBounds());
 		arpeggioSwitchSlider->setBounds(mini3.removeFromRight(12).reduced(0, 8));
+
+		skipChorusSlider->setBounds(strip.removeFromTop(rotaryHeight));
+
         
 		
                
