@@ -12,19 +12,29 @@
 #define CHORUS_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "MoogLadders/VAOnePole.h"
+
+
+//--------------------------------------------------------
+
+//---------------------------------------------------------
+
 
 template <typename FloatType>
 class Chorus {
 public: 
 	Chorus() : 
-		delayTime(14.0), 
-		width(12.0),
-		depth(0.3), 
+		delayTime(4.0), 
+		width(22.0),
+		depth(0.7), 
 		numVoices(3),
 		frequency(0.05)
-
-	{}
-	~Chorus() {}
+	{
+		lowPass.reset( new VAOnePole() );
+	}
+	~Chorus() {
+		
+	}
 
 	void setDelay(double delTime) {
 		delayTime = delTime;
@@ -62,11 +72,16 @@ public:
 		inverseSampleRate = 1.0 / sampleRate;
 
 		twoPi = 2.0 * double_Pi;
+
+		lowPass->Prepare(samplerate, numsamples);
+		lowPass->SetCutoff(1000.0);
 	}
 
 	template <typename FloatType>
-	void processBlock(AudioBuffer<FloatType>& buffer) {
+	void processBlock(AudioBuffer<FloatType>& buffer, bool skip) {
 		ScopedNoDenormals noDenormals;
+
+		if (skip) return;
 
 		const int numInputChannels = buffer.getNumChannels();
 		const int numSamples = buffer.getNumSamples();
@@ -135,7 +150,7 @@ public:
 						phaseOffset += 1.0 / (FloatType)(numVoices - 1);
 				}
 
-				delayData[localWritePosition] = in;
+				delayData[localWritePosition] = lowPass->doFilter(in, 0);
 
 				if (++localWritePosition >= delayBufferSamples)
 					localWritePosition -= delayBufferSamples;
@@ -157,6 +172,7 @@ public:
 	}
 
 private:
+	std::unique_ptr<VAOnePole> lowPass;
 	AudioBuffer<FloatType> delayBuffer;
 	int delayBufferSamples;
 	int delayBufferChannels; //maybe
@@ -194,5 +210,8 @@ inline double Chorus<FloatType>::simpleLFO(double phase, int waveform) {
 	}
 	return out;
 }
+
+
+
 
 #endif //CHORUS_H

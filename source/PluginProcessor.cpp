@@ -776,8 +776,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
 
 	// CHORUS EFFECT
-	if ( *skipChorusParam == 0 )
-		chorusEffect.processBlock(buffer);
+	bool skip = (bool)*skipChorusParam;
+	chorusEffect.processBlock(buffer, skip);
     
 
     // Now ask the host for the current time so we can store it to be displayed later...
