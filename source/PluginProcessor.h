@@ -278,6 +278,8 @@ public:
     
     AudioParameterFloat* glideTimeParam;
 
+	AudioParameterInt* skipChorusParam;
+
 
 	String debugInfo;
 private:
@@ -351,7 +353,7 @@ private:
 
     
     LFO lfo;
-	Chorus chorusEffect;
+	Chorus<float> chorusEffect;
     
     double modAmount;
     

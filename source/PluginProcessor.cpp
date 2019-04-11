@@ -120,7 +120,9 @@ useFilterKeyFollowParam(nullptr),
 arpeggioNoteLengthParam(nullptr),
 arpeggioUseParam(nullptr),
 
-glideTimeParam(nullptr)
+glideTimeParam(nullptr),
+
+skipChorusParam(nullptr)
 
 
 
@@ -319,6 +321,11 @@ glideTimeParam(nullptr)
     //GLIDE
     addParameter(glideTimeParam = new AudioParameterFloat("glideTimeParam", "Glide Time", NormalisableRange<float>(0.0, 5000.0, 0.0 , 0.25 ), 0.0));
     
+
+
+	//CHORUS
+	addParameter(skipChorusParam = new AudioParameterInt("skipChorusParam", "Chorus On/Off", 0, 1, 1));
+
     initialiseSynth();
     
     keyboardState.addListener(this);
@@ -465,6 +472,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     filterA->Prepare(newSampleRate, newBlockSize);
     filterB->Prepare(newSampleRate, newBlockSize);
     filterC->Prepare(newSampleRate, newBlockSize);
+
+	chorusEffect.prepareToPlay(newSampleRate, newBlockSize);
     
     resetSamplerates(newSampleRate, samplesPerBlock);
     
@@ -587,6 +596,8 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int buffer
     filterA->UpdateBufferSize(newBufferSize);
     filterB->UpdateBufferSize(newBufferSize);
     filterC->UpdateBufferSize(newBufferSize);
+
+	chorusEffect.prepareToPlay(newsr, newBufferSize);
     
     
     for (int i = 0; i < 3; i++)
@@ -762,6 +773,11 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     buffer.copyFrom(1, 0, buffer, 0, 0, buffer.getNumSamples());
    
 	meter.setLevel( buffer.getMagnitude( 0, 0, buffer.getNumSamples() ) );
+
+
+	// CHORUS EFFECT
+	if ( (bool)skipChorusParam* )
+		chorusEffect.processBlock(buffer);
     
 
     // Now ask the host for the current time so we can store it to be displayed later...

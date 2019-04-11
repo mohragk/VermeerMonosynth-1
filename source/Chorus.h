@@ -13,7 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-
+template <typename FloatType>
 class Chorus {
 public: 
 	Chorus() : 
@@ -63,10 +63,99 @@ public:
 		twoPi = 2.0 * double_Pi;
 	}
 
-	void processBlock(AudioBuffer<double>& buffer);
+	template <typename FloatType>
+	void processBlock(AudioBuffer<FloatType>& buffer) {
+		ScopedNoDenormals noDenormals;
+
+		const int numInputChannels = buffer.getNumChannels();
+		const int numOutputChannels = numInputChannels;
+		const int numSamples = buffer.getNumSamples();
+
+		FloatType currentDelay = delayTime;
+		FloatType currentWidth = width;
+		FloatType currentDepth = depth;
+		FloatType currentFrequency = frequency;
+
+		int localWritePosition;
+		FloatType phase;
+
+		for (int channel = 0; channel < numInputChannels; ++channel) {
+			FloatType* channelData = buffer.getWritePointer(channel);
+			FloatType* delayData = delayBuffer.getWritePointer(channel); //hmmm
+			localWritePosition = delayWritePosition;
+
+			for (int sample = 0; sample < numSamples; ++sample) {
+				const FloatType in = channelData[sample];
+				FloatType out = 0.0;
+				FloatType phaseOffset = 0.0;
+				FloatType weight;
+
+				for (int voice = 0; voice < numVoices - 1; voice++) {
+					if (numVoices > 2) {
+						weight = (FloatType)voice / (FloatType)(numVoices - 2);
+						if (channel != 0)
+							weight = 1.0 - weight;
+					}
+					else {
+						weight = 1.0;
+					}
+
+					FloatType localDelayTime = (
+						currentDelay +
+						currentWidth *
+						simpleLFO(phase + phaseOffset)
+						)  
+						* samplerate;
+					FloatType readPosition = fmodf(
+						(FloatType)localWritePosition - localDelayTime + (FloatType)delayBufferSamples,
+						(FloatType)delayBufferSamples
+					);
+
+					int localReadPosition = floorf(readPosition);
+
+					int interpolationType = 0;
+					switch (interpolationType) {
+					case 0: {
+						FloatType closestSample = delayData[localReadPosition % delayBufferSamples];
+						out = closestSample;
+						break;
+					}
+					}
+
+					if (numVoices == 2)
+						channelData[sample] = (channel == 0) ? in : out * currentDepth;
+					else
+						channelData[sample] += out * currentDepth * weight;
+
+					if (numVoices == 3)
+						phaseOffset += 0.25;
+					else if (numVoices > 3)
+						phaseOffset += 1.0 / (FloatType)(numVoices - 1);
+				}
+
+				delayData[localWritePosition] = in;
+
+				if (++localWritePosition >= delayBufferSamples)
+					localWritePosition -= delayBufferSamples;
+
+				phase += currentFrequency * inverseSampleRate;
+				if (phase >= 1.0)
+					phase -= 1.0;
+			}
+		}
+
+		delayWritePosition = localWritePosition;
+		lfoPhase = phase;
+
+		/*
+		for (int channel = numInputChannels; channel < numOutputChannels; ++channel)
+		buffer.clear(channel, 0, numSamples);
+		*/
+
+	}
 
 private:
-	AudioBuffer<double> delayBuffer;
+	AudioBuffer<FloatType> delayBuffer;
 	int delayBufferSamples;
 	int delayBufferChannels; //maybe
 	int delayWritePosition;
@@ -91,98 +180,8 @@ private:
 };
 
 
-inline void Chorus::processBlock(AudioBuffer<double>& buffer) {
-	ScopedNoDenormals noDenormals;
-
-	const int numInputChannels = buffer.getNumChannels();
-	const int numOutputChannels = numInputChannels;
-	const int numSamples = buffer.getNumSamples();
-
-	double currentDelay = delayTime;
-	double currentWidth = width;
-	double currentDepth = depth;
-	double currentFrequency = frequency;
-
-	int localWritePosition;
-	double phase;
-
-	for (int channel = 0; channel < numInputChannels; ++channel) {
-		double* channelData = buffer.getWritePointer(channel);
-		double* delayData = delayBuffer.getWritePointer(channel); //hmmm
-		localWritePosition = delayWritePosition;
-
-		for (int sample = 0; sample < numSamples; ++sample) {
-			const double in = channelData[sample];
-			double out = 0.0;
-			double phaseOffset = 0.0;
-			double weight;
-
-			for (int voice = 0; voice < numVoices - 1; voice++) {
-				if (numVoices > 2) {
-					weight = (double)voice / (double)(numVoices - 2);
-					if (channel != 0)
-						weight = 1.0 - weight;
-				}
-				else {
-					weight = 1.0;
-				}
-
-				double localDelayTime = (
-					currentDelay + 
-					currentWidth * 
-					simpleLFO(phase + phaseOffset) * 
-					samplerate
-					);
-				double readPosition = fmodf(
-					(double) localWritePosition - localDelayTime,
-					(double) delayBufferSamples
-				);
-
-				int localReadPosition = floorf(readPosition);
-
-				int interpolationType = 0;
-				switch (interpolationType) {
-					case 0: {
-						double closestSample = delayData[localReadPosition % delayBufferSamples];
-						out = closestSample;
-						break;
-					}
-				}
-
-				if (numVoices == 2)
-					channelData[sample] = (channel == 0) ? in : out * currentDepth;
-				else
-					channelData[sample] += out * currentDepth * weight;
-
-				if (numVoices == 3)
-					phaseOffset += 0.25;
-				else if (numVoices > 3)
-					phaseOffset += 1.0 / (double)(numVoices - 1);
-			}
-
-			delayData[localWritePosition] = in;
-
-			if (++localWritePosition >= delayBufferSamples)
-				localWritePosition -= delayBufferSamples;
-
-			phase += currentFrequency * inverseSampleRate;
-			if (phase >= 1.0)
-				phase -= 1.0;
-		}
-	}
-
-	delayWritePosition = localWritePosition;
-	lfoPhase = phase;
-
-	/*
-	for (int channel = numInputChannels; channel < numOutputChannels; ++channel)
-		buffer.clear(channel, 0, numSamples);
-	*/
-
-}
-
-
-inline double Chorus::simpleLFO(double phase, int waveform = 0) {
+template <typename FloatType>
+inline double Chorus<FloatType>::simpleLFO(double phase, int waveform) {
 	double out = 0.0f;
 
 	switch (waveform) {

@@ -59,8 +59,9 @@ private:
         saturationModeSlider,
 
 	   arpeggiatorSpeedSlider,
-	   arpeggioSwitchSlider
+	   arpeggioSwitchSlider,
     
+	   skipChorusSlider,
         
 
     ;
