@@ -40,7 +40,6 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "Vermeer Monosynth";
-    const char* const  companyName    = "MRVR inc.";
     const char* const  versionString  = "1.0.0";
     const int          versionNumber  = 0x10000;
 }

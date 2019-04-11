@@ -8,7 +8,7 @@
               pluginSilenceInIsSilenceOut="0" pluginTailLength="0" pluginEditorRequiresKeys="1"
               pluginAUExportPrefix="VermeerMonosynth" pluginAUViewClass="JuceDemoProjectAU_V1"
               pluginRTASCategory="" bundleIdentifier="com.vermeer.Monosynth"
-              jucerVersion="5.4.1" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
+              jucerVersion="5.3.2" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
               buildAAX="0" pluginAAXCategory="2" includeBinaryInAppConfig="1"
               buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
               companyWebsite="www.soundcloud.com/meneervermeer" companyEmail="meneervermeermusic@gmail.com"

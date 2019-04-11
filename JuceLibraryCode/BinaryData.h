@@ -9,7 +9,7 @@
 namespace BinaryData
 {
     extern const char*   OscNoiseWaveSymbol_svg;
-    const int            OscNoiseWaveSymbol_svgSize = 650;
+    const int            OscNoiseWaveSymbol_svgSize = 638;
 
     extern const char*   MonoSynthIconLarge_png;
     const int            MonoSynthIconLarge_pngSize = 29576;

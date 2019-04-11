@@ -24,10 +24,10 @@ template <typename FloatType>
 class Chorus {
 public: 
 	Chorus() : 
-		delayTime(4.0), 
+		delayTime(14.0),
 		width(2.0),
-		depth(0.5), 
-		numVoices(9),
+		depth(0.7),
+		numVoices(5),
 		frequency(0.15)
 	{
 		lowPass.reset( new VAOnePole() );
@@ -77,7 +77,7 @@ public:
 		lowPass->SetCutoff(1000.0);
 	}
 
-	template <typename FloatType>
+	//template <typename FloatType>
 	void processBlock(AudioBuffer<FloatType>& buffer, bool skip) {
 		ScopedNoDenormals noDenormals;
 
@@ -94,6 +94,8 @@ public:
 		int localWritePosition;
 		FloatType phase;
 
+        FloatType gainReduction = 0.75;
+        
 		for (int channel = 0; channel < numInputChannels; ++channel) {
 			FloatType* channelData = buffer.getWritePointer(channel);
 			FloatType* delayData = delayBuffer.getWritePointer(channel); 
@@ -102,7 +104,7 @@ public:
 			phase = lfoPhase;
 
 			for (int sample = 0; sample < numSamples; ++sample) {
-				const FloatType in = channelData[sample];
+				const FloatType in = channelData[sample] * gainReduction;
 				FloatType out = 0.0;
 				FloatType phaseOffset = 0.0;
 				FloatType weight;
@@ -152,13 +154,15 @@ public:
 						FloatType a2 = -0.5 * sample0 + 0.5 * sample2;
 						FloatType a3 = sample1;
 						out = a0 * fractionCube + a1 * fractionSqr + a2 * fraction + a3;
+                        out *= gainReduction;
 						break;
 
 					}
 					}
+                    
 
 					if (numVoices == 2)
-						channelData[sample] = (channel == 0) ? in : out * currentDepth;
+						channelData[sample] = (channel == 0) ? in : (out * currentDepth);
 					else
 						channelData[sample] += out * currentDepth * weight;
 
