@@ -17,9 +17,9 @@ template <typename FloatType>
 class Chorus {
 public: 
 	Chorus() : 
-		delayTime(30.0), 
-		width(30.0),
-		depth(0.7), 
+		delayTime(14.0), 
+		width(12.0),
+		depth(0.3), 
 		numVoices(3),
 		frequency(0.05)
 
@@ -46,7 +46,8 @@ public:
 		samplerate = sampleRate;
 		numsamples = samplesPerBlock;
 
-		double maxDelayTime = 50.0 + 50.0; //max delayTime + max Width
+
+		double maxDelayTime = (50.0 + 50.0) * 0.001; //max delayTime + max Width
 		delayBufferSamples = (int)(maxDelayTime * samplerate) + 1;
 		if (delayBufferSamples < 1)
 			delayBufferSamples = 1;
