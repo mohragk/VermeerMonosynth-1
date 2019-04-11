@@ -597,7 +597,6 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int buffer
     filterB->UpdateBufferSize(newBufferSize);
     filterC->UpdateBufferSize(newBufferSize);
 
-	chorusEffect.prepareToPlay(newsr, newBufferSize);
     
     
     for (int i = 0; i < 3; i++)

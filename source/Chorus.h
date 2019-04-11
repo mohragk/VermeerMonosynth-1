@@ -25,10 +25,10 @@ class Chorus {
 public: 
 	Chorus() : 
 		delayTime(4.0), 
-		width(22.0),
-		depth(0.7), 
-		numVoices(3),
-		frequency(0.05)
+		width(2.0),
+		depth(0.5), 
+		numVoices(9),
+		frequency(0.15)
 	{
 		lowPass.reset( new VAOnePole() );
 	}
@@ -108,7 +108,7 @@ public:
 				FloatType weight;
 
 				for (int voice = 0; voice < numVoices - 1; ++voice) {
-				if (numVoices > 2) {
+					if (numVoices > 2) {
 						weight = (FloatType)voice / (FloatType)(numVoices - 2);
 						if (channel != 0)
 							weight = 1.0 - weight;
@@ -130,12 +130,30 @@ public:
 
 					int localReadPosition = floorf(readPosition);
 
-					int interpolationType = 0;
+					int interpolationType = 1;
 					switch (interpolationType) {
 					case 0: {
 						FloatType closestSample = delayData[localReadPosition % delayBufferSamples];
 						out = closestSample;
 						break;
+					}
+					case 1: {
+						FloatType fraction = readPosition - (FloatType)localReadPosition;
+						FloatType fractionSqr = fraction * fraction;
+						FloatType fractionCube = fractionSqr * fraction;
+
+						FloatType sample0 = delayData[(localReadPosition - 1 + delayBufferSamples) % delayBufferSamples];
+						FloatType sample1 = delayData[(localReadPosition + 0)];
+						FloatType sample2 = delayData[(localReadPosition + 1) % delayBufferSamples];
+						FloatType sample3 = delayData[(localReadPosition + 2) % delayBufferSamples];
+
+						FloatType a0 = -0.5 * sample0 + 1.5 * sample1 - 1.5 * sample2 + 0.5 * sample3;
+						FloatType a1 = sample0 - 2.5 * sample1 + 2.0 * sample2 - 0.5 * sample3;
+						FloatType a2 = -0.5 * sample0 + 0.5 * sample2;
+						FloatType a3 = sample1;
+						out = a0 * fractionCube + a1 * fractionSqr + a2 * fraction + a3;
+						break;
+
 					}
 					}
 
