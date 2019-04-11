@@ -167,6 +167,7 @@
     <FILE id="yf17tA" name="lfo.h" compile="0" resource="0" file="source/lfo.h"/>
     <FILE id="EHurt1" name="PulseClock.h" compile="0" resource="0" file="source/PulseClock.h"/>
     <FILE id="UCRHL7" name="ParamSmoother.h" compile="0" resource="0" file="source/ParamSmoother.h"/>
+    <FILE id="TGS3ml" name="Chorus.h" compile="0" resource="0" file="source/Chorus.h"/>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
   <MODULES>
@@ -187,6 +188,6 @@
   </MODULES>
   <LIVE_SETTINGS>
     <OSX buildEnabled="0"/>
-    <WINDOWS buildEnabled="1"/>
+    <WINDOWS buildEnabled="0"/>
   </LIVE_SETTINGS>
 </JUCERPROJECT>

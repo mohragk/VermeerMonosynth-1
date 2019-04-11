@@ -42,6 +42,7 @@
 #include "Arpeggiator.h"
 #include "LevelMeter.h"
 #include "LEDProcessor.h"
+#include "Chorus.h"
 
 
 #include "MoogLadders/ImprovedModel.h"
@@ -350,6 +351,7 @@ private:
 
     
     LFO lfo;
+	Chorus chorusEffect;
     
     double modAmount;
     
