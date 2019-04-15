@@ -8,7 +8,7 @@
               pluginSilenceInIsSilenceOut="0" pluginTailLength="0" pluginEditorRequiresKeys="1"
               pluginAUExportPrefix="VermeerMonosynth" pluginAUViewClass="JuceDemoProjectAU_V1"
               pluginRTASCategory="" bundleIdentifier="com.vermeer.Monosynth"
-              jucerVersion="5.3.2" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
+              jucerVersion="5.4.1" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
               buildAAX="0" pluginAAXCategory="2" includeBinaryInAppConfig="1"
               buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
               companyWebsite="www.soundcloud.com/meneervermeer" companyEmail="meneervermeermusic@gmail.com"
@@ -139,6 +139,8 @@
             file="source/ParameterSlider.h"/>
     </GROUP>
     <GROUP id="{902056B3-1486-08AF-7310-B5F8845202B7}" name="MoogLadders">
+      <FILE id="Hz8hJ8" name="Filter.cpp" compile="1" resource="0" file="source/MoogLadders/Filter.cpp"/>
+      <FILE id="MhR9B3" name="Filter.h" compile="0" resource="0" file="source/MoogLadders/Filter.h"/>
       <FILE id="Bf6nQH" name="DiodeLadderModel.h" compile="0" resource="0"
             file="source/MoogLadders/DiodeLadderModel.h"/>
       <FILE id="xJQKhJ" name="ThreeFiveModel.h" compile="0" resource="0"

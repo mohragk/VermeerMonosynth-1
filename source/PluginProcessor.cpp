@@ -331,11 +331,8 @@ skipChorusParam(nullptr)
     keyboardState.addListener(this);
     synth.addListener(this);
     
-    
-    
-    filterA.reset( new ImprovedMoog );
-    filterB.reset( new ThreeFiveModel );
-    filterC.reset( new DiodeLadderModel );
+
+	filter.reset(new Filter);
     
 
     for( int i = 0; i < 3; i++)
@@ -377,6 +374,7 @@ MonosynthPluginAudioProcessor::~MonosynthPluginAudioProcessor()
     currentPlayedNotes.clear();
     gainSmoothed.clear();
     
+	
     
 }
 
@@ -469,9 +467,8 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
     oversamplingDoubleHQ->initProcessing(samplesPerBlock);
     
     int newBlockSize = (int)oversamplingFloat->getOversamplingFactor() * samplesPerBlock;
-    filterA->Prepare(newSampleRate, newBlockSize);
-    filterB->Prepare(newSampleRate, newBlockSize);
-    filterC->Prepare(newSampleRate, newBlockSize);
+  
+	filter->prepareToPlay(newSampleRate, newBlockSize);
 
 	chorusEffect.prepareToPlay(newSampleRate, newBlockSize);
     
@@ -496,10 +493,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
     oversamplingDoubleHQ->reset();
     
     
-   
-    filterA->Reset();
-    filterB->Reset();
-    filterC->Reset();
+	filter->reset();
     
 
     for (int i = 0; i < numSmoothers; i++)
@@ -525,10 +519,8 @@ void MonosynthPluginAudioProcessor::reset()
     oversamplingFloatHQ->reset();
     oversamplingDoubleHQ->reset();
     
-    
-    filterA->Reset();
-    filterB->Reset();
-    filterC->Reset();
+
+	filter->reset();
 	
     for (int i = 0; i < numSmoothers; i++)
         smoothing[i]->reset();
@@ -589,14 +581,10 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int buffer
 	seqState.get()->prepareToPlay(newsr);
 	arp.prepareToPlay(newsr, 0);
     
-    filterA->SetSampleRate(newsr);
-    filterB->SetSampleRate(newsr);
-    filterC->SetSampleRate(newsr);
-   
-    filterA->UpdateBufferSize(newBufferSize);
-    filterB->UpdateBufferSize(newBufferSize);
-    filterC->UpdateBufferSize(newBufferSize);
 
+
+
+	filter->prepareToPlay(newsr, newBufferSize);
     
     
     for (int i = 0; i < 3; i++)
@@ -710,14 +698,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     
     
         // APPLY FILTER
-        LadderFilterBase* curFilter;
     
-        if      (*filterSelectParam == 0) curFilter = filterA.get();
-        else if (*filterSelectParam == 1) curFilter = filterB.get();
-        else                              curFilter = filterC.get();
-    
-        applyFilterEnvelope(chunkBuffer, curFilter);
-        applyFilter(chunkBuffer, curFilter);
+        applyFilterEnvelope(chunkBuffer);
+        applyFilter(chunkBuffer);
     
     
 		// APPLY AMP ENVELOPE
@@ -827,7 +810,7 @@ void MonosynthPluginAudioProcessor::applyAmplitudeEnvelope(AudioBuffer<FloatType
 
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter)
+void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer)
 {
 	
     const int numSamples = buffer.getNumSamples();
@@ -904,26 +887,28 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         auto snapToLocalVal= [](double val) -> double { if (val < 0.0) val = 0.0; else if (val > 1.0) val = 1.0; return val;  };
         
         FloatType newReso =  snapToLocalVal(resonance.getNextValue());
-        
-        filter->AddModulationValueForParameter(combinedCutoff, LadderFilterBase::CUTOFF, i);
-        filter->AddModulationValueForParameter(newReso, LadderFilterBase::RESONANCE, i);
-        filter->AddModulationValueForParameter(drive.getNextValue(), LadderFilterBase::DRIVE, i);
+      
 		
+
+		filter->setCutoff(combinedCutoff);
+		filter->setResonance(newReso);
+		filter->setDrive(drive.getNextValue());
     }
     
     
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter)
+void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer)
 {
     
     FloatType* channelDataLeft  = buffer.getWritePointer(0);
     const int numSamples = buffer.getNumSamples();
 
     
-    filter->Process(channelDataLeft, numSamples);
+	//curFilter->Process(channelDataLeft, numSamples);
   
+	filter->processBlock(buffer, numSamples);
    
 
 	

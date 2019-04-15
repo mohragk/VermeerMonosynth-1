@@ -45,11 +45,7 @@
 #include "Chorus.h"
 
 
-#include "MoogLadders/ImprovedModel.h"
-#include "MoogLadders/SEMModel.h"
-#include "MoogLadders/VAOnePole.h"
-#include "MoogLadders/DiodeLadderModel.h"
-#include "MoogLadders/ThreeFiveModel.h"
+#include "MoogLadders/Filter.h"
 
 
 static bool isWindows()
@@ -305,10 +301,10 @@ private:
 
     
     template <typename FloatType>
-    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
+    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer);
 
     template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
+    void applyFilter (AudioBuffer<FloatType>& buffer);
 
 	template <typename FloatType>
 	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
@@ -407,8 +403,8 @@ private:
 
 	std::unique_ptr<ParamSmoother> smoothing[numSmoothers];
     
-    std::unique_ptr<LadderFilterBase> filterA, filterB, filterC;
-    
+	std::unique_ptr<Filter> filter;
+
     std::unique_ptr<ADSR> envelopeGenerator[3];
     
     Array<int> currentPlayedNotes;

@@ -99,18 +99,7 @@ inline float clip(float value, float saturation, float saturationinverse)
 #define HZ_TO_RAD(f) (MOOG_PI_2 * f)
 #define RAD_TO_HZ(omega) (MOOG_INV_PI_2 * omega)
 
-#ifdef __GNUC__
-	#define ctz(N) __builtin_ctz(N)
-#else
-	template<typename T>
-	inline int ctz(T x)
-	{
-		int p, b;
-		for (p = 0, b = 1; !(b & x); b <<= 1, ++p)
-			;
-		return p;
-	}
-#endif
+
 
 inline double fast_tanh(double x) 
 {
@@ -118,4 +107,22 @@ inline double fast_tanh(double x)
 	return x * (27 + x2) / (27 + 9 * x2);
 }
 
+inline double clamp(double val, double min, double max) {
+	return std::max(min, std::min(val, max));
+}
+inline double map(double val, double iMin, double iMax, double oMin, double oMax)
+{
+	return oMin + (oMax - oMin) * ((val - iMin) / (iMax - iMin));
+}
+
+inline bool approximatelyEqual(double a, double b, double epsilon = DBL_EPSILON) {
+	return std::abs(a - b) <= ((std::abs(a) < std::abs(b) ? std::abs(b) : std::abs(a)) * epsilon);
+}
+
 #endif
+/*
+
+
+*/
+
+

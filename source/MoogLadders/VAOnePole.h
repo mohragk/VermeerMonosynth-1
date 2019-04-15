@@ -12,6 +12,7 @@
 #define VA_ONEPOLE_H
 
 #include "LadderFilterBase.h"
+#include "util.h"
 
 class VAOnePole : public LadderFilterBase
 {
