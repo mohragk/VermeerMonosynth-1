@@ -11,14 +11,14 @@
 #ifndef VA_ONEPOLE_H
 #define VA_ONEPOLE_H
 
-#include "LadderFilterBase.h"
 #include "util.h"
 
-class VAOnePole : public LadderFilterBase
+class VAOnePole 
 {
     public :
+		enum FilterType { LPF1, HPF1, LPF2, HPF2, BPF2, BSF2, LPF4, HPF4, BPF4 } type;
     
-        VAOnePole() : LadderFilterBase(),
+        VAOnePole() :
     
                         Alpha(1.0),
                         Beta(0.0),
@@ -29,8 +29,8 @@ class VAOnePole : public LadderFilterBase
                         Z1(0.0),
                         Feedback(0.0),
                         type(LPF1),
-                        sampleRate(44100.0),
-						oldCutoff(1000.0)
+                        sampleRate(44100.0)
+						
         {
             Reset();
         }
@@ -38,8 +38,14 @@ class VAOnePole : public LadderFilterBase
         virtual ~VAOnePole()
         {}
     
+
+		void Prepare(double newSampleRate, int newSamplesPerBlock)
+		{
+			sampleRate = newSampleRate;
+			numSamples = newSamplesPerBlock;
+		}
         
-        virtual void Update() override
+        void Update() 
         {
             double wd = 2 * MOOG_PI * cutoff.get();
             double T = 1 / sampleRate;
@@ -49,7 +55,7 @@ class VAOnePole : public LadderFilterBase
             Alpha = g / ( 1.0 + g );
         }
         
-        virtual void Process(float* samples, size_t n) noexcept override
+        void Process(float* samples, size_t n) 
 		{
             for (uint32_t i = 0; i < n; i++)
 			{
@@ -57,7 +63,7 @@ class VAOnePole : public LadderFilterBase
 			}
 		}
 
-		virtual void Process(double* samples, size_t n) noexcept override
+		 void Process(double* samples, size_t n)
 		{
 			for (uint32_t i = 0; i < n; i++)
 			{
@@ -65,7 +71,7 @@ class VAOnePole : public LadderFilterBase
 			}
 		}
     
-        virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
+       void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) 
         {
 			const auto increment = (endCutoff - beginCutoff) / static_cast<float> (n);
             
@@ -77,7 +83,7 @@ class VAOnePole : public LadderFilterBase
             }
         }
     
-        virtual void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) override
+        void ProcessRamp(double* samples, size_t n, double beginCutoff, double endCutoff) 
         {
 			const auto increment = (endCutoff - beginCutoff) / static_cast<double> (n);
             
@@ -112,7 +118,7 @@ class VAOnePole : public LadderFilterBase
                 return hpf;
         }
         
-        virtual void Reset() override
+        void Reset()
         {
             Z1 = 0.0; Feedback = 0.0;
         }
@@ -138,35 +144,30 @@ class VAOnePole : public LadderFilterBase
         }
         
         
-        virtual void SetSampleRate (double sr) override
+        void SetSampleRate (double sr)
 		{
 			sampleRate = sr;                
 		}
 	
-		virtual void SetResonance(double r) override
+		void SetResonance(double r)
 		{
             resonance.set( r * 10.0);
 		}
     
-		virtual bool SetCutoff(double c) override
+		bool SetCutoff(double c)
 		{
             
 			cutoff.set(c);
-            
-			if ( !approximatelyEqual(oldCutoff, c) )
-			{
-				Update();
-			}
-
-			oldCutoff = c;
+           
             return true;
 		}
     
-		virtual void SetDrive (double d ) override
+		void SetDrive (double d )
 		{
 			drive = d;
 		}
 	
+		
     
 		double Alpha;
 		double Beta;
@@ -182,9 +183,10 @@ class VAOnePole : public LadderFilterBase
         
     private :
     
-        FilterType type;
-        double sampleRate;
-		double oldCutoff;
+		Atomic<double> cutoff, resonance, drive;
+		double sampleRate;
+		int numSamples;
+    
 };
 
 

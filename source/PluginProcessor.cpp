@@ -1217,6 +1217,15 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
             //ARPEGGIATOR
             double hertz = getLFOSyncedFreq(lastPosInfo, *arpeggioNoteLengthParam);
             arp.setSpeedInHz(hertz);
+
+			
+
+			Filter::FilterModel model = Filter::FilterModel::MOOG_MODEL;
+
+			if (*filterSelectParam == 2) model = Filter::FilterModel::DIODE_MODEL;
+			else if(*filterSelectParam == 1) model = Filter::FilterModel::KORG_MODEL;
+
+			filter->setModel(model);
         }
      
         

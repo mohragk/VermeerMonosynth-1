@@ -16,10 +16,12 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "util.h"
+#include "VAOnePole.h"
 
 
 // Thermal voltage (26 milliwats at room temperature)
 #define VT 0.312
+
 
 
 class Filter {
@@ -31,6 +33,8 @@ public:
 		DIODE_MODEL,
 		KORG_MODEL
 	} currentModel;
+
+	
 
 	Filter();
 	~Filter();
@@ -80,6 +84,14 @@ private:
 	std::array<double, 4> V, dV, tV;
 	double x, g;
 	double multiplier;
+
+	// korg specific
+	double Alpha0;
+	VAOnePole::FilterType type = VAOnePole::FilterType::LPF2;
+	VAOnePole va_LPF1;
+	VAOnePole va_LPF2;
+	VAOnePole va_HPF1; 
+	VAOnePole va_HPF2;
 };
 
 #endif // FILTER_H
