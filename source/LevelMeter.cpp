@@ -13,6 +13,7 @@
 LevelMeter::LevelMeter() :
 	currentLevel(0.0),
 	needToRepaint(false)
+
 {
 	image = Image(Image::ARGB, jmax(1, getWidth()), jmax(1, getHeight()), true);
 
@@ -60,6 +61,16 @@ void LevelMeter::resized()
 
 void LevelMeter::timerCallback()
 {
+    
+    double decayrate = 0.93;
+    
+    if (newLevel > currentLevel) {
+        currentLevel = newLevel * (1.0 / decayrate);
+    }
+    
+    
+    
+    if (currentLevel > 0.001) currentLevel *= decayrate;
 
     renderImage();
 	if (needToRepaint)
