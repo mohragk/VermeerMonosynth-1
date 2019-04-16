@@ -29,6 +29,7 @@ public :
 	};
 
 	void setLevel(double level);
+    
 
 	void setOrientation( orientation o ) { currentOrientation = o ; };
 
@@ -49,7 +50,8 @@ private :
 
     CriticalSection imageLock;
     
-	double currentLevel;
+	double currentLevel = 0.0;
+    double newLevel;
 	float scale;
     
 	orientation currentOrientation;
@@ -72,7 +74,7 @@ private :
 
 inline void LevelMeter::setLevel(double level)
 {
-    currentLevel = level;
+    newLevel = level;
 }
 
 #endif // LEVEL_METER_H
