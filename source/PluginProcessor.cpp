@@ -938,7 +938,7 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>
 {
 
 	int numSamples = buffer.getNumSamples();
-    int blendTimeSamples = sampleRate * 0.025;
+    int blendTimeSamples = sampleRate * 0.01;
     FloatType gainRampCoeff = ( (FloatType)numSamples / (FloatType)blendTimeSamples);
 	
     if (lastFilterChoice != *filterSelectParam)
@@ -950,13 +950,21 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>
     // APPLY FILTER
     LadderFilterBase* curFilter;
     
-    if (lastFilterChoice == 0)      curFilter = filterA.get();
-    else if (lastFilterChoice == 1) curFilter = filterB.get();
-    else                            curFilter = filterC.get();
+    switch (lastFilterChoice) {
+        case 0:
+            curFilter = filterA.get();
+            break;
+        case 1:
+            curFilter = filterB.get();
+            break;
+        case 2:
+            curFilter = filterC.get();
+            break;
+    }
     
     applyFilterEnvelope(buffer, curFilter);
     applyFilter(buffer, curFilter);
- 
+    
     switch (filterBlendState)
     {
         case FADE_IN : {
