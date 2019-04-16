@@ -708,16 +708,9 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
         synth.renderNextBlock (chunkBuffer, chunkMidi, 0, numSamplesChunk);
     
     
-    
-        // APPLY FILTER
-        LadderFilterBase* curFilter;
-    
-        if      (*filterSelectParam == 0) curFilter = filterA.get();
-        else if (*filterSelectParam == 1) curFilter = filterB.get();
-        else                              curFilter = filterC.get();
-    
-        applyFilterEnvelope(chunkBuffer, curFilter);
-        applyFilter(chunkBuffer, curFilter);
+		// TEST TEST TEST FILTER
+		processFilterBlending(chunkBuffer);
+       
     
     
 		// APPLY AMP ENVELOPE
@@ -918,18 +911,50 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 }
 
 template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter)
+void MonosynthPluginAudioProcessor::applyFilter(AudioBuffer<FloatType>& buffer, LadderFilterBase* filter)
 {
-    
-    FloatType* channelDataLeft  = buffer.getWritePointer(0);
-    const int numSamples = buffer.getNumSamples();
 
-    
-    filter->Process(channelDataLeft, numSamples);
-  
-   
+	FloatType* channelDataLeft = buffer.getWritePointer(0);
+	const int numSamples = buffer.getNumSamples();
 
+
+	filter->Process(channelDataLeft, numSamples);
+}
+
+
+bool isBlending = false;
+int lastFilterChoice = 0;
+float blendOldToNewAmount = 0.0;
+int blendTimeRemaining = 0;
+
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>& buffer)
+{
+
+	int numSamples = buffer.getNumSamples();
 	
+	AudioBuffer<FloatType> tempFilterBuffer[2];
+
+
+	int blendTimeSamples = std::round(sampleRate * 0.1); // blend 1/10 of a second
+
+	// APPLY FILTER
+	LadderFilterBase* curFilter;
+
+	if (*filterSelectParam == 0)	  curFilter = filterA.get();
+	else if (*filterSelectParam == 1) curFilter = filterB.get();
+	else                              curFilter = filterC.get();
+
+	for (int filter = 0; filter < 2; filter++) {
+		tempFilterBuffer[filter].setSize(1, numSamples);
+		tempFilterBuffer[filter].copyFrom(0, 0, buffer, 0,0, numSamples);
+		applyFilterEnvelope(tempFilterBuffer[filter], curFilter);
+		applyFilter(tempFilterBuffer[filter], curFilter);
+	}
+	
+	// BLEND 2 filters
+	buffer.copyFrom(0,0, tempFilterBuffer[0], 0, 0, numSamples);
+
 }
 
 template <typename FloatType>

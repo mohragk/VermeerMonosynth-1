@@ -310,6 +310,10 @@ private:
     template <typename FloatType>
     void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
 
+
+	template <typename FloatType>
+	void processFilterBlending(AudioBuffer<FloatType>& buffer);
+
 	template <typename FloatType>
 	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
 
