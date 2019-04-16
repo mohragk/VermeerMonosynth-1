@@ -320,6 +320,9 @@ private:
     template <typename FloatType>
     void updateOscilloscope(AudioBuffer<FloatType>& buffer);
     
+    
+    template <typename FloatType>
+    void processChorusBlending(AudioBuffer<FloatType>& buffer);
 	
     dsp::LookupTableTransform<double> tanhLUT   { [](double x) { return std::tanh(x); }, double(-5), double(5), 256 };
     dsp::LookupTableTransform<double> arrayaLUT { [](double x) { return (3.0 * x / 2.0) * (1 - x * x / 3.0); }, double(-5), double(5), 256 };
@@ -338,6 +341,8 @@ private:
     
     std::unique_ptr<dsp::Oversampling<float>> oversamplingFloatHQ;
     std::unique_ptr<dsp::Oversampling<double>> oversamplingDoubleHQ;
+    
+    double oversampleFactor = 1.0;
     
     bool hqOversampling = false;
     bool prevHqOversampling = false;
@@ -420,6 +425,20 @@ private:
     bool reTriggerEnvelopes = false;
     
     static BusesProperties getBusesProperties();
+    
+    
+    enum FadeState {
+        FADE_IN,
+        FADE_OUT,
+        NO_FADE
+        
+    } filterBlendState = NO_FADE, chorusBlendState = NO_FADE;
+    
+    int lastFilterChoice = 0;
+    double filterGain = 1.0;
+    
+    int lastChorusChoice = 1;
+    double chorusGain = 1.0;
    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthPluginAudioProcessor)
 };

@@ -567,6 +567,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int buffer
     
     if(*useHQOversamplingParam)
     {
+        oversampleFactor = oversamplingDoubleHQ->getOversamplingFactor();
         newsr *= oversamplingDoubleHQ->getOversamplingFactor();
         newBufferSize *= oversamplingDoubleHQ->getOversamplingFactor();
         if ( isUsingDoublePrecision() ) { setLatencySamples(roundToInt(oversamplingDoubleHQ->getLatencyInSamples())); }
@@ -574,6 +575,7 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int buffer
     }
     else
     {
+        oversampleFactor = oversamplingDouble->getOversamplingFactor();
         newsr *= oversamplingDouble->getOversamplingFactor();
         newBufferSize *= oversamplingDoubleHQ->getOversamplingFactor();
         if ( isUsingDoublePrecision() ) { setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
@@ -768,8 +770,8 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
 
 	// CHORUS EFFECT
-	bool skip = (bool)*skipChorusParam;
-	chorusEffect.processBlock(buffer, skip);
+	
+    processChorusBlending(buffer);
     
     
     meter.setLevel( buffer.getMagnitude( 0, buffer.getNumSamples() ) );
@@ -922,16 +924,53 @@ void MonosynthPluginAudioProcessor::applyFilter(AudioBuffer<FloatType>& buffer, 
 }
 
 
-int lastFilterChoice = 0;
-enum FadeState {
-    FADE_IN,
-    FADE_OUT,
-    NO_FADE
-    
-} filterBlendState = NO_FADE;
 
-int blendTimeSamplesRemaining = 0;
-double filterGain = 1.0;
+template <typename FloatType>
+void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>& buffer) {
+    int numSamples = buffer.getNumSamples();
+    int blendTimeSamples = (sampleRate / oversampleFactor) * 0.01;
+    FloatType gainRampCoeff = ( (FloatType)numSamples / (FloatType)blendTimeSamples);
+    
+    if (lastChorusChoice != *skipChorusParam)
+    {
+        if (chorusBlendState == NO_FADE) chorusBlendState = FADE_OUT;
+    }
+    
+    bool skip = false; // not necessary anymore
+    if (lastChorusChoice == 1 ) chorusEffect.processBlock(buffer, skip);
+    
+    switch (chorusBlendState)
+    {
+        case FADE_OUT : {
+            FloatType beginGain = chorusGain;
+            chorusGain -= gainRampCoeff;
+            buffer.applyGainRamp(0, numSamples, beginGain, chorusGain);
+            
+            if (chorusGain <= 0.0) {
+                lastChorusChoice = *skipChorusParam;
+                chorusBlendState = FADE_IN;
+                chorusGain = 0.0;
+            }
+            
+            return;
+        }
+        case FADE_IN: {
+            FloatType beginGain = chorusGain;
+            chorusGain += gainRampCoeff;
+            buffer.applyGainRamp(0, numSamples, beginGain, chorusGain);
+            
+            if (chorusGain >= 1.0) {
+                chorusBlendState = NO_FADE;
+                chorusGain = 1.0;
+            }
+            return;
+        }
+        case NO_FADE: {
+            return;
+        }
+    }
+    
+}
 
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>& buffer)
