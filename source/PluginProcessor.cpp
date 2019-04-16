@@ -922,39 +922,72 @@ void MonosynthPluginAudioProcessor::applyFilter(AudioBuffer<FloatType>& buffer, 
 }
 
 
-bool isBlending = false;
 int lastFilterChoice = 0;
-float blendOldToNewAmount = 0.0;
-int blendTimeRemaining = 0;
+enum FadeState {
+    FADE_IN,
+    FADE_OUT,
+    NO_FADE
+    
+} filterBlendState = NO_FADE;
+
+int blendTimeSamplesRemaining = 0;
+double filterGain = 1.0;
 
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>& buffer)
 {
 
 	int numSamples = buffer.getNumSamples();
+    int blendTimeSamples = sampleRate * 0.025;
+    FloatType gainRampCoeff = ( (FloatType)numSamples / (FloatType)blendTimeSamples);
 	
-	AudioBuffer<FloatType> tempFilterBuffer[2];
+    if (lastFilterChoice != *filterSelectParam)
+    {
+        if (filterBlendState == NO_FADE) filterBlendState = FADE_IN;
+        
+    }
+    
+    // APPLY FILTER
+    LadderFilterBase* curFilter;
+    
+    if (lastFilterChoice == 0)      curFilter = filterA.get();
+    else if (lastFilterChoice == 1) curFilter = filterB.get();
+    else                            curFilter = filterC.get();
+    
+    applyFilterEnvelope(buffer, curFilter);
+    applyFilter(buffer, curFilter);
+ 
+    switch (filterBlendState)
+    {
+        case FADE_IN : {
+            FloatType beginGain = filterGain;
+            filterGain -= gainRampCoeff;
+            buffer.applyGainRamp(0, 0, numSamples, beginGain, filterGain);
+            
+            if (filterGain <= 0.0) {
+                lastFilterChoice = *filterSelectParam;
+                filterBlendState = FADE_OUT;
+            }
+            
+            return;
+        }
+        case FADE_OUT: {
+            FloatType beginGain = filterGain;
+            filterGain += gainRampCoeff;
+            buffer.applyGainRamp(0, 0, numSamples, beginGain, filterGain);
+            
+            if (filterGain >= 1.0) {
+                filterBlendState = NO_FADE;
+                filterGain = 1.0;
+            }
+            return;
+        }
+        case NO_FADE: {
+            return;
+        }
+    }
 
-
-	int blendTimeSamples = std::round(sampleRate * 0.1); // blend 1/10 of a second
-
-	// APPLY FILTER
-	LadderFilterBase* curFilter;
-
-	if (*filterSelectParam == 0)	  curFilter = filterA.get();
-	else if (*filterSelectParam == 1) curFilter = filterB.get();
-	else                              curFilter = filterC.get();
-
-	for (int filter = 0; filter < 2; filter++) {
-		tempFilterBuffer[filter].setSize(1, numSamples);
-		tempFilterBuffer[filter].copyFrom(0, 0, buffer, 0,0, numSamples);
-		applyFilterEnvelope(tempFilterBuffer[filter], curFilter);
-		applyFilter(tempFilterBuffer[filter], curFilter);
-	}
-	
-	// BLEND 2 filters
-	buffer.copyFrom(0,0, tempFilterBuffer[0], 0, 0, numSamples);
-
+    
 }
 
 template <typename FloatType>
