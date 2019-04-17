@@ -973,25 +973,40 @@ void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>
 	*/
 
 	int numSamples = buffer.getNumSamples();
+	int newChorusChoice = *skipChorusParam;
 	bool skip = false;
 
-	if (lastChorusChoice != *skipChorusParam) 
+	if (lastChorusChoice != newChorusChoice)
 	{
 		int newChorusChoice = *skipChorusParam;
 		AudioBuffer<FloatType> tempBuffer;
 		tempBuffer.makeCopyOf(buffer);
 
+
+
+		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.01;
+		FloatType gainRampCoeff = ((FloatType)numSamples / (FloatType)blendTimeSamples);
+
+		FloatType beginGain = chorusGain;
+		chorusGain -= gainRampCoeff;
+
 		
 		if(lastChorusChoice == 1) chorusEffect.processBlock(buffer, skip);
 
-		buffer.applyGainRamp(0, numSamples, 1.0, 0.0);
+		buffer.applyGainRamp(0, numSamples, beginGain, chorusGain);
 
 		if(newChorusChoice == 1) chorusEffect.processBlock(tempBuffer, skip);
 
-		tempBuffer.applyGainRamp(0, numSamples, 0.0, 1.0);
+		tempBuffer.applyGainRamp(0, numSamples, 1.0 - beginGain, 1.0 - chorusGain);
 
 		buffer.addFrom(0, 0, tempBuffer, 0, 0, numSamples);
-		lastChorusChoice = newChorusChoice;
+		buffer.addFrom(1, 0, tempBuffer, 0, 0, numSamples);
+
+		if (chorusGain <= 0.0)
+		{
+			lastChorusChoice = newChorusChoice;
+			chorusGain = 1.0;
+		}
 
 	}
 	else
@@ -1074,6 +1089,12 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>
 		AudioBuffer<FloatType> tempBuffer;
 		tempBuffer.makeCopyOf(buffer);
 
+		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.01;
+		FloatType gainRampCoeff = ((FloatType)numSamples / (FloatType)blendTimeSamples);
+
+		FloatType beginGain = filterGain;
+		filterGain -= gainRampCoeff;
+
 		switch (lastFilterChoice) {
 		case 0:
 			curFilter = filterA.get();
@@ -1089,7 +1110,7 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>
 		applyFilterEnvelope(buffer, curFilter);
 		applyFilter(buffer, curFilter);
 
-		buffer.applyGainRamp(0, 0, numSamples, 1.0, 0.0);
+		buffer.applyGainRamp(0, 0, numSamples, beginGain, filterGain);
 
 		switch (newFilterChoice) {
 		case 0:
@@ -1106,10 +1127,15 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>
 		applyFilterEnvelope(tempBuffer, curFilter);
 		applyFilter(tempBuffer, curFilter);
 
-		tempBuffer.applyGainRamp(0, 0, tempBuffer.getNumSamples(), 0.0, 1.0);
+		tempBuffer.applyGainRamp(0, 0, numSamples, 1.0 - beginGain, 1.0 - filterGain);
 
 		buffer.addFrom(0,0,tempBuffer, 0, 0, numSamples);
-		lastFilterChoice = newFilterChoice;
+
+		if (filterGain <= 0.0)
+		{
+			lastFilterChoice = newFilterChoice;
+			filterGain = 1.0;
+		}
 	}
 	else
 	{
