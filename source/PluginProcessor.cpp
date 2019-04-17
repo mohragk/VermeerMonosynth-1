@@ -984,7 +984,7 @@ void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>
 
 
 
-		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.01;
+		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.02;
 		FloatType gainRampCoeff = ((FloatType)numSamples / (FloatType)blendTimeSamples);
 
 		FloatType beginGain = chorusGain;
