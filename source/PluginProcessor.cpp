@@ -927,6 +927,7 @@ void MonosynthPluginAudioProcessor::applyFilter(AudioBuffer<FloatType>& buffer, 
 
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>& buffer) {
+	/*
     int numSamples = buffer.getNumSamples();
     int blendTimeSamples = (sampleRate / oversampleFactor) * 0.01;
     FloatType gainRampCoeff = ( (FloatType)numSamples / (FloatType)blendTimeSamples);
@@ -969,7 +970,34 @@ void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>
             return;
         }
     }
-    
+	*/
+
+	int numSamples = buffer.getNumSamples();
+	bool skip = false;
+
+	if (lastChorusChoice != *skipChorusParam) 
+	{
+		int newChorusChoice = *skipChorusParam;
+		AudioBuffer<FloatType> tempBuffer;
+		tempBuffer.makeCopyOf(buffer);
+
+		
+		if(lastChorusChoice == 1) chorusEffect.processBlock(buffer, skip);
+
+		buffer.applyGainRamp(0, numSamples, 1.0, 0.0);
+
+		if(newChorusChoice == 1) chorusEffect.processBlock(tempBuffer, skip);
+
+		tempBuffer.applyGainRamp(0, numSamples, 0.0, 1.0);
+
+		buffer.addFrom(0, 0, tempBuffer, 0, 0, numSamples);
+		lastChorusChoice = newChorusChoice;
+
+	}
+	else
+	{
+		if (lastChorusChoice == 1) chorusEffect.processBlock(buffer, skip);
+	}
 }
 
 template <typename FloatType>
