@@ -975,7 +975,7 @@ void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>
 template <typename FloatType>
 void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>& buffer)
 {
-
+	/*
 	int numSamples = buffer.getNumSamples();
     int blendTimeSamples = sampleRate * 0.01;
     FloatType gainRampCoeff = ( (FloatType)numSamples / (FloatType)blendTimeSamples);
@@ -1034,7 +1034,73 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>
         }
     }
 
-    
+    */
+
+	int numSamples = buffer.getNumSamples();
+	LadderFilterBase* curFilter;
+
+	if (lastFilterChoice != *filterSelectParam)
+	{
+		int newFilterChoice = *filterSelectParam;
+
+		AudioBuffer<FloatType> tempBuffer;
+		tempBuffer.makeCopyOf(buffer);
+
+		switch (lastFilterChoice) {
+		case 0:
+			curFilter = filterA.get();
+			break;
+		case 1:
+			curFilter = filterB.get();
+			break;
+		case 2:
+			curFilter = filterC.get();
+			break;
+		}
+
+		applyFilterEnvelope(buffer, curFilter);
+		applyFilter(buffer, curFilter);
+
+		buffer.applyGainRamp(0, 0, numSamples, 1.0, 0.0);
+
+		switch (newFilterChoice) {
+		case 0:
+			curFilter = filterA.get();
+			break;
+		case 1:
+			curFilter = filterB.get();
+			break;
+		case 2:
+			curFilter = filterC.get();
+			break;
+		}
+
+		applyFilterEnvelope(tempBuffer, curFilter);
+		applyFilter(tempBuffer, curFilter);
+
+		tempBuffer.applyGainRamp(0, 0, tempBuffer.getNumSamples(), 0.0, 1.0);
+
+		buffer.addFrom(0,0,tempBuffer, 0, 0, numSamples);
+		lastFilterChoice = newFilterChoice;
+	}
+	else
+	{
+
+		switch (lastFilterChoice) {
+		case 0:
+			curFilter = filterA.get();
+			break;
+		case 1:
+			curFilter = filterB.get();
+			break;
+		case 2:
+			curFilter = filterC.get();
+			break;
+		}
+
+		applyFilterEnvelope(buffer, curFilter);
+		applyFilter(buffer, curFilter);
+	}
 }
 
 template <typename FloatType>
