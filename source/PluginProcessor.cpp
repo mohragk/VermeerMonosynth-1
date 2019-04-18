@@ -984,7 +984,7 @@ void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>
 
 
 
-		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.02;
+		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.04;
 		FloatType gainRampCoeff = ((FloatType)numSamples / (FloatType)blendTimeSamples);
 
 		FloatType beginGain = chorusGain;
@@ -1089,7 +1089,7 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>
 		AudioBuffer<FloatType> tempBuffer;
 		tempBuffer.makeCopyOf(buffer);
 
-		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.01;
+		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.04;
 		FloatType gainRampCoeff = ((FloatType)numSamples / (FloatType)blendTimeSamples);
 
 		FloatType beginGain = filterGain;
