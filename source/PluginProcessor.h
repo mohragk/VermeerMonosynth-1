@@ -413,6 +413,9 @@ private:
     
     int lastChorusChoice = 1;
     double chorusGain = 1.0;
+    
+    AudioBuffer<float>tempBufferChorus, tempBufferFilter;
+    AudioBuffer<float>osBuffer;
    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthPluginAudioProcessor)
 };

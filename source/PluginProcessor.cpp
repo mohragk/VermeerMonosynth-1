@@ -471,10 +471,20 @@ void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int sam
 
 	chorusEffect.prepareToPlay(newSampleRate, newBlockSize);
     
+    
+    tempBufferFilter = AudioBuffer<float>(1, samplesPerBlock);
+    tempBufferFilter.clear();
+    
     resetSamplerates(newSampleRate, samplesPerBlock);
     
     keyboardState.reset();
     currentPlayedNotes.clear();
+    
+    osBuffer = AudioBuffer<float> (1, newBlockSize);
+    osBuffer.clear();
+    
+    tempBufferChorus = AudioBuffer<float>(2, samplesPerBlock);
+    tempBufferChorus.clear();
 
     lastNotePlayed = 60;
 }
@@ -573,7 +583,11 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int buffer
        setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples()));
     }
     
+    tempBufferFilter.setSize(1,newBufferSize);
+    tempBufferFilter.clear();
     
+    osBuffer.setSize(1, newBufferSize);
+    osBuffer.clear();
     
     synth.setCurrentPlaybackSampleRate (newsr);
     MonosynthVoice* synthVoice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
@@ -650,103 +664,75 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<float>& buffer, MidiBuf
     
     osBlock = oversampling->processSamplesUp(block);
     
-    float* const arr[] = { osBlock.getChannelPointer(0), osBlock.getChannelPointer(1) };
+    float* arr[] = { osBlock.getChannelPointer(0), osBlock.getChannelPointer(1) };
     
-    AudioBuffer<float> osBuffer(
-                                    arr,
-                                    2,
-                                    static_cast<int> ( osBlock.getNumSamples() )
-                                    );
-    
+    osBuffer.setDataToReferTo (arr, 2, (int)osBlock.getNumSamples());
     
     const int numSamples = osBuffer.getNumSamples();
 
-    // Clear the buffer of any samples
-    //osBuffer.clear();
     
-    int chunkSize = jmin(256, numSamples);
-    int position = 0;
-    int samplesRemaining = numSamples;
-    int numSamplesChunk = chunkSize;
+    MidiBuffer chunkMidi;
+    
+    chunkMidi.addEvents(midiMessages, 0, numSamples, 0);
     
     
+    // PARAMETER UPDATE
+    updateParameters(osBuffer);
 
-    for ( ; position < numSamples; position += chunkSize )
-    {
-        
-        AudioBuffer<float> chunkBuffer (1, numSamplesChunk);
-        MidiBuffer chunkMidi;
-        
-        chunkBuffer.copyFrom(0, 0, osBuffer, 0, position, numSamplesChunk);
-        chunkMidi.addEvents(midiMessages, position, numSamplesChunk, 0);
-        
-        
-        // PARAMETER UPDATE
-        updateParameters(chunkBuffer);
 
-    
-        // KEYBOARD
-        keyboardState.processNextMidiBuffer(chunkMidi, 0, numSamplesChunk, true);
-    
-    
-        // SEQUENCER
-        seqState.get()->processBuffer(chunkBuffer, chunkMidi, bool(*useSequencerParam));
-    
-        //ARPEGGIATOR
-        arp.process(chunkBuffer, chunkMidi, *arpeggioUseParam, false);
+    // KEYBOARD
+    keyboardState.processNextMidiBuffer(chunkMidi, 0, numSamples, true);
 
-    
-        // GET SYNTHDATA
-        synth.renderNextBlock (chunkBuffer, chunkMidi, 0, numSamplesChunk);
-    
-    
-		// TEST TEST TEST FILTER
-		processFilterBlending(chunkBuffer);
-       
-    
-    
-		// APPLY AMP ENVELOPE
-		applyAmplitudeEnvelope(chunkBuffer);
-    
 
-        // APPLYING WAVESHAPER
-        if(*waveshapeSwitchParam == 1)
-            applyWaveshaper(chunkBuffer);
-    
-    
-        // In case we have more outputs than inputs, we'll clear any output
-        // channels that didn't contain input data, (because these aren't
-        // guaranteed to be empty - they may contain garbage).
-        for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
-            chunkBuffer.clear (i, 0, numSamplesChunk);
-    
+    // SEQUENCER
+    seqState.get()->processBuffer(osBuffer, chunkMidi, bool(*useSequencerParam));
 
-        // Update oscilloscope data
-        updateOscilloscope(chunkBuffer);
-    
+    //ARPEGGIATOR
+    arp.process(osBuffer, chunkMidi, *arpeggioUseParam, false);
+
+
+    // GET SYNTHDATA
+    synth.renderNextBlock (osBuffer, chunkMidi, 0, numSamples);
+
+
+    // TEST TEST TEST FILTER
+    processFilterBlending(osBuffer);
+   
+
+
+    // APPLY AMP ENVELOPE
+    applyAmplitudeEnvelope(osBuffer);
+
+
+    // APPLYING WAVESHAPER
+    if(*waveshapeSwitchParam == 1)
+        applyWaveshaper(osBuffer);
+
+
+    // In case we have more outputs than inputs, we'll clear any output
+    // channels that didn't contain input data, (because these aren't
+    // guaranteed to be empty - they may contain garbage).
+    for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
+        osBuffer.clear (i, 0, numSamples);
+
+
+    // Update oscilloscope data
+    updateOscilloscope(osBuffer);
 
 
 
-        // APPLY VOLUME
-        applyGain(chunkBuffer); // apply our gain-change to the outgoing data..
+
+    // APPLY VOLUME
+    applyGain(osBuffer); // apply our gain-change to the outgoing data..
 
 
-        // APPLY SOFTCLIP
-        if (*softClipSwitchParam == 1)
-            softClipBuffer(chunkBuffer);
+    // APPLY SOFTCLIP
+    if (*softClipSwitchParam == 1)
+        softClipBuffer(osBuffer);
         
         
-        osBuffer.copyFrom(0, position, chunkBuffer, 0, 0, numSamplesChunk);
-        
-        samplesRemaining -= chunkSize;
-        
-        if (samplesRemaining < chunkSize)
-            numSamplesChunk = samplesRemaining > 0 ? samplesRemaining : chunkSize;
-        
-        
-    }
+    
 
-	//osBuffer.copyFrom(1, 0, osBuffer, 0, 0, osBuffer.getNumSamples());
 
  
     // DOWNSAMPLING
@@ -919,10 +905,8 @@ void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<float>& bu
 
 	if (lastChorusChoice != newChorusChoice)
 	{
-		int newChorusChoice = *skipChorusParam;
-		AudioBuffer<float> tempBuffer;
-		tempBuffer.makeCopyOf(buffer);
-
+		
+        tempBufferChorus.copyFrom(0,0, buffer, 0,0, numSamples);
 
 
 		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.04;
@@ -936,12 +920,12 @@ void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<float>& bu
 
 		buffer.applyGainRamp(0, numSamples, beginGain, chorusGain);
 
-		if(newChorusChoice == 1) chorusEffect.processBlock(tempBuffer, skip);
+		if(newChorusChoice == 1) chorusEffect.processBlock(tempBufferChorus, skip);
 
-		tempBuffer.applyGainRamp(0, numSamples, 1.0 - beginGain, 1.0 - chorusGain);
+		tempBufferChorus.applyGainRamp(0, numSamples, 1.0 - beginGain, 1.0 - chorusGain);
 
-		buffer.addFrom(0, 0, tempBuffer, 0, 0, numSamples);
-		buffer.addFrom(1, 0, tempBuffer, 0, 0, numSamples);
+		buffer.addFrom(0, 0, tempBufferChorus, 0, 0, numSamples);
+		buffer.addFrom(1, 0, tempBufferChorus, 0, 0, numSamples);
 
 		if (chorusGain <= 0.0)
 		{
@@ -965,15 +949,16 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<float>& bu
 	{
 		int newFilterChoice = *filterSelectParam;
 
-		AudioBuffer<float> tempBuffer;
-		tempBuffer.makeCopyOf(buffer);
+        tempBufferFilter.copyFrom(0,0, buffer, 0,0, numSamples);
 
-		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.04;
+		int blendTimeSamples = (sampleRate / 1) * 0.04;
 		float gainRampCoeff = ((float)numSamples / (float)blendTimeSamples);
 
 		float beginGain = filterGain;
 		filterGain -= gainRampCoeff;
-
+        
+        
+        //FILTER LAST
 		switch (lastFilterChoice) {
 		case 0:
 			curFilter = filterA.get();
@@ -991,6 +976,8 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<float>& bu
 
 		buffer.applyGainRamp(0, 0, numSamples, beginGain, filterGain);
 
+        
+        // FILTER NEW
 		switch (newFilterChoice) {
 		case 0:
 			curFilter = filterA.get();
@@ -1003,12 +990,12 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<float>& bu
 			break;
 		}
 
-		applyFilterEnvelope(tempBuffer, curFilter);
-		applyFilter(tempBuffer, curFilter);
+		applyFilterEnvelope(tempBufferFilter, curFilter);
+		applyFilter(tempBufferFilter, curFilter);
 
-		tempBuffer.applyGainRamp(0, 0, numSamples, 1.0 - beginGain, 1.0 - filterGain);
+		tempBufferFilter.applyGainRamp(0, 0, numSamples, 1.0 - beginGain, 1.0 - filterGain);
 
-		buffer.addFrom(0,0,tempBuffer, 0, 0, numSamples);
+		buffer.addFrom(0,0,tempBufferFilter, 0, 0, numSamples);
 
 		if (filterGain <= 0.0)
 		{
