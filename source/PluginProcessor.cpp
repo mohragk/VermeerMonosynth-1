@@ -343,11 +343,9 @@ skipChorusParam(nullptr)
     
     // Oversampling 2 times with FIR filtering
     oversamplingFloat.reset  ( new dsp::Oversampling<float>    ( 2, 1, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR , false ) );
-    oversamplingDouble.reset ( new dsp::Oversampling<double>   ( 2, 1, dsp::Oversampling<double>::filterHalfBandPolyphaseIIR , false ) );
     
     // HQ Oversampling 8 times with FIR filtering
     oversamplingFloatHQ.reset  ( new dsp::Oversampling<float>  ( 2, 3, dsp::Oversampling<float>::filterHalfBandFIREquiripple , true ) );
-    oversamplingDoubleHQ.reset ( new dsp::Oversampling<double> ( 2, 3, dsp::Oversampling<double>::filterHalfBandFIREquiripple , true ) );
     
 
     for (int i = 0; i < numSmoothers; i++)
@@ -464,9 +462,7 @@ AudioProcessor::BusesProperties MonosynthPluginAudioProcessor::getBusesPropertie
 void MonosynthPluginAudioProcessor::prepareToPlay (double newSampleRate, int samplesPerBlock)
 {
 	oversamplingFloat->initProcessing(samplesPerBlock);
-	oversamplingDouble->initProcessing(samplesPerBlock);
     oversamplingFloatHQ->initProcessing(samplesPerBlock);
-    oversamplingDoubleHQ->initProcessing(samplesPerBlock);
     
     int newBlockSize = (int)oversamplingFloat->getOversamplingFactor() * samplesPerBlock;
     filterA->Prepare(newSampleRate, newBlockSize);
@@ -491,10 +487,7 @@ void MonosynthPluginAudioProcessor::releaseResources()
 
     
     oversamplingFloat->reset();
-    oversamplingDouble->reset();
     oversamplingFloatHQ->reset();
-    oversamplingDoubleHQ->reset();
-    
     
    
     filterA->Reset();
@@ -521,9 +514,7 @@ void MonosynthPluginAudioProcessor::reset()
 	saturationAmount.reset   (sampleRate, cutoffRampTimeDefault);
     
     oversamplingFloat->reset();
-    oversamplingDouble->reset();
     oversamplingFloatHQ->reset();
-    oversamplingDoubleHQ->reset();
     
     
     filterA->Reset();
@@ -567,19 +558,19 @@ void MonosynthPluginAudioProcessor::resetSamplerates(const double sr, int buffer
     
     if(*useHQOversamplingParam)
     {
-        oversampleFactor = oversamplingDoubleHQ->getOversamplingFactor();
-        newsr *= oversamplingDoubleHQ->getOversamplingFactor();
-        newBufferSize *= oversamplingDoubleHQ->getOversamplingFactor();
-        if ( isUsingDoublePrecision() ) { setLatencySamples(roundToInt(oversamplingDoubleHQ->getLatencyInSamples())); }
-        else                            { setLatencySamples(roundToInt(oversamplingFloatHQ->getLatencyInSamples())); }
+        oversampleFactor = oversamplingFloatHQ->getOversamplingFactor();
+        newsr *= oversamplingFloatHQ->getOversamplingFactor();
+        newBufferSize *= oversamplingFloatHQ->getOversamplingFactor();
+        setLatencySamples(roundToInt(oversamplingFloatHQ->getLatencyInSamples()));
+       
     }
     else
     {
-        oversampleFactor = oversamplingDouble->getOversamplingFactor();
-        newsr *= oversamplingDouble->getOversamplingFactor();
-        newBufferSize *= oversamplingDoubleHQ->getOversamplingFactor();
-        if ( isUsingDoublePrecision() ) { setLatencySamples(roundToInt(oversamplingDouble->getLatencyInSamples())); }
-        else                            { setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples())); }
+        oversampleFactor = oversamplingFloat->getOversamplingFactor();
+        newsr *= oversamplingFloat->getOversamplingFactor();
+        newBufferSize *= oversamplingFloat->getOversamplingFactor();
+       
+       setLatencySamples(roundToInt(oversamplingFloat->getLatencyInSamples()));
     }
     
     
@@ -640,8 +631,7 @@ void MonosynthPluginAudioProcessor::setOversampleQuality(int q = 0)
     hqOversampling = bool(q);
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, dsp::Oversampling<FloatType>* oversampling)
+void MonosynthPluginAudioProcessor::process (AudioBuffer<float>& buffer, MidiBuffer& midiMessages, dsp::Oversampling<float>* oversampling)
 {
     
     bool hqOn = bool(*useHQOversamplingParam);
@@ -655,14 +645,14 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
 
     
     // OVERSAMPLING
-    dsp::AudioBlock<FloatType> block (buffer);
-    dsp::AudioBlock<FloatType> osBlock;
+    dsp::AudioBlock<float> block (buffer);
+    dsp::AudioBlock<float> osBlock;
     
     osBlock = oversampling->processSamplesUp(block);
     
-    FloatType* const arr[] = { osBlock.getChannelPointer(0), osBlock.getChannelPointer(1) };
+    float* const arr[] = { osBlock.getChannelPointer(0), osBlock.getChannelPointer(1) };
     
-    AudioBuffer<FloatType> osBuffer(
+    AudioBuffer<float> osBuffer(
                                     arr,
                                     2,
                                     static_cast<int> ( osBlock.getNumSamples() )
@@ -684,7 +674,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     for ( ; position < numSamples; position += chunkSize )
     {
         
-        AudioBuffer<FloatType> chunkBuffer (1, numSamplesChunk);
+        AudioBuffer<float> chunkBuffer (1, numSamplesChunk);
         MidiBuffer chunkMidi;
         
         chunkBuffer.copyFrom(0, 0, osBuffer, 0, position, numSamplesChunk);
@@ -781,8 +771,7 @@ void MonosynthPluginAudioProcessor::process (AudioBuffer<FloatType>& buffer, Mid
     updateCurrentTimeInfoFromHost();
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<float>& buffer)
 {
 
   masterGain = dbToGain(*gainParam, MIN_INFINITY_DB);
@@ -799,20 +788,19 @@ void MonosynthPluginAudioProcessor::applyGain(AudioBuffer<FloatType>& buffer)
 
 }
 
-template<typename FloatType>
-void MonosynthPluginAudioProcessor::applyAmplitudeEnvelope(AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::applyAmplitudeEnvelope(AudioBuffer<float>& buffer)
 {
 
 	int numSamples = buffer.getNumSamples();
 
-	const FloatType* input = buffer.getReadPointer(0);
-	FloatType* dataLeft    = buffer.getWritePointer(0);
+	const float* input = buffer.getReadPointer(0);
+	float* dataLeft    = buffer.getWritePointer(0);
 
 	MonosynthVoice* voice = dynamic_cast<MonosynthVoice*>(synth.getVoice(0));
 
 	for (int pos = 0; pos < numSamples; pos++)
 	{
-		FloatType gain = envelopeGenerator[0].get()->process();
+		float gain = envelopeGenerator[0].get()->process();
 
 		envelopeLED1.setBrightness((float)gain);
 		envelopeLED3.setBrightness((float)voice->getPitchEnvelopeValue());
@@ -824,8 +812,7 @@ void MonosynthPluginAudioProcessor::applyAmplitudeEnvelope(AudioBuffer<FloatType
 
 
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter)
+void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<float>& buffer, LadderFilterBase* filter)
 {
 	
     const int numSamples = buffer.getNumSamples();
@@ -890,7 +877,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
 		
 		currentCutoff = linToLog(CUTOFF_MIN, CUTOFF_MAX, linearCutoffVal);
        
-		FloatType combinedCutoff = currentCutoff; // +smoothing[CUTOFF_SMOOTHER]->processSmooth(cutoff.getNextValue());
+		float combinedCutoff = currentCutoff; // +smoothing[CUTOFF_SMOOTHER]->processSmooth(cutoff.getNextValue());
         
         
         
@@ -901,7 +888,7 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
         
         auto snapToLocalVal= [](double val) -> double { if (val < 0.0) val = 0.0; else if (val > 1.0) val = 1.0; return val;  };
         
-        FloatType newReso =  snapToLocalVal(resonance.getNextValue());
+        float newReso =  snapToLocalVal(resonance.getNextValue());
         
         filter->AddModulationValueForParameter(combinedCutoff, LadderFilterBase::CUTOFF, i);
         filter->AddModulationValueForParameter(newReso, LadderFilterBase::RESONANCE, i);
@@ -912,11 +899,10 @@ void MonosynthPluginAudioProcessor::applyFilterEnvelope (AudioBuffer<FloatType>&
     
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyFilter(AudioBuffer<FloatType>& buffer, LadderFilterBase* filter)
+void MonosynthPluginAudioProcessor::applyFilter(AudioBuffer<float>& buffer, LadderFilterBase* filter)
 {
 
-	FloatType* channelDataLeft = buffer.getWritePointer(0);
+	float* channelDataLeft = buffer.getWritePointer(0);
 	const int numSamples = buffer.getNumSamples();
 
 
@@ -925,52 +911,7 @@ void MonosynthPluginAudioProcessor::applyFilter(AudioBuffer<FloatType>& buffer, 
 
 
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>& buffer) {
-	/*
-    int numSamples = buffer.getNumSamples();
-    int blendTimeSamples = (sampleRate / oversampleFactor) * 0.01;
-    FloatType gainRampCoeff = ( (FloatType)numSamples / (FloatType)blendTimeSamples);
-    
-    if (lastChorusChoice != *skipChorusParam)
-    {
-        if (chorusBlendState == NO_FADE) chorusBlendState = FADE_OUT;
-    }
-    
-    bool skip = false; // not necessary anymore
-    if (lastChorusChoice == 1 ) chorusEffect.processBlock(buffer, skip);
-    
-    switch (chorusBlendState)
-    {
-        case FADE_OUT : {
-            FloatType beginGain = chorusGain;
-            chorusGain -= gainRampCoeff;
-            buffer.applyGainRamp(0, numSamples, beginGain, chorusGain);
-            
-            if (chorusGain <= 0.0) {
-                lastChorusChoice = *skipChorusParam;
-                chorusBlendState = FADE_IN;
-                chorusGain = 0.0;
-            }
-            
-            return;
-        }
-        case FADE_IN: {
-            FloatType beginGain = chorusGain;
-            chorusGain += gainRampCoeff;
-            buffer.applyGainRamp(0, numSamples, beginGain, chorusGain);
-            
-            if (chorusGain >= 1.0) {
-                chorusBlendState = NO_FADE;
-                chorusGain = 1.0;
-            }
-            return;
-        }
-        case NO_FADE: {
-            return;
-        }
-    }
-	*/
+void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<float>& buffer) {
 
 	int numSamples = buffer.getNumSamples();
 	int newChorusChoice = *skipChorusParam;
@@ -979,15 +920,15 @@ void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>
 	if (lastChorusChoice != newChorusChoice)
 	{
 		int newChorusChoice = *skipChorusParam;
-		AudioBuffer<FloatType> tempBuffer;
+		AudioBuffer<float> tempBuffer;
 		tempBuffer.makeCopyOf(buffer);
 
 
 
 		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.04;
-		FloatType gainRampCoeff = ((FloatType)numSamples / (FloatType)blendTimeSamples);
+		float gainRampCoeff = ((float)numSamples / (float)blendTimeSamples);
 
-		FloatType beginGain = chorusGain;
+		float beginGain = chorusGain;
 		chorusGain -= gainRampCoeff;
 
 		
@@ -1015,70 +956,8 @@ void MonosynthPluginAudioProcessor::processChorusBlending(AudioBuffer<FloatType>
 	}
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<float>& buffer)
 {
-	/*
-	int numSamples = buffer.getNumSamples();
-    int blendTimeSamples = sampleRate * 0.01;
-    FloatType gainRampCoeff = ( (FloatType)numSamples / (FloatType)blendTimeSamples);
-	
-    if (lastFilterChoice != *filterSelectParam)
-    {
-        if (filterBlendState == NO_FADE) filterBlendState = FADE_IN;
-        
-    }
-    
-    // APPLY FILTER
-    LadderFilterBase* curFilter;
-    
-    switch (lastFilterChoice) {
-        case 0:
-            curFilter = filterA.get();
-            break;
-        case 1:
-            curFilter = filterB.get();
-            break;
-        case 2:
-            curFilter = filterC.get();
-            break;
-    }
-    
-    applyFilterEnvelope(buffer, curFilter);
-    applyFilter(buffer, curFilter);
-    
-    switch (filterBlendState)
-    {
-        case FADE_IN : {
-            FloatType beginGain = filterGain;
-            filterGain -= gainRampCoeff;
-            buffer.applyGainRamp(0, 0, numSamples, beginGain, filterGain);
-            
-            if (filterGain <= 0.0) {
-                lastFilterChoice = *filterSelectParam;
-                filterBlendState = FADE_OUT;
-            }
-            
-            return;
-        }
-        case FADE_OUT: {
-            FloatType beginGain = filterGain;
-            filterGain += gainRampCoeff;
-            buffer.applyGainRamp(0, 0, numSamples, beginGain, filterGain);
-            
-            if (filterGain >= 1.0) {
-                filterBlendState = NO_FADE;
-                filterGain = 1.0;
-            }
-            return;
-        }
-        case NO_FADE: {
-            return;
-        }
-    }
-
-    */
-
 	int numSamples = buffer.getNumSamples();
 	LadderFilterBase* curFilter;
 
@@ -1086,13 +965,13 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>
 	{
 		int newFilterChoice = *filterSelectParam;
 
-		AudioBuffer<FloatType> tempBuffer;
+		AudioBuffer<float> tempBuffer;
 		tempBuffer.makeCopyOf(buffer);
 
 		int blendTimeSamples = (sampleRate / oversampleFactor) * 0.04;
-		FloatType gainRampCoeff = ((FloatType)numSamples / (FloatType)blendTimeSamples);
+		float gainRampCoeff = ((float)numSamples / (float)blendTimeSamples);
 
-		FloatType beginGain = filterGain;
+		float beginGain = filterGain;
 		filterGain -= gainRampCoeff;
 
 		switch (lastFilterChoice) {
@@ -1157,12 +1036,11 @@ void MonosynthPluginAudioProcessor::processFilterBlending(AudioBuffer<FloatType>
 	}
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<float>& buffer)
 {
     const int numSamples = buffer.getNumSamples();
-    const FloatType* readLeft = buffer.getReadPointer(0);
-	  FloatType* dataL = buffer.getWritePointer(0);
+    const float* readLeft = buffer.getReadPointer(0);
+	  float* dataL = buffer.getWritePointer(0);
 
 
 	  auto saturation = saturationAmount.getNextValue();
@@ -1173,8 +1051,7 @@ void MonosynthPluginAudioProcessor::applyWaveshaper(AudioBuffer<FloatType>& buff
 	  }
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::updateOscilloscope(AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::updateOscilloscope(AudioBuffer<float>& buffer)
 {
  
     float satuNorm = (*saturationParam - 1.0f) / 4.0f;
@@ -1323,8 +1200,7 @@ void MonosynthPluginAudioProcessor::timerCallback()
 {
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<float>& buffer)
 {
     int numSamples = buffer.getNumSamples();
     int stepSize = jmin(1, numSamples);
@@ -1366,9 +1242,9 @@ void MonosynthPluginAudioProcessor::updateParameters(AudioBuffer<FloatType>& buf
     double osFactor = 1.0;
     
     if(*useHQOversamplingParam)
-        osFactor = oversamplingDoubleHQ->getOversamplingFactor();
+        osFactor = oversamplingFloatHQ->getOversamplingFactor();
     else
-        osFactor = oversamplingDouble->getOversamplingFactor();
+        osFactor = oversamplingFloat->getOversamplingFactor();
     
     
     cutoff.setValue(*filterCutoffParam);
@@ -1493,17 +1369,16 @@ void MonosynthPluginAudioProcessor::applyModToTarget(int target, double amount)
     }
 }
 
-template <typename FloatType>
-FloatType MonosynthPluginAudioProcessor::softClip(FloatType s)
+float MonosynthPluginAudioProcessor::softClip(float s)
 {
-    FloatType localSample = s;
+    float localSample = s;
     if (localSample > 1.0)
     {
-        localSample = FloatType(1.0);
+        localSample = float(1.0);
     }
     else if (localSample < -1.0)
     {
-        localSample = FloatType(-1.0);
+        localSample = float(-1.0);
         
     }
     else
@@ -1531,20 +1406,19 @@ double FastArcTan(double x)
     return ((A*xx + B)*xx + C)*x;
 }
 
-template <typename FloatType>
-void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<FloatType>& buffer)
+void MonosynthPluginAudioProcessor::softClipBuffer(AudioBuffer<float>& buffer)
 {
     const int numSamples = buffer.getNumSamples();
     
-    const FloatType* readLeft = buffer.getReadPointer(0);
+    const float* readLeft = buffer.getReadPointer(0);
     
-    FloatType* dataLeft = buffer.getWritePointer(0);
+    float* dataLeft = buffer.getWritePointer(0);
     
 
     
     auto softClipLambda = [](auto sample)
     {
-        return FastArcTan(sample) * ( 2 / FloatType(double_Pi) );
+        return FastArcTan(sample) * ( 2 / float(double_Pi) );
     };
     
     for (int i = 0; i < numSamples; i++)

@@ -86,25 +86,14 @@ public:
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
     {
 
-        jassert (! isUsingDoublePrecision());
         if (*useHQOversamplingParam)
             process (buffer, midiMessages, oversamplingFloatHQ.get());
         else
             process (buffer, midiMessages, oversamplingFloat.get());
     }
     
-    void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
-    {
-
-        /*
-        jassert (! isUsingDoublePrecision());
-        if (*useHQOversamplingParam)
-            process (buffer, midiMessages, oversamplingDoubleHQ);
-        else
-            process (buffer, midiMessages, oversamplingDouble);
-         */
-    }
-
+   
+    
 
 
     //==============================================================================
@@ -294,35 +283,26 @@ private:
     float gainToDb(float gain, float min);
     float dbToGain(float dB, float min);
 
-	template <typename FloatType>
-    void process (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages, dsp::Oversampling<FloatType>* os);
+    void process (AudioBuffer<float>& buffer, MidiBuffer& midiMessages, dsp::Oversampling<float>* os);
 
-    template <typename FloatType>
-    void applyGain (AudioBuffer<FloatType>& buffer);
+    void applyGain (AudioBuffer<float>& buffer);
 
-	template <typename FloatType>
-	void applyAmplitudeEnvelope(AudioBuffer<FloatType>& buffer);
+	void applyAmplitudeEnvelope(AudioBuffer<float>& buffer);
 
     
-    template <typename FloatType>
-    void applyFilterEnvelope (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
+    void applyFilterEnvelope (AudioBuffer<float>& buffer, LadderFilterBase* filter);
 
-    template <typename FloatType>
-    void applyFilter (AudioBuffer<FloatType>& buffer, LadderFilterBase* filter);
+    void applyFilter (AudioBuffer<float>& buffer, LadderFilterBase* filter);
 
 
-	template <typename FloatType>
-	void processFilterBlending(AudioBuffer<FloatType>& buffer);
+	void processFilterBlending(AudioBuffer<float>& buffer);
 
-	template <typename FloatType>
-	void applyWaveshaper(AudioBuffer<FloatType>& buffer);
+	void applyWaveshaper(AudioBuffer<float>& buffer);
 
-    template <typename FloatType>
-    void updateOscilloscope(AudioBuffer<FloatType>& buffer);
+    void updateOscilloscope(AudioBuffer<float>& buffer);
     
     
-    template <typename FloatType>
-    void processChorusBlending(AudioBuffer<FloatType>& buffer);
+    void processChorusBlending(AudioBuffer<float>& buffer);
 	
     dsp::LookupTableTransform<double> tanhLUT   { [](double x) { return std::tanh(x); }, double(-5), double(5), 256 };
     dsp::LookupTableTransform<double> arrayaLUT { [](double x) { return (3.0 * x / 2.0) * (1 - x * x / 3.0); }, double(-5), double(5), 256 };
@@ -337,10 +317,7 @@ private:
    
     
     std::unique_ptr<dsp::Oversampling<float>> oversamplingFloat;
-	std::unique_ptr<dsp::Oversampling<double>> oversamplingDouble;
-    
     std::unique_ptr<dsp::Oversampling<float>> oversamplingFloatHQ;
-    std::unique_ptr<dsp::Oversampling<double>> oversamplingDoubleHQ;
     
     double oversampleFactor = 1.0;
     
@@ -371,14 +348,11 @@ private:
     void initialiseSynth();
     void updateCurrentTimeInfoFromHost();
 
-	template <typename FloatType>
-    void updateParameters(AudioBuffer<FloatType>& buffer);
+    void updateParameters(AudioBuffer<float>& buffer);
     
-    template <typename FloatType>
-    FloatType softClip(FloatType s);
+    float softClip(float s);
     
-    template <typename FloatType>
-    void softClipBuffer(AudioBuffer<FloatType>& buffer);
+    void softClipBuffer(AudioBuffer<float>& buffer);
 
     float  contourVelocity;
 	double cutoffModulationAmt; 
