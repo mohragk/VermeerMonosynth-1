@@ -143,7 +143,7 @@ public:
                 midi.clear();
             
             
-            int interval = jmin(256, numSamples);
+            int interval = jmin(128, numSamples);
             int samplesRemaining = numSamples;
             int position = 0;
             

@@ -115,6 +115,7 @@ class DiodeLadderModel : public LadderFilterBase
     {
 	
         UpdateParameters(pos);
+        Update();
         va_LPF4.setFeedback( 0.0 );
         va_LPF3.setFeedback( va_LPF4.getFeedbackOutput() );
         va_LPF2.setFeedback( va_LPF3.getFeedbackOutput() );
@@ -203,7 +204,7 @@ class DiodeLadderModel : public LadderFilterBase
 
 		if ( !approximatelyEqual(oldCutoff , c) )
 		{
-			Update();
+			
 		}
         
 		oldCutoff = c;

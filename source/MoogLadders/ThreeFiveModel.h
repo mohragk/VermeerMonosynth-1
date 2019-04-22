@@ -125,8 +125,10 @@ public:
     
 	template <typename FloatType>
 	inline FloatType doFilter(FloatType sample, int pos )
+    
     {
         UpdateParameters(pos);
+        Update();
 
 		FloatType y = 0.0;
 		
@@ -204,7 +206,7 @@ public:
 
 		if ( !approximatelyEqual(oldCutoff, c) )
 		{
-			Update();
+            //Update();
 		}
 
 		oldCutoff = c;
