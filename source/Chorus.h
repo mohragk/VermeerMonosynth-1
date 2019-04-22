@@ -125,13 +125,14 @@ public:
 						simpleLFO(phase + phaseOffset)
 						)  
 						* samplerate;
-                    
-                    int cheapReadPosition = (localWritePosition - (int)localDelayTime + delayBufferSamples) % delayBufferSamples;
+					FloatType readPosition = fmodf(
+						(FloatType)localWritePosition - localDelayTime + (FloatType)delayBufferSamples,
+						(FloatType)delayBufferSamples
+					);
 
-					int localReadPosition = cheapReadPosition;
-                    
+					int localReadPosition = floorf(readPosition);
 
-					int interpolationType = 0;
+					int interpolationType = 1;
 					switch (interpolationType) {
 					case 0: {
 						FloatType closestSample = delayData[localReadPosition % delayBufferSamples];
@@ -139,7 +140,6 @@ public:
 						break;
 					}
 					case 1: {
-                        /*
 						FloatType fraction = readPosition - (FloatType)localReadPosition;
 						FloatType fractionSqr = fraction * fraction;
 						FloatType fractionCube = fractionSqr * fraction;
@@ -155,7 +155,6 @@ public:
 						FloatType a3 = sample1;
 						out = a0 * fractionCube + a1 * fractionSqr + a2 * fraction + a3;
                         out *= gainReduction;
-                         */
 						break;
 
 					}
