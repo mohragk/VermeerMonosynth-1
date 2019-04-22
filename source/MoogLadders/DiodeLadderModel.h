@@ -56,7 +56,7 @@ class DiodeLadderModel : public LadderFilterBase
     {
         double wd = 2 * MOOG_PI * cutoff.get();
         double T  = 1 / sampleRate;
-        double wa = ( 2 / T ) * tan( wd * T / 2 );
+        double wa = ( 2 / T ) * dsp::FastMathApproximations::tan( wd * T / 2 );
         double g = wa * T / 2;
         
         double G4 = 0.5 * g / ( 1.0 + g );
