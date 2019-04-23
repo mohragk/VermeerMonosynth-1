@@ -66,13 +66,36 @@ class VAOnePole : public LadderFilterBase
     
         virtual void ProcessRamp(float* samples, size_t n, float beginCutoff, float endCutoff) override
         {
-			const auto increment = (endCutoff - beginCutoff) / static_cast<float> (n);
+            
+            auto linToLogLambda = [](float start, float end, float linVal) {
+                float result = std::pow(10.0f, (std::log10(end / start) * linVal + std::log10(start)));
+                if (result > end)
+                    result = end;
+                if (result < start)
+                    result = start;
+                return result;
+            };
+            auto logToLinLambda = [](float start, float end, float logVal) {
+                float result =  (std::log10(logVal / start) / std::log10(end / start));
+                if (result > 1.0)
+                    result = 1.0;
+                if (result < 0.0)
+                    result = 0.0;
+                return result;
+            };
+            
+            float beginCutoffLinear = logToLinLambda(40.0, 20000.0, beginCutoff);
+            float endCutoffLinear = logToLinLambda(40.0, 20000.0, endCutoff);
+            float currentCutoffLinear = beginCutoffLinear;
+            const auto increment = (endCutoffLinear - beginCutoffLinear) / static_cast<float> (n);
+            
             
             for (uint32_t i = 0; i < n; i++)
             {
-                SetCutoff(beginCutoff);
+                float currentCutoff = linToLogLambda(40.0, 20000.0, currentCutoffLinear);
+                SetCutoff(currentCutoff);
                 samples[i] = doFilter(samples[i], i);
-                beginCutoff += increment;
+                currentCutoffLinear += increment;
             }
         }
     

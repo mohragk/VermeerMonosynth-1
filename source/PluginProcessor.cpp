@@ -893,6 +893,9 @@ void MonosynthPluginAudioProcessor::applyFilter(AudioBuffer<float>& buffer, Ladd
 
 
 	filter->Process(channelDataLeft, numSamples);
+    //filter->ProcessRamp(channelDataLeft, numSamples, prevCutoff, currentCutoff);
+    
+    prevCutoff = currentCutoff;
 }
 
 
