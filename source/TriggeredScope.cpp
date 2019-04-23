@@ -229,25 +229,30 @@ void TriggeredScope::renderImage()
 
 
 	Path oscilloLine;
-	float lineW = 1.7f;
+	float lineW = 2.0f;
     int slice =0;
 
     //for (int slice = 0; slice < w; slice += 24)
     {
         oscilloLine.startNewSubPath(slice, h / 2.0f);
         g.setColour(Colours::white);
+		float oldY = 0.0f;
         while (currentX < w)
         {
-            ++bufferReadPos;
+            bufferReadPos += 1;
             if (bufferReadPos == bufferSize)
                 bufferReadPos = 0;
             
             const float currentY = (1.0f - (0.5f + (0.5f * verticalZoomFactor * maxBuffer[bufferReadPos]))) * h;
             
             //oscilloLine.lineTo(currentX, currentY);
-           g.drawLine(currentX - 1.0, currentY, currentX, currentY, lineW);
-            
-            ++currentX;
+            //g.drawLine(currentX - 1.0, currentY, currentX, currentY, lineW);
+			oldY += lineW;
+			const float bottom = oldY > currentY ? oldY : currentY;
+			const float top = oldY > currentY ? currentY : oldY;
+			g.drawVerticalLine(currentX, top, bottom);
+            currentX += 1;
+			oldY = currentY;
         }
         
         g.setColour(Colours::white);
