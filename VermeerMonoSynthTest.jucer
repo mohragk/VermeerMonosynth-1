@@ -8,7 +8,7 @@
               pluginSilenceInIsSilenceOut="0" pluginTailLength="0" pluginEditorRequiresKeys="1"
               pluginAUExportPrefix="VermeerMonosynth" pluginAUViewClass="JuceDemoProjectAU_V1"
               pluginRTASCategory="" bundleIdentifier="com.vermeer.Monosynth"
-              jucerVersion="5.4.1" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
+              jucerVersion="5.4.5" companyName="MRVR inc." aaxIdentifier="com.vermeer.Monosynth"
               buildAAX="0" pluginAAXCategory="2" includeBinaryInAppConfig="1"
               buildVST3="0" pluginManufacturerEmail="support@yourcompany.com"
               companyWebsite="www.soundcloud.com/meneervermeer" companyEmail="meneervermeermusic@gmail.com"
@@ -42,8 +42,7 @@
         <MODULEPATH id="juce_dsp" path="../../../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <VS2017 targetFolder="Builds/VisualStudio2017" windowsTargetPlatformVersion="10.0.16299.0"
-            smallIcon="aJR5EJ" bigIcon="IbiCwm">
+    <VS2017 targetFolder="Builds/VisualStudio2017" smallIcon="aJR5EJ" bigIcon="IbiCwm">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
                        isDebug="1" optimisation="1" targetName="VermeerMonosynth" debugInformationFormat="ProgramDatabase"
@@ -188,6 +187,6 @@
   </MODULES>
   <LIVE_SETTINGS>
     <OSX buildEnabled="0"/>
-    <WINDOWS buildEnabled="0"/>
+    <WINDOWS buildEnabled="1"/>
   </LIVE_SETTINGS>
 </JUCERPROJECT>

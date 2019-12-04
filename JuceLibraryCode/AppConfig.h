@@ -47,6 +47,8 @@
 
 #define JUCE_USE_DARK_SPLASH_SCREEN 1
 
+#define JUCE_PROJUCER_VERSION 0x50405
+
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_audio_basics             1
 #define JUCE_MODULE_AVAILABLE_juce_audio_devices            1
@@ -440,6 +442,12 @@
 #endif
 #ifndef  JucePlugin_IAAName
  #define JucePlugin_IAAName                "Vermeer inc.: Vermeer Monosynth"
+#endif
+#ifndef  JucePlugin_VSTNumMidiInputs
+ #define JucePlugin_VSTNumMidiInputs       16
+#endif
+#ifndef  JucePlugin_VSTNumMidiOutputs
+ #define JucePlugin_VSTNumMidiOutputs      16
 #endif
 
 //==============================================================================
