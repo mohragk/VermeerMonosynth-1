@@ -12,3 +12,5 @@ Setup your desired target platforms and export from the Projucer to generate the
 This project was made using Juce 5.4.1 and some functions are deprecated in newer versions of Juce. You should build this using version 5.4.1 or older. You van find [older versions of Juce](https://github.com/juce-framework/JUCE/releases) over [here](https://github.com/juce-framework/JUCE/releases).
 
 
+### VST3 vs VST2
+As VST2 is no longer available as a free SDK, I suggest porting this project to VST3. 
