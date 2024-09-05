@@ -1,5 +1,7 @@
 # Vermeer Monosynth-1
 
+![Monosynth](monosynth-card.png)
+
 #### Info
 This is a software synthesizer, made to be used as a VST plug-in or standalone application on your platform of choice. It's realised in C++ using the [Juce framework](https://juce.com/). 
 It features 3 oscillators, 3 different filter models, 3 envelope generators, an LFO and a simple yet powerfull sequencer.
